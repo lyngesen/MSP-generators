@@ -1,0 +1,71 @@
+% # Abbriviations
+
+% MO := Multi-objective
+% MOCO := Multi-objective combinatorial optimization
+% BOCO := Bi-objective combinatorial optimization
+% MO-MSP := Multi-objective Minkowski sum optimization problem
+
+% # Commands
+
+% ## Ehrgott set notation
+\newcommand{\X}{\mathcal{X}} % Decision space
+\newcommand{\Xe}{\mathcal{X}_E} % Effecient solutions
+\newcommand{\Y}{\mathcal{Y}} % Objective space points
+%hide \newcommand[\Y][1][][\mathcal{Y}^{#1}] % objective space with argument
+\newcommand{\Yn}{\mathcal{Y}_{\mathcal{N}}} % Non-dominated points
+\renewcommand{\L}{\mathcal{L}} % Lower bound set
+\newcommand{\U}{\mathcal{U}} % Upper bound set
+
+% ## Article notation 
+
+\newcommand{\mcN}{\mathcal{N}} % Non-dominated set
+\newcommand{\YsS}{\bar{\mathcal{Y}}^s} % Conditioned non-dominated set
+%hide \newcommand{\Gc}{\mathcal{G}^{1|2}} % set of generators
+\newcommand{\Yc}{\bar{\mathcal{Y}}^{1}} % a minimal generator
+\newcommand{\Ycs}{\bar{\mathcal{Y}}^{s}} % a minimal generator wrt. several subproblems.
+\newcommand{\hY}{\hat{\mathcal{Y}}^{1}} % subset of non-dominated points
+%show \newcommand{\Yc}{\ ^g\bar{\mathcal{Y}}^{1}} % a minimal generator
+%hide \newcommand{\Yc}{\bar{\prescript{g}{}{\mathcal{Y}}^{1}}} % a minimal generator with (g)
+\newcommand{\hYc}{\hat{\mathcal{Y}}^{1}} % (another) minimal generator
+\newcommand{\Uc}{\bar{\mathcal{U}}^{1}} % a conditional upper bound set
+\newcommand{\bY}{\bar{\mathcal{Y}}} % bar over objective space
+\newcommand{\bYn}{\bar{\mathcal{Y}}_\mathcal{N}} % bar over non-dominated points
+\renewcommand{\u}{\bar{u}} % Auxilary variable used in upper bound algorithm
+\newcommand{\yul}{y^{ul}} % Upper-left lex min solution
+\newcommand{\ylr}{y^{lr}} % Lower-right lex min solution
+\newcommand{\Q}{\mathcal{Q}} % Auxilary set used in upper bound algorithm
+
+
+% ## index sets
+\newcommand{\I}{\mathcal{I}} % index set of decision variables
+\newcommand{\J}{\mathcal{J}} % index set
+\renewcommand{\P}{\mathcal{P}} % index set objective space
+\renewcommand{\S}{\mathcal{S}} % set of subsystems
+\newcommand{\Z}{\mathcal{Z}} % set of subsystems
+
+% ## Number sets
+\newcommand{\R}{\mathbb{R}} % The real numbers
+\newcommand{\Rp}{\mathbb{R}^p} % The positive cone in p-dimensions
+\newcommand{\Rpp}{\mathbb{R}_{\geqq}^p} % The positive cone in p-dimensions including $0$
+\newcommand{\Rppp}{\mathbb{R}_{\geq}^p} % The positive cone in p-dimensions without $0$
+\newcommand{\N}{\mathbb{N}} % The set of natural numbes
+%hide \newcommand{\Z}{\mathbb{Z}} % The set of integers
+
+% ##  Operators
+\newcommand{\+}{\oplus} % Minkowski sum
+\renewcommand{\-}{\ominus} % Minkowski difference
+\newcommand{\msum}{\bigoplus} % Minkowski sum (multiple)
+\newcommand{\mmul}{\bigotimes} % Cartesian product (multiple)
+\newcommand{\x}{\times} % Cartesian product
+%show \renewcommand{}{\prod} % Cartesian product (multiple)
+%show \newcommand{}{(\cdot)_\mathcal{N}} % Non-dominated points
+
+% ##  Misc
+\newcommand{\eg}{e.g.\@\xspace} %
+\newcommand{\wrt}{wrt.\@\xspace} %
+\newcommand{\ie}{i.e.\@\xspace} %
+\newcommand{\BB}{branch-and-bound\@\xspace} %
+\newcommand{\msp}{MO-MSP\@\xspace} %
+\newcommand{\MSP}{multi-objective Minkowski Sum problem\@\xspace} %
+\newcommand{\eproblem}{$\epsilon$-problem\@\xspace} %
+\newcommand{\emethod}{$\epsilon$-method\@\xspace} %

@@ -1,0 +1,55 @@
+% document settings
+\usepackage[utf8]{inputenc}
+% language support
+\usepackage[british]{babel}
+
+% for hyperlinks
+\usepackage{hyperref}
+
+% for figures + tikz
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{relsize}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% math stuff
+\usepackage{amsmath,amsfonts,amssymb, mathtools}
+%\mathtoolsset{showonlyrefs=true,showmanualtags=true} %Show only labels if make a reference to it
+%\mathtoolsset{showonlyrefs}	
+% numbered enviroments
+\usepackage{amsthm}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{corollary}{Corrolary}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{prop}{Proposition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{exmp}{Example}[section]
+\newtheorem{conj}{Conjecture}[section]
+
+% for algorithms
+\usepackage[linesnumbered,lined,boxed,commentsnumbered]{algorithm2e}
+
+% for optimization problems
+\usepackage[short]{optidef}
+
+% for adding code
+\usepackage{listings}
+
+% for references
+\usepackage{cleveref}
+\crefname{subsection}{Subsection}{subsections}
+\Crefname{prop}{Proposition}{proposition}
+\Crefname{thm}{Theorem}{theorem}
+\Crefname{definition}{Definition}{definition}
+\Crefname{remark}{Remark}{remark}
+\Crefname{lemma}{Lemma}{lemma}
+\Crefname{exmp}{Example}{example}
+\Crefname{conj}{Conjecture}{conjecture}
+
+
+% for referencung optimization problems
+\newcommand{\Pref}[1]{Problem \ref{#1}}

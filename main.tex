@@ -1,0 +1,49 @@
+\documentclass[preprint,12pt,authoryear]{LaTeXConfig/elsarticle} % Use elsarticle class
+
+\input{LaTeXConfig/preamble.tex} % link to global preamble file
+\input{LaTeXConfig/commands.tex} % link to global commands file. See LaTeXConfig/README.md
+\begin{document}
+
+% TODO: test fix <27-01-24> %
+\title{Minkowski sum problems - Theory and definitions\\
+%\vspace*{1.5ex}
+\texorpdfstring{
+\vspace*{1.5ex}
+\small
+% subtitle
+Generator sets and upper bounds.
+}
+}
+\author[Aarhus University]{Mark Lyngesen}
+\author[Aarhus University]{Sune Lauth Gadegaard}
+\author[Aarhus University]{Lars Relund nielsen}
+\affiliation[Aarhus University]{organization={Department of Economics and Business Economics, BSS, Aarhus University},%Department and Organization
+            addressline={Fuglsangs Allé 4}, 
+            city={Aarhus},
+            postcode={8000}, 
+            state={Aarhus Municipality},
+            country={Denmark}}
+
+\begin{abstract}
+%% Text of abstract
+\end{abstract}
+
+\maketitle
+ 
+\pagebreak
+
+\input{sections/introduction.tex}
+\input{sections/literature.tex}
+\input{sections/prerequisites.tex}
+\input{sections/empirical.tex}
+\input{sections/conclusion.tex}
+
+Test cite
+\citep{adelgren2018efficient}
+
+\pagebreak
+
+\bibliographystyle{LaTeXConfig/elsarticle-num-names} 
+\bibliography{LaTeXConfig/literature}
+
+\end{document}
