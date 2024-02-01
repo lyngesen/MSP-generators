@@ -1,0 +1,44 @@
+---
+title: "Generation of instance files for subproblems"
+output: html_document
+date: "`r Sys.Date()`"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Subproblem caristica
+
+\begin{itemize}
+    \item Test $p=2,\ldots, 5$. [4 options]
+    \item Width is the same for all objectives (\cite{Kerberenes2022phd} use $w_i=1000$ in Chap. 2) or width is the same for approx. half of the objectives (\eg 1000) and 1/4 for the remaining (\ie 250). [2 options]
+    \item Generate on a sphere: either lower/west part (many supported) or upper/east part (many unsupported). [2 options]
+    \item Generate $10, 50, 100, 150, 200$ points and find the nd points among them for each subproblem. [5 options]
+    \item Classify each nd point (supported, extreme, unsupported)
+    \item Keep statistics: number of points, supported, extreme, unsupported, ratio = supported/unsupported, (range) width $w_i$ = max-min, min and max value for each objective $i = 1,\ldots p$.
+    \item 5 instances for each config. [5 options]
+\end{itemize}
+
+```{r}
+#install.packages("gMOIP")
+library(gMOIP)
+```
+
+```{r}
+ini3D()
+cent <- c(100,100,100)
+r <- 75
+planeC <- c(cent+r/3)
+planeC <- c(planeC, -sum(planeC^2))
+pts <- genSample(3, 100,
+  argsSphere = list(center = cent, radius = r, below = FALSE, plane = planeC, factor = 6))
+Rfast::colMinsMaxs(as.matrix(pts))
+rgl::spheres3d(cent, radius=r, color = "grey100", alpha=0.1)
+plotPoints3D(pts)
+rgl::planes3d(planeC[1],planeC[2],planeC[3],planeC[4], alpha = 0.5, col = "red")
+finalize3D()
+```
+
