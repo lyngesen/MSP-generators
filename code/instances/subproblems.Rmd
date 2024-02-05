@@ -7,38 +7,261 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## Subproblem caristica
-
-\begin{itemize}
-    \item Test $p=2,\ldots, 5$. [4 options]
-    \item Width is the same for all objectives (\cite{Kerberenes2022phd} use $w_i=1000$ in Chap. 2) or width is the same for approx. half of the objectives (\eg 1000) and 1/4 for the remaining (\ie 250). [2 options]
-    \item Generate on a sphere: either lower/west part (many supported) or upper/east part (many unsupported). [2 options]
-    \item Generate $10, 50, 100, 150, 200$ points and find the nd points among them for each subproblem. [5 options]
-    \item Classify each nd point (supported, extreme, unsupported)
-    \item Keep statistics: number of points, supported, extreme, unsupported, ratio = supported/unsupported, (range) width $w_i$ = max-min, min and max value for each objective $i = 1,\ldots p$.
-    \item 5 instances for each config. [5 options]
-\end{itemize}
-
-```{r}
-#install.packages("gMOIP")
+# remotes::install_github("relund/gMOIP")
 library(gMOIP)
+library(tidyverse)
+library(knitr)
+library(rgl)
+rgl::setupKnitr()
+options(rgl.useNULL=TRUE)
+rgl::par3d("family" = "serif")
+opts_chunk$set(
+  echo = FALSE,
+  message=FALSE, include = TRUE,
+  out.width = "99%", fig.width = 8, fig.align = "center", fig.asp = 0.8
+)
 ```
 
+## Subproblems
+
 ```{r}
-ini3D()
-cent <- c(100,100,100)
-r <- 75
-planeC <- c(cent+r/3)
-planeC <- c(planeC, -sum(planeC^2))
-pts <- genSample(3, 100,
-  argsSphere = list(center = cent, radius = r, below = FALSE, plane = planeC, factor = 6))
-Rfast::colMinsMaxs(as.matrix(pts))
-rgl::spheres3d(cent, radius=r, color = "grey100", alpha=0.1)
-plotPoints3D(pts)
-rgl::planes3d(planeC[1],planeC[2],planeC[3],planeC[4], alpha = 0.5, col = "red")
-finalize3D()
+genSubproblems <- function(p, samples, width = 10000, pltS = FALSE, pltM = FALSE) {
+  #### subproblems sphere ####
+  center <- rep(0, p)
+  radius <- width
+  pts <- genSample(p, samples * 10 * p, 
+                   argsSphere = list(center = center, radius = radius, below = NULL, factor = 6))
+  # cat("Genenerate", dim(pts)[1], "on a sphere\n")
+  ## Upper part
+  ptsU <- as.data.frame(pts) %>%
+    filter(if_all(where(is.double), ~ (. >= 0))) %>% 
+    slice_sample(n = round(1.2 * samples))
+  # cat("Pick ND points among", dim(ptsU)[1], "upper points\n")
+  ptsU <- addNDSet(ptsU[, 1:p], crit = "min", classify = F)
+  if (nrow(ptsU) < samples) warning("Did not find ", samples, " nd points (u). p = ", p, " s = ", samples)
+  ptsU <- ptsU %>% 
+    slice_sample(n = samples)
+  # cat("Classify", dim(ptsU)[1], "upper points\n")
+  ptsU <- classifyNDSet(ptsU[,1:p]) %>% mutate(nd = TRUE)
+  ## lower part
+  ptsL <- as.data.frame(pts) %>%
+    filter(if_all(where(is.double), ~ (. <= 0))) %>% 
+    slice_sample(n = round(1.2 * samples))
+  # cat("Pick ND points among", dim(ptsL)[1], "lower points\n")
+  ptsL <- addNDSet(ptsL[, 1:p], crit = "min", classify = F)
+  if (nrow(ptsL) < samples) warning("Did not find ", samples, " nd points (l). p = ", p, " s = ", samples)
+  ptsL <- ptsL %>% 
+    slice_sample(n = samples)
+  # cat("Classify", dim(ptsL)[1], "lower points\n")
+  ptsL <- classifyNDSet(ptsL[,1:p]) %>% mutate(nd = TRUE)
+  ## Plot
+  if (p == 3 & pltS) {
+    # rgl::mfrow3d(nr = 1, nc = 2, sharedMouse = F)
+    ini3D(argsPlot3d = list(box = TRUE, axes = TRUE))
+    rgl::spheres3d(center, radius=radius, color = "grey100", alpha=0.1)
+    plotPoints3D(ptsU)
+    plotPoints3D(ptsL)
+    finalize3D()
+    # next3d()
+  }
+  ptsL <- ptsL %>% 
+    mutate(across(where(is.double), ~ .x + width)) 
+  Rfast::colMinsMaxs(as.matrix(ptsU[, 1:p]))
+  Rfast::colMinsMaxs(as.matrix(ptsL[, 1:p]))
+  
+  #### subproblems planes ####
+  rng <- matrix(rep(c(0, width), each = p), nrow = p)
+  center <- rowMeans(rng)
+  planeU <- c(rep(1, p), -1.2*sum(rowMeans(rng)))
+  planeL <- c(rep(1, p), -0.8*sum(rowMeans(rng)))
+  ptsM <- genNDSet(p, n = samples, range = rng, planes = TRUE, classify = TRUE,
+                   argsPlanes = list(center = center, planeU = planeU, planeL = planeL))
+  # ptsR <- genSample(p, 10 * p * samples, range = rng, random = TRUE, classify = T)
+  # center <- rep(width/2, p)
+  # planeL <- c(center+width/4, -sum(center^2))
+  # planeU <- c(center-width/15, -sum(center^2))
+  # set <- matrix(rep(0, p), nrow = 1)
+  # for (i in 1:nrow(ptsR)) {
+  #   if (sum(planeL[1:p] * ptsR[i, ]) >= 
+  #     -planeL[p + 1]) {
+  #     set <- rbind(set, ptsR[i, ])
+  #   }
+  # }
+  # ptsR <- set[-1, ]
+  # set <- matrix(rep(0, p), nrow = 1)
+  # for (i in 1:nrow(ptsR)) {
+  #   if (sum(planeU[1:p] * ptsR[i, ]) <= 
+  #     -planeU[p + 1]) {
+  #     set <- rbind(set, ptsR[i, ])
+  #   }
+  # }
+  # ptsR <- set[-1, ]
+  # ptsR <- as.data.frame(ptsR) %>%
+  #   slice_sample(n = round(4 * p * samples))
+  # # cat("Pick ND points among", dim(ptsR)[1], "middle points\n")
+  # ptsR <- addNDSet(ptsR, crit = "min", classify = F)
+  # if (nrow(ptsR) < samples) warning("Did not find ", samples, " nd points (m). p = ", p, " s = ", samples)
+  # ptsR <- ptsR %>% 
+  #   slice_sample(n = samples)
+  # # cat("Classify", dim(ptsR)[1], "middle points\n")
+  # ptsR <- classifyNDSet(ptsR[,1:p])
+  # Rfast::colMinsMaxs(as.matrix(ptsR[, 1:p]))
+  if (p == 3 & pltM) {
+    ini3D(argsPlot3d = list(box = TRUE, axes = TRUE))
+    plotPoints3D(ptsM)
+    rgl::planes3d(planeL[1],planeL[2],planeL[3],planeL[4], alpha = 0.5, col = "red")
+    rgl::planes3d(planeU[1],planeU[2],planeU[3],planeU[4], alpha = 0.5, col = "red")
+    finalize3D()
+  }
+  
+  
+  #### subproblems box ####
+  # rng <- matrix(rep(c(0, width, 0, round(width/4, 0)), p)[1:(2 * p)], byrow = TRUE, ncol = 2)
+  # pts <- genSample(p, samples * 2, range = rng, box = TRUE, argsBox = list(cor = "idxRand"))
+  # ptsB <- pts
+  # if (p == 3 & plt) {
+  #   ini3D(argsPlot3d = list(box = TRUE, axes = TRUE))
+  #   plotPoints3D(ptsB)
+  #   finalize3D()
+  # }
+  
+  calcStat <- function(p, pts, method) {
+    lst <- list(points = pts %>% select(-nd, -se, -sne, -us))
+    lst$statistics$p <- p 
+    lst$statistics$card <- nrow(pts)
+    lst$statistics$supported <- sum(pts$se) + sum(pts$sne)
+    lst$statistics$extreme <- sum(pts$se)
+    lst$statistics$unsupported <- sum(pts$us)
+    lst$statistics$min <- Rfast::colMins(as.matrix(pts[, 1:p]), value = T)
+    lst$statistics$max <- Rfast::colMaxs(as.matrix(pts[, 1:p]), value = T)
+    lst$statistics$width <- Rfast::colrange(as.matrix(pts[, 1:p]))
+    lst$statistics$method <- method
+    return(lst)
+  }
+  
+  return(list(iU = calcStat(p, ptsU, "u"), iM = calcStat(p, ptsM, "m"), iL = calcStat(p, ptsL, "l")))
+}
+
+saveSubproblems <- function(pS, samplesS, dub, overwrite = TRUE) {
+  #name = sub-<p>-<card>-<gen-method>_-<grp-id>.json
+  for (p in pS) {
+    for (s in samplesS) {
+      for (d in 1:dub) {
+        pathU <- str_c("subproblems/sup-", p, "-", s, "-u", "_", d, ".json")
+        pathM <- str_c("subproblems/sup-", p, "-", s, "-m", "_", d, ".json")
+        pathL <- str_c("subproblems/sup-", p, "-", s, "-l", "_", d, ".json")
+        if (overwrite | !fs::file_exists(pathU) | !fs::file_exists(pathM) | !fs::file_exists(pathL)) {
+          cat("Generate for p =", p, "card =", s, "\n")
+          lst <- genSubproblems(p, s)
+          jsonlite::write_json(lst$iU, pathU, pretty = TRUE)
+          jsonlite::write_json(lst$iM, pathM, pretty = TRUE)
+          jsonlite::write_json(lst$iL, pathL, pretty = TRUE)
+        }
+      }
+    }
+  }
+  return(NULL)
+}
+
+getStatistics <- function() {
+  dat <- NULL
+  paths <- fs::dir_ls("subproblems/")
+  paths <- paths[str_detect(paths, "-")]
+  for (p in sort(paths, decreasing = T)) {
+    lst <- jsonlite::read_json(p)
+    dat <- dat %>% bind_rows(c(path = p, unlist(lst$statistics)))
+    dat <- dat %>% bind_rows(c(path = p, unlist(lst$statistics)))
+    dat <- dat %>% bind_rows(c(path = p, unlist(lst$statistics)))
+  }
+  return(dat)
+}
+
+deleteFiles <- function(delete = TRUE) {
+  paths <- fs::dir_ls("subproblems/")
+  paths <- paths[-1]  # remove statistics file
+  if (delete == "m") {
+     fs::file_delete(str_subset(paths, "-m"))
+  }
+  for (p in sort(paths, decreasing = T)) {
+    samples <- as.numeric(str_split_1(p, "-")[3])
+    lst <- jsonlite::read_json(p)
+    if (samples != lst$statistics$card[[1]]) {
+      cat("Found lower number of nd points for", p, samples, "!=", lst$statistics$card[[1]],  " Remove the file!\n")
+      if (delete) fs::file_delete(p)
+    }
+  }
+  return(NULL)
+} 
 ```
+
+We use the R package `gMOIP` to generate subproblems. A subproblem is generated such that all nondominated points is integer and in the hypercube $[0, 10000]^p$. A configuration is defined using:
+
+  * Number of objectives ($p$).
+  * Number of nondominated points (card). 
+  * Generation method which is either
+    - Points generated on the upper (u) part of a sphere resulting in many unsupported points (see Fig. 1).
+    - Points generated between to hyperplanes in the middle (m) of the hypercube, resulting in both supported and unsupported points near to the hull (see Fig. 2).
+    - Points generated on the lower (l) part of a sphere resulting in many supported points (see Fig. 1).
+  
+That is a subproblem can be identified using filename `sub-<p>-<card>-<gen-method>_<id>.json` where `id` denote the instance id for the same configuration. 
+  
+```{r, webgl=TRUE}
+lst <- genSubproblems(p = 3, samples = 25, pltS = T)
+rgl::title3d(main = "Fig. 1: Generation on a sphere (option u and l).")
+```
+
+```{r, webgl=TRUE}
+lst <- genSubproblems(p = 3, samples = 25, pltM = T)
+rgl::title3d(main = "Fig. 2: Generation between hyperplanes (option m).")
+```
+  
+For each subproblem we calculate the statistics:
+
+  * Classification of points into supported extreme (se), supported non extreme (sne), unsupported (us).
+  * Number of 
+    - points (cardinality) 
+    - supported, extreme and unsupported 
+    <!-- - ratio $r$ = unsupported/supported. Note unsupported = $r\cdot$supported, $r\in [0, unsupported]$. If $r$ = 0 (no unsupported), $r=$unsupported (one supported), $r<1$ more supported.  -->
+    - min and max value for each objective $i = 1,\ldots p$.
+    - width $w_i$ = $max_i-min_i$ for each objective $i = 1,\ldots p$.
+
+Let us try to generate a set of subproblems saved as json files in folder subproblems:
+
+```{r, echo=TRUE, results='hide'}
+pS <- 2:5 # p values
+samplesS <- c(10, 50, 100, 150, 200, 300, 600) # nd points set size
+dub <- 5 # number of duplicates for each configuration
+deleteFiles()
+saveSubproblems(pS, samplesS, dub, overwrite = F)
+```
+
+```{r, include=FALSE}
+path <- "subproblems/statistics.csv"
+dat <- getStatistics()
+if (!is.null(dat)) write_csv(dat, file = path) 
+dat <- read_csv(path)
+```
+
+## A few plots
+
+```{r}
+ggplot(mapping = aes(x = card, y = unsupported/card, color = method), data = dat) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  facet_wrap(vars(p)) + 
+  labs(title = "Percentage of unsupported given p",
+       y = "Pct.") +
+  theme(legend.position = "bottom")
+
+dat %>% 
+  rowwise() %>% 
+  mutate(avg_width = max(c_across(contains("width")), na.rm = TRUE)) %>% 
+  ggplot(mapping = aes(x = card, y = avg_width, color = method)) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  facet_wrap(vars(p)) + 
+  labs(title = "Average width for all objectives given p") +
+  theme(legend.position = "bottom")
+```
+
 
