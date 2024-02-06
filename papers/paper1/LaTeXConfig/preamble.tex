@@ -3,8 +3,6 @@
 % language support
 \usepackage[british]{babel}
 
-% for hyperlinks
-\usepackage{hyperref}
 
 % for figures + tikz
 \usepackage{tikz}
@@ -18,7 +16,7 @@
 % math stuff
 \usepackage{amsmath,amsfonts,amssymb, mathtools}
 %\mathtoolsset{showonlyrefs=true,showmanualtags=true} %Show only labels if make a reference to it
-%\mathtoolsset{showonlyrefs}	
+\mathtoolsset{showonlyrefs}	
 % numbered enviroments
 \usepackage{amsthm}
 \newtheorem{thm}{Theorem}[section]
@@ -39,8 +37,11 @@
 % for adding code
 \usepackage{listings}
 
+% for hyperlinks
+\usepackage[hidelinks,breaklinks=true]{hyperref}
+
 % for references
-\usepackage{cleveref}
+\usepackage[nameinlink]{cleveref}
 \crefname{subsection}{Subsection}{subsections}
 \Crefname{prop}{Proposition}{proposition}
 \Crefname{thm}{Theorem}{theorem}
