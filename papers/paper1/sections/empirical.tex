@@ -1,5 +1,57 @@
 \section{Emperical study}
 
+The purpose of the computational study is to answer the following questions:
+
+[General intro see e.g. https://www.research.relund.dk/publications/pdf/forget22b.pdf and https://www.research.relund.dk/publications/pdf/forget22a.pdf]
+
+\begin{enumerate}
+    \item How large is $|\Yn|$ given $|\Yn^s|, s\in S$ ($\prod_s |\Yn^s|)$?
+    \item What is the relative size of the generator sets compared to $|\Yn^s|, s\in S$?
+    \item Does the sequence of subproblems impact the generator set size? 
+\end{enumerate}
+
+\subsection{Test instances}
+
+Possible setup: In an instance folder, create a subfolder for each instance = problem. Keep on csv file for each subproblem. Even better could be to have no subfolders but instead one json file for each instance. Another solution is to have a json file for each subproblem. This is properly the best option. However, the instances will be correlated. An instance can then be defined as a combination of subproblems.
+
+For each subproblem we
+
+\begin{itemize}
+    \item Test $p=2,\ldots, 5$. [4 options]
+    \item Width is the same for all objectives (\cite{Kerberenes2022phd} use $w_i=1000$ in Chap. 2) or width is the same for approx. half of the objectives (\eg 1000) and 1/4 for the remaining (\ie 250). [2 options]
+    \item Generate on a sphere: either lower/west part (many supported) or upper/east part (many unsupported). [2 options]
+    \item Generate $10, 50, 100, 150, 200$ points and find the nd points among them for each subproblem. [5 options]
+    \item Classify each nd point (supported, extreme, unsupported)
+    \item Keep statistics: number of points, supported, extreme, unsupported, ratio = supported/unsupported, (range) width $w_i$ = max-min, min and max value for each objective $i = 1,\ldots p$.
+    \item 5 instances for each config. [5 options]
+\end{itemize}
+
+In total $4 \cdot 2 \cdot 2 \cdot 2 \cdot 5 \cdot 5 = 800$ files. Naming convention could be 
+
+\verb|sub-<id>-<p>-<width>-<sphere-method>-<nd-points>-<ratio>-<instance-id>.json|.
+
+
+Note that given integer points, an upper bound on the width of the master problem with $s = 1,\ldots, m$ subproblems is $w_i = \sum_s w_{si}$. That is, if we keep the width of the subproblem fixed, the width of the master grows as $m$ grows. 
+
+Note that given integer points and $p=2$, an upper bound on the number of nd points is $1 + \min_i w_i$. For a problem with $m$ subproblems an upper bound on the nd points is $1 + \min_i \sum_p w_{pi}$
+
+The following instance/problem groups are generated given combinations of (this should maybe be changed for each question):
+
+\begin{itemize}
+    \item $p=2,\ldots, 5$. [4 options]
+    \item $m=2,\ldots 5$ where $m$ is the number of subproblems. [4 options]
+    \item All subproblems have the same sphere config, half/half. [3 options]
+    \item Increasing nd points in subproblems (if m=3 choose 100, 200, 250), all have highest (n=250). [2 options]
+    \item 10 instances for each config. [10 options]
+\end{itemize}
+
+In total $4 \cdot 4 \cdot 3 \cdot 2 \cdot 10 = 960$ files. Naming convention could be 
+
+\verb|prob-<id>-<p>-<m>-<sphere-method>-<sub-ids>.json|.
+
+A result file in the format https://github.com/MCDMSociety/MOrepo/blob/master/contribute.md may be created.
+
+
 
 \subsection{Emperical study of Generator sets}
 When are generator sets small relative to the non-dominated sets?
