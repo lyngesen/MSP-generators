@@ -49,7 +49,7 @@ In total $4 \cdot 4 \cdot 3 \cdot 2 \cdot 10 = 960$ files. Naming convention cou
 
 \verb|prob-<id>-<p>-<m>-<sphere-method>-<sub-ids>.json|.
 
-A result file in the format https://github.com/MCDMSociety/MOrepo/blob/master/contribute.md may be created.
+A result file in the format \href{https://github.com/MCDMSociety/MOrepo/blob/master/contribute.md}{MCDMSociety}   may be created.
 
 
 
@@ -71,3 +71,97 @@ Periodically generate a point for each subproblem whereafter all generator sets 
 	\item 
 Sweep: generate all supported non-dominated points for each subproblem whereafter all generator sets and upper bound sets are updated.
 \end{itemize}
+
+
+
+\subsection{Methods for answering research questions}
+
+In the following we describe ways of generating test metrics used to answer the main empirical research questions. Each test is performed on an \msp instance given by a sequence of sets $\{\Y^s\}_{s \in \S}$ for some ordered sequence of subproblems indexed by a set $\S$ (where we assume $\Y^s \subseteq \Yn^s \forall s \in \S$).
+
+\begin{enumerate}
+	\item  How large is $\lvert \Yn \rvert$ given $\left\{\lvert \Yn^s \rvert \right\}_{s \in \S}$?
+To determine the set $\Yn$ we run the naive Minkowski Sum filtering algorithm from \citep{Kerberenes2022}. This algorithm sequentially generates the nondominated Minkowski Sum and uses a nondominance filter as a subroutine. The speed of the nondominance algorithm differs for $p=2$ and for $p>2$.
+
+In each test we record the following measures:
+\begin{itemize}
+	\item 
+$\lvert \Yn \rvert$ total nondominated points.
+	\item 
+$\lvert \Ysn \rvert$ total supported nondominated points.
+	\item 
+$\lvert \Yen \rvert$ total extreme (supported) nondominated points.
+	\item 
+$\lvert \Yn \setminus \Ysn \rvert$ total unsupported nondominated points.
+\end{itemize}
+
+
+
+\item What is the relative size of the generator sets compared to $\lvert \Y^s \rvert (\forall s \in \S)$?
+We first note that generator sets are not unique. We consider several different generator sets and compare. We define a \emph{Minimum generator set sequence} as a sequence of generators $\left\{ \Ycs  \right\}_{s \in \S}$ where $\Ycs \subseteq \Y^s$ such that $\bar{M} := \sum_{s \in \S} \lvert \Ycs \rvert$ is minimum.
+
+Let $\bar{M}$ denote the size of a minimum generator set sequence. $\bar{M}$ is defined by the following combinatorial problem.
+
+\begin{align}
+	\bar{M}  =  \min& \sum_{s \in \S} \lvert \hY^s \rvert  \\
+	s.t. \quad & \msum_{s \in \S} \lvert \hY^s \rvert = \Yn,  \label{constr:comb spanning}\\
+		   & \hY^s \subseteq \Y^s, \quad \forall s \in \S
+\end{align}
+
+We will reformulate the combinatorial problem as a general MIP. To do this we introduce the following notation. We order the sets $\Y^s := \{y^s_1,\hdots\} = \{\Y_i^s\}_{s \in \I^s}$ indexed by set $\I^s$ for all subproblems $s \in s \in \S$. Likewise, we order the set $\Yn := \{y_j\}_{j \in \J}$ indexed by the set $\J$. We introduce decision variables $x$ and $w$ such that:
+\begin{align}
+	x^s_i &= \begin{cases}
+    	1, &\text{ if }y_i^s \in \hY^s \\ 
+    	0, &\text{ otherwise }\\ 
+    \end{cases}
+    & \forall i \in \I^s, \forall s \in \S
+    \\
+		w^s_{i,j} &= \begin{cases}
+    	1, &\text{ if $y^s_i$ generates $y_j \in \Yn$} \\ 
+    	0, &\text{ otherwise }\\ 
+    \end{cases}
+    & \forall i \in \I^s, \forall s \in \S, \forall j \in \J \nonumber
+\end{align}
+To enforce the definitions of the decision variables we add the following constraints.
+\begin{align}
+    w^s_{i,j} \le x^s_i, \quad \forall i \in \I^s, \forall s \in \S, \forall j \in \J \label{constr:MIP-subset-chosen}
+\end{align}
+That is, $y^s_i$ can only be part of generating $y_j$ (for any $j$) if $y^s \in \hY^s$. We now add constraints which ensure that each point in the set $\Yn$ is 'generated' by some combination of points of the subproblems:
+\begin{align}
+    \sum_{s \in \S}\sum_{i \in \I^s} w^s_{i,j} y^s_i = y_j, \quad \forall j \in \J \label{constr:MIP-generating}
+\end{align}
+Finally, each point $y \in \Yn$ must be a combination of exactly one point from each subproblem:
+\begin{align}
+    \sum_{i \in \I^s} w^s_{i,j} = 1, \quad \forall s \in \S, \forall j \in \J \label{constr:MIP-combination-single}
+\end{align}
+The constraints \Cref{constr:MIP-subset-chosen} together with \Cref{constr:MIP-combination-single} also ensures that at least one solution is chosen to each subproblem $\left( \sum_{i \in I^s} x^s_i \right) \forall s \in \S $.
+The objective function is the sum of the chosen generator points: $\bar{M} := \sum_{s \in \S}\sum_{i \in \I^s} x^s_i$. This results in the following MIP:
+
+\begin{align*}
+	\bar{M}  := \min&  \sum_{s \in \S}\sum_{i \in \I^s} x^s_i \\
+	s.t. \quad & w^s_{i,j} \le x^s_i & \forall i \in \I^s, \forall s \in \S, \forall j \in \J \\
+		   &\sum_{s \in \S}\sum_{i \in \I^s} w^s_{i,j} y^s_i = y_j & \quad \forall j \in \J \\
+		   &\sum_{i \in \I^s} w^s_{i,j} = 1 & \quad \forall s \in \S, \forall j \in \J  \\
+		   & x^s_i \in \{0,1\} & \forall i \in \I^s, \forall s \in \S\\
+		   & w^s_{i,j} \in \{0,1\} &\forall i \in \I^s, \forall s \in \S, \forall j \in \J \nonumber
+\end{align*}
+Given an optimal solution $(\bar{x},\bar{w})$ the corrospinding generator sets $\Ycs$ is gives as $\Ycs = \{ y^s_i \in \Y^s : \bar{x}^s_i = 1\}$.
+
+For each test we record:
+\begin{itemize}
+	\item Total points, supported points, extreme (supported) points, unsupported nondominated points.
+	\item Global $\lvert \Yn \rvert$, $\lvert \Ysn \rvert$,  $\lvert \Yen \rvert$, $\lvert \Yn \setminus \Ysn \rvert$.
+	\item Subproblems (already known)  $\lvert \Yn^s \rvert$, $\lvert \Ysn^s \rvert$,  $\lvert \Yen^s \rvert$, $\lvert \Yn^s \setminus \Ysn^s \rvert$ $\forall s \in \S$.
+	\item Generator sets $\lvert \Ycs \rvert$, $\lvert \Ycs \cap \Ysn^s \rvert$, $\lvert \Ycs \cap \Yen^s \rvert$,  $\lvert \Ycs \setminus \Ysn^s \rvert$  $\forall s \in \S$
+	\item $\bar{M}$
+\end{itemize}
+
+
+
+
+
+\end{enumerate}
+
+
+%\subsubsection{}
+
+
