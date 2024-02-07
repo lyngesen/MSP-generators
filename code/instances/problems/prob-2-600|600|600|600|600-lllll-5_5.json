@@ -1,1 +1,9 @@
-["subproblems/sup-2-600-l_9.json", "subproblems/sup-2-600-l_7.json", "subproblems/sup-2-600-l_1.json", "subproblems/sup-2-600-l_4.json", "subproblems/sup-2-600-l_5.json"]
+[
+  {
+    "V1": "subproblems/sp-2-600-l_8.json",
+    "V2": "subproblems/sp-2-600-l_6.json",
+    "V3": "subproblems/sp-2-600-l_9.json",
+    "V4": "subproblems/sp-2-600-l_1.json",
+    "V5": "subproblems/sp-2-600-l_3.json"
+  }
+]

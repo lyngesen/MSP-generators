@@ -5,14 +5,14 @@ date: "`r Sys.Date()`"
 editor_options: 
   chunk_output_type: console
 knit: (function(inputFile, encoding) { 
-    out_dir <- '../../web';
+    out_dir <- '../../web/';
     rmarkdown::render(inputFile,
                       encoding=encoding, 
                       output_file=file.path(dirname(inputFile), out_dir, 'problem-generation.html')) })
 ---
 
 ```{r setup, include=FALSE}
-# remotes::install_github("relund/gMOIP")
+remotes::install_github("relund/gMOIP")
 library(gMOIP)
 library(tidyverse)
 library(knitr)
@@ -152,9 +152,9 @@ saveSubproblems <- function(pS, samplesS, dub, overwrite = TRUE) {
   for (p in pS) {
     for (s in samplesS) {
       for (d in 1:dub) {
-        pathU <- str_c("subproblems/sup-", p, "-", s, "-u", "_", d, ".json")
-        pathM <- str_c("subproblems/sup-", p, "-", s, "-m", "_", d, ".json")
-        pathL <- str_c("subproblems/sup-", p, "-", s, "-l", "_", d, ".json")
+        pathU <- str_c("subproblems/sp-", p, "-", s, "-u", "_", d, ".json")
+        pathM <- str_c("subproblems/sp-", p, "-", s, "-m", "_", d, ".json")
+        pathL <- str_c("subproblems/sp-", p, "-", s, "-l", "_", d, ".json")
         if (overwrite | !fs::file_exists(pathU) | !fs::file_exists(pathM) | !fs::file_exists(pathL)) {
           cat("Generate for p =", p, "card =", s, "\n")
           lst <- genSubproblems(p, s)
@@ -203,13 +203,9 @@ deleteFilesProb <- function(delete = TRUE) {
 } 
   
   
-              
-
-
-
 deleteFiles <- function(delete = TRUE) {
   paths <- fs::dir_ls("subproblems/")
-  paths <- paths[-1]  # remove statistics file
+  paths <- str_subset(paths, "sp-")  # remove statistics file
   if (delete == "m") {
      fs::file_delete(str_subset(paths, "-m"))
   }
@@ -314,24 +310,23 @@ The following instance/problem groups are generated given:
 ```{r}
 saveProblems <- function(pS, mS, samplesS, methodS, dub, overwrite = TRUE) {
   paths <- fs::dir_ls("subproblems/")
-  paths <- paths[-1]  # remove statistics file
-  # prob-<p>-<samples>-<m>-<sphere-method>-<sub-ids>.json|.
+  paths <- str_subset(paths, "sp-")  # remove statistics file
   for (p in pS) {
     for (s in samplesS) {
       for (method in methodS) {
         if (method != "ul") {
-          subS <- str_c("subproblems/sup-", p, "-", s, "-", method)
+          subS <- str_c("subproblems/sp-", p, "-", s, "-", method)
           curPaths <- str_subset(paths, subS)
         } 
         if (method == "ul") {
-          subS <- str_c("subproblems/sup-", p, "-", s, "-u")
+          subS <- str_c("subproblems/sp-", p, "-", s, "-u")
           curPathsU <- str_subset(paths, subS)
-          subS <- str_c("subproblems/sup-", p, "-", s, "-l")
+          subS <- str_c("subproblems/sp-", p, "-", s, "-l")
           curPathsL <- str_subset(paths, subS)
         }
         for (m in mS) {
           datSubp <- as.data.frame(matrix(NA_character_, nrow = 10 * dub, ncol = m), .name_repair = "minimal")
-          for (d in 1:dub) {
+          for (d in 1:(10 * dub)) {
             if (method != "ul") datSubp[d, ] <- sample(curPaths, m)
             if (method == "ul") {
               mL <- round(m/2)
@@ -349,6 +344,7 @@ saveProblems <- function(pS, mS, samplesS, methodS, dub, overwrite = TRUE) {
             mth <- str_c(dat$method, collapse = "")
             path <- str_c("problems/prob-", p, "-", ss, "-", mth, "-", m, "_", d, ".json")
             if (overwrite | !fs::file_exists(path) ) {
+              cat("Save", path, "\n")
               jsonlite::write_json(subp, path, pretty = TRUE)
             }
           }
@@ -361,15 +357,13 @@ saveProblems <- function(pS, mS, samplesS, methodS, dub, overwrite = TRUE) {
 ```
 
 
-```{r}
+```{r, echo=TRUE, results='hide'}
 pS <- 2:5
 mS <- 2:5
 samplesS <- c(50, 200, 300, 600) # nd points set size
 methodS <- c("u", "l", "m", "ul")
 dub <- 5 # number of duplicates for each configuration
-deleteFilesProb()
-saveProblems(pS, mS, samplesS, methodS, dub, overwrite = T)
-deleteFilesProb()
+saveProblems(pS, mS, samplesS, methodS, dub, overwrite = F)
 ```
 
 
