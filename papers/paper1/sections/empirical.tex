@@ -157,7 +157,27 @@ For each test we record:
 
 
 
-We will now define a more restricted sequence of generator sets which we call the \emph{local sequentially minimum sequence of generator sets}. 
+
+
+\subsubsection{Sequential minimum generators}
+In order to get a second measure for answering questions $2$ and also to answer question $3$ we seek to define minimum generator set sequence which depend on the index sets $\S$.
+
+For each type of we are interested in generating sets $\bY^s$ where we to some extend minimuze $ \left(\abs{\bY^1}, \hdots \abs{\bY^{\abs{\S}}}\right) $. For each test we record:
+\begin{itemize}
+	\item $\abs{\bY^s}$ for all $s \in \S$
+	\item $\sum_{s \in \S} \abs{\bY^s} $
+	\item Also similar metrics for supported points, extreme supported points and unsupported.
+\end{itemize}
+
+
+\textbf{MGS1}
+\begin{itemize}
+	\item Each generator $\bY^{s'}$ depends on: $\bY^1, \hdots, \bY^{s'-1}, \Y^{s'} $.
+	\item At each step a generator $\bY^{s'} := \hY^{s'}$ is fixed.
+	\item At each step the combined generators must 'generate' $\left( \Y^1 \+ \hdots \+ \Y^{s'} \right)_\mcN $.
+\end{itemize}
+We will now define a more restricted sequence of generator sets which we call the \emph{local sequentially minimum sequence of generator sets} (MGS1).  
+
 
 The first generator set is simply defined as the set of nondominated points of the first subproblem.
 \begin{align}
@@ -176,6 +196,13 @@ For a general $s' \in \S$
 	     & \hY^{s'} \subseteq \Yn^{s'}
 \end{align}
 
+\textbf{MGS2}
+\begin{itemize}
+	\item Each generator $\bY^{s'}$ depends on: $\bY^1, \hdots, \bY^{s'-1}, \Y^{s'}, \hdots, \Y^{\abs{\S}} $.
+	\item At each step a generator $\bY^{s'} := \hY^{s'}$ is fixed.
+	\item At each step the combined generators must 'generate' $\Yn $.
+\end{itemize}
+
 An alternative \emph{global sequentially minimum sequence of generator sets} is defined as follows:
 
 \begin{align}
@@ -192,11 +219,5 @@ For a general $s' \in \S$
 
 
 
-
-
 \end{enumerate}
-
-
-%\subsubsection{}
-
 
