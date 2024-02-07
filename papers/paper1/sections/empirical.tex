@@ -69,14 +69,14 @@ Generate a new point from a subproblem and update all generator sets and upper b
 	\item 
 Periodically generate a point for each subproblem where after all generator sets and upper bound sets are updated.
 	\item 
-Sweep: generate all supported non-dominated points for each subproblem where after all generator sets and upper bound sets are updated.
+Sweep: Generate all supported non-dominated points for each subproblem where after all generator sets and upper bound sets are updated.
 \end{itemize}
 
 
 
 \subsection{Methods for answering research questions}
 
-In the following we describe ways of generating test metrics used to answer the main empirical research questions. Each test is performed on an \msp instance given by a sequence of sets $\{\Y^s\}_{s \in \S}$ for some ordered sequence of subproblems indexed by a set $\S$ (where we assume $\Y^s \subseteq \Yn^s \forall s \in \S$).
+In the following, we describe ways of generating test metrics used to answer the main empirical research questions. Each test is performed on an \msp instance given by a sequence of sets $\{\Y^s\}_{s \in \S}$ for some ordered sequence of subproblems indexed by a set $\S$ (where we assume $\Y^s \subseteq \Yn^s \forall s \in \S$).
 
 \begin{enumerate}
 	\item  How large is $\lvert \Yn \rvert$ given $\left\{\lvert \Yn^s \rvert \right\}_{s \in \S}$?
@@ -97,9 +97,9 @@ $\lvert \Yn \setminus \Ysn \rvert$ total unsupported nondominated points.
 
 
 \item What is the relative size of the generator sets compared to $\lvert \Y^s \rvert (\forall s \in \S)$?
-We first note that generator sets are not unique. We consider several different generator sets and compare. We define a \emph{Minimum generator set sequence} as a sequence of generators $\left\{ \Ycs  \right\}_{s \in \S}$ where $\Ycs \subseteq \Y^s$ such that $\bar{M} := \sum_{s \in \S} \lvert \Ycs \rvert$ is minimum.
+We first note that the generator sets are not unique. We consider several different generator sets and compare them. We define a \emph{Minimum generator set sequence} as a sequence of generators $\left\{ \Ycs  \right\}_{s \in \S}$ where $\Ycs \subseteq \Y^s$ such that $\bar{M} := \sum_{s \in \S} \lvert \Ycs \rvert$ is minimum.
 
-Let $\bar{M}$ denote the size of a minimum generator set sequence. $\bar{M}$ is defined by the following combinatorial optimization problem.
+Let $\bar{M}$ be the size of a minimum generator set sequence. $\bar{M}$ is defined by the following combinatorial optimization problem.
 
 \begin{align}
 	\bar{M}  =  \min& \sum_{s \in \S} \lvert \hY^s \rvert  \\
