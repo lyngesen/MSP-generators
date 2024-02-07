@@ -157,12 +157,37 @@ For each test we record:
 
 
 
-We will now define a more restricted sequence of generator sets which we call the \emph{sequentially minimum sequence of generator sets}. 
+We will now define a more restricted sequence of generator sets which we call the \emph{local sequentially minimum sequence of generator sets}. 
+
+The first generator set is simply defined as the set of nondominated points of the first subproblem.
+\begin{align}
+    \bY^1  &= \Yn^1
+\end{align}
+For the second generator we find the smallest set which together with the generator $\bY^1$ generates $\left( \Y^1 \+ \Y^2 \right)_\mcN$.
+\begin{align}
+    \bY^2 = \text{arg min} &\lvert \hY^2 \rvert \\ 
+    st. \quad& \left( \bY^1 \+ \hY^2 \right)_\mcN = \left( \Y^1 \+ \Y^2 \right)_\mcN  \nonumber  \\
+	     & \hY^2 \subseteq \Yn^2
+\end{align}
+For a general $s' \in \S$
+\begin{align}
+    \bY^{s'} = \text{arg min} &\lvert \hY^{s'} \rvert \\ 
+    st. \quad& \left( \left( \msum_{s = 1}^{s'-1} \bY^s \right)  + \hY^2 \right)_\mcN = \left( \msum_{s=1}^{s'} \Y^s \right)_\mcN  \nonumber  \\
+	     & \hY^{s'} \subseteq \Yn^{s'}
+\end{align}
+
+An alternative \emph{global sequentially minimum sequence of generator sets} is defined as follows:
 
 \begin{align}
-    \bar{\Y^1}  &= \Yn^1 \\
-    \bar{\Y^2}  &= \text{arg min} \lvert \hY^2 \rvert \\ 
-    s.t. \quad& \left( \right)
+    \bY^1  =  \text{arg min} &\lvert \hY^1 \rvert \\ 
+    st. \quad& \left( \hY^1 \+ \msum_{s=2}^{\abs{S}} \Y^s \right)_\mcN = \Yn  \nonumber  \\
+	     & \hY^1 \subseteq \Yn^1
+\end{align}
+For a general $s' \in \S$
+\begin{align}
+    \bY^{s'} = \text{arg min} &\lvert \hY^{s'} \rvert \\ 
+    st. \quad& \left( \left(\msum_{s = 1}^{s'-1} \hY^s \right) \+ \bY^{s'} \+ \left(\msum_{s=2}^{\abs{S}} \right)\right)_\mcN = \Yn  \nonumber  \\
+	     & \hY^{s'} \subseteq \Yn^{s'}
 \end{align}
 
 
