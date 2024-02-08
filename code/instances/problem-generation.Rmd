@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 editor_options: 
   chunk_output_type: console
 knit: (function(inputFile, encoding) { 
-    out_dir <- '../../web/';
+    out_dir <- '../../docs/';
     rmarkdown::render(inputFile,
                       encoding=encoding, 
                       output_file=file.path(dirname(inputFile), out_dir, 'problem-generation.html')) })
@@ -230,7 +230,7 @@ We use the R package `gMOIP` to generate subproblems. A subproblem is generated 
     - Points generated between to hyperplanes in the middle (m) of the hypercube, resulting in both supported and unsupported points near to the hull (see Fig. 2).
     - Points generated on the lower (l) part of a sphere resulting in many supported points (see Fig. 1).
   
-That is a subproblem can be identified using filename `sub-<p>-<card>-<gen-method>_<id>.json` where `id` denote the instance id for the same configuration. 
+That is a subproblem can be identified using filename `sp-<p>-<card>-<gen-method>_<id>.json` where `id` denote the instance id for the same configuration. 
   
 ```{r, webgl=TRUE}
 lst <- genSubproblems(p = 3, samples = 25, pltS = T)
@@ -296,7 +296,7 @@ dat %>%
 
 ## Generation of problems
 
-The problems generated consists of $m\leq 5$ subproblems and is generated so provide a good test bed for a research question.
+The problems generated consists of $m\leq 5$ subproblems and is generated so provide a good test bed for a research question. The naming convention is `prob-<p>-<cards>-<gen-methods>_<m>_<id>.json`
 
 ### RQ: How large is $|Y_N|$ given $|y_N^s|, s\in S$?
 
