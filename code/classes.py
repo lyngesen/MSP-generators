@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
+import json
 # from itertools.collections import Counter
 import collections
 
@@ -45,6 +46,7 @@ class Point:
     val: np.array(iter)
     dim = None
     plot_color = None
+    cls = None
 
     def __post_init__(self):
         self.val = np.array(self.val)
@@ -136,6 +138,8 @@ class PointList:
     points: tuple[Point] = ()
     dim = None
     plot_color = None
+    statistics = None
+    filename = None
     def __post_init__(self):
         # Check if SINGLETON: allows for PointList((y)) where y is of class Point 
         if isinstance(self.points, Point):
@@ -246,6 +250,46 @@ class PointList:
             # self.points = points
             return PointList(points)
 
+    def as_dict(self):
+
+        PointList_dict = {
+            "points":
+                          [dict({f"z{p+1}": point[p] for p in range(point.dim)},**({'cls':None})) for point in self.points],
+            "statistics": {
+                "p": [self.dim],
+                "card": [len(self.points)],
+                "supported": [None],
+                "extreme": [None],
+                "unsupported": [None],
+                "min": [None],
+                "max": [None, None],
+                "width": [None, None],
+                "method": [None]
+              }
+          }
+        return PointList_dict 
+
+    def save_json(self, filename):
+        with open(filename, 'w') as json_file:
+            json.dump(self.as_dict(), json_file, indent=1)
+
+    def from_json(filename: str):
+        with open(filename, 'r') as json_file:
+            json_dict = json.load(json_file)
+        statistics = json_dict['statistics']
+        points = []
+        for json_point in json_dict['points']:
+            values = [json_point[f"z{p+1}"] for p in range(statistics["p"][0])]
+            # TODO: Error if values not casted to float65  - does not work for int64? <08-02-24> #
+            values = np.float64(values)
+            point = Point(values)
+            point.cls = json_point['cls']
+            points.append(point)
+        Y = PointList(points)
+        Y.statistics = statistics
+
+        return Y
+
     def print_data(self):
         N_POINTS = len(self.points)
         print(f"{N_POINTS=}")
@@ -258,6 +302,42 @@ class PointList:
 
     def removed_duplicates(self):
         return PointList(set(self.points))
+
+
+
+@dataclass
+class MinkowskiSumProblem:
+    Y_list: tuple[PointList]
+    filename : str = None
+    dim : int = None
+    
+    def from_json(filename: str):
+        with open(filename, 'r') as json_file:
+            json_dict = json.load(json_file)[0]
+
+        Y_list = []
+        for V, Y_filename in sorted(json_dict.items()):
+            Y = PointList.from_json("instances/" + Y_filename)
+            Y_list.append(Y)
+
+        MSP = MinkowskiSumProblem(Y_list)
+        MSP.filename = filename
+        MSP.dim = Y_list[0].dim
+        return  MSP
+
+    def __repr__(self):
+        string = f"MSP( filename={self.filename.split('/')[-1]}, "
+        for s,Y in enumerate(self.Y_list):
+            string+=f"|Y{s+1}|={len(Y)} "
+
+        string += ")"
+        return string
+
+
+    def plot(self,  hidelabel = False, ax = None, *kwargs):
+        ax = ax if ax else plt
+        for s, Y in enumerate(self.Y_list):
+            Y.plot(l= "_"*hidelabel + "$\mathcal{Y}_{\mathcal{N}}^{" + str(s+1) + "}$", ax = ax, *kwargs)
 
 
 class Node:

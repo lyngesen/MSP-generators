@@ -137,7 +137,7 @@ def MS_naive_filter(Y_list = list[PointList]) -> PointList:
     output: nondominated points of Minkowski sum of sets Y_list
     """
     Y = MS_sum(Y_list)
-    Yn = naive_filter(Y)
+    Yn = N(Y)
 
     return PointList(Yn)
  
@@ -147,21 +147,23 @@ def MS_sequential_filter(Y_list = list[PointList], filter_alg=naive_filter) -> P
     input: list of PointList
     output: nondominated points of Minkowski sum of sets Y_list
     """
-    Y_ms = filter_alg(Y_list[0])
+    Y_ms = N(Y_list[0])
 
     for s in range(1, len(Y_list)):
         Y_ms_new = []
-        Y_s = filter_alg(Y_list[s])
+        Y_s = N(Y_list[s])
         for y_ms in Y_ms:
             for y_s in Y_s:
                 Y_ms_new.append(y_ms+y_s)
-        Y_ms = filter_alg(Y_ms_new)
+        
+        Y_ms_new = PointList(Y_ms_new)
+        Y_ms = N(Y_ms_new)
 
     return PointList(Y_ms)
 
 
 def MS_doubling_filter(Y_list = list[PointList], MS_filter_alg = MS_sequential_filter) -> PointList:
-    """docstring for MS_doubling_filter
+    """
     input: list of PointList
     output: nondominated points of Minkowski sum of sets Y_list
     """
@@ -256,11 +258,12 @@ def lex_filter(Y: PointList):
     return PointList((N.data for N in llist.__iter__()))
 
 
-def N(Y_list = list[PointList], **kwargs):
-    if Y_list[0].dim <= 2:
-        return unidirectional_filter(Y_list, *kwargs)
+def N(Y = PointList, **kwargs):
+    """ 'best' implemented nondominance filter """
+    if Y[0].dim <= 2:
+        return unidirectional_filter(Y, *kwargs)
     else:
-        return naive_filter(Y_list, *kwargs)
+        return naive_filter(Y, *kwargs)
 
 
 def induced_UB(Y: PointList, line=False, assumption = "consecutive"):
