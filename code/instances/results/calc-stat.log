@@ -1,0 +1,23 @@
+
+> sink(zz, type = "message")  # open the same file for messages, errors and warnings
+
+> paths <- fs::dir_ls(here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")[1:3]
+
+> lst <- map(paths, calcStat)
+
+> cat("Files updated\n")
+Files updated
+
+> res <- unlist(lst)
+
+> names(res) <- NULL
+
+> res
+[1] "/Users/au15463/github/minkowski_theory/code/instances/results/RQ1/prob-2-200|200-ll-2_1.json"
+[2] "/Users/au15463/github/minkowski_theory/code/instances/results/RQ1/prob-2-200|200-ll-2_2.json"
+[3] "/Users/au15463/github/minkowski_theory/code/instances/results/RQ1/prob-2-200|200-ll-2_3.json"
+
+> ## Close log file
+> sink()  # close the file for output
+Warning message:
+In sink() : no sink to remove

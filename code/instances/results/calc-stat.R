@@ -41,9 +41,9 @@ sink(zz, type = "message")  # open the same file for messages, errors and warnin
 
 paths <- fs::dir_ls(here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
 lst <- map(paths, calcStat)
-cat("Files updated\n")
 res <- unlist(lst)
 names(res) <- NULL
+cat("Files updated:\n")
 res
 
 ## Close log file
