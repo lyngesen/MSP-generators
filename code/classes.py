@@ -1,3 +1,4 @@
+from __future__ import annotations # allow annotation self references (eg. in KD_Node)
 from dataclasses import dataclass
 import numpy as np
 import matplotlib.pyplot as plt
@@ -63,14 +64,21 @@ class Point:
         return all(self.val < other.val)
 
     def lex_le(self, other):
-        assert len(self.val) == 2, " lex_le only implemented for p=2"
-        if self.val[0] > other.val[0]:
-            return False
-        if self.val[0] < other.val[0]:
-            return True
-        if self.val[0] == other.val[0] and self.val[1] > other.val[1]:
-            return False
-        else:
+        if len(self.val) == 2:
+            if self.val[0] > other.val[0]:
+                return False
+            if self.val[0] < other.val[0]:
+                return True
+            if self.val[0] == other.val[0] and self.val[1] > other.val[1]:
+                return False
+            else:
+                return True
+        if len(self.val) > 2:
+            for p in range(self.dim):
+                if self[p] < other[p]:
+                    return True
+                elif self[p] > other[p]:
+                    return False
             return True
 
 
@@ -146,9 +154,10 @@ class PointList:
             self.points = (self.points,)
         else: #unpack list
             self.points = tuple([y if isinstance(y, Point) else Point(y) for y in self.points])
-        self.dim = self.points[0].dim
+        if self.points:
+            self.dim = self.points[0].dim
 
-    def __iter__(self):
+    def __iter__(self) -> tuple[Point]:
         return tuple(self.points).__iter__()
     def __len__(self):
         return tuple(self.points).__len__()
@@ -193,6 +202,13 @@ class PointList:
             if y < point:
                 return True
         return False
+
+    def weakly_dominates_point(self, point:Point):
+        for y in self.points:
+            if y <= point:
+                return True
+        return False
+
 
 
     def __add__(self,other):
@@ -326,7 +342,7 @@ class MinkowskiSumProblem:
         return  MSP
 
     def __repr__(self):
-        string = f"MSP( filename={self.filename.split('/')[-1]}, "
+        string = f"MSP( filename={self.filename.split('/')[-1]}, dim={self.dim}, "
         for s,Y in enumerate(self.Y_list):
             string+=f"|Y{s+1}|={len(Y)} "
 
@@ -421,5 +437,84 @@ class LinkedList:
             previous_node = node
 
         raise Exception("Node with data '%s' not found" % target_node_data)
+
+
+@dataclass
+class KD_Node:
+    y : Point
+    l : int
+    parent : KD_Node  = None
+    LEFT : KD_Node = None
+    RIGHT : KD_Node = None
+    UB : Point = None
+    LB : Point = None
+    
+    # def __repr__(self):
+        # return f"{str(self.y)}"
+    def __str__(self, level=0):
+        ret = "\t"*level+repr(self.y) + f"l={self.l}" +"\n"
+        
+        if self.LEFT != None:
+            ret += self.LEFT.__str__(level+1)
+        else:
+            ret += "\t"*(level+1) + "Ø \n"
+
+        if self.RIGHT != None:
+            ret += self.RIGHT.__str__(level+1)
+        else:
+            ret += "\t"*(level+1) + "Ø \n"
+
+        return ret
+
+    def __repr__(self):
+        # return str(self.y)
+        return f"KD_NODE(y={self.y}, parent={self.parent.y if self.parent else 'Ø'}, LEFT={self.LEFT.y if self.LEFT else 'Ø'}, RIGHT={self.RIGHT.y if self.RIGHT else 'Ø'}, UB = {self.UB}, LB = {self.LB})"
+
+@dataclass
+class KD_tree:
+    def dominates_point(r : KD_Node, p : Point):
+        """ checks if point is dominated by the KD-tree rooted at r 
+
+        Args:
+            p (Point): point
+
+        Returns: 
+            1, if p is dominated by a point in the KD-tree rooted at r, 
+            0, otherwise
+
+        """
+        if r.y <= p: return True
+        if r.LEFT != None and p >= r.LEFT.LB:
+            return KD_tree.dominates_point(r.LEFT, p)
+        if r.RIGHT != None and p >= r.RIGHT.LB:
+            return KD_tree.dominates_point(r.RIGHT, p)
+        return False
+    
+    def insert(r : KD_Node, l : int, p: Point):
+        # update r.UB, r.LB
+        r.UB = Point([max(r.UB[i], p[i]) for i in range(p.dim)])
+        r.LB = Point([min(r.LB[i], p[i]) for i in range(p.dim)])
+        
+        # compare l-th component of p and r
+        # print(f"{r,l,p =}")
+        if p[l] <= r.y[l]:
+            if r.LEFT == None:
+                r.LEFT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
+            elif r.LEFT != None:
+                KD_tree.insert(r.LEFT, (l + 1) % p.dim, p)
+        elif p[l] >= r.y[l]:
+            if r.RIGHT == None:
+                r.RIGHT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
+            elif r.RIGHT != None:
+                KD_tree.insert(r.RIGHT, (l + 1) % p.dim, p)
+
+
+
+            
+            
+
+        
+
+
 
 
