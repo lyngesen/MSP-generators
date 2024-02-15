@@ -14,7 +14,7 @@ IMPLEMENTED methods:
     MS_sequential_filter(Y_list) -> N(Y_ms)
     MS_doubling_filter(Y_list) -> N(Y_ms)
 """
-from classes import Point, PointList, LinkedList, Node
+from classes import Point, PointList, LinkedList, Node, KD_Node, KD_tree
 import numpy as np
 from collections import deque # for fast leftappend
 from operator import itemgetter # for lexsort function to define keys
@@ -54,7 +54,7 @@ def naive_filter(Y:PointList, MCtF = False) -> PointList:
     for i, y in enumerate(Y):
         dominated_indices_y = set()
         for j, y2 in enumerate(Yn):
-            if y2 < y:
+            if y2 <= y:
                 break # discard y
             if y2 > y:
                 dominated_indices_y.add(j) # record dominance
@@ -70,6 +70,86 @@ def naive_filter(Y:PointList, MCtF = False) -> PointList:
     # Y.points = Yn
     return(PointList(Yn))
 
+
+def two_phase_filter(Y: PointList) -> PointList:
+    """ Two phase filter from Chen2012 for filtering a list of points
+
+    Args:
+        Y (PointList): Yn (PointList) set of nondominated points 
+
+    Returns: PointList with all nondominated points removed
+    """
+    
+    Y = lex_sort(Y)
+    
+    Yn = PointList(())
+    Yn.dim = Y.dim
+    Yn.points = list(Yn.points)
+    # phase 1
+    for i, y in enumerate(Y):
+        if not Yn.weakly_dominates_point(y):
+            Yn.points.append(y)
+    # print(f"Phase 1 result: {Yn=}")
+    # phase 2
+    Yn_new = PointList()
+    Yn_new.dim = Yn.dim
+    Yn_new.points = list(Yn_new.points)
+    for i in range(len(Yn)):
+        y = Yn[-i + 1]
+        if not Yn_new.weakly_dominates_point(y):
+            Yn_new.points.append(y)
+    return Yn_new       
+
+
+def KD_filter(Y: PointList):
+    """ Kd-tree filtering algorithm from Chen2012
+
+    Args:
+        Y (PointList)
+
+    Returns:
+        Yn (PointList) set of nondominated points 
+
+    Returns: PointList with all nondominated points removed
+
+    """
+    Y = lex_sort(Y) # sort input list
+    R = []
+    for i, y in enumerate(Y):
+        if i == 0:
+            r = KD_Node(Y[0], 0)
+            r.UB = r.y
+            r.LB = r.y
+            k = 0
+            R.append(y)
+            continue
+
+        if not KD_tree.dominates_point(r, y):
+            # print(f"{y=}")
+            KD_tree.insert(r,0, y)
+            R.append(y)
+            k += 1
+
+
+    r = None
+    Yn = []
+    for i, y in enumerate(reversed(R)):
+        if i == 0:
+            r = KD_Node(y, 0)
+            r.UB = r.y
+            r.LB = r.y
+            Yn.append(y)
+            continue
+        
+        if not KD_tree.dominates_point(r, y):
+            KD_tree.insert(r,0, y)
+            Yn.append(y)
+
+    Yn = PointList(Yn)
+
+    return Yn
+
+
 def lex_sort(Y: PointList):
     """
     input: PointList
@@ -77,7 +157,7 @@ def lex_sort(Y: PointList):
 
     source https://stackoverflow.com/questions/38277143/sort-2d-numpy-array-lexicographically
     """
-    Y.points = sorted(Y.points, key=itemgetter(*range(len(Y[0].val))))
+    Y.points = sorted(Y.points, key=itemgetter(*range(Y.dim)))
 
     for i in range(len(Y.points)-1): # simple but not exhaustive correctness check
         assert not Y[i] > Y[i+1], f"{Y[i]=},{Y[i+1]=} "
@@ -98,7 +178,7 @@ def unidirectional_filter(Y: PointList) -> PointList:
     Yn = []
     
     for y in Y:
-        if Yn == [] or not Yn[-1] < y:
+        if Yn == [] or not Yn[-1] <= y:
             Yn.append(y)
             # assert not PointList(Yn).dominates_point(y), f"{Yn=}, {y=}"
     return(PointList(Yn))
@@ -142,22 +222,18 @@ def MS_naive_filter(Y_list = list[PointList]) -> PointList:
     return PointList(Yn)
  
 
-def MS_sequential_filter(Y_list = list[PointList], filter_alg=naive_filter) -> PointList:
+def MS_sequential_filter(Y_list = list[PointList], filter_alg = None) -> PointList:
     """
     input: list of PointList
     output: nondominated points of Minkowski sum of sets Y_list
     """
+    if filter_alg != None:
+        N = filter_alg
+
     Y_ms = N(Y_list[0])
 
     for s in range(1, len(Y_list)):
-        Y_ms_new = []
-        Y_s = N(Y_list[s])
-        for y_ms in Y_ms:
-            for y_s in Y_s:
-                Y_ms_new.append(y_ms+y_s)
-        
-        Y_ms_new = PointList(Y_ms_new)
-        Y_ms = N(Y_ms_new)
+        Y_ms = N(Y_ms + N(Y_list[s]))
 
     return PointList(Y_ms)
 
@@ -263,7 +339,9 @@ def N(Y = PointList, **kwargs):
     if Y[0].dim <= 2:
         return unidirectional_filter(Y, *kwargs)
     else:
-        return naive_filter(Y, *kwargs)
+        return KD_filter(Y)
+        # return naive_filter(Y, MCtF = True)
+        # return two_phase_filter(Y)
 
 
 def induced_UB(Y: PointList, line=False, assumption = "consecutive"):
