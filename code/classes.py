@@ -280,7 +280,7 @@ class PointList:
                 "min": [None],
                 "max": [None, None],
                 "width": [None, None],
-                "method": [None]
+                "method": [None],
               }
           }
         return PointList_dict 

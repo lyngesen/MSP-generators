@@ -63,14 +63,17 @@ def timeit(func, keyname = None):
 def print_timeit():
     global TIME_dict
     # sort and show TIME_dict
-    print("_"*55)
+    hline = 70
+    print("_"*hline)
     TIME_dict = {k: v for k, v in sorted(TIME_dict.items(), key=lambda item: item[1])}
     for k,v in TIME_dict.items():
-        if COUNT_dict[k]!= 0:
-            print(f" {k:20} : {v:5.2f} seconds {COUNT_dict[k]:7} calls")
-    print("_"*55)
-    print(f" {'Total time ':20} : {time.perf_counter() - START_TIME:5.2f} seconds")
-    print("_"*55)
+        calls = COUNT_dict[k]
+        if calls!= 0:
+            calls = f"{calls:13.2e}" if calls > 1_000_000 else f"{calls:13}" 
+            print(f" {k:27} : {v:10.2f} seconds {calls} calls")
+    print("_"*hline)
+    print(f" {'Total time ':27} : {time.perf_counter() - START_TIME:10.2f} seconds")
+    print("_"*hline)
 
 def reset_timeit():
     global TIME_dict

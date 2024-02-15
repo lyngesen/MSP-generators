@@ -4,6 +4,7 @@ import methods
 from timing import timeit, print_timeit
 from functools import reduce
 import matplotlib.pyplot as plt
+import copy
 
 def test_sorting():
     testset = "instances/testsets/BINOM-p2-n100-s1"
@@ -14,24 +15,50 @@ def test_sorting():
 
     assert YS == YS2
 
+
+    Y = PointList(((1,2,3),(2,2,2),(3,2,1), (1,1,2)))
+    Y_lex = PointList(((1,1,2), (1,2,3),(2,2,2),(3,2,1)))
+    # cast to list and check sorting sequence returned by lex_sort is correct
+    assert list(methods.lex_sort(Y).points) == list(Y_lex.points)
+
+
+
+
     
 def test_single():
+
+    Y = PointList(((2,7), (3,9), (4,3), (5,8), (7,5), (6,4), (8,6), (9,2)))
+    methods.two_phase_filter(Y)
+
     # single set test
     testset = "instances/testsets/DISK-p2-n10-s1"
     Y = PointList.from_csv(testset)
+    Y_copy = copy.deepcopy(Y)
+    assert Y == Y_copy
     Yn1 = methods.naive_filter(Y, MCtF = False)
-    Y = PointList.from_csv(testset)
+    assert Y == Y_copy
     Yn2 = methods.naive_filter(Y, MCtF = True)
-    Y = PointList.from_csv(testset)
+    assert Y == Y_copy
     Yn3 = methods.unidirectional_filter(Y)
-    Y = PointList.from_csv(testset)
+    assert Y == Y_copy
     Yn4 = methods.lex_filter(Y)
-    Y = PointList.from_csv(testset)
+    assert Y == Y_copy
     Yn6 = methods.basic_filter(Y)
+    assert Y == Y_copy
+    Yn7 = methods.KD_filter(Y)
+    assert Y == Y_copy
+    Yn8 = methods.KD_filter(Y)
+    assert Y == Y_copy
+    Yn9 = methods.two_phase_filter(Y)
     assert Yn1 == Yn2
     assert Yn2 == Yn3
     assert Yn3 == Yn4
+    assert Yn6 == Yn7
+    assert Yn7 == Yn8
+    assert Yn8 == Yn9
 
+    # Check input PointList unchanged by filtering algorithms
+    assert Y == Y_copy
     # test sort 
     Y_lex = methods.lex_sort(Y)
     for i in range(len(Y_lex)-1):
@@ -46,6 +73,16 @@ def test_single():
 
     # test plot
     Y_lex.plot(l='lex_sorted')
+
+
+
+    # test no Yn duplicates
+    Y = PointList(((2,7), (3,9), (4,3), (5,8), (7,5), (6,4), (8,6), (9,2),
+                   (2,7), (3,9), (4,3), (5,8), (7,5), (6,4), (8,6), (9,2)))
+    Yn = PointList(((2,7),(4,3), (9,2)))
+    assert methods.N(Y) == Yn
+    assert methods.naive_filter(Y) == Yn
+    assert methods.two_phase_filter(Y) == Yn
 
 
 

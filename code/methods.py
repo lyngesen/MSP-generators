@@ -186,6 +186,18 @@ def unidirectional_filter(Y: PointList) -> PointList:
     # p > 2 NOT IMPLEMENTED
 
 
+
+def N(Y = PointList, **kwargs):
+    """ 'best' implemented nondominance filter """
+    if Y[0].dim <= 2:
+        return unidirectional_filter(Y, *kwargs)
+    else:
+        return KD_filter(Y)
+        # return naive_filter(Y, MCtF = True)
+        # return two_phase_filter(Y)
+
+
+
 def MS_sum(Y_list = list[PointList], operator = "+") -> PointList:
     """
     input: list of PointList
@@ -222,14 +234,11 @@ def MS_naive_filter(Y_list = list[PointList]) -> PointList:
     return PointList(Yn)
  
 
-def MS_sequential_filter(Y_list = list[PointList], filter_alg = None) -> PointList:
+def MS_sequential_filter(Y_list = list[PointList], N = N) -> PointList:
     """
     input: list of PointList
     output: nondominated points of Minkowski sum of sets Y_list
     """
-    if filter_alg != None:
-        N = filter_alg
-
     Y_ms = N(Y_list[0])
 
     for s in range(1, len(Y_list)):
@@ -332,16 +341,6 @@ def lex_filter(Y: PointList):
                     new_node = Node(y_current)
                     N.next = new_node
     return PointList((N.data for N in llist.__iter__()))
-
-
-def N(Y = PointList, **kwargs):
-    """ 'best' implemented nondominance filter """
-    if Y[0].dim <= 2:
-        return unidirectional_filter(Y, *kwargs)
-    else:
-        return KD_filter(Y)
-        # return naive_filter(Y, MCtF = True)
-        # return two_phase_filter(Y)
 
 
 def induced_UB(Y: PointList, line=False, assumption = "consecutive"):
