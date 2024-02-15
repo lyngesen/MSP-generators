@@ -31,10 +31,10 @@ jobs:
 
       - uses: r-lib/actions/setup-renv@v2
       
-      - name: Document
-        run: Rscript Rscript code/instances/results/calc-stat.R
+      - name: Update statistics for result files
+        run: Rscript code/instances/results/calc-stat.R
 
-      - name: Render Rmarkdown files and Commit Results
+      - name: Commit Results
         run: |
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
