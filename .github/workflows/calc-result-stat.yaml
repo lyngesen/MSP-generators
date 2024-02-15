@@ -13,10 +13,12 @@ on:
 name: render-rmarkdown
 
 jobs:
-  ucalc-result-stat:
+  calc-result-stat:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      RGL_USE_NULL: true
+      DISPLAY: 99 # for rgl
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
