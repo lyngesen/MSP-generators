@@ -39,7 +39,7 @@ zz <- file(here::here("code/instances/results/calc-stat.log"), open = "wt")
 sink(zz, type = "output")   # open the file for output
 sink(zz, type = "message")  # open the same file for messages, errors and warnings
 
-paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")[1:4]
+paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
 lst <- map(paths, calcStat)
 res <- unlist(lst)
 names(res) <- NULL
