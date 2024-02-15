@@ -146,7 +146,7 @@ class PointList:
     points: tuple[Point] = ()
     dim = None
     plot_color = None
-    statistics = None
+    statistics : dict = None
     filename = None
     def __post_init__(self):
         # Check if SINGLETON: allows for PointList((y)) where y is of class Point 
