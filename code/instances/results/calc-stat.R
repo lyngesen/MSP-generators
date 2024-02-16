@@ -44,7 +44,7 @@ sink(zz, type = "output", split = T)   # open the file for output
 sink(zz, type = "message")  # open the same file for messages, errors and warnings
 
 paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
-timeLimit <- 10*60  # max run time in sec
+timeLimit <- 1 * 60  # max run time in sec
 tictoc::tic.clear()
 start <- Sys.time()
 for (path in paths) {
