@@ -3,20 +3,20 @@ Check: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/result
 Check: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/RQ1/prob-2-200|200-ll-2_4.json ... already calc.
 0.006 sec elapsed
 Check: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_1.json ... already calc.
-0.006 sec elapsed
+0.005 sec elapsed
 Check: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_2.json ... already calc.
 0.006 sec elapsed
 Check: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_3.json ... already calc.
-0.008 sec elapsed
+0.006 sec elapsed
 Check: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_4.json ... already calc.
-0.009 sec elapsed
+0.005 sec elapsed
 Check: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_5.json ... already calc.
-0.009 sec elapsed
+0.006 sec elapsed
 Check: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_1.json ... already calc.
-0.006 sec elapsed
+0.005 sec elapsed
 Check: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_2.json ... already calc.
-0.006 sec elapsed
+0.005 sec elapsed
 Check: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_3.json ... already calc.
-0.006 sec elapsed
+0.005 sec elapsed
 Warning message:
 In sink() : no sink to remove
