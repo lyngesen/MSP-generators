@@ -36,12 +36,19 @@ calcStat <- function(path) {
    return(calc)
 }
 
+updateStatFile <- function() {
+   paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
+   prefix <- str_extract(paths, ".*/")
+   filename <- str_extract(paths, "^.*/(.*)$", group = 1)
+   alg <- unique(str_extract(filename, "(.*?)-", group = 1))
+}
+
 
 #### Run script ####
 ## Open log file
 zz <- file(here::here("code/instances/results/calc-stat.log"), open = "wt")
 sink(zz, type = "output", split = T)   # open the file for output
-sink(zz, type = "message")  # open the same file for messages, errors and warnings
+sink(zz, type = "message", split = T)  # open the same file for messages, errors and warnings
 
 paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
 timeLimit <- 1 * 60  # max run time in sec
@@ -49,7 +56,7 @@ tictoc::tic.clear()
 start <- Sys.time()
 for (path in paths) {
    calcStat(path)
-   cpu <- difftime(Sys.time(), tm, units = "secs")
+   cpu <- difftime(Sys.time(), start, units = "secs")
    cat("Cpu test", cpu, "\n")
    if (cpu > timeLimit) {
       message("Time limit reached! Stop R script.")
