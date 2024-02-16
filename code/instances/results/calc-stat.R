@@ -77,7 +77,7 @@ start <- Sys.time()
 for (path in paths) {
    calcStat(path)
    cpu <- difftime(Sys.time(), start, units = "secs")
-   cat("Cpu test", cpu, "\n")
+   cat("Cpu total", cpu, "\n")
    if (cpu > timeLimit) {
       message("Time limit reached! Stop R script.")
       break
