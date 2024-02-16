@@ -33,7 +33,7 @@ jobs:
       - name: Update statistics for result files
         id: loop
         run: |
-          for i in 1 2 3 4 5
+          for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 
           do
             Rscript code/instances/results/calc-stat.R
             git config --local user.name "$GITHUB_ACTOR"

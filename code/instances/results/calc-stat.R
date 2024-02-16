@@ -55,6 +55,7 @@ for (path in paths) {
       break
    }
 }
+cat("\n\nFinish running R script.\n\n")
 
 ## Close log file
 sink(type = "message")  # close the file for output
