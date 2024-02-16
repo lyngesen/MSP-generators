@@ -49,7 +49,7 @@ tictoc::tic.clear()
 start <- Sys.time()
 for (path in paths) {
    calcStat(path)
-   cpu <- Sys.time() - start 
+   cpu <- difftime(Sys.time(), tm, units = "secs")
    cat("Cpu test", cpu, "\n")
    if (cpu > timeLimit) {
       message("Time limit reached! Stop R script.")
