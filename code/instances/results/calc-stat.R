@@ -43,6 +43,7 @@ updateStatFile <- function() {
    alg <- unique(str_extract(filename, "(.*?)-", group = 1))
    for (a in alg) {
       if (a == "alg1") {
+         datSubProb <- read_csv(here::here("code/instances/stat-sp.csv"))
          dat <- NULL
          algPaths <- str_subset(paths, "alg1")[1:10]
          algFiles <- fs::path_file(algPaths)
@@ -50,7 +51,21 @@ updateStatFile <- function() {
          for (i in 1:length(algPaths)) {
             lstAlg <- jsonlite::read_json(algPaths[i])
             row <- c(file = algFiles[i], unlist(lstAlg$statistics))
+            
+            
+            
+            
+            
+            
             row <- c(row, getSubProbStat(probFiles[i]))
+            
+            
+            
+            
+            
+            
+            
+            
             dat <- dat %>% bind_rows(row)
             
          }
@@ -79,7 +94,7 @@ sink(zz, type = "output", split = T)   # open the file for output
 # sink(zz, type = "message")  # open the same file for messages, errors and warnings
 
 paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
-timeLimit <- 1 * 60  # max run time in sec
+timeLimit <- 20 * 60  # max run time in sec
 tictoc::tic.clear()
 start <- Sys.time()
 for (path in paths) {
