@@ -37,7 +37,7 @@ calcStat <- function(path) {
 }
 
 updateProbStatFile <- function() {
-   cat("Update statistics for results.")
+   cat("Update statistics for results. ")
    paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
    prefix <- str_extract(paths, ".*/")
    filename <- str_extract(paths, "^.*/(.*)$", group = 1)
