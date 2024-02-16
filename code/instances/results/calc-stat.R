@@ -50,6 +50,7 @@ start <- Sys.time()
 for (path in paths) {
    calcStat(path)
    cpu <- Sys.time() - start 
+   cat("Cpu test", cpu, "\n")
    if (cpu > timeLimit) {
       message("Time limit reached! Stop R script.")
       break
