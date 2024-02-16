@@ -1,5 +1,4 @@
-# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
-# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# Update result statistics
 
 on:
   push:
@@ -10,7 +9,7 @@ on:
   # schedule:
   #   - cron: '0 */3 * * *'
 
-name: render-rmarkdown
+name: Update result statistics
 
 jobs:
   calc-result-stat:
