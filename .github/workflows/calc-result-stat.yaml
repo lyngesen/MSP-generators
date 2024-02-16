@@ -32,11 +32,13 @@ jobs:
       - uses: r-lib/actions/setup-renv@v2
       
       - name: Update statistics for result files
-        run: Rscript code/instances/results/calc-stat.R
-
-      - name: Commit Results
+        id: loop
         run: |
-          git config --local user.name "$GITHUB_ACTOR"
-          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git commit code/instances/results/. -m "update stat in result files" || echo "No changes to commit"
-          git push origin || echo "No changes to commit"
+          for i in 1 2 3 4 5
+          do
+            Rscript code/instances/results/calc-stat.R
+            git config --local user.name "$GITHUB_ACTOR"
+            git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+            git commit code/instances/results/. -m "update stat in result files" || echo "No changes to commit"
+            git push origin || echo "No changes to commit"
+          done
