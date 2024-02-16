@@ -6,7 +6,7 @@ on:
       - .github/workflows/calc-result-stat.yaml
       - code/instances/results/calc-stat.R
       - code/instances/results/**.json
-  # schedule:
+  schedule:
     - cron: '15 1,13 * * *'
 
 name: Update result statistics
