@@ -6,7 +6,7 @@ The purpose of the computational study is to answer the following questions:
 
 \begin{enumerate}
     \item How large is $|\Yn|$ given $|\Yn^s|, s\in S$ ($\prod_s |\Yn^s|)$?
-    \item What is the relative size of the generator sets compared to $|\Yn^s|, s\in S$?
+    \item What is the relative size of the generator sets compared to $|\Yn^s|, s\in S$? (total minimum size $\bar{M}$, minimum size for each s given $\bar{M}$ (maybe this sum is not $\bar{M}$))
     \item Does the sequence of subproblems impact the generator set size? 
 \end{enumerate}
 
@@ -92,6 +92,8 @@ $\lvert \Ysn \rvert$ total supported nondominated points.
 $\lvert \Yen \rvert$ total extreme (supported) nondominated points.
 	\item 
 $\lvert \Yn \setminus \Ysn \rvert$ total unsupported nondominated points.
+	\item 
+$|\Yn| /  (1/m\sum_s |\Yn^s|)$ Ratio of $\Yn$ given the average size of nondominated points in subproblems.
 \end{itemize}
 
 
@@ -107,7 +109,7 @@ Let $\bar{M}$ be the size of a minimum generator set sequence. $\bar{M}$ is defi
 		   & \hY^s \subseteq \Y^s, \quad \forall s \in \S
 \end{align}
 
-We will reformulate the combinatorial problem as a general MIP. To do this we introduce the following notation. We order the sets $\Y^s := \{y^s_1,\hdots\} = \{\Y_i^s\}_{s \in \I^s}$ indexed by set $\I^s$ for all subproblems $ s \in \S$. Likewise, we order the set $\Yn := \{y_j\}_{j \in \J}$ indexed by the set $\J$. We introduce decision variables $x$ and $w$ such that:
+We will reformulate the combinatorial problem as a general MIP. To do this we introduce the following notation. We order the sets $\Y^s := \{y^s_1,\hdots\} = \{\Y_i^s\}_{i \in \I^s}$ indexed by set $\I^s$ for all subproblems $ s \in \S$. Likewise, we order the set $\Yn := \{y_j\}_{j \in \J}$ indexed by the set $\J$. We introduce decision variables $x$ and $w$ such that:
 \begin{align}
 	x^s_i &= \begin{cases}
     	1, &\text{ if }y_i^s \in \hY^s \\ 
@@ -134,7 +136,7 @@ Finally, each point $y \in \Yn$ must be a combination of points with exactly one
     \sum_{i \in \I^s} w^s_{i,j} = 1, \quad \forall s \in \S, \forall j \in \J \label{constr:MIP-combination-single}
 \end{align}
 The constraints \Cref{constr:MIP-subset-chosen} together with \Cref{constr:MIP-combination-single} also ensures that at least one solution is chosen to each subproblem $\left( \sum_{i \in I^s} x^s_i,  \forall s \in \S \right)$.
-The objective function is the sum of the chosen generator points: $\bar{M} := \sum_{s \in \S}\sum_{i \in \I^s} x^s_i$. This results in the following MIP:
+The objective function is the sum of the chosen generator points: $\sum_{s \in \S}\sum_{i \in \I^s} x^s_i$. This results in the following MIP:
 
 \begin{align*}
 	\bar{M}  := \min&  \sum_{s \in \S}\sum_{i \in \I^s} x^s_i \\
@@ -160,23 +162,24 @@ For each test we record:
 
 
 \subsubsection{Sequential minimum generators}
-In order to get a second measure for answering questions $2$ and also to answer question $3$ we seek to define minimum generator set sequence which depend on the index sets $\S$.
+In order to get a second measure for answering questions $2$ and also to answer question $3$ we seek to define a \emph{minimum generator set sequence} (MGS) which depends on the order of the index sets $\S$.
 
-For each type of we are interested in generating sets $\bY^s$ where we to some extend minimuze $ \left(\abs{\bY^1}, \hdots \abs{\bY^{\abs{\S}}}\right) $. For each test we record:
+For each type of MGS we are interested in generating sets $\bY^s$ which to some extent minimize the vector $ \left(\abs{\bY^1}, \hdots \abs{\bY^{\abs{\S}}}\right) $. For each test we record:
 \begin{itemize}
+        \item The index order used (\eg increasing or decreasing in  $\abs{\Y^s}$ ).
 	\item $\abs{\bY^s}$ for all $s \in \S$
 	\item $\sum_{s \in \S} \abs{\bY^s} $
 	\item Also similar metrics for supported points, extreme supported points and unsupported.
 \end{itemize}
 
 
-\textbf{MGS1}
+$MGS1$
 \begin{itemize}
 	\item Each generator $\bY^{s'}$ depends on: $\bY^1, \hdots, \bY^{s'-1}, \Y^{s'} $.
 	\item At each step a generator $\bY^{s'} := \hY^{s'}$ is fixed.
 	\item At each step the combined generators must 'generate' $\left( \Y^1 \+ \hdots \+ \Y^{s'} \right)_\mcN $.
 \end{itemize}
-We will now define a more restricted sequence of generator sets which we call the \emph{local sequentially minimum sequence of generator sets} (MGS1).  
+We will now define a more restricted sequence of generator sets which we call (MGS1).  
 
 
 The first generator set is simply defined as the set of nondominated points of the first subproblem.
@@ -187,38 +190,57 @@ For the second generator we find the smallest set which together with the genera
 \begin{align}
     \bY^2 = \text{arg min} &\lvert \hY^2 \rvert \\ 
     st. \quad& \left( \bY^1 \+ \hY^2 \right)_\mcN = \left( \Y^1 \+ \Y^2 \right)_\mcN  \nonumber  \\
-	     & \hY^2 \subseteq \Yn^2
+	     & \hY^2 \subseteq \Yn^2\nonumber
 \end{align}
 For a general $s' \in \S$
 \begin{align}
     \bY^{s'} = \text{arg min} &\lvert \hY^{s'} \rvert \\ 
-    st. \quad& \left( \left( \msum_{s = 1}^{s'-1} \bY^s \right)  + \hY^2 \right)_\mcN = \left( \msum_{s=1}^{s'} \Y^s \right)_\mcN  \nonumber  \\
-	     & \hY^{s'} \subseteq \Yn^{s'}
+    st. \quad& \left( \left( \msum_{s = 1}^{s'-1} \bY^s \right)  + \hY^{s'} \right)_\mcN = \left( \msum_{s=1}^{s'} \Y^s \right)_\mcN  \nonumber  \\
+	     & \hY^{s'} \subseteq \Yn^{s'} \nonumber
 \end{align}
 
-\textbf{MGS2}
+$MGS2$
 \begin{itemize}
 	\item Each generator $\bY^{s'}$ depends on: $\bY^1, \hdots, \bY^{s'-1}, \Y^{s'}, \hdots, \Y^{\abs{\S}} $.
 	\item At each step a generator $\bY^{s'} := \hY^{s'}$ is fixed.
 	\item At each step the combined generators must 'generate' $\Yn $.
 \end{itemize}
 
-An alternative \emph{global sequentially minimum sequence of generator sets} is defined as follows:
+An alternative MGS is $MGS2$ where we sequentially fix a generator set while always requiring that the (global) nondominated set is generated.
 
 \begin{align}
     \bY^1  =  \text{arg min} &\lvert \hY^1 \rvert \\ 
     st. \quad& \left( \hY^1 \+ \msum_{s=2}^{\abs{S}} \Y^s \right)_\mcN = \Yn  \nonumber  \\
-	     & \hY^1 \subseteq \Yn^1
+	     & \hY^1 \subseteq \Yn^1\nonumber
 \end{align}
 For a general $s' \in \S$
 \begin{align}
     \bY^{s'} = \text{arg min} &\lvert \hY^{s'} \rvert \\ 
     st. \quad& \left( \left(\msum_{s = 1}^{s'-1} \hY^s \right) \+ \bY^{s'} \+ \left(\msum_{s=2}^{\abs{S}} \right)\right)_\mcN = \Yn  \nonumber  \\
-	     & \hY^{s'} \subseteq \Yn^{s'}
+	     & \hY^{s'} \subseteq \Yn^{s'}\nonumber
 \end{align}
 
 
-A pitfall of MGS1 and MGS2 is that the metrics they produce are not unique.
+A pitfall of MGS1 and MGS2 is that the metrics they produce are not unique. To obtain unique metrics, we will define $MGS1^{lex}$ as a sequence of generator sets that satisfy the conditions for MGS1 such that the vector $ \left(\abs{\bY^1}, \hdots \abs{\bY^{\abs{\S}}}\right) $ is minimum in a lexicographical sense.
 
+\textbf{$MGS1^{lex}$}
+\begin{align}
+\left\{ \Ycs  \right\}_{s \in \S}
+     = \text{arg lex min} &  \left(\abs{\bY^1}, \hdots \abs{\bY^{\abs{\S}}}\right)  \\ 
+    st. \quad& \left(  \msum_{s = 1}^{s'} \hY^s  \right)_\mcN = \left( \msum_{s=1}^{s'} \Y^s \right)_\mcN  \nonumber, \quad \forall s' \in \S  \nonumber\\
+	     & \hY^{s} \subseteq \Yn^{s}, \quad \forall s \in \S \nonumber
+\end{align}
+
+
+\textbf{$MGS2^{lex}$}
+
+Similarly, we define $MGS2^{lex}$ as:
+
+\begin{align}
+\left\{ \Ycs  \right\}_{s \in \S}
+     = \text{arg lex min} &  \left(\abs{\bY^1}, \hdots \abs{\bY^{\abs{\S}}}\right)  \\ 
+    st. \quad& \left(  \msum_{s \in \S} \hY^s  \right)_\mcN = \Yn \nonumber \\
+	     & \hY^{s} \subseteq \Yn^{s}, \quad \forall s \in \S \nonumber
+\end{align}
 \end{enumerate}
 
