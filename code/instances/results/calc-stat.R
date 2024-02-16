@@ -37,26 +37,27 @@ calcStat <- function(path) {
 }
 
 updateProbStatFile <- function() {
-   cat("Update statistics for results. ")
+   cat("Update statistics for results.")
    paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
    prefix <- str_extract(paths, ".*/")
    filename <- str_extract(paths, "^.*/(.*)$", group = 1)
    alg <- unique(str_extract(filename, "(.*?)-", group = 1))
    for (a in alg) {
       if (a == "alg1") {
-         datSubProb <- read_csv(here::here("code/instances/stat-sp.csv"))
+         datSubProb <- read_csv(here::here("code/instances/stat-sp.csv"), show_col_types = F)
          datRes <- NULL
-         algPaths <- str_subset(paths, "alg1")[1:10]
+         algPaths <- str_subset(paths, "alg1")
          algFiles <- str_extract(algPaths, "^.*/instances/(.*)$", group = 1)
-         probFiles <- str_extract(algFiles, "^alg1-(.*)$", group = 1)
+         probFiles <- str_extract(algFiles, "^.*alg1-(.*)$", group = 1)
          for (i in 1:length(algPaths)) {
             lstAlg <- jsonlite::read_json(algPaths[i])
             row <- c(path = algFiles[i], unlist(lstAlg$statistics))
+            subProb <- unlist(jsonlite::read_json(here::here("code/instances/problems", probFiles[i])))
             dat <- datSubProb %>% filter(path %in% subProb)
             row <- c(row, spCard = dat$card, spSupported = dat$supported, spExtreme = dat$extreme, spUnsupported = dat$unsupported)
             datRes <- datRes %>% bind_rows(row)
          }
-         write_csv(here::here("code/instances/stat-prob.csv"))
+         write_csv(datRes, here::here("code/instances/stat-prob.csv"))
       }
    }
    return(alg)
