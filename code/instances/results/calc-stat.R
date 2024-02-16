@@ -36,7 +36,8 @@ calcStat <- function(path) {
    return(calc)
 }
 
-updateStatFile <- function() {
+updateProbStatFile <- function() {
+   cat("Update statistics for results.")
    paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
    prefix <- str_extract(paths, ".*/")
    filename <- str_extract(paths, "^.*/(.*)$", group = 1)
@@ -44,46 +45,21 @@ updateStatFile <- function() {
    for (a in alg) {
       if (a == "alg1") {
          datSubProb <- read_csv(here::here("code/instances/stat-sp.csv"))
-         dat <- NULL
+         datRes <- NULL
          algPaths <- str_subset(paths, "alg1")[1:10]
-         algFiles <- fs::path_file(algPaths)
+         algFiles <- str_extract(algPaths, "^.*/instances/(.*)$", group = 1)
          probFiles <- str_extract(algFiles, "^alg1-(.*)$", group = 1)
          for (i in 1:length(algPaths)) {
             lstAlg <- jsonlite::read_json(algPaths[i])
-            row <- c(file = algFiles[i], unlist(lstAlg$statistics))
-            
-            
-            
-            
-            
-            
-            row <- c(row, getSubProbStat(probFiles[i]))
-            
-            
-            
-            
-            
-            
-            
-            
-            dat <- dat %>% bind_rows(row)
-            
+            row <- c(path = algFiles[i], unlist(lstAlg$statistics))
+            dat <- datSubProb %>% filter(path %in% subProb)
+            row <- c(row, spCard = dat$card, spSupported = dat$supported, spExtreme = dat$extreme, spUnsupported = dat$unsupported)
+            datRes <- datRes %>% bind_rows(row)
          }
-         dat %>% unite()
+         write_csv(here::here("code/instances/stat-prob.csv"))
       }
    }
-   
-   
-   
-
-
-   return(dat)
-   
-}
-
-getSubProbStat <- function(probFile) {
-   lstProb <- jsonlite::read_json(here::here("code/instances/problems", probFile))
-   
+   return(alg)
 }
 
 
@@ -106,6 +82,7 @@ for (path in paths) {
       break
    }
 }
+updateProbStatFile()
 cat("\n\nFinish running R script.\n\n")
 
 ## Close log file
