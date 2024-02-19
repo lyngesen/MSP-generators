@@ -1,0 +1,155 @@
+---
+title: "Results: Plots and Tables"
+output: html_document
+date: "`r Sys.Date()`"
+editor_options: 
+  chunk_output_type: console
+knit: (function(inputFile, encoding) { 
+    out_dir <- '../../docs/';
+    rmarkdown::render(inputFile,
+                      encoding=encoding, 
+                      output_file=file.path(dirname(inputFile), out_dir, 'problem-statistics.html')) })
+---
+
+```{r setup, include=FALSE}
+here::i_am("code/instances/problem-statistics.Rmd")  # specify relative path given project
+# remotes::install_github("relund/gMOIP")
+# library(gMOIP)
+library(tidyverse)
+# library(knitr)
+# library(rgl)
+# rgl::setupKnitr()
+# options(rgl.useNULL=TRUE)
+# rgl::par3d("family" = "serif")
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message=FALSE, include = TRUE, warning = FALSE,
+  out.width = "99%", fig.width = 8, fig.align = "center", fig.asp = 0.8
+)
+```
+
+This report contains different plots that may be relevant when visualizing the results.
+
+## RQ1: How large is $|Y_N|$ given |Y_N^s|
+
+Given a problem consisting of a set of subproblems with $Y_N^s$ given for each subproblem $s$, we use a filtering algorithm to find $Y_N$ and afterwards classify the nondominated points into, extreame, supported non-extreame and unsupported.
+
+```{r}
+raw <- read_csv(here::here("code/instances/stat-prob.csv"))
+dat <- raw %>% 
+  mutate(method = str_extract(path, "^.*-(.*)-.*$", group = 1)) %>% 
+  mutate(method = map_chr(method, function (x) {
+  x <- str_split_1(x, "")
+  x <- unique(x)
+  str_c(x, collapse = "")
+  })) %>% 
+  rowwise() %>% 
+  mutate(aveWidth = mean(c_across(starts_with("width")), na.rm = T),
+         hypervolume = if_else(is.nan(aveWidth), NA, prod(c_across(starts_with("width")), na.rm = T)),
+         spAveCard = mean(c_across(starts_with("spCard")), na.rm = T)) %>% 
+  ungroup() %>% 
+  mutate(
+         pctSup = supported/card,
+         m = as.numeric(str_extract(path, "^.*-(.*)_.*$", group = 1))) 
+  
+for (s in 1:3) {
+  dat[, str_c("spPctSup", s)] <- dat[, str_c("spSupported", s)] / dat[, str_c("spCard", s)]
+} 
+dat <- dat %>% mutate(
+  spAvePctSup = mean(c_across(starts_with("spPctSup")), na.rm = T),
+) 
+
+dat %>% mutate(cst = hypervolume/(m * 10000)^p) %>% ungroup() %>% summarise(val = mean(cst, na.rm = T))
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(x = m, y = aveWidth, color = method)) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  facet_wrap(vars(p)) +
+  labs(title = "Average objective width (should be approx. m * 10000)",
+       y = "Average objective width",
+       x = "Number of subproblems (m)",
+       color = "Method(s) used to generate subproblems") +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(x = spAveCard, y = card, color = method)) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  facet_grid(m ~ p, scales = "free", margins = T) + 
+  labs(title = "Number of nondominated points given subproblem cardinality",
+       y = "Cardinality Yn",
+       x = "Average subproblem cardinality",
+       color = "Method(s) used to generate subproblems") +
+  theme(legend.position = "bottom")
+
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(x = method, y = card)) +
+  geom_boxplot() + 
+  facet_wrap(vars(p), scales = "free") + 
+  labs(title = "Number of nondominated points given method",
+       y = "Cardinality Yn",
+       x = "Method(s) used to generate subproblems") +
+  theme(legend.position = "bottom")
+```
+
+
+```{r}
+dat %>% 
+  ggplot(aes(x = p, y = card/(10000^cardS), color = method)) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  # facet_wrap(vars(p), scales = "free") + 
+  # labs(title = "Number of nondominated points",
+  #      y = "Cardinality Yn",
+  #      x = "Average subproblem size",
+  #      color = "Method(s) used to generate subproblems") +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(x = method, y = pctSup)) +
+  geom_boxplot() + 
+  # geom_smooth(se = F) +
+  # facet_wrap(vars(p)) +
+  # labs(title = "Average objective width",
+  #      y = "Average objective width",
+  #      x = "Number of subproblems",
+  #      color = "Method(s) used to generate subproblems") +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(x = spAvePctSup, y = pctSup, color = method)) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  facet_wrap(vars(p)) +
+  # labs(title = "Average objective width",
+  #      y = "Average objective width",
+  #      x = "Number of subproblems",
+  #      color = "Method(s) used to generate subproblems") +
+  theme(legend.position = "bottom")
+```
+
+
+```{r}
+dat %>% 
+  ggplot(aes(x = , y = pctSup)) +
+  geom_boxplot() + 
+  # geom_smooth(se = F) +
+  # facet_wrap(vars(p)) +
+  # labs(title = "Average objective width",
+  #      y = "Average objective width",
+  #      x = "Number of subproblems",
+  #      color = "Method(s) used to generate subproblems") +
+  theme(legend.position = "bottom")
+```
