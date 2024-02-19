@@ -11,7 +11,28 @@ here::i_am("code/instances/stat-prob.R")  # specify relative path given project
 #' @return True if calculated statistics.
 calcStat <- function(path) {
    tictoc::tic()
-   cat("Check:", path, "...")
+   cat("Update statistics:", path, "...")
+   lst <- jsonlite::read_json(path, simplifyVector = T)
+   calc <- any(is.na(lst$statistics$min))
+   if (calc) {
+      p <- lst$statistics$p
+      pts <- lst$points
+      lst$statistics$min <- Rfast::colMins(as.matrix(pts[, 1:p]), value = T)
+      lst$statistics$max <- Rfast::colMaxs(as.matrix(pts[, 1:p]), value = T)
+      lst$statistics$width <- Rfast::colrange(as.matrix(pts[, 1:p]))
+      lst$statistics$method <- NULL
+      jsonlite::write_json(lst, path, pretty = TRUE)
+      cat(" done.\n")
+   } else {
+      cat(" already calc.\n")
+   }
+   tictoc::toc()
+   return(calc)
+}
+
+classifyStat <- function(path) {
+   tictoc::tic()
+   cat("Classify points:", path, "...")
    lst <- jsonlite::read_json(path, simplifyVector = T)
    calc <- any(is.na(lst$points$cls))
    if (calc) {
@@ -23,10 +44,6 @@ calcStat <- function(path) {
       lst$statistics$supported <- sum(pts$se) + sum(pts$sne)
       lst$statistics$extreme <- sum(pts$se)
       lst$statistics$unsupported <- sum(pts$us)
-      lst$statistics$min <- Rfast::colMins(as.matrix(pts[, 1:p]), value = T)
-      lst$statistics$max <- Rfast::colMaxs(as.matrix(pts[, 1:p]), value = T)
-      lst$statistics$width <- Rfast::colrange(as.matrix(pts[, 1:p]))
-      lst$statistics$method <- NULL
       jsonlite::write_json(lst, path, pretty = TRUE)
       cat(" done.\n")
    } else {
@@ -76,6 +93,16 @@ tictoc::tic.clear()
 start <- Sys.time()
 for (path in paths) {
    calcStat(path)
+   cpu <- difftime(Sys.time(), start, units = "secs")
+   cat("Cpu total", cpu, "\n")
+   if (cpu > timeLimit) {
+      message("Time limit reached! Stop R script.")
+      break
+   }
+}
+updateProbStatFile()
+for (path in paths) {
+   classifyStat(path)
    cpu <- difftime(Sys.time(), start, units = "secs")
    cat("Cpu total", cpu, "\n")
    if (cpu > timeLimit) {
