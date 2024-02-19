@@ -30,9 +30,12 @@ knitr::opts_chunk$set(
 
 This report contains different plots that may be relevant when visualizing the results.
 
-## RQ1: How large is $|Y_N|$ given |Y_N^s|
+## How large is $|Y_N|$ given |Y_N^s|
 
-Given a problem consisting of a set of subproblems with $Y_N^s$ given for each subproblem $s$, we use a filtering algorithm to find $Y_N$ and afterwards classify the nondominated points into, extreame, supported non-extreame and unsupported.
+Given a problem consisting of a set of subproblems with $Y_N^s$ given for each subproblem $s$, we use a filtering algorithm to find $Y_N$ and afterwards classify the nondominated points into, extreme, supported non-extreme and unsupported.
+
+
+
 
 ```{r}
 raw <- read_csv(here::here("code/instances/stat-prob.csv"))
@@ -61,6 +64,16 @@ dat <- dat %>% mutate(
 
 dat %>% mutate(cst = hypervolume/(m * 10000)^p) %>% ungroup() %>% summarise(val = mean(cst, na.rm = T))
 ```
+
+```{r}
+dat %>% 
+  group_by(p, m, method, spAveCard) %>% 
+  summarise(instances = n(), card = mean(card), pctSup = mean(pctSup)) %>% 
+  filter(instances >= 5)
+```
+
+
+
 
 ```{r}
 dat %>% 
