@@ -1,5 +1,6 @@
 ## Code for classification of nondominated points and updating statistics
 
+remotes::install_github("relund/gMOIP")
 library(tidyverse)
 library(gMOIP)
 here::i_am("code/instances/stat-prob.R")  # specify relative path given project
@@ -32,9 +33,9 @@ calcStat <- function(path) {
 
 classifyStat <- function(path) {
    tictoc::tic()
-   cat("Classify points:", path, "...")
    lst <- jsonlite::read_json(path, simplifyVector = T)
-   calc <- any(is.na(lst$points$cls))
+   cat("Classify", lst$statistics$card, "points:", path, "...")
+   calc <- is.null(lst$points$cls) | any(is.na(lst$points$cls))
    if (calc) {
       p <- lst$statistics$p
       pts <- classifyNDSet(lst$points[, 1:p])
@@ -101,16 +102,19 @@ for (path in paths) {
    }
 }
 updateProbStatFile()
-for (path in paths) {
-   classifyStat(path)
-   cpu <- difftime(Sys.time(), start, units = "secs")
-   cat("Cpu total", cpu, "\n")
-   if (cpu > timeLimit) {
-      message("Time limit reached! Stop R script.")
-      break
+if (cpu < timeLimit) {
+   for (path in paths) {
+      classifyStat(path)
+      cpu <- difftime(Sys.time(), start, units = "secs")
+      cat("Cpu total", cpu, "\n")
+      if (cpu > timeLimit) {
+         message("Time limit reached! Stop R script.")
+         break
+      }
    }
-}
-updateProbStatFile()
+   updateProbStatFile()
+} 
+
 cat("\n\nFinish running R script.\n\n")
 
 ## Close log file
