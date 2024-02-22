@@ -54,22 +54,28 @@ dat <- raw %>%
   mutate(
          pctSup = supported/card,
          m = as.numeric(str_extract(path, "^.*-(.*)_.*$", group = 1))) 
-  
-for (s in 1:3) {
+# stat for subproblems
+for (s in 1:max(dat$m)) {
   dat[, str_c("spPctSup", s)] <- dat[, str_c("spSupported", s)] / dat[, str_c("spCard", s)]
 } 
 dat <- dat %>% mutate(
   spAvePctSup = mean(c_across(starts_with("spPctSup")), na.rm = T),
 ) 
 
+
+
+
 dat %>% mutate(cst = hypervolume/(m * 10000)^p) %>% ungroup() %>% summarise(val = mean(cst, na.rm = T))
 ```
+
+
+Overview over subproblems not solved yet
 
 ```{r}
 dat %>% 
   group_by(p, m, method, spAveCard) %>% 
   summarise(instances = n(), card = mean(card), pctSup = mean(pctSup)) %>% 
-  filter(instances >= 5)
+  filter(instances < 5)
 ```
 
 
