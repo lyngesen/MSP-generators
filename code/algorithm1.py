@@ -7,12 +7,15 @@ For each problem MSP (from instances/problem)
 
 from classes import Point, PointList, MinkowskiSumProblem, KD_Node, KD_tree
 import methods
-from methods import N
-import matplotlib.pyplot as plt
-# import pyomo.environ as pyomo
 from timing import timeit, print_timeit, reset_timeit
+from methods import N
+# public library imports
+import matplotlib.pyplot as plt
 import os
 import csv
+
+
+
 
 
 methods.MS_doubling_filter = timeit(methods.MS_doubling_filter)
@@ -139,7 +142,7 @@ def json_files_to_csv():
 
 
 if __name__ == "__main__":
-    test_times()
+    # test_times()
     # example_Yn()
     # main()
-    # json_files_to_csv()
+    json_files_to_csv()

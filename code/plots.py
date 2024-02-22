@@ -45,9 +45,48 @@ def example():
     Y = PointList([y+Point((50,0)) for y in Y])
     Y.plot()
     plt.show()
+
+
+def klamroth2023_lemma2():
+    l = 6
+    m = 6
+    A = PointList([(-1,-1,-0)] + [(-0, -i/l, -(l-i)/l) for i in range(1,l)])
+    B = PointList([(-0,-1,-1)] + [(-i/m, -(m-i)/m, -0 ) for i in range(1,m)])
+
+    print(f"{A=}")
+    print(f"{B=}")
+
+
+    fig = plt.figure()
+    ax= plt.axes(projection = '3d')
+    
+
+    A.plot(ax= ax, l="A")
+    B.plot(ax= ax, l="B")
+
+    # S = PointList(A.points + B.points)
+    S = A + B
+
+    S.plot(ax= ax, l = "A + B")
+    Sn = N(S)
+    print(f"A+B = {S}")
+    print(f"(A+B)_N = {Sn}")
+    Sn.plot(ax= ax, l= "(A + B)_N" , color="blue")
+
+    print(f"{len(Sn.removed_duplicates())=}")
+
+    print(f"|A|={len(A)}")
+    print(f"|B|={len(B)}")
+    print(f"|A+B|={len(S)}")
+    print(f"|(A+B)_N|={len(Sn)}")
+
+    plt.show()
+
+
 def main():
 
-    example()
+    klamroth2023_lemma2()
+    # example()
 
 
 
@@ -55,7 +94,7 @@ if __name__ == '__main__':
 
     SAVE_PLOTS = False
     FIGURES_LOCATION = "figures/"
-    NO_AXIS = True 
+    NO_AXIS = False 
 
     # used figure sizes
     SIZE_STANDARD_FIGURE = (5,2)
