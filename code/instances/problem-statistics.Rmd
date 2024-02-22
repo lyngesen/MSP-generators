@@ -116,7 +116,7 @@ dat %>%
 
 ```{r}
 dat %>% 
-  ggplot(aes(x = p, y = card/(10000^cardS), color = method)) +
+  ggplot(aes(x = p, y = card/(10000^m), color = method)) +
   geom_point() + 
   geom_smooth(se = F) +
   # facet_wrap(vars(p), scales = "free") + 
