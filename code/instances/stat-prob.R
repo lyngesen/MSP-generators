@@ -21,7 +21,7 @@ calcStat <- function(path) {
       lst$statistics$min <- Rfast::colMins(as.matrix(pts[, 1:p]), value = T)
       lst$statistics$max <- Rfast::colMaxs(as.matrix(pts[, 1:p]), value = T)
       lst$statistics$width <- Rfast::colrange(as.matrix(pts[, 1:p]))
-      lst$statistics$method <- NULL
+      # lst$statistics$method <- NULL
       jsonlite::write_json(lst, path, pretty = TRUE)
       cat(" done.\n")
    } else {
@@ -38,8 +38,8 @@ classifyStat <- function(path) {
    calc <- is.null(lst$points$cls) | any(is.na(lst$points$cls))
    if (calc) {
       p <- lst$statistics$p
-      pts <- classifyNDSet(lst$points[, 1:p])
-      pts <- pts %>% distinct()
+      try(pts <- classifyNDSet(lst$points[, 1:p]), silent = TRUE)
+      if (nrow(pts) > 0) pts <- pts %>% distinct()
       lst$points <- pts %>% select(-se, -sne, -us)
       lst$statistics$card <- nrow(pts)
       lst$statistics$supported <- sum(pts$se) + sum(pts$sne)
