@@ -601,14 +601,14 @@
     },
     "gMOIP": {
       "Package": "gMOIP",
-      "Version": "1.5.1",
+      "Version": "1.5.2",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "gMOIP",
       "RemoteUsername": "relund",
       "RemoteRef": "HEAD",
-      "RemoteSha": "2fbf5a03d8be54dddb3465ddaf4b60444590ae38",
+      "RemoteSha": "abfecb8f34d501a0a806d47fc7df39071ecb2dd0",
       "Requirements": [
         "MASS",
         "Matrix",
@@ -631,7 +631,7 @@
         "tidyr",
         "tidyselect"
       ],
-      "Hash": "df00ef438d626608f143ac2ae529c18b"
+      "Hash": "0017a22c4e6d894779b3a0b20f1d81cc"
     },
     "gargle": {
       "Package": "gargle",
