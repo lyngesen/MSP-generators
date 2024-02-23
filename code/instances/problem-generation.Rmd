@@ -308,9 +308,9 @@ The following instance/problem groups are generated given:
   * Five instances for each config. [5 options]
 
 ```{r}
-saveProblems <- function(pS, mS, samplesS, methodS, dub, overwrite = TRUE) {
+saveProblemsAlg1 <- function(pS, mS, samplesS, methodS, dub, overwrite = TRUE) {
   paths <- fs::dir_ls("subproblems/")
-  paths <- str_subset(paths, "sp-")  # remove statistics file
+  paths <- str_subset(paths, "sp-")  # remove redundant files
   for (p in pS) {
     for (s in samplesS) {
       for (method in methodS) {

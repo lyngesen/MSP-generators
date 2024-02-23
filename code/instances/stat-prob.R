@@ -38,14 +38,14 @@ classifyStat <- function(path) {
    calc <- is.null(lst$points$cls) | any(is.na(lst$points$cls))
    if (calc) {
       p <- lst$statistics$p
-      try(pts <- classifyNDSet(lst$points[, 1:p]), silent = TRUE)
-      if (nrow(pts) > 0) pts <- pts %>% distinct()
-      lst$points <- pts %>% select(-se, -sne, -us)
-      lst$statistics$card <- nrow(pts)
-      lst$statistics$supported <- sum(pts$se) + sum(pts$sne)
-      lst$statistics$extreme <- sum(pts$se)
-      lst$statistics$unsupported <- sum(pts$us)
-      jsonlite::write_json(lst, path, pretty = TRUE)
+      pts <- classifyNDSet(lst$points[, 1:p]);
+      if (nrow(pts) > 0) pts <- pts %>% distinct();
+      lst$points <- pts %>% select(-se, -sne, -us);
+      lst$statistics$card <- nrow(pts);
+      lst$statistics$supported <- sum(pts$se) + sum(pts$sne);
+      lst$statistics$extreme <- sum(pts$se);
+      lst$statistics$unsupported <- sum(pts$us);
+      jsonlite::write_json(lst, path, pretty = TRUE);
       cat(" done.\n")
    } else {
       cat(" already calc.\n")
@@ -92,6 +92,8 @@ paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "f
 timeLimit <- 10 * 60  # max run time in sec
 tictoc::tic.clear()
 start <- Sys.time()
+
+## first update easy calc stat
 for (path in paths) {
    calcStat(path)
    cpu <- difftime(Sys.time(), start, units = "secs")
@@ -102,9 +104,11 @@ for (path in paths) {
    }
 }
 updateProbStatFile()
+
+## next try to classify
 if (cpu < timeLimit) {
    for (path in paths) {
-      classifyStat(path)
+      try(classifyStat(path), TRUE)
       cpu <- difftime(Sys.time(), start, units = "secs")
       cat("Cpu total", cpu, "\n")
       if (cpu > timeLimit) {
