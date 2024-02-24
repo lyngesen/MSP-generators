@@ -1,985 +1,985 @@
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_1.json ... already calc.
 0.007 sec elapsed
-Cpu total 0.02778053 
+Cpu total 0.0277698 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_2.json ... already calc.
 0.006 sec elapsed
-Cpu total 0.03364062 
+Cpu total 0.03364205 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_3.json ... already calc.
 0.006 sec elapsed
-Cpu total 0.03946686 
+Cpu total 0.03966832 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_4.json ... already calc.
-0.005 sec elapsed
-Cpu total 0.04522157 
+0.006 sec elapsed
+Cpu total 0.04550576 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_5.json ... already calc.
-0.005 sec elapsed
-Cpu total 0.05098987 
+0.006 sec elapsed
+Cpu total 0.05138445 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_1.json ... already calc.
 0.005 sec elapsed
-Cpu total 0.05595779 
+Cpu total 0.0564127 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_2.json ... already calc.
 0.005 sec elapsed
-Cpu total 0.06083679 
+Cpu total 0.06134439 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_3.json ... already calc.
-0.006 sec elapsed
-Cpu total 0.06639552 
-Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_4.json ... already calc.
 0.005 sec elapsed
-Cpu total 0.07177019 
-Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_5.json ... already calc.
+Cpu total 0.06694031 
+Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_4.json ... already calc.
 0.006 sec elapsed
-Cpu total 0.07735372 
+Cpu total 0.07245302 
+Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_5.json ... already calc.
+0.005 sec elapsed
+Cpu total 0.07811332 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ul-2_1.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.07943606 
+Cpu total 0.08035374 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ul-2_2.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.081352 
+Cpu total 0.08235121 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ul-2_3.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.0834291 
+Cpu total 0.08455849 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ul-2_4.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.08534217 
+Cpu total 0.08658171 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ul-2_5.json ... already calc.
-0.001 sec elapsed
-Cpu total 0.08723903 
+0.002 sec elapsed
+Cpu total 0.08864403 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-uu-2_1.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.08956432 
+Cpu total 0.09108281 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-uu-2_2.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.09195423 
+Cpu total 0.09357834 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-uu-2_3.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.09412003 
+Cpu total 0.09587264 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-uu-2_4.json ... already calc.
-0.001 sec elapsed
-Cpu total 0.09605312 
+0.002 sec elapsed
+Cpu total 0.09791684 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-uu-2_5.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.0981946 
+Cpu total 0.1001768 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ll-2_1.json ... already calc.
 0.008 sec elapsed
-Cpu total 0.1069062 
+Cpu total 0.108887 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ll-2_2.json ... already calc.
 0.009 sec elapsed
-Cpu total 0.1153555 
+Cpu total 0.1174915 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ll-2_3.json ... already calc.
-0.008 sec elapsed
-Cpu total 0.1240847 
-Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ll-2_4.json ... already calc.
 0.009 sec elapsed
-Cpu total 0.1326661 
-Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ll-2_5.json ... already calc.
+Cpu total 0.1263003 
+Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ll-2_4.json ... already calc.
 0.008 sec elapsed
-Cpu total 0.1413009 
+Cpu total 0.1349297 
+Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ll-2_5.json ... already calc.
+0.009 sec elapsed
+Cpu total 0.1435804 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-mm-2_1.json ... already calc.
 0.007 sec elapsed
-Cpu total 0.1487126 
+Cpu total 0.1511247 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-mm-2_2.json ... already calc.
-0.008 sec elapsed
-Cpu total 0.1563752 
+0.007 sec elapsed
+Cpu total 0.158838 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-mm-2_3.json ... already calc.
-0.01 sec elapsed
-Cpu total 0.1669014 
+0.011 sec elapsed
+Cpu total 0.1694689 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-mm-2_4.json ... already calc.
 0.007 sec elapsed
-Cpu total 0.1736228 
+Cpu total 0.1762848 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-mm-2_5.json ... already calc.
 0.006 sec elapsed
-Cpu total 0.18029 
+Cpu total 0.1831493 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ul-2_1.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.1825449 
+Cpu total 0.1854823 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ul-2_2.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.1844816 
+Cpu total 0.1875474 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ul-2_3.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.1866934 
+Cpu total 0.1898508 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ul-2_4.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.1886244 
+Cpu total 0.191941 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ul-2_5.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.1906273 
+Cpu total 0.1939652 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-uu-2_1.json ... already calc.
-0.002 sec elapsed
-Cpu total 0.1929362 
+0.003 sec elapsed
+Cpu total 0.1964834 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-uu-2_2.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.1952145 
+Cpu total 0.1988466 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-uu-2_3.json ... already calc.
-0.002 sec elapsed
-Cpu total 0.1975965 
+0.003 sec elapsed
+Cpu total 0.20135 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-uu-2_4.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.1999846 
+Cpu total 0.2038853 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-uu-2_5.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.2021344 
+Cpu total 0.2061336 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_1.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2035344 
+Cpu total 0.2076902 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_2.json ... already calc.
-0.001 sec elapsed
-Cpu total 0.2049663 
+0.002 sec elapsed
+Cpu total 0.2092597 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_3.json ... already calc.
-0.002 sec elapsed
-Cpu total 0.206573 
-Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_4.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2080212 
-Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_5.json ... already calc.
+Cpu total 0.2109337 
+Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_4.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.209471 
+Cpu total 0.2125077 
+Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_5.json ... already calc.
+0.001 sec elapsed
+Cpu total 0.2140708 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-mm-2_1.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2107365 
+Cpu total 0.2155035 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-mm-2_2.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2119453 
+Cpu total 0.2168429 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-mm-2_3.json ... already calc.
-0.001 sec elapsed
-Cpu total 0.2132206 
+0.002 sec elapsed
+Cpu total 0.2182252 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-mm-2_4.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2143312 
+Cpu total 0.2195094 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-mm-2_5.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2156601 
+Cpu total 0.2209756 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ul-2_1.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2165985 
+Cpu total 0.2220607 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ul-2_2.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2177353 
+Cpu total 0.2233517 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ul-2_3.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2186227 
+Cpu total 0.2243896 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ul-2_4.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2197089 
+Cpu total 0.2256279 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ul-2_5.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2206681 
+Cpu total 0.2267351 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-uu-2_1.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2216341 
+Cpu total 0.2278481 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-uu-2_2.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2227068 
+Cpu total 0.2290573 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-uu-2_3.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2237716 
+Cpu total 0.2302716 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-uu-2_4.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2248013 
+Cpu total 0.2314615 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-uu-2_5.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.225914 
+Cpu total 0.2326348 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-lll-3_1.json ... already calc.
-0.004 sec elapsed
-Cpu total 0.2292979 
+0.003 sec elapsed
+Cpu total 0.2361224 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-lll-3_2.json ... already calc.
 0.003 sec elapsed
-Cpu total 0.2326658 
+Cpu total 0.2396383 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-lll-3_3.json ... already calc.
-0.003 sec elapsed
-Cpu total 0.2361717 
+0.004 sec elapsed
+Cpu total 0.2432687 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-lll-3_4.json ... already calc.
 0.003 sec elapsed
-Cpu total 0.2394855 
+Cpu total 0.2466547 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-lll-3_5.json ... already calc.
 0.003 sec elapsed
-Cpu total 0.2428048 
+Cpu total 0.2500856 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-mmm-3_1.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.2450435 
+Cpu total 0.2524641 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-mmm-3_2.json ... already calc.
-0.003 sec elapsed
-Cpu total 0.2476001 
+0.002 sec elapsed
+Cpu total 0.2548618 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-mmm-3_3.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.2498677 
+Cpu total 0.2570937 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-mmm-3_4.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.2520077 
+Cpu total 0.2592559 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-mmm-3_5.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.2541962 
+Cpu total 0.2614081 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-ull-3_1.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.2563555 
+Cpu total 0.2635696 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-ull-3_2.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.2584555 
+Cpu total 0.2656093 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-ull-3_3.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.2604427 
+Cpu total 0.2676163 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-ull-3_4.json ... already calc.
-0.002 sec elapsed
-Cpu total 0.263221 
+0.003 sec elapsed
+Cpu total 0.2703404 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-ull-3_5.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.2653708 
+Cpu total 0.272465 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-uuu-3_1.json ... already calc.
-0.001 sec elapsed
-Cpu total 0.267154 
+0.002 sec elapsed
+Cpu total 0.2742348 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-uuu-3_2.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2688186 
+Cpu total 0.2759449 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-uuu-3_3.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.2703636 
+Cpu total 0.2774367 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-uuu-3_4.json ... already calc.
-0.001 sec elapsed
-Cpu total 0.2722561 
+0.002 sec elapsed
+Cpu total 0.2793014 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-uuu-3_5.json ... already calc.
 0.001 sec elapsed
-Cpu total 0.2738712 
+Cpu total 0.2810459 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ll-2_1.json ... already calc.
 0.014 sec elapsed
-Cpu total 0.2881868 
+Cpu total 0.2953084 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ll-2_2.json ... already calc.
 0.014 sec elapsed
-Cpu total 0.3025815 
+Cpu total 0.3095291 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ll-2_3.json ... already calc.
 0.015 sec elapsed
-Cpu total 0.3173931 
+Cpu total 0.3243153 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ll-2_4.json ... already calc.
 0.015 sec elapsed
-Cpu total 0.3326242 
+Cpu total 0.3394082 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ll-2_5.json ... already calc.
 0.015 sec elapsed
-Cpu total 0.3480456 
+Cpu total 0.354589 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-mm-2_1.json ... already calc.
 0.015 sec elapsed
-Cpu total 0.3628778 
+Cpu total 0.3693838 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-mm-2_2.json ... already calc.
 0.018 sec elapsed
-Cpu total 0.3812687 
+Cpu total 0.3876731 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-mm-2_3.json ... already calc.
 0.014 sec elapsed
-Cpu total 0.3957822 
+Cpu total 0.4017544 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-mm-2_4.json ... already calc.
 0.014 sec elapsed
-Cpu total 0.4097631 
+Cpu total 0.4155622 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-mm-2_5.json ... already calc.
 0.013 sec elapsed
-Cpu total 0.4231839 
+Cpu total 0.4287496 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ul-2_1.json ... already calc.
 0.003 sec elapsed
-Cpu total 0.4265773 
+Cpu total 0.4319808 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ul-2_2.json ... already calc.
-0.003 sec elapsed
-Cpu total 0.4298909 
+0.002 sec elapsed
+Cpu total 0.4351523 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ul-2_3.json ... already calc.
 0.003 sec elapsed
-Cpu total 0.4332657 
+Cpu total 0.4383416 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ul-2_4.json ... already calc.
 0.003 sec elapsed
-Cpu total 0.4366016 
+Cpu total 0.4415171 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ul-2_5.json ... already calc.
 0.003 sec elapsed
-Cpu total 0.4399512 
+Cpu total 0.4446845 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-uu-2_1.json ... already calc.
 0.005 sec elapsed
-Cpu total 0.4450994 
+Cpu total 0.4496889 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-uu-2_2.json ... already calc.
 0.004 sec elapsed
-Cpu total 0.4492471 
+Cpu total 0.4536228 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-uu-2_3.json ... already calc.
-0.003 sec elapsed
-Cpu total 0.4530201 
+0.004 sec elapsed
+Cpu total 0.4572246 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-uu-2_4.json ... already calc.
-0.004 sec elapsed
-Cpu total 0.4570334 
+0.003 sec elapsed
+Cpu total 0.4610848 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-uu-2_5.json ... already calc.
-0.004 sec elapsed
-Cpu total 0.4604483 
+0.003 sec elapsed
+Cpu total 0.4643083 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-200|200-ll-2_1.json ... already calc.
 0.014 sec elapsed
-Cpu total 0.4751821 
+Cpu total 0.4787209 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-200|200-uu-2_1.json ... already calc.
 0.007 sec elapsed
-Cpu total 0.4824398 
+Cpu total 0.4858489 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-ll-2_2.json ... already calc.
 0.025 sec elapsed
-Cpu total 0.5074019 
+Cpu total 0.5105643 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-ll-2_3.json ... already calc.
 0.024 sec elapsed
-Cpu total 0.531415 
+Cpu total 0.5342951 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-mm-2_4.json ... already calc.
 0.023 sec elapsed
-Cpu total 0.5549345 
+Cpu total 0.5579767 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-mm-2_5.json ... already calc.
-0.028 sec elapsed
-Cpu total 0.5827742 
+0.027 sec elapsed
+Cpu total 0.5858972 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-ul-2_4.json ... already calc.
-0.011 sec elapsed
-Cpu total 0.5941849 
+0.012 sec elapsed
+Cpu total 0.5973542 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-ul-2_5.json ... already calc.
 0.008 sec elapsed
-Cpu total 0.6023958 
+Cpu total 0.6054754 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-uu-2_2.json ... already calc.
 0.01 sec elapsed
-Cpu total 0.6128623 
+Cpu total 0.6159039 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-uu-2_3.json ... already calc.
 0.009 sec elapsed
-Cpu total 0.6219313 
+Cpu total 0.6248298 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-ll-2_2.json ... already calc.
 0.003 sec elapsed
-Cpu total 0.624846 
+Cpu total 0.6277227 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-ll-2_3.json ... already calc.
 0.003 sec elapsed
-Cpu total 0.627908 
+Cpu total 0.630775 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-mm-2_4.json ... already calc.
 0.003 sec elapsed
-Cpu total 0.6304374 
+Cpu total 0.633287 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-mm-2_5.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.6331799 
+Cpu total 0.6360054 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-ul-2_4.json ... already calc.
-0.002 sec elapsed
-Cpu total 0.6353204 
+0.001 sec elapsed
+Cpu total 0.6381414 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-ul-2_5.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.6378257 
+Cpu total 0.6406128 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-uu-2_2.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.6398027 
+Cpu total 0.6425648 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-uu-2_3.json ... already calc.
 0.002 sec elapsed
-Cpu total 0.6419344 
+Cpu total 0.6446638 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-lll-3_2.json ... already calc.
 0.014 sec elapsed
-Cpu total 0.6562388 
+Cpu total 0.6587708 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-lll-3_3.json ... already calc.
-0.013 sec elapsed
-Cpu total 0.6699581 
+0.014 sec elapsed
+Cpu total 0.6724586 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-mmm-3_1.json ... already calc.
-0.011 sec elapsed
-Cpu total 0.6806667 
+0.01 sec elapsed
+Cpu total 0.6831505 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-ull-3_4.json ... already calc.
 0.008 sec elapsed
-Cpu total 0.6893077 
+Cpu total 0.6917107 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-ull-3_5.json ... already calc.
 0.008 sec elapsed
-Cpu total 0.6977062 
+Cpu total 0.6996431 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-uuu-3_4.json ... already calc.
 0.004 sec elapsed
-Cpu total 0.702229 
+Cpu total 0.70417 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-uuu-3_5.json ... already calc.
 0.006 sec elapsed
-Cpu total 0.7087913 
+Cpu total 0.7105243 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-600|600-ll-2_1.json ... already calc.
-0.063 sec elapsed
-Cpu total 0.7714274 
+0.062 sec elapsed
+Cpu total 0.7722883 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-600|600-uu-2_1.json ... already calc.
 0.016 sec elapsed
-Cpu total 0.7879007 
+Cpu total 0.7889898 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-200|200-ll-2_1.json ... already calc.
-0.085 sec elapsed
-Cpu total 0.8728685 
+0.083 sec elapsed
+Cpu total 0.8730826 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-200|200-uu-2_1.json ... already calc.
-0.106 sec elapsed
-Cpu total 0.9784386 
+0.105 sec elapsed
+Cpu total 0.9786861 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-ll-2_2.json ... already calc.
-0.185 sec elapsed
-Cpu total 1.163378 
+0.183 sec elapsed
+Cpu total 1.16186 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-ll-2_3.json ... already calc.
-0.189 sec elapsed
-Cpu total 1.353357 
-Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-mm-2_4.json ... already calc.
-0.338 sec elapsed
-Cpu total 1.691492 
-Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-mm-2_5.json ... already calc.
-0.238 sec elapsed
-Cpu total 1.930293 
-Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-ul-2_4.json ... already calc.
-0.184 sec elapsed
-Cpu total 2.114999 
-Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-ul-2_5.json ... already calc.
 0.186 sec elapsed
-Cpu total 2.300361 
+Cpu total 1.347902 
+Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-mm-2_4.json ... already calc.
+0.342 sec elapsed
+Cpu total 1.689376 
+Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-mm-2_5.json ... already calc.
+0.239 sec elapsed
+Cpu total 1.928568 
+Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-ul-2_4.json ... already calc.
+0.183 sec elapsed
+Cpu total 2.111818 
+Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-ul-2_5.json ... already calc.
+0.181 sec elapsed
+Cpu total 2.293113 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-uu-2_2.json ... already calc.
-0.296 sec elapsed
-Cpu total 2.597231 
+0.302 sec elapsed
+Cpu total 2.595798 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-uu-2_3.json ... already calc.
 0.19 sec elapsed
-Cpu total 2.787432 
+Cpu total 2.786195 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-ll-2_4.json ... already calc.
-0.007 sec elapsed
-Cpu total 2.79442 
+0.006 sec elapsed
+Cpu total 2.793077 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-ll-2_5.json ... already calc.
 0.006 sec elapsed
-Cpu total 2.801125 
+Cpu total 2.799598 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-mm-2_2.json ... already calc.
-0.006 sec elapsed
-Cpu total 2.806466 
-Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-mm-2_3.json ... already calc.
 0.005 sec elapsed
-Cpu total 2.812128 
+Cpu total 2.804809 
+Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-mm-2_3.json ... already calc.
+0.006 sec elapsed
+Cpu total 2.810355 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-ul-2_2.json ... already calc.
 0.006 sec elapsed
-Cpu total 2.818684 
+Cpu total 2.816825 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-ul-2_3.json ... already calc.
-0.006 sec elapsed
-Cpu total 2.832186 
+0.014 sec elapsed
+Cpu total 2.830373 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-uu-2_4.json ... already calc.
 0.007 sec elapsed
-Cpu total 2.839552 
+Cpu total 2.837601 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-uu-2_5.json ... already calc.
 0.006 sec elapsed
-Cpu total 2.845722 
+Cpu total 2.843768 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50|50-lll-3_1.json ... already calc.
-0.172 sec elapsed
-Cpu total 3.017533 
+0.17 sec elapsed
+Cpu total 3.013833 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50|50-mmm-3_2.json ... already calc.
-0.149 sec elapsed
-Cpu total 3.166691 
+0.145 sec elapsed
+Cpu total 3.15827 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50|50-mmm-3_3.json ... already calc.
-0.226 sec elapsed
-Cpu total 3.392612 
+0.237 sec elapsed
+Cpu total 3.395957 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-600|600-ll-2_1.json ... already calc.
-0.852 sec elapsed
-Cpu total 4.245587 
+0.874 sec elapsed
+Cpu total 4.270361 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-600|600-uu-2_1.json ... already calc.
-1.009 sec elapsed
-Cpu total 5.254945 
+1.01 sec elapsed
+Cpu total 5.280761 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200-ll-2_1.json ... already calc.
-0.121 sec elapsed
-Cpu total 5.37603 
+0.124 sec elapsed
+Cpu total 5.40424 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200-uu-2_1.json ... already calc.
 0.136 sec elapsed
-Cpu total 5.511439 
+Cpu total 5.540351 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-300|300-ll-2_2.json ... already calc.
-0.281 sec elapsed
-Cpu total 5.792411 
+0.277 sec elapsed
+Cpu total 5.817569 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-300|300-ll-2_3.json ... already calc.
-0.286 sec elapsed
-Cpu total 6.078687 
+0.293 sec elapsed
+Cpu total 6.110607 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-300|300-mm-2_4.json ... already calc.
-0.244 sec elapsed
-Cpu total 6.322518 
+0.26 sec elapsed
+Cpu total 6.370434 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-300|300-mm-2_5.json ... already calc.
-0.287 sec elapsed
-Cpu total 6.610308 
+0.291 sec elapsed
+Cpu total 6.661788 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-300|300-ul-2_4.json ... already calc.
-0.287 sec elapsed
-Cpu total 6.898311 
+0.289 sec elapsed
+Cpu total 6.950549 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-300|300-ul-2_5.json ... already calc.
-0.391 sec elapsed
-Cpu total 7.290018 
+0.379 sec elapsed
+Cpu total 7.329994 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-300|300-uu-2_2.json ... already calc.
-0.274 sec elapsed
-Cpu total 7.563947 
+0.279 sec elapsed
+Cpu total 7.609545 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-300|300-uu-2_3.json ... already calc.
-0.296 sec elapsed
-Cpu total 7.860194 
+0.401 sec elapsed
+Cpu total 8.010767 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50-ll-2_5.json ... already calc.
-0.008 sec elapsed
-Cpu total 7.868992 
+0.009 sec elapsed
+Cpu total 8.019716 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50-mm-2_2.json ... already calc.
 0.007 sec elapsed
-Cpu total 7.875893 
+Cpu total 8.026566 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50-mm-2_3.json ... already calc.
 0.008 sec elapsed
-Cpu total 7.883829 
+Cpu total 8.03425 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50-ul-2_2.json ... already calc.
-0.011 sec elapsed
-Cpu total 7.895092 
+0.008 sec elapsed
+Cpu total 8.04231 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50-ul-2_3.json ... already calc.
 0.008 sec elapsed
-Cpu total 7.9031 
+Cpu total 8.050261 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50-uu-2_4.json ... already calc.
-0.008 sec elapsed
-Cpu total 7.910922 
+0.007 sec elapsed
+Cpu total 8.05802 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50-uu-2_5.json ... already calc.
-0.008 sec elapsed
-Cpu total 7.918997 
+0.007 sec elapsed
+Cpu total 8.066069 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50|50-lll-3_4.json ... already calc.
-0.353 sec elapsed
-Cpu total 8.272082 
+0.356 sec elapsed
+Cpu total 8.422632 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50|50-lll-3_5.json ... already calc.
-0.341 sec elapsed
-Cpu total 8.614261 
+0.367 sec elapsed
+Cpu total 8.789834 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50|50-ull-3_2.json ... already calc.
-0.466 sec elapsed
-Cpu total 9.080822 
+0.341 sec elapsed
+Cpu total 9.130813 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50|50-ull-3_3.json ... already calc.
-0.363 sec elapsed
-Cpu total 9.443644 
+0.393 sec elapsed
+Cpu total 9.523932 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50|50-uuu-3_2.json ... already calc.
-0.37 sec elapsed
-Cpu total 9.813437 
+0.479 sec elapsed
+Cpu total 10.0034 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-50|50|50-uuu-3_3.json ... already calc.
-0.532 sec elapsed
-Cpu total 10.34625 
+0.389 sec elapsed
+Cpu total 10.3928 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-600|600-ll-2_1.json ... already calc.
-1.49 sec elapsed
-Cpu total 11.83684 
+1.52 sec elapsed
+Cpu total 11.91234 
 Update statistics: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-600|600-uu-2_1.json ... already calc.
-1.338 sec elapsed
-Cpu total 13.17471 
+1.392 sec elapsed
+Cpu total 13.30439 
 Update statistics for results.[1] "alg1"
 Classify 2135 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_1.json ... already calc.
 0.006 sec elapsed
-Cpu total 22.31521 
+Cpu total 22.87912 
 Classify 2095 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_2.json ... already calc.
-0.035 sec elapsed
-Cpu total 22.3509 
+0.005 sec elapsed
+Cpu total 22.88514 
 Classify 2119 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_3.json ... already calc.
-0.007 sec elapsed
-Cpu total 22.35759 
+0.005 sec elapsed
+Cpu total 22.89115 
 Classify 2072 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_4.json ... already calc.
-0.006 sec elapsed
-Cpu total 22.36365 
+0.005 sec elapsed
+Cpu total 22.89699 
 Classify 2112 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ll-2_5.json ... already calc.
-0.006 sec elapsed
-Cpu total 22.36986 
+0.005 sec elapsed
+Cpu total 22.90286 
 Classify 1745 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_1.json ... already calc.
 0.005 sec elapsed
-Cpu total 22.3749 
+Cpu total 22.90774 
 Classify 1694 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_2.json ... already calc.
 0.005 sec elapsed
-Cpu total 22.37976 
+Cpu total 22.91245 
 Classify 1998 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_3.json ... already calc.
-0.006 sec elapsed
-Cpu total 22.38563 
+0.005 sec elapsed
+Cpu total 22.91806 
 Classify 1935 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_4.json ... already calc.
 0.005 sec elapsed
-Cpu total 22.39124 
+Cpu total 22.92361 
 Classify 2023 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-mm-2_5.json ... already calc.
-0.005 sec elapsed
-Cpu total 22.39715 
+0.006 sec elapsed
+Cpu total 22.92931 
 Classify 565 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ul-2_1.json ... already calc.
-0.001 sec elapsed
-Cpu total 22.39924 
+0.002 sec elapsed
+Cpu total 22.93123 
 Classify 469 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ul-2_2.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.40114 
+Cpu total 22.93294 
 Classify 565 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ul-2_3.json ... already calc.
-0.001 sec elapsed
-Cpu total 22.40319 
+0.002 sec elapsed
+Cpu total 22.9348 
 Classify 470 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ul-2_4.json ... already calc.
-0.001 sec elapsed
-Cpu total 22.40505 
+0.002 sec elapsed
+Cpu total 22.93654 
 Classify 492 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-ul-2_5.json ... already calc.
-0.003 sec elapsed
-Cpu total 22.45451 
+0.002 sec elapsed
+Cpu total 22.93824 
 Classify 651 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-uu-2_1.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.45685 
+Cpu total 22.94035 
 Classify 686 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-uu-2_2.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.45921 
+Cpu total 22.94249 
 Classify 594 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-uu-2_3.json ... already calc.
-0.001 sec elapsed
-Cpu total 22.46131 
+0.002 sec elapsed
+Cpu total 22.94447 
 Classify 504 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-uu-2_4.json ... already calc.
-0.001 sec elapsed
-Cpu total 22.4632 
+0.002 sec elapsed
+Cpu total 22.94622 
 Classify 583 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-200|200-uu-2_5.json ... already calc.
-0.001 sec elapsed
-Cpu total 22.46531 
+0.002 sec elapsed
+Cpu total 22.94817 
 Classify 3347 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ll-2_1.json ... already calc.
-0.01 sec elapsed
-Cpu total 22.47603 
+0.008 sec elapsed
+Cpu total 22.95717 
 Classify 3254 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ll-2_2.json ... already calc.
-0.01 sec elapsed
-Cpu total 22.48613 
+0.008 sec elapsed
+Cpu total 22.96535 
 Classify 3379 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ll-2_3.json ... already calc.
-0.009 sec elapsed
-Cpu total 22.49625 
+0.008 sec elapsed
+Cpu total 22.9738 
 Classify 3313 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ll-2_4.json ... already calc.
-0.009 sec elapsed
-Cpu total 22.50619 
+0.008 sec elapsed
+Cpu total 22.982 
 Classify 3293 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ll-2_5.json ... already calc.
-0.009 sec elapsed
-Cpu total 22.51603 
+0.007 sec elapsed
+Cpu total 22.99011 
 Classify 2819 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-mm-2_1.json ... already calc.
-0.161 sec elapsed
-Cpu total 22.67657 
+0.006 sec elapsed
+Cpu total 22.99685 
 Classify 2902 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-mm-2_2.json ... already calc.
-0.009 sec elapsed
-Cpu total 22.68549 
+0.007 sec elapsed
+Cpu total 23.00376 
 Classify 2852 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-mm-2_3.json ... already calc.
-0.008 sec elapsed
-Cpu total 22.69413 
+0.007 sec elapsed
+Cpu total 23.0105 
 Classify 2852 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-mm-2_4.json ... already calc.
-0.008 sec elapsed
-Cpu total 22.70234 
+0.007 sec elapsed
+Cpu total 23.01725 
 Classify 2899 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-mm-2_5.json ... already calc.
-0.008 sec elapsed
-Cpu total 22.71067 
+0.006 sec elapsed
+Cpu total 23.02414 
 Classify 743 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ul-2_1.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.71312 
+Cpu total 23.0265 
 Classify 619 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ul-2_2.json ... already calc.
-0.001 sec elapsed
-Cpu total 22.71522 
+0.002 sec elapsed
+Cpu total 23.02855 
 Classify 736 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ul-2_3.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.71766 
+Cpu total 23.03084 
 Classify 630 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ul-2_4.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.71984 
+Cpu total 23.03294 
 Classify 612 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-ul-2_5.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.72199 
+Cpu total 23.03498 
 Classify 799 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-uu-2_1.json ... already calc.
-0.003 sec elapsed
-Cpu total 22.72457 
+0.002 sec elapsed
+Cpu total 23.03754 
 Classify 764 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-uu-2_2.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.72706 
+Cpu total 23.03996 
 Classify 820 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-uu-2_3.json ... already calc.
-0.003 sec elapsed
-Cpu total 22.72971 
+0.002 sec elapsed
+Cpu total 23.04248 
 Classify 825 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-uu-2_4.json ... already calc.
-0.003 sec elapsed
-Cpu total 22.73241 
+0.002 sec elapsed
+Cpu total 23.04505 
 Classify 707 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-300|300-uu-2_5.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.73478 
+Cpu total 23.04734 
 Classify 367 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_1.json ... already calc.
-0.002 sec elapsed
-Cpu total 22.73637 
-Classify 380 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_2.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.73801 
+Cpu total 23.04883 
+Classify 380 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_2.json ... already calc.
+0.002 sec elapsed
+Cpu total 23.05034 
 Classify 422 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_3.json ... already calc.
-0.002 sec elapsed
-Cpu total 22.73971 
+0.001 sec elapsed
+Cpu total 23.052 
 Classify 382 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_4.json ... already calc.
-0.002 sec elapsed
-Cpu total 22.74137 
+0.001 sec elapsed
+Cpu total 23.05354 
 Classify 378 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ll-2_5.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.74299 
+Cpu total 23.05507 
 Classify 297 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-mm-2_1.json ... already calc.
-0.002 sec elapsed
-Cpu total 22.74441 
+0.001 sec elapsed
+Cpu total 23.05642 
 Classify 281 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-mm-2_2.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.74582 
+Cpu total 23.05771 
 Classify 300 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-mm-2_3.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.74724 
+Cpu total 23.05907 
 Classify 237 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-mm-2_4.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.74854 
+Cpu total 23.06026 
 Classify 336 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-mm-2_5.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.75007 
+Cpu total 23.06168 
 Classify 173 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ul-2_1.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.7512 
+Cpu total 23.06271 
 Classify 245 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ul-2_2.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.7525 
+Cpu total 23.06396 
 Classify 151 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ul-2_3.json ... already calc.
-0.001 sec elapsed
-Cpu total 22.7536 
+0 sec elapsed
+Cpu total 23.06494 
 Classify 239 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ul-2_4.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.7549 
+Cpu total 23.06613 
 Classify 183 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-ul-2_5.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.75606 
+Cpu total 23.06722 
 Classify 168 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-uu-2_1.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.75721 
+Cpu total 23.06824 
 Classify 219 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-uu-2_2.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.75845 
+Cpu total 23.06937 
 Classify 218 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-uu-2_3.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.75969 
+Cpu total 23.07052 
 Classify 203 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-uu-2_4.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.7609 
+Cpu total 23.07167 
 Classify 207 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50-uu-2_5.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.76214 
+Cpu total 23.07277 
 Classify 1285 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-lll-3_1.json ... already calc.
-0.003 sec elapsed
-Cpu total 22.76602 
+0.004 sec elapsed
+Cpu total 23.0764 
 Classify 1313 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-lll-3_2.json ... already calc.
-0.004 sec elapsed
-Cpu total 22.76983 
+0.003 sec elapsed
+Cpu total 23.08002 
 Classify 1369 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-lll-3_3.json ... already calc.
-0.004 sec elapsed
-Cpu total 22.77377 
+0.003 sec elapsed
+Cpu total 23.08375 
 Classify 1259 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-lll-3_4.json ... already calc.
 0.004 sec elapsed
-Cpu total 22.77743 
+Cpu total 23.08727 
 Classify 1259 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-lll-3_5.json ... already calc.
 0.003 sec elapsed
-Cpu total 22.78106 
+Cpu total 23.09084 
 Classify 758 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-mmm-3_1.json ... already calc.
 0.003 sec elapsed
-Cpu total 22.78357 
+Cpu total 23.09326 
 Classify 791 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-mmm-3_2.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.78616 
+Cpu total 23.09579 
 Classify 684 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-mmm-3_3.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.78847 
+Cpu total 23.09801 
 Classify 647 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-mmm-3_4.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.79071 
+Cpu total 23.10017 
 Classify 664 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-mmm-3_5.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.79295 
+Cpu total 23.10234 
 Classify 659 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-ull-3_1.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.7952 
+Cpu total 23.10453 
 Classify 614 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-ull-3_2.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.79739 
+Cpu total 23.10658 
 Classify 593 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-ull-3_3.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.79948 
+Cpu total 23.1086 
 Classify 961 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-ull-3_4.json ... already calc.
 0.003 sec elapsed
-Cpu total 22.80241 
+Cpu total 23.11146 
 Classify 654 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-ull-3_5.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.80461 
+Cpu total 23.1136 
 Classify 475 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-uuu-3_1.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.80649 
+Cpu total 23.11537 
 Classify 429 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-uuu-3_2.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.80823 
+Cpu total 23.11701 
 Classify 350 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-uuu-3_3.json ... already calc.
 0.001 sec elapsed
-Cpu total 22.80984 
+Cpu total 23.11847 
 Classify 536 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-uuu-3_4.json ... already calc.
 0.002 sec elapsed
-Cpu total 22.81178 
+Cpu total 23.12037 
 Classify 386 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-50|50|50-uuu-3_5.json ... already calc.
-0.002 sec elapsed
-Cpu total 22.81343 
+0.001 sec elapsed
+Cpu total 23.12192 
 Classify 6705 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ll-2_1.json ... already calc.
-0.017 sec elapsed
-Cpu total 22.83079 
+0.015 sec elapsed
+Cpu total 23.13648 
 Classify 6647 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ll-2_2.json ... already calc.
-0.017 sec elapsed
-Cpu total 22.84758 
+0.014 sec elapsed
+Cpu total 23.15088 
 Classify 6685 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ll-2_3.json ... already calc.
-0.017 sec elapsed
-Cpu total 22.86442 
+0.015 sec elapsed
+Cpu total 23.16541 
 Classify 6700 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ll-2_4.json ... already calc.
-0.016 sec elapsed
-Cpu total 22.88111 
+0.025 sec elapsed
+Cpu total 23.19023 
 Classify 6620 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ll-2_5.json ... already calc.
 0.016 sec elapsed
-Cpu total 22.89828 
+Cpu total 23.20697 
 Classify 6398 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-mm-2_1.json ... already calc.
-0.016 sec elapsed
-Cpu total 22.91449 
+0.015 sec elapsed
+Cpu total 23.22262 
 Classify 6364 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-mm-2_2.json ... already calc.
 0.016 sec elapsed
-Cpu total 22.93109 
+Cpu total 23.23829 
 Classify 6405 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-mm-2_3.json ... already calc.
-0.016 sec elapsed
-Cpu total 22.94757 
+0.015 sec elapsed
+Cpu total 23.25369 
 Classify 6440 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-mm-2_4.json ... already calc.
-0.016 sec elapsed
-Cpu total 22.96395 
+0.015 sec elapsed
+Cpu total 23.26887 
 Classify 6195 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-mm-2_5.json ... already calc.
 0.015 sec elapsed
-Cpu total 22.97925 
+Cpu total 23.28398 
 Classify 1230 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ul-2_1.json ... already calc.
 0.003 sec elapsed
-Cpu total 22.9828 
+Cpu total 23.28756 
 Classify 1207 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ul-2_2.json ... already calc.
 0.003 sec elapsed
-Cpu total 22.9862 
+Cpu total 23.2909 
 Classify 1220 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ul-2_3.json ... already calc.
-0.003 sec elapsed
-Cpu total 22.98963 
+0.004 sec elapsed
+Cpu total 23.29427 
 Classify 1202 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ul-2_4.json ... already calc.
 0.003 sec elapsed
-Cpu total 22.993 
+Cpu total 23.29763 
 Classify 1202 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-ul-2_5.json ... already calc.
-0.004 sec elapsed
-Cpu total 22.99641 
+0.003 sec elapsed
+Cpu total 23.30098 
 Classify 2091 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-uu-2_1.json ... already calc.
 0.005 sec elapsed
-Cpu total 23.00171 
+Cpu total 23.30632 
 Classify 1564 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-uu-2_2.json ... already calc.
 0.004 sec elapsed
-Cpu total 23.00589 
+Cpu total 23.31047 
 Classify 1415 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-uu-2_3.json ... already calc.
 0.004 sec elapsed
-Cpu total 23.00975 
+Cpu total 23.31428 
 Classify 1565 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-uu-2_4.json ... already calc.
 0.004 sec elapsed
-Cpu total 23.01392 
+Cpu total 23.31838 
 Classify 1237 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-2-600|600-uu-2_5.json ... already calc.
-0.004 sec elapsed
-Cpu total 23.01743 
+0.003 sec elapsed
+Cpu total 23.32183 
 Classify 5520 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-200|200-ll-2_1.json ... already calc.
-0.021 sec elapsed
-Cpu total 23.03877 
+0.017 sec elapsed
+Cpu total 23.33824 
 Classify 2537 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-200|200-uu-2_1.json ... already calc.
-0.008 sec elapsed
-Cpu total 23.04659 
+0.007 sec elapsed
+Cpu total 23.34611 
 Classify 9737 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-ll-2_2.json ... already calc.
-0.026 sec elapsed
-Cpu total 23.07293 
+0.027 sec elapsed
+Cpu total 23.37334 
 Classify 9386 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-ll-2_3.json ... already calc.
 0.026 sec elapsed
-Cpu total 23.09919 
+Cpu total 23.39962 
 Classify 9138 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-mm-2_4.json ... already calc.
-0.024 sec elapsed
-Cpu total 23.12423 
+0.025 sec elapsed
+Cpu total 23.42489 
 Classify 8711 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-mm-2_5.json ... already calc.
-0.023 sec elapsed
-Cpu total 23.14771 
+0.024 sec elapsed
+Cpu total 23.44857 
 Classify 4008 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-ul-2_4.json ... already calc.
-0.011 sec elapsed
-Cpu total 23.15927 
+0.012 sec elapsed
+Cpu total 23.46029 
 Classify 2861 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-ul-2_5.json ... already calc.
 0.008 sec elapsed
-Cpu total 23.16772 
+Cpu total 23.46883 
 Classify 3802 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-uu-2_2.json ... already calc.
 0.011 sec elapsed
-Cpu total 23.17851 
+Cpu total 23.47977 
 Classify 3226 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-300|300-uu-2_3.json ... already calc.
-0.009 sec elapsed
-Cpu total 23.18788 
+0.015 sec elapsed
+Cpu total 23.49486 
 Classify 794 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-ll-2_2.json ... already calc.
 0.003 sec elapsed
-Cpu total 23.19084 
+Cpu total 23.49783 
 Classify 846 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-ll-2_3.json ... already calc.
 0.003 sec elapsed
-Cpu total 23.19405 
+Cpu total 23.50086 
 Classify 649 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-mm-2_4.json ... already calc.
 0.003 sec elapsed
-Cpu total 23.19659 
+Cpu total 23.50333 
 Classify 726 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-mm-2_5.json ... already calc.
-0.003 sec elapsed
-Cpu total 23.19939 
-Classify 518 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-ul-2_4.json ... already calc.
 0.002 sec elapsed
-Cpu total 23.20155 
+Cpu total 23.50596 
+Classify 518 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-ul-2_4.json ... already calc.
+0.001 sec elapsed
+Cpu total 23.50809 
 Classify 633 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-ul-2_5.json ... already calc.
 0.002 sec elapsed
-Cpu total 23.20402 
+Cpu total 23.51049 
 Classify 460 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-uu-2_2.json ... already calc.
 0.002 sec elapsed
-Cpu total 23.20602 
+Cpu total 23.51243 
 Classify 501 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50-uu-2_3.json ... already calc.
 0.002 sec elapsed
-Cpu total 23.20814 
+Cpu total 23.51446 
 Classify 5354 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-lll-3_2.json ... already calc.
-0.014 sec elapsed
-Cpu total 23.22306 
+0.016 sec elapsed
+Cpu total 23.53028 
 Classify 5147 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-lll-3_3.json ... already calc.
 0.015 sec elapsed
-Cpu total 23.23743 
+Cpu total 23.54536 
 Classify 3938 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-mmm-3_1.json ... already calc.
 0.011 sec elapsed
-Cpu total 23.24877 
+Cpu total 23.55677 
 Classify 3074 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-ull-3_4.json ... already calc.
 0.009 sec elapsed
-Cpu total 23.25783 
+Cpu total 23.56579 
 Classify 2810 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-ull-3_5.json ... already calc.
 0.008 sec elapsed
-Cpu total 23.26615 
+Cpu total 23.57407 
 Classify 1424 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-uuu-3_4.json ... already calc.
 0.004 sec elapsed
-Cpu total 23.27084 
+Cpu total 23.57867 
 Classify 2179 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-50|50|50-uuu-3_5.json ... already calc.
 0.007 sec elapsed
-Cpu total 23.27749 
+Cpu total 23.58525 
 Classify 23778 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-600|600-ll-2_1.json ... already calc.
-0.064 sec elapsed
-Cpu total 23.34224 
+0.063 sec elapsed
+Cpu total 23.64882 
 Classify 6159 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-3-600|600-uu-2_1.json ... already calc.
 0.018 sec elapsed
-Cpu total 23.36047 
+Cpu total 23.66669 
 Classify 24504 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-200|200-ll-2_1.json ... already calc.
-0.085 sec elapsed
-Cpu total 23.44637 
+0.08 sec elapsed
+Cpu total 23.74699 
 Classify 33058 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-200|200-uu-2_1.json ... already calc.
-0.117 sec elapsed
-Cpu total 23.56403 
+0.118 sec elapsed
+Cpu total 23.8654 
 Classify 48640 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-ll-2_2.json ... already calc.
-0.179 sec elapsed
-Cpu total 23.74274 
+0.171 sec elapsed
+Cpu total 24.03653 
 Classify 53922 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-ll-2_3.json ... already calc.
-0.199 sec elapsed
-Cpu total 23.94216 
+0.198 sec elapsed
+Cpu total 24.23506 
 Classify 70095 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-mm-2_4.json ... already calc.
-0.249 sec elapsed
-Cpu total 24.19182 
+0.253 sec elapsed
+Cpu total 24.48833 
 Classify 61373 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-mm-2_5.json ... already calc.
-0.216 sec elapsed
-Cpu total 24.40784 
+0.429 sec elapsed
+Cpu total 24.91792 
 Classify 53413 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-ul-2_4.json ... already calc.
-0.191 sec elapsed
-Cpu total 24.5985 
+0.206 sec elapsed
+Cpu total 25.12505 
 Classify 50687 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-ul-2_5.json ... already calc.
-0.21 sec elapsed
-Cpu total 24.80845 
+0.193 sec elapsed
+Cpu total 25.31901 
 Classify 56433 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-uu-2_2.json ... already calc.
-0.204 sec elapsed
-Cpu total 25.01298 
+0.197 sec elapsed
+Cpu total 25.51708 
 Classify 54722 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-300|300-uu-2_3.json ... already calc.
-0.21 sec elapsed
-Cpu total 25.22277 
+0.194 sec elapsed
+Cpu total 25.71183 
 Classify 1840 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-ll-2_4.json ... already calc.
-0.008 sec elapsed
-Cpu total 25.23049 
-Classify 1874 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-ll-2_5.json ... already calc.
 0.007 sec elapsed
-Cpu total 25.23741 
+Cpu total 25.71908 
+Classify 1874 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-ll-2_5.json ... already calc.
+0.006 sec elapsed
+Cpu total 25.72571 
 Classify 1465 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-mm-2_2.json ... already calc.
 0.005 sec elapsed
-Cpu total 25.24288 
+Cpu total 25.73106 
 Classify 1598 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-mm-2_3.json ... already calc.
-0.006 sec elapsed
-Cpu total 25.24871 
+0.005 sec elapsed
+Cpu total 25.73673 
 Classify 1880 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-ul-2_2.json ... already calc.
 0.007 sec elapsed
-Cpu total 25.25546 
+Cpu total 25.74327 
 Classify 1705 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-ul-2_3.json ... already calc.
 0.006 sec elapsed
-Cpu total 25.26165 
+Cpu total 25.74967 
 Classify 2077 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-uu-2_4.json ... already calc.
-0.007 sec elapsed
-Cpu total 25.26902 
+0.008 sec elapsed
+Cpu total 25.75725 
 Classify 1786 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50-uu-2_5.json ... already calc.
-0.007 sec elapsed
-Cpu total 25.27544 
+0.006 sec elapsed
+Cpu total 25.76353 
 Classify 50154 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50|50-lll-3_1.json ... already calc.
 0.177 sec elapsed
-Cpu total 25.45293 
+Cpu total 25.94074 
 Classify 41470 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50|50-mmm-3_2.json ... already calc.
-0.144 sec elapsed
-Cpu total 25.59692 
+0.14 sec elapsed
+Cpu total 26.0805 
 Classify 40416 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-50|50|50-mmm-3_3.json ... already calc.
-0.151 sec elapsed
-Cpu total 25.74752 
+0.135 sec elapsed
+Cpu total 26.21617 
 Classify 190106 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-600|600-ll-2_1.json ... already calc.
-0.78 sec elapsed
-Cpu total 26.52786 
+0.719 sec elapsed
+Cpu total 26.9362 
 Classify 209029 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-600|600-uu-2_1.json ... already calc.
-1.056 sec elapsed
-Cpu total 27.58337 
-Classify 34828 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200-ll-2_1.json ...Cpu total 123.2158 
+0.788 sec elapsed
+Cpu total 27.72521 
+Classify 34828 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200-ll-2_1.json ...Cpu total 122.1454 
 Classify 35549 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200-uu-2_1.json ... already calc.
-0.149 sec elapsed
-Cpu total 123.3645 
-Classify 76352 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-300|300-ll-2_2.json ...Cpu total 382.5995 
-Classify 75875 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-300|300-ll-2_3.json ...Cpu total 645.2003 
+0.147 sec elapsed
+Cpu total 122.2926 
+Classify 76352 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-300|300-ll-2_2.json ...Cpu total 387.5259 
+Classify 75875 points: /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-300|300-ll-2_3.json ...Cpu total 649.2249 
 Update statistics for results.[1] "alg1"
 
 
