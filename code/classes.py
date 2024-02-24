@@ -188,7 +188,7 @@ class PointList:
         if point_labels:
             # add labels to points
             for i,y in enumerate(self, start = 1):
-                y.plot(ax = ax, l=f"$y^{i}$", label_only=True)
+                y.plot(ax = ax, l= "$y^{" +  f"{i}" + "}$", label_only=True)
            
 
                 
