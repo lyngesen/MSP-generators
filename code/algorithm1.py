@@ -45,11 +45,41 @@ PointList.from_json = timeit(PointList.from_json, 'PointList.from_json')
 MinkowskiSumProblem.from_json = timeit(MinkowskiSumProblem.from_json, 'MSP.from_json')
 
 
+def name_dict(problem_file):
+    filename = problem_file
+    problem_file = problem_file.split(".json")[0]
+    problem_file, seed = problem_file.split("_")
+    _, p, size, method, M = problem_file.split("-")
+    size = size.split("|")[0]
+    p, M, size = int(p), int(M), int(size)
+    D = {'filename': filename, 'p': p, 'method':method, 'M': M, 'size': size}
+    return D
+    
+def name_dict_keys(problem_file):
+    D = name_dict(problem_file)
+    return (D['size'], D['p'], D['M'])
+
+def sorted_problems():
+    all_problems = os.listdir("instances/problems/")
+
+    print(f"{name_dict(all_problems[0])=}")
+
+    all_problems = sorted(all_problems, key = name_dict_keys )
+
+    for p in all_problems[:100]:
+        # print(f"{name_dict(p)}")
+        print(" ".join(f"{k} = {v},\t" for k, v in name_dict(p).items()))
+    # print(f"{all_problems[:10]=}")
+
+
+
 def main():
 
 
     # problem_name = "prob-3-50|50-ul-2_1.json"
     all_problems = os.listdir("instances/problems/")
+    all_problems = sorted(all_problems, key = name_dict_keys )
+
 
     def get_Y_max_size(MSP: MinkowskiSumProblem):
         problem_count = MSP.filename.count('|')
@@ -67,21 +97,23 @@ def main():
     # print(f"{all_problems[:10]=}")
     save_prefix = "alg1-"
     for problem_name in all_problems:
+        print(" ".join(f"{k} = {v},\t" for k, v in name_dict(problem_name).items()))
+
         if problem_name.split(".")[-1] != "json": continue
         if save_prefix + problem_name in os.listdir("instances/results/algorithm1/"):
             print(f"  problem solved - skipping {problem_name}")
             continue
         MSP = MinkowskiSumProblem.from_json("instances/problems/"+ problem_name) 
 
-        if MSP.dim == 2:
-            continue
+        # if MSP.dim == 2:
+            # continue
 
-        if get_Y_max_size(MSP) > 5_000_000:
+        if get_Y_max_size(MSP) > 10_000_000:
             print(f"  problem too big (skipping): {get_Y_max_size(MSP)=}")
             continue
 
-        print(f"{MSP=}")
-        print(f"{get_Y_max_size(MSP)=}")
+        # print(f"{MSP=}")
+        # print(f"{get_Y_max_size(MSP)=}")
         Yn = methods.MS_sequential_filter(MSP.Y_list)
         # Yn = methods.MS_sequential_filter(MSP.Y_list)
         Yn.save_json("instances/results/algorithm1/"  +  save_prefix + problem_name)
@@ -144,5 +176,7 @@ def json_files_to_csv():
 if __name__ == "__main__":
     # test_times()
     # example_Yn()
-    # main()
-    json_files_to_csv()
+    main()
+    # json_files_to_csv()
+
+    # sorted_problems()
