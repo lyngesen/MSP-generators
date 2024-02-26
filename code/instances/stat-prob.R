@@ -89,34 +89,36 @@ sink(zz, type = "output", split = T)   # open the file for output
 # sink(zz, type = "message")  # open the same file for messages, errors and warnings
 
 paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
-timeLimit <- 10 * 60  # max run time in sec
+timeLimit <- 1 * 60 * 60  # max run time in sec
 tictoc::tic.clear()
 start <- Sys.time()
 
 ## first update easy calc stat
+calc <- FALSE
 for (path in paths) {
-   calcStat(path)
+   calc <- any(calc, calcStat(path))
    cpu <- difftime(Sys.time(), start, units = "secs")
    cat("Cpu total", cpu, "\n")
    if (cpu > timeLimit) {
-      message("Time limit reached! Stop R script.")
+      cat("Time limit reached! Stop R script.")
       break
    }
 }
-updateProbStatFile()
+if (calc) updateProbStatFile()
 
 ## next try to classify
+calc <- FALSE
 if (cpu < timeLimit) {
    for (path in paths) {
-      try(classifyStat(path), TRUE)
+      try({calc <- any(calc, classifyStat(path))}, TRUE)
       cpu <- difftime(Sys.time(), start, units = "secs")
       cat("Cpu total", cpu, "\n")
       if (cpu > timeLimit) {
-         message("Time limit reached! Stop R script.")
+         cat("Time limit reached! Stop R script.")
          break
       }
    }
-   updateProbStatFile()
+   if (calc) updateProbStatFile()
 } 
 
 cat("\n\nFinish running R script.\n\n")
