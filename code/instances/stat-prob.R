@@ -45,7 +45,7 @@ classifyStat <- function(path) {
       lst$statistics$supported <- sum(pts$se) + sum(pts$sne);
       lst$statistics$extreme <- sum(pts$se);
       lst$statistics$unsupported <- sum(pts$us);
-      jsonlite::write_json(lst, path, pretty = TRUE);
+      jsonlite::write_json(lst, path, pretty = FALSE);
       cat(" done.\n")
    } else {
       cat(" already calc.\n")
