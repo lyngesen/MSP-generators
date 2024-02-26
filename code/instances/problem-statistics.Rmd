@@ -58,9 +58,13 @@ dat <- raw %>%
 for (s in 1:max(dat$m)) {
   dat[, str_c("spPctSup", s)] <- dat[, str_c("spSupported", s)] / dat[, str_c("spCard", s)]
 } 
-dat <- dat %>% mutate(
-  spAvePctSup = mean(c_across(starts_with("spPctSup")), na.rm = T),
-) 
+dat <- dat %>% 
+  rowwise() %>% 
+  mutate(
+    spAvePctSup = mean(c_across(starts_with("spPctSup")), na.rm = T),
+    ubCard = prod(c_across(starts_with("spCard")), na.rm = T)
+  ) %>% 
+  ungroup()
 
 
 
@@ -79,7 +83,7 @@ dat %>%
 ```
 
 
-
+Let the width for an objective denote the difference between the max and min value. Note subproblems are generated using a width of approx. 10000.   
 
 ```{r}
 dat %>% 
@@ -92,6 +96,19 @@ dat %>%
        x = "Number of subproblems (m)",
        color = "Method(s) used to generate subproblems") +
   theme(legend.position = "bottom")
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(y = card / ubCard, x = method)) +
+  geom_boxplot() +
+  facet_grid(m ~ p, margins = T) 
+  # labs(title = "Number of nondominated points given subproblem cardinality",
+  #      y = "Cardinality Yn",
+  #      x = "Average subproblem cardinality",
+  #      color = "Method(s) used to generate subproblems") +
+  # theme(legend.position = "bottom")
+
 ```
 
 ```{r}
