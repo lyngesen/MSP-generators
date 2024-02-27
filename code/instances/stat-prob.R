@@ -22,7 +22,7 @@ calcStat <- function(path) {
       lst$statistics$max <- Rfast::colMaxs(as.matrix(pts[, 1:p]), value = T)
       lst$statistics$width <- Rfast::colrange(as.matrix(pts[, 1:p]))
       # lst$statistics$method <- NULL
-      jsonlite::write_json(lst, path, pretty = TRUE)
+      jsonlite::write_json(lst, path, pretty = FALSE)
       cat(" done.\n")
    } else {
       cat(" already calc.\n")
@@ -45,7 +45,7 @@ classifyStat <- function(path) {
       lst$statistics$supported <- sum(pts$se) + sum(pts$sne);
       lst$statistics$extreme <- sum(pts$se);
       lst$statistics$unsupported <- sum(pts$us);
-      jsonlite::write_json(lst, path, pretty = FALSE);
+      jsonlite::write_json(lst, path, pretty = FALSE)
       cat(" done.\n")
    } else {
       cat(" already calc.\n")
@@ -84,8 +84,8 @@ updateProbStatFile <- function() {
 
 #### Run script ####
 ## Open log file
-zz <- file(here::here("code/instances/results/calc-stat.log"), open = "wt")
-sink(zz, type = "output", split = T)   # open the file for output
+# zz <- file(here::here("code/instances/results/calc-stat.log"), open = "wt")
+# sink(zz, type = "output", split = T)   # open the file for output
 # sink(zz, type = "message")  # open the same file for messages, errors and warnings
 
 paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
@@ -125,7 +125,7 @@ cat("\n\nFinish running R script.\n\n")
 
 ## Close log file
 # sink(type = "message")  # close the file for output
-sink()  # close the file for messages, errors and warnings
+# sink()  # close the file for messages, errors and warnings
 
 
 #### Tests ####
