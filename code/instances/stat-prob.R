@@ -36,6 +36,7 @@ classifyStat <- function(path) {
    tictoc::tic()
    lst <- jsonlite::read_json(path, simplifyVector = T)
    cat("Classify", lst$statistics$card, "points:", path, "...")
+   if (is.null(lst$points)) return(FALSE)
    calc <- is.null(lst$points$cls) | any(is.na(lst$points$cls))
    if (calc) {
       p <- lst$statistics$p
@@ -109,9 +110,16 @@ if (calc) updateProbStatFile()
 
 ## next try to classify
 calc <- FALSE
+datError <- read_csv(here::here("code/instances/stat-prob-error.csv")) %>% 
+   filter(type == "classify")
+paths1 <- setdiff(paths, datError$path)
 if (cpu < timeLimit) {
-   for (path in paths) {
-      res <- tryCatchLog(classifyStat(path), error = function(c) FALSE)
+   for (path in paths1) {
+      res <- tryCatchLog(classifyStat(path), 
+         error = function(c) {
+            datError <- bind_rows(datError, c(path = path, type = "classify"))
+            return(FALSE)
+         })
       calc <- any(calc, res)
       cpu <- difftime(Sys.time(), start, units = "secs")
       cat("Cpu total", cpu, "\n")
@@ -120,6 +128,7 @@ if (cpu < timeLimit) {
          break
       }
    }
+   write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
    if (calc) updateProbStatFile()
 } 
 
