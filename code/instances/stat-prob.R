@@ -3,6 +3,7 @@
 remotes::install_github("relund/gMOIP")
 library(tidyverse)
 library(gMOIP)
+library(tryCatchLog)
 here::i_am("code/instances/stat-prob.R")  # specify relative path given project
 
 #### Functions ####
@@ -110,7 +111,8 @@ if (calc) updateProbStatFile()
 calc <- FALSE
 if (cpu < timeLimit) {
    for (path in paths) {
-      try({calc <- any(calc, classifyStat(path))}, TRUE)
+      res <- tryCatchLog(classifyStat(path), error = function(c) FALSE)
+      calc <- any(calc, res)
       cpu <- difftime(Sys.time(), start, units = "secs")
       cat("Cpu total", cpu, "\n")
       if (cpu > timeLimit) {

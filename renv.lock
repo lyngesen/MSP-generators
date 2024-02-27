@@ -1758,6 +1758,17 @@
       ],
       "Hash": "5ac22900ae0f386e54f1c307eca7d843"
     },
+    "tryCatchLog": {
+      "Package": "tryCatchLog",
+      "Version": "1.3.1",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "utils"
+      ],
+      "Hash": "ee3a0717cd6a7a190bb32b90ccf0178b"
+    },
     "tzdb": {
       "Package": "tzdb",
       "Version": "0.4.0",
