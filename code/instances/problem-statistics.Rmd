@@ -15,6 +15,7 @@ knit: (function(inputFile, encoding) {
 here::i_am("code/instances/problem-statistics.Rmd")  # specify relative path given project
 # remotes::install_github("relund/gMOIP")
 # library(gMOIP)
+library(DT)
 library(tidyverse)
 # library(knitr)
 # library(rgl)
@@ -28,14 +29,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-This report contains different plots that may be relevant when visualizing the results.
+This report contains different plots and tables that may be relevant for analysing the results. Observe:
 
-## How large is $|Y_N|$ given |Y_N^s|
+  * The hypercube $Y_N$ is placed in, is approx. $[0, 10000m]^p$, since for each subproblem $Y_N^s \subset [0, 10000]^p$. That is, more subproblems create a larger hypercube for the master problem and the volume (number of integer points) grows exponentially in $p$. 
+  * Given $|Y_N|$, we can find the hypercube as $$[l_1, u_1] \times \cdots \times [l_p, u_p],$$ where $l_i = \min_{y \in Y_N}(y_i)$ and $u_i = \max_{y \in Y_N}(y_i)$.
+  * The number of integer points in the hypercube is $$\prod_{i = 1}^p (u_i - l_i + 1)$$
 
-Given a problem consisting of a set of subproblems with $Y_N^s$ given for each subproblem $s$, we use a filtering algorithm to find $Y_N$ and afterwards classify the nondominated points into, extreme, supported non-extreme and unsupported.
 
+## Statistics for the problems solved using `alg1`
 
-
+Given a problem consisting of $m$ subproblems with $Y_N^s$ given for each subproblem $s$, we use a filtering algorithm to find $Y_N$ (`alg1`). 
 
 ```{r}
 raw <- read_csv(here::here("code/instances/stat-prob.csv"))
@@ -48,50 +51,81 @@ dat <- raw %>%
   })) %>% 
   rowwise() %>% 
   mutate(aveWidth = mean(c_across(starts_with("width")), na.rm = T),
-         hypervolume = if_else(is.nan(aveWidth), NA, prod(c_across(starts_with("width")), na.rm = T)),
+         points_hypercube = if_else(is.nan(aveWidth), NA, prod(1 + c_across(starts_with("width")), na.rm = T)),
          spAveCard = mean(c_across(starts_with("spCard")), na.rm = T)) %>% 
   ungroup() %>% 
   mutate(
          pctSup = supported/card,
+         pctExt = extreme/card,
          m = as.numeric(str_extract(path, "^.*-(.*)_.*$", group = 1))) 
-# stat for subproblems
+
+## is the hypercube close to approx?
+#dat %>% mutate(cst = points_hypercube/(m * 10000)^p) %>% ungroup() %>% summarise(val = mean(cst, na.rm = T))
+
+# add stat for subproblems
 for (s in 1:max(dat$m)) {
-  dat[, str_c("spPctSup", s)] <- dat[, str_c("spSupported", s)] / dat[, str_c("spCard", s)]
+  dat[, str_c("spPctExt", s)] <- dat[, str_c("spExtreme", s)] / dat[, str_c("spCard", s)]
 } 
-dat <- dat %>% mutate(
-  spAvePctSup = mean(c_across(starts_with("spPctSup")), na.rm = T),
-) 
-
-
-
-
-dat %>% mutate(cst = hypervolume/(m * 10000)^p) %>% ungroup() %>% summarise(val = mean(cst, na.rm = T))
-```
-
-
-Overview over subproblems not solved yet
-
-```{r}
-dat %>% 
+dat <- dat %>% 
+  rowwise() %>% 
+  mutate(
+    spAvePctExt = mean(c_across(starts_with("spPctExt")), na.rm = T),
+    ubCard = prod(c_across(starts_with("spCard")), na.rm = T)
+  ) %>% 
+  ungroup()
+# remove results where have not solved all instances
+dat <- dat %>% 
   group_by(p, m, method, spAveCard) %>% 
-  summarise(instances = n(), card = mean(card), pctSup = mean(pctSup)) %>% 
-  filter(instances < 5)
+  mutate(instances = n()) %>% 
+  filter(instances == 5) %>% 
+  select(-instances) %>% 
+  ungroup()
+DT::datatable(dat)
 ```
 
-
-
+Note that the width of objective $i$, $w_i = [l_i, u_i]$ should be approx. $10000m$:
 
 ```{r}
 dat %>% 
-  ggplot(aes(x = m, y = aveWidth, color = method)) +
-  geom_point() + 
-  geom_smooth(se = F) +
-  facet_wrap(vars(p)) +
-  labs(title = "Average objective width (should be approx. m * 10000)",
-       y = "Average objective width",
-       x = "Number of subproblems (m)",
-       color = "Method(s) used to generate subproblems") +
-  theme(legend.position = "bottom")
+  group_by(m) %>% 
+  summarize(across(starts_with("width"), ~ mean(.x, na.rm = TRUE), .names = "mean_{.col}"))
+```
+
+<!-- Overview over subproblems not solved yet -->
+
+<!-- ```{r} -->
+<!-- dat %>%  -->
+<!--   group_by(p, m, method, spAveCard) %>%  -->
+<!--   summarise(instances = n(), card = mean(card), pctSup = mean(pctSup)) %>%  -->
+<!--   filter(instances < 5) -->
+<!-- ``` -->
+
+### Size of $Y_N$
+
+What is $|Y_N|$ given the different methods of generating the set of nondominated points for the subproblems?
+
+```{r}
+dat %>% 
+  group_by(method) %>% 
+  summarise(mean_card = mean(card), n = n()) 
+```
+
+Does $p$ have an effect? 
+
+```{r}
+dat %>% 
+  group_by(method, p) %>% 
+  summarise(mean_card = mean(card), n = n()) %>% 
+  arrange(p)
+```
+
+Does $m$ have an effect? 
+
+```{r}
+dat %>% 
+  group_by(method, m) %>% 
+  summarise(mean_card = mean(card), n = n()) %>% 
+  arrange(m)
 ```
 
 ```{r}
@@ -99,76 +133,133 @@ dat %>%
   ggplot(aes(x = spAveCard, y = card, color = method)) +
   geom_point() + 
   geom_smooth(se = F) +
-  facet_grid(m ~ p, scales = "free", margins = T) + 
+  facet_wrap(m ~ p, scales = "free", labeller = label_context)  + 
   labs(title = "Number of nondominated points given subproblem cardinality",
        y = "Cardinality Yn",
-       x = "Average subproblem cardinality",
+       x = "Subproblem cardinality",
+       color = "Methods used to generate subproblems") +
+  theme(legend.position = "bottom") 
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(x = spAveCard, y = card, color = method)) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  facet_wrap(m ~ p, scales = "free", labeller = "label_both")  + 
+  labs(title = "Number of nondominated points given subproblem cardinality (log2) scale",
+       y = "Cardinality Yn",
+       x = "Subproblem cardinality",
+       color = "Methods used to generate subproblems") +
+  theme(legend.position = "bottom") +
+  scale_y_continuous(trans = "log2")
+```
+
+<!-- ```{r} -->
+<!-- dat %>%  -->
+<!--   ggplot(aes(x = spAveCard, y = card, color = factor(p))) + -->
+<!--   geom_point() +  -->
+<!--   geom_smooth(se = F) + -->
+<!--   facet_wrap(vars(method), scales = "free", labeller = "label_both")  +  -->
+<!--   labs(title = "Number of nondominated points given subproblem cardinality", -->
+<!--        y = "Cardinality Yn", -->
+<!--        x = "Subproblem cardinality", -->
+<!--        color = "p") + -->
+<!--   theme(legend.position = "bottom")  -->
+<!-- ``` -->
+
+
+### Relative size of $Y_N$
+
+```{r}
+dat %>% 
+  ggplot(aes(y = card / ubCard, x = method, color = method)) +
+  geom_boxplot() +
+  facet_grid(m ~ p, margins = T, labeller = label_both) +
+  labs(title = "Relative size of nondominated points compared to total enumeration",
+       y = "%",
+       x = "Method",
        color = "Method(s) used to generate subproblems") +
   theme(legend.position = "bottom")
 
 ```
 
+
+<!-- ```{r} -->
+<!-- dat %>%  -->
+<!--   ggplot(aes(y = card / points_hypercube, x = method, color = method)) + -->
+<!--   geom_boxplot() + -->
+<!--   facet_grid(m ~ p, margins = T, labeller = label_both) + -->
+<!--   labs(title = "Relative size of nondominated points compared to total enumeration", -->
+<!--        y = "%", -->
+<!--        x = "Method", -->
+<!--        color = "Method(s) used to generate subproblems") + -->
+<!--   theme(legend.position = "bottom") -->
+<!-- ``` -->
+
+### Nondominated points classification
+
+We classify the nondominated points into, extreme, supported non-extreme and unsupported.
+
 ```{r}
 dat %>% 
-  ggplot(aes(x = method, y = card)) +
-  geom_boxplot() + 
-  facet_wrap(vars(p), scales = "free") + 
-  labs(title = "Number of nondominated points given method",
-       y = "Cardinality Yn",
-       x = "Method(s) used to generate subproblems") +
-  theme(legend.position = "bottom")
-```
-
-
-```{r}
-dat %>% 
-  ggplot(aes(x = p, y = card/(10000^m), color = method)) +
+  ggplot(aes(x = spAveCard, y = pctExt, color = method)) +
   geom_point() + 
   geom_smooth(se = F) +
-  # facet_wrap(vars(p), scales = "free") + 
-  # labs(title = "Number of nondominated points",
-  #      y = "Cardinality Yn",
-  #      x = "Average subproblem size",
-  #      color = "Method(s) used to generate subproblems") +
-  theme(legend.position = "bottom")
+  facet_grid(m ~ p, margins = T, labeller = label_both)  + 
+  labs(title = "Relativ number of extreme points given subproblem cardinality",
+       y = "%",
+       x = "Subproblem cardinality",
+       color = "Methods used to generate subproblems") +
+  theme(legend.position = "bottom") 
 ```
 
 ```{r}
 dat %>% 
-  ggplot(aes(x = method, y = pctSup)) +
-  geom_boxplot() + 
-  # geom_smooth(se = F) +
-  # facet_wrap(vars(p)) +
-  # labs(title = "Average objective width",
-  #      y = "Average objective width",
-  #      x = "Number of subproblems",
-  #      color = "Method(s) used to generate subproblems") +
-  theme(legend.position = "bottom")
-```
-
-```{r}
-dat %>% 
-  ggplot(aes(x = spAvePctSup, y = pctSup, color = method)) +
+  ggplot(aes(x = spAveCard, y = pctSup, color = method)) +
   geom_point() + 
   geom_smooth(se = F) +
-  facet_wrap(vars(p)) +
-  # labs(title = "Average objective width",
-  #      y = "Average objective width",
-  #      x = "Number of subproblems",
-  #      color = "Method(s) used to generate subproblems") +
-  theme(legend.position = "bottom")
+  facet_grid(m ~ p, margins = T, labeller = label_both)  + 
+  labs(title = "Relativ number of supported points given subproblem cardinality",
+       y = "%",
+       x = "Subproblem cardinality",
+       color = "Methods used to generate subproblems") +
+  theme(legend.position = "bottom") 
 ```
-
 
 ```{r}
 dat %>% 
-  ggplot(aes(x = , y = pctSup)) +
+  ggplot(aes(x = method, y = pctExt, color = method)) +
   geom_boxplot() + 
-  # geom_smooth(se = F) +
-  # facet_wrap(vars(p)) +
-  # labs(title = "Average objective width",
-  #      y = "Average objective width",
-  #      x = "Number of subproblems",
-  #      color = "Method(s) used to generate subproblems") +
+  facet_grid(m ~ p, margins = T, labeller = label_both) +
+  labs(title = "Relativ number of extreme points given method",
+       y = "%",
+       x = "Method",
+       color = "Methods used to generate subproblems") +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(x = spAvePctExt, y = pctExt, color = method)) +
+  geom_point() + 
+  facet_grid(m ~ p, margins = T, labeller = label_both) +
+  labs(title = "Relativ number of extreme points",
+       y = "% extreme master",
+       x = "Avg. % extreme subproblems",
+       color = "Method(s) used to generate subproblems") +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(y = pctExt/spAvePctExt, x = spAveCard, color = method)) +
+  geom_point() + 
+  geom_smooth(se = F) +
+  facet_grid(m ~ p, margins = T, labeller = label_both) +
+  labs(title = "Relativ number of extreme points",
+       y = "% extreme master / % extreme subproblems",
+       x = "Subproblem cardinality",
+       color = "Method(s) used to generate subproblems") +
   theme(legend.position = "bottom")
 ```

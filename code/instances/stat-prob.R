@@ -3,6 +3,7 @@
 remotes::install_github("relund/gMOIP")
 library(tidyverse)
 library(gMOIP)
+library(tryCatchLog)
 here::i_am("code/instances/stat-prob.R")  # specify relative path given project
 
 #### Functions ####
@@ -22,7 +23,7 @@ calcStat <- function(path) {
       lst$statistics$max <- Rfast::colMaxs(as.matrix(pts[, 1:p]), value = T)
       lst$statistics$width <- Rfast::colrange(as.matrix(pts[, 1:p]))
       # lst$statistics$method <- NULL
-      jsonlite::write_json(lst, path, pretty = TRUE)
+      jsonlite::write_json(lst, path, pretty = FALSE)
       cat(" done.\n")
    } else {
       cat(" already calc.\n")
@@ -35,7 +36,11 @@ classifyStat <- function(path) {
    tictoc::tic()
    lst <- jsonlite::read_json(path, simplifyVector = T)
    cat("Classify", lst$statistics$card, "points:", path, "...")
-   calc <- is.null(lst$points$cls) | any(is.na(lst$points$cls))
+   if (is.null(lst$points)) {
+      calc <- FALSE
+   } else {
+      calc <- is.null(lst$points$cls) | any(is.na(lst$points$cls))
+   }
    if (calc) {
       p <- lst$statistics$p
       pts <- classifyNDSet(lst$points[, 1:p]);
@@ -45,7 +50,7 @@ classifyStat <- function(path) {
       lst$statistics$supported <- sum(pts$se) + sum(pts$sne);
       lst$statistics$extreme <- sum(pts$se);
       lst$statistics$unsupported <- sum(pts$us);
-      jsonlite::write_json(lst, path, pretty = TRUE);
+      jsonlite::write_json(lst, path, pretty = FALSE)
       cat(" done.\n")
    } else {
       cat(" already calc.\n")
@@ -84,46 +89,58 @@ updateProbStatFile <- function() {
 
 #### Run script ####
 ## Open log file
-zz <- file(here::here("code/instances/results/calc-stat.log"), open = "wt")
-sink(zz, type = "output", split = T)   # open the file for output
+# zz <- file(here::here("code/instances/results/calc-stat.log"), open = "wt")
+# sink(zz, type = "output", split = T)   # open the file for output
 # sink(zz, type = "message")  # open the same file for messages, errors and warnings
 
 paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
-timeLimit <- 10 * 60  # max run time in sec
+timeLimit <- 30 * 60  # max run time in sec
 tictoc::tic.clear()
 start <- Sys.time()
 
 ## first update easy calc stat
+calc <- FALSE
 for (path in paths) {
-   calcStat(path)
+   calc <- any(calc, calcStat(path))
    cpu <- difftime(Sys.time(), start, units = "secs")
    cat("Cpu total", cpu, "\n")
    if (cpu > timeLimit) {
-      message("Time limit reached! Stop R script.")
+      cat("Time limit reached! Stop R script.")
       break
    }
 }
-updateProbStatFile()
+if (calc) updateProbStatFile()
 
 ## next try to classify
+calc <- FALSE
+datError <- read_csv(here::here("code/instances/stat-prob-error.csv")) %>% 
+   filter(type == "classify")
+paths1 <- setdiff(paths, datError$path)
 if (cpu < timeLimit) {
-   for (path in paths) {
-      try(classifyStat(path), TRUE)
+   for (path in paths1) {
+      res <- tryCatchLog(classifyStat(path), 
+         error = function(c) {
+            datError <- bind_rows(datError, c(path = path, type = "classify", alg = "alg1"))
+            write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
+            return(NA)
+         })
+      if (is.na(res)) break   # stop so can commit
+      calc <- any(calc, res)
       cpu <- difftime(Sys.time(), start, units = "secs")
       cat("Cpu total", cpu, "\n")
       if (cpu > timeLimit) {
-         message("Time limit reached! Stop R script.")
+         cat("Time limit reached! Stop R script.")
          break
       }
    }
-   updateProbStatFile()
+   if (calc) updateProbStatFile()
 } 
 
 cat("\n\nFinish running R script.\n\n")
 
 ## Close log file
 # sink(type = "message")  # close the file for output
-sink()  # close the file for messages, errors and warnings
+# sink()  # close the file for messages, errors and warnings
 
 
 #### Tests ####

@@ -6,8 +6,10 @@ on:
       - .github/workflows/stat-prob.yaml
       - code/instances/stat-prob.R
       - code/instances/results/**.json
+      - code/instances/problem-statistics.Rmd
+      
   schedule:
-    - cron: '15 1,13 * * *'
+    - cron: '15 5,17 * * *'
 
 name: Update result statistics
 
@@ -35,22 +37,17 @@ jobs:
 
       - uses: r-lib/actions/setup-renv@v2
       
-      - name: Update statistics for result files (in loop)
+      - name: Update result statistics and render (in loop) 
         id: loop
         run: |
-          for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 
+          for i in 1 2 3 4 5 6 
           do
             Rscript code/instances/stat-prob.R
+            Rscript -e 'rmarkdown::render(here::here("code/instances/problem-statistics.Rmd"), output_dir = here::here("docs"))'
             git config --local user.name "$GITHUB_ACTOR"
             git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-            git commit code/instances/results/. -m "update stat in result files" || echo "No changes to commit"
+            git commit docs/problem-statistics.html -m "update report" || echo "No changes to commit"
+            git commit code/instances/. -m "update stat in result files" || echo "No changes to commit"
             git push origin || echo "No changes to commit"
           done
           
-      - name: Render Rmarkdown files and Commit Results
-        run: |
-          Rscript -e 'rmarkdown::render(here::here("code/instances/problem-statistics.Rmd"), output_dir = here::here("docs"))'
-          git config --local user.name "$GITHUB_ACTOR"
-          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git commit ${RMD_PATH[*]/.Rmd/.md} -m 'rebuild Rmarkdown file' || echo "No changes to commit"
-          git push origin || echo "No changes to commit"
