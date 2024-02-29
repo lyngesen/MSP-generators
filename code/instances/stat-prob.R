@@ -122,8 +122,9 @@ if (cpu < timeLimit) {
          error = function(c) {
             datError <- bind_rows(datError, c(path = path, type = "classify", alg = "alg1"))
             write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
-            return(FALSE)
+            return(NA)
          })
+      if (is.na(res)) break   # stop so can commit
       calc <- any(calc, res)
       cpu <- difftime(Sys.time(), start, units = "secs")
       cat("Cpu total", cpu, "\n")

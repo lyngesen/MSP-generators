@@ -41,6 +41,7 @@ jobs:
           for i in 1 2 3 4 5 6 
           do
             Rscript code/instances/stat-prob.R
+            Rscript -e 'rmarkdown::render(here::here("code/instances/problem-statistics.Rmd"), output_dir = here::here("docs"))'
             git config --local user.name "$GITHUB_ACTOR"
             git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
             git commit code/instances/results/. -m "update stat in result files" || echo "No changes to commit"
