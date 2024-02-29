@@ -11,6 +11,14 @@ knit: (function(inputFile, encoding) {
                       output_file=file.path(dirname(inputFile), out_dir, 'problem-statistics.html')) })
 ---
 
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
 ```{r setup, include=FALSE}
 here::i_am("code/instances/problem-statistics.Rmd")  # specify relative path given project
 # remotes::install_github("relund/gMOIP")
@@ -25,7 +33,7 @@ library(tidyverse)
 knitr::opts_chunk$set(
   echo = FALSE,
   message=FALSE, include = TRUE, warning = FALSE,
-  out.width = "99%", fig.width = 8, fig.align = "center", fig.asp = 0.8
+  out.width = "99%", fig.width = 12, fig.align = "center", fig.asp = 0.8
 )
 ```
 
