@@ -157,6 +157,18 @@ class PointList:
         if self.points:
             self.dim = self.points[0].dim
 
+        self.statistics = {
+            "p": [self.dim],
+            "card": [len(self.points)],
+            "supported": [None],
+            "extreme": [None],
+            "unsupported": [None],
+            "min": [None],
+            "max": [None, None],
+            "width": [None, None],
+            "method": [None],
+          }
+
     def __iter__(self) -> tuple[Point]:
         return tuple(self.points).__iter__()
     def __len__(self):
@@ -271,23 +283,13 @@ class PointList:
         PointList_dict = {
             "points":
                           [dict({f"z{p+1}": point[p] for p in range(point.dim)},**({'cls':None})) for point in self.points],
-            "statistics": {
-                "p": [self.dim],
-                "card": [len(self.points)],
-                "supported": [None],
-                "extreme": [None],
-                "unsupported": [None],
-                "min": [None],
-                "max": [None, None],
-                "width": [None, None],
-                "method": [None],
-              }
+            'statistics': self.statistics
           }
         return PointList_dict 
 
     def save_json(self, filename):
         with open(filename, 'w') as json_file:
-            json.dump(self.as_dict(), json_file, indent=1)
+            json.dump(self.as_dict(), json_file, indent=None, separators=(',', ':'))
 
     def from_json(filename: str):
         with open(filename, 'r') as json_file:

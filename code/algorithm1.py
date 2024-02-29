@@ -13,6 +13,7 @@ from methods import N
 import matplotlib.pyplot as plt
 import os
 import csv
+import time
 
 
 
@@ -108,13 +109,15 @@ def main():
         # if MSP.dim == 2:
             # continue
 
-        if get_Y_max_size(MSP) > 10_000_000:
+        if get_Y_max_size(MSP) > 10000_000_000:
             print(f"  problem too big (skipping): {get_Y_max_size(MSP)=}")
             continue
 
         # print(f"{MSP=}")
-        # print(f"{get_Y_max_size(MSP)=}")
+        print(f"{get_Y_max_size(MSP)=}")
+        filter_time = time.time()
         Yn = methods.MS_sequential_filter(MSP.Y_list)
+        Yn.statistics['filter_time'] = time.time() - filter_time
         # Yn = methods.MS_sequential_filter(MSP.Y_list)
         Yn.save_json("instances/results/algorithm1/"  +  save_prefix + problem_name)
         print(f"{len(Yn)=}")
@@ -125,19 +128,22 @@ def main():
 
 def test_times():
 
-    MSP = MinkowskiSumProblem.from_json("instances/problems/prob-2-50|50-ll-2_1.json") 
-    # MSP = MinkowskiSumProblem.from_json("instances/problems/prob-3-200|200-uu-2_1.json") 
+    # MSP = MinkowskiSumProblem.from_json("instances/problems/prob-2-50|50-ll-2_1.json") 
+    MSP = MinkowskiSumProblem.from_json("instances/problems/prob-2-200|200|200-lll-3_3.json") 
     # MSP = MinkowskiSumProblem.from_json("instances/problems/prob-3-50|50-ll-2_1.json") 
 
 
     Y = methods.MS_sum(MSP.Y_list)
+    print(f"{Y.statistics=}")
+    filter_time = time.time()
     Yn = methods.MS_sequential_filter(MSP.Y_list)
-    
-    Y.plot(l="Y")
-    Yn.plot(l = "Yn")
-    print(f"{len(Yn)=}")
+    print(f"{Yn.statistics=}")
+    Yn.statistics['filter_time'] = time.time() - filter_time
 
-    plt.show()
+    print(f"{Yn.statistics=}")
+    print_timeit()
+
+    # plt.show()
       
 #     print(f"{MSP=}")
     # Yn = methods.MS_sequential_filter(MSP.Y_list, filter_alg = methods.KD_filter)
@@ -171,9 +177,31 @@ def json_files_to_csv():
 
 
 
+def remaining_instances():
 
+    all_problems = os.listdir("instances/problems/")
+    all_problems = sorted(all_problems, key = name_dict_keys )
+
+    not_solved = []
+    solved = []
+
+    save_prefix = "alg1-"
+
+    for p in all_problems:
+        if save_prefix + p in os.listdir("instances/results/algorithm1/"):
+            solved.append(p)
+        else:
+            not_solved.append(p)
+
+
+    print(f"|solved| = {len(solved)}")
+    print(f"|not solved| = {len(not_solved)}")
+
+    for p in not_solved:
+        print(f"{name_dict(p)}")
 
 if __name__ == "__main__":
+    # remaining_instances()
     # test_times()
     # example_Yn()
     main()
