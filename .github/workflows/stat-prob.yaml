@@ -6,6 +6,8 @@ on:
       - .github/workflows/stat-prob.yaml
       - code/instances/stat-prob.R
       - code/instances/results/**.json
+      - code/instances/problem-statistics.Rmd
+      
   schedule:
     - cron: '15 5,17 * * *'
 
