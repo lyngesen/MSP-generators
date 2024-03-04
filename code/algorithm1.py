@@ -109,7 +109,7 @@ def main():
         # if MSP.dim == 2:
             # continue
 
-        if get_Y_max_size(MSP) > 10000_000_000:
+        if get_Y_max_size(MSP) > 1_000_000:
             print(f"  problem too big (skipping): {get_Y_max_size(MSP)=}")
             continue
 
