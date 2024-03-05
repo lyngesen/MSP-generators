@@ -85,7 +85,7 @@ dat <- dat %>%
 dat <- dat %>% 
   group_by(p, m, method, spAveCard) %>% 
   mutate(instances = n()) %>% 
-  filter(instances == 5) %>% 
+  filter(instances == 5, spAveCard <= 300) %>% 
   select(-instances) %>% 
   ungroup()
 DT::datatable(dat)
