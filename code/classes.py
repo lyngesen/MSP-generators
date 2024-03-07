@@ -287,9 +287,18 @@ class PointList:
           }
         return PointList_dict 
 
-    def save_json(self, filename):
+    def save_json(self, filename, max_file_size = 100):
+        json_str = json.dumps(self.as_dict(), indent=None, separators=(',', ':'))
+        # Calculate size (approx) in bytes
+        size_mb = len(json_str.encode('utf-8')) / 1_000_000
+        if size_mb >= max_file_size:
+            print(f"*** {filename}, pointlist with {len(self)} points too large for json. Saving json without points. ESTIMATED MB {size_mb} > {max_file_size}=MAX")
+            json_str = self.as_dict()
+            json_str['points'] = []
+            json_str = json.dumps(json_str, indent=None, separators=(',', ':'))
         with open(filename, 'w') as json_file:
-            json.dump(self.as_dict(), json_file, indent=None, separators=(',', ':'))
+            json_file.write(json_str)
+            # json.dump(self.as_dict(), json_file)
 
     def from_json(filename: str):
         with open(filename, 'r') as json_file:
