@@ -115,7 +115,8 @@ if (calc) updateProbStatFile()
 calc <- FALSE
 datError <- read_csv(here::here("code/instances/stat-prob-error.csv")) %>% 
    filter(type == "classify")
-paths1 <- setdiff(paths, datError$path)
+idx <- which(fs::path_file(paths) %in% fs::path_file(datError$path))
+paths1 <- paths[-idx]
 if (cpu < timeLimit) {
    for (path in paths1) {
       res <- tryCatchLog(classifyStat(path), 
