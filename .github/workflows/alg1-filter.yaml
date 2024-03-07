@@ -3,7 +3,7 @@
 on:
   push:
     paths:
-      - .github/workflows/al1-filter.yml
+      - .github/workflows/al1-filter.yaml
       - code/instances/stat-prob.R
       - code/instances/results/**.json
       
