@@ -55,6 +55,10 @@ classifyStat <- function(path) {
    } else {
       cat(" already calc.\n")
    }
+   if (fs::file_size(path) > "20MB" & !any(is.na(lst$statistics$min))) { # reduce file sizes
+      lst$points <- NULL
+      jsonlite::write_json(lst, path, pretty = FALSE)
+   }
    tictoc::toc()
    return(calc)
 }
