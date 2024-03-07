@@ -1,0 +1,50 @@
+# Run alg1 see https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python 
+
+on:
+  push:
+    paths:
+      - .github/workflows/al1-filter.yml
+      - code/instances/stat-prob.R
+      - code/instances/results/**.json
+      
+  schedule:
+    - cron: '15 5,17 * * *'
+
+name: Filter problems
+
+# # Stop if a new push
+# concurrency:
+#   group: ${{ github.ref }}
+#   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+  alg1-filter:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      RGL_USE_NULL: true
+      DISPLAY: 99 # for rgl
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Update result statistics and render (in loop) 
+        id: loop
+        run: |
+          for i in 1 2 3 4 5 6    # do loop if you need a time limit
+          do
+            # Phyton call here
+            git config --local user.name "$GITHUB_ACTOR"
+            git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+            git commit code/instances/. -m "update/add result files" || echo "No changes to commit"
+            git push origin || echo "No changes to commit"
+          done
+          
