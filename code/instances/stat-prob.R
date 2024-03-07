@@ -94,7 +94,7 @@ updateProbStatFile <- function() {
 # sink(zz, type = "message")  # open the same file for messages, errors and warnings
 
 paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
-timeLimit <- 30 * 60  # max run time in sec
+timeLimit <- 120 * 60  # max run time in sec
 tictoc::tic.clear()
 start <- Sys.time()
 
@@ -118,13 +118,12 @@ datError <- read_csv(here::here("code/instances/stat-prob-error.csv")) %>%
 paths1 <- setdiff(paths, datError$path)
 if (cpu < timeLimit) {
    for (path in paths1) {
-      # res <- tryCatchLog(classifyStat(path), 
-      #    error = function(c) {
-      #       datError <- bind_rows(datError, c(path = path, type = "classify", alg = "alg1"))
-      #       write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
-      #       return(NA)
-      #    })
-      res <- classifyStat(path)
+      res <- tryCatchLog(classifyStat(path), 
+         error = function(c) {
+            datError <- bind_rows(datError, c(path = path, type = "classify", alg = "alg1"))
+            write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
+            return(NA)
+         })
       if (is.na(res)) break   # stop so can commit
       calc <- any(calc, res)
       cpu <- difftime(Sys.time(), start, units = "secs")
