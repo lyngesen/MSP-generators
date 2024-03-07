@@ -43,6 +43,7 @@ jobs:
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git commit docs/problem-statistics.html -m "update report" || echo "No changes to commit"
+          git pull
           git push origin || echo "No changes to commit"
       
       - name: Update result statistics and render (in loop) 
@@ -56,6 +57,7 @@ jobs:
             git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
             git commit docs/problem-statistics.html -m "update report" || echo "No changes to commit"
             git commit code/instances/. -m "update stat in result files" || echo "No changes to commit"
+            git pull
             git push origin || echo "No changes to commit"
           done
           
