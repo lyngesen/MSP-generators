@@ -118,12 +118,13 @@ datError <- read_csv(here::here("code/instances/stat-prob-error.csv")) %>%
 paths1 <- setdiff(paths, datError$path)
 if (cpu < timeLimit) {
    for (path in paths1) {
-      res <- tryCatchLog(classifyStat(path), 
-         error = function(c) {
-            datError <- bind_rows(datError, c(path = path, type = "classify", alg = "alg1"))
-            write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
-            return(NA)
-         })
+      # res <- tryCatchLog(classifyStat(path), 
+      #    error = function(c) {
+      #       datError <- bind_rows(datError, c(path = path, type = "classify", alg = "alg1"))
+      #       write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
+      #       return(NA)
+      #    })
+      res <- classifyStat(path)
       if (is.na(res)) break   # stop so can commit
       calc <- any(calc, res)
       cpu <- difftime(Sys.time(), start, units = "secs")
