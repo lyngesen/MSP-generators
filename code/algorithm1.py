@@ -88,6 +88,9 @@ def main():
         # if MSP.dim == 2:
             # continue
 
+        if len(MSP.Y_list[0]) == 50:
+            continue
+
         if get_Y_max_size(MSP) > 100_000_000:
             print(f"  problem too big (skipping): {get_Y_max_size(MSP)=}")
             continue
@@ -182,12 +185,12 @@ def remaining_instances():
         # print(f"{name_dict(p)}")
 
 if __name__ == "__main__":
-    remaining_instances()
+    # remaining_instances()
     # test_times()
     # example_Yn()
 
 
-    # main()
+    main()
     # json_files_to_csv()
 
     # sorted_problems()
