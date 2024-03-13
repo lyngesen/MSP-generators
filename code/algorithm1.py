@@ -7,7 +7,8 @@ For each problem MSP (from instances/problem)
 
 from classes import Point, PointList, MinkowskiSumProblem, KD_Node, KD_tree
 import methods
-from timing import timeit, print_timeit, reset_timeit
+import timing
+from timing import timeit, print_timeit, reset_timeit, time_object
 from methods import N
 # public library imports
 import matplotlib.pyplot as plt
@@ -15,35 +16,13 @@ import os
 import csv
 import time
 
-
-
-
-
-methods.MS_doubling_filter = timeit(methods.MS_doubling_filter)
-methods.MS_sequential_filter = timeit(methods.MS_sequential_filter)
-methods.MS_naive_filter = timeit(methods.MS_naive_filter)
-methods.MS_sum = timeit(methods.MS_sum)
-methods.KD_filter = timeit(methods.KD_filter)
-
-
-methods.lex_sort = timeit(methods.lex_sort)
-methods.two_phase_filter = timeit(methods.two_phase_filter)
-methods.N = timeit(methods.N, "filter N")
-
-
-
-Point.__le__ = timeit(Point.__le__)
-Point.__lt__ = timeit(Point.__lt__)
-Point.__gt__ = timeit(Point.__gt__)
-
-PointList.__add__ = timeit(PointList.__add__)
-methods.MS_doubling_filter = timeit(methods.MS_doubling_filter)
-
-
-
-PointList.save_json = timeit(PointList.save_json)
-PointList.from_json = timeit(PointList.from_json, 'PointList.from_json')
-MinkowskiSumProblem.from_json = timeit(MinkowskiSumProblem.from_json, 'MSP.from_json')
+time_object(KD_tree)
+time_object(KD_Node)
+time_object(PointList)
+time_object(Point)
+time_object(timing)
+time_object(MinkowskiSumProblem,'MSP')
+time_object(methods, prefix ="ALG")
 
 
 def name_dict(problem_file):
@@ -109,7 +88,7 @@ def main():
         # if MSP.dim == 2:
             # continue
 
-        if get_Y_max_size(MSP) > 1_000_000:
+        if get_Y_max_size(MSP) > 100_000_000:
             print(f"  problem too big (skipping): {get_Y_max_size(MSP)=}")
             continue
 
@@ -129,19 +108,21 @@ def main():
 def test_times():
 
     # MSP = MinkowskiSumProblem.from_json("instances/problems/prob-2-50|50-ll-2_1.json") 
-    MSP = MinkowskiSumProblem.from_json("instances/problems/prob-2-200|200|200-lll-3_3.json") 
-    # MSP = MinkowskiSumProblem.from_json("instances/problems/prob-3-50|50-ll-2_1.json") 
+    # MSP = MinkowskiSumProblem.from_json("instances/problems/prob-5-300|300|300|300|300-lllll-5_3.json") 
+    MSP = MinkowskiSumProblem.from_json("instances/problems/prob-3-100|100|100-mmm-3_1.json") 
+
+    # MSP = MinkowskiSumProblem.from_json("instances/problems/prob-3-100|100-ll-2_1.json") 
 
 
-    Y = methods.MS_sum(MSP.Y_list)
-    print(f"{Y.statistics=}")
+    # Y = methods.MS_sum(MSP.Y_list)
+    print(f"{MSP}")
     filter_time = time.time()
     Yn = methods.MS_sequential_filter(MSP.Y_list)
     print(f"{Yn.statistics=}")
     Yn.statistics['filter_time'] = time.time() - filter_time
 
     print(f"{Yn.statistics=}")
-    print_timeit()
+    print_timeit(0.1)
 
     # plt.show()
       
@@ -197,14 +178,16 @@ def remaining_instances():
     print(f"|solved| = {len(solved)}")
     print(f"|not solved| = {len(not_solved)}")
 
-    for p in not_solved:
-        print(f"{name_dict(p)}")
+    # for p in not_solved:
+        # print(f"{name_dict(p)}")
 
 if __name__ == "__main__":
-    # remaining_instances()
+    remaining_instances()
     # test_times()
     # example_Yn()
-    main()
+
+
+    # main()
     # json_files_to_csv()
 
     # sorted_problems()

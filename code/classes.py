@@ -50,8 +50,10 @@ class Point:
     cls = None
 
     def __post_init__(self):
-        self.val = np.array(self.val)
-        self.dim = len(self.val)
+        if not isinstance(self.val, np.ndarray):
+            self.val = np.array(self.val)
+        if self.dim == None:
+            self.dim = len(self.val)
     def __lt__(self, other):
         if all(self.val == other.val):
             return False
@@ -80,7 +82,6 @@ class Point:
                 elif self[p] > other[p]:
                     return False
             return True
-
 
     def __gt__(self, other):
         if all(self.val == other.val):
@@ -483,6 +484,16 @@ class KD_Node:
 
 @dataclass
 class KD_tree:
+    def dominates_point_recursion(r : KD_Node, p : Point):
+        # seperated for timing purposes
+
+        if r.y <= p: return True
+        if r.LEFT != None and p >= r.LEFT.LB:
+            return KD_tree.dominates_point_recursion(r.LEFT, p)
+        if r.RIGHT != None and p >= r.RIGHT.LB:
+            return KD_tree.dominates_point_recursion(r.RIGHT, p)
+        return False
+     
     def dominates_point(r : KD_Node, p : Point):
         """ checks if point is dominated by the KD-tree rooted at r 
 
@@ -494,17 +505,22 @@ class KD_tree:
             0, otherwise
 
         """
-        if r.y <= p: return True
-        if r.LEFT != None and p >= r.LEFT.LB:
-            return KD_tree.dominates_point(r.LEFT, p)
-        if r.RIGHT != None and p >= r.RIGHT.LB:
-            return KD_tree.dominates_point(r.RIGHT, p)
-        return False
-    
-    def insert(r : KD_Node, l : int, p: Point):
+        return KD_tree.dominates_point_recursion(r,p)
+
+    def get_UB(r : KD_Node,  p: Point):
+        return Point(np.maximum(r.UB.val, p.val))
+        # old
+        # return Point([max(r.UB[i], p[i]) for i in range(p.dim)])
+
+    def get_LB(r: KD_node, l : int,  p: Point):
+        return Point(np.minimum(r.LB.val, p.val))
+        # return Point([min(r.LB[i], p[i]) for i in range(p.dim)])
+
+    def insert_recursion(r : KD_Node, l : int, p: Point):
+        # seperated for timing purposes
         # update r.UB, r.LB
-        r.UB = Point([max(r.UB[i], p[i]) for i in range(p.dim)])
-        r.LB = Point([min(r.LB[i], p[i]) for i in range(p.dim)])
+        r.UB = KD_tree.get_UB(r,p)
+        r.LB = KD_tree.get_LB(r,l,p) 
         
         # compare l-th component of p and r
         # print(f"{r,l,p =}")
@@ -512,15 +528,15 @@ class KD_tree:
             if r.LEFT == None:
                 r.LEFT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
             elif r.LEFT != None:
-                KD_tree.insert(r.LEFT, (l + 1) % p.dim, p)
+                KD_tree.insert_recursion(r.LEFT, (l + 1) % p.dim, p)
         elif p[l] >= r.y[l]:
             if r.RIGHT == None:
                 r.RIGHT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
             elif r.RIGHT != None:
-                KD_tree.insert(r.RIGHT, (l + 1) % p.dim, p)
+                KD_tree.insert_recursion(r.RIGHT, (l + 1) % p.dim, p)
 
-
-
+    def insert(r : KD_Node, l : int, p: Point):
+        return KD_tree.insert_recursion(r,l,p)
             
             
 

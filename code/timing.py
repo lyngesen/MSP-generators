@@ -60,7 +60,7 @@ def timeit(func, keyname = None):
         return result
     return timeit_wrapper
 
-def print_timeit():
+def print_timeit(tolerance = 0):
     global TIME_dict
     # sort and show TIME_dict
     hline = 70
@@ -68,7 +68,8 @@ def print_timeit():
     TIME_dict = {k: v for k, v in sorted(TIME_dict.items(), key=lambda item: item[1])}
     for k,v in TIME_dict.items():
         calls = COUNT_dict[k]
-        if calls!= 0:
+        # if v > 0.01:
+        if calls != 0 and v > tolerance:
             calls = f"{calls:13.2e}" if calls > 1_000_000 else f"{calls:13}" 
             print(f" {k:27} : {v:10.2f} seconds {calls} calls")
     print("_"*hline)
@@ -84,3 +85,19 @@ def reset_timeit():
     COUNT_dict = {k : 0 for k in COUNT_dict.keys()}
     START_TIME = time.perf_counter()
 
+
+def time_object(object_name, prefix = None):
+    """
+    Modifies the incoming object_name (class or module) by adding the timeit_wrapper to each callable in the object.
+
+    exceptions include '__class__', '__new__', '__getattribute__' and names which include 'recursion'
+    """
+    if prefix == None:
+        prefix = object_name.__name__
+
+    for fct_str in dir(object_name):
+        fct = getattr(object_name, fct_str)
+        if callable(fct) and fct_str not in ['__class__', '__new__', '__getattribute__'] and 'recursion' not in fct_str:
+            fct = timeit(fct, f'{prefix}.{fct_str}')
+            setattr(object_name, fct_str, fct)
+    return object_name
