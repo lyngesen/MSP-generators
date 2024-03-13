@@ -1,0 +1,1799 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>classes API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>classes</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from __future__ import annotations # allow annotation self references (eg. in KD_Node)
+from dataclasses import dataclass
+import numpy as np
+import matplotlib.pyplot as plt
+import csv
+import json
+# from itertools.collections import Counter
+import collections
+
+&#34;&#34;&#34;
+Class
+@Point
+
+y1 = Point((4,2))
+y2 = Point([3,2])
+
+y1 &lt; y2
+&gt;&gt; False
+t2 &lt;= y1 
+&gt;&gt; True
+
+
+Class
+@PointList 
+
+Y1 = PointList((y1, y2))
+Y2 = PointList((y2))
+Y3 = PointList.from_csv(fname)
+
+Y1 == Y2
+&gt;&gt; False, since counter is off Y1:{y1: 1, y2: 1}, while Y2: {y2: 1}
+
+Y3.save_csv(fname)
+&gt;&gt; saves the list to a csv file with name fname
+
+Y1.plot()
+&gt; plots set of points, if True plt.show() is called
+
+Y2.dominates_point(y1)
+&gt;&gt; True if the point y1 is dominated by the set Y2
+
+
+&#34;&#34;&#34;
+
+@dataclass
+class Point:
+    val: np.array(iter)
+    dim = None
+    plot_color = None
+    cls = None
+
+    def __post_init__(self):
+        self.val = np.array(self.val)
+        self.dim = len(self.val)
+    def __lt__(self, other):
+        if all(self.val == other.val):
+            return False
+        return all(self.val &lt;= other.val)
+
+    def __le__(self, other):
+        return all(self.val &lt;= other.val)
+    
+    def strictly_dominates(self, other):
+        return all(self.val &lt; other.val)
+
+    def lex_le(self, other):
+        if len(self.val) == 2:
+            if self.val[0] &gt; other.val[0]:
+                return False
+            if self.val[0] &lt; other.val[0]:
+                return True
+            if self.val[0] == other.val[0] and self.val[1] &gt; other.val[1]:
+                return False
+            else:
+                return True
+        if len(self.val) &gt; 2:
+            for p in range(self.dim):
+                if self[p] &lt; other[p]:
+                    return True
+                elif self[p] &gt; other[p]:
+                    return False
+            return True
+
+
+    def __gt__(self, other):
+        if all(self.val == other.val):
+            return False
+        return all(self.val &gt;= other.val)
+    def __iter__(self):
+        return self.val.__iter__()
+    def __hash__(self):
+        return tuple(self.val).__hash__()
+    def __eq__(self, other):
+        return (self.val == other.val).all()
+    def __repr__(self):
+        return tuple(self.val).__repr__()
+    def __getitem__(self, item):
+        return self.val[item]
+    def __add__(self, other):
+        if isinstance(other, PointList):
+            return PointList((self,)) + other
+
+        return Point(self.val + other.val)
+    def __sub__(self, other):
+        return Point(self.val - other.val)
+    def __mul__(self, other):
+        if isinstance(other, int):
+            return Point(self.val * other)
+        elif isinstance(other, float):
+            return Point(self.val * other)
+        elif isinstance(other, Point):
+            return Point(self.val * other.val)
+        else:
+            raise TypeError(f&#39;__mul__ not implemented for {type(other)=}&#39;)
+    
+
+    def plot(self, SHOW = False, fname = None, ax = None, l =None,label_only = False, color = None,  **kwargs):
+        assert self.dim&lt;=3, &#39;Not implemented for p &gt; 3&#39;
+        ax = ax if ax else plt
+        color = color if (color is not None) else self.plot_color
+        kwargs[&#39;color&#39;] = color
+        if self.dim == 3: 
+            ax.scatter = ax.scatter3D
+
+        if not label_only:
+            plot = ax.scatter(*self.val, **kwargs)
+            self.plot_color = plot.get_facecolor()
+        if l != None:
+            if self.dim == 3:
+                ax.text(*self.val, l)
+            else:
+                ax.annotate(text=l, xy= self.val, xytext=self.val*1.02 )
+                
+        if l != None:
+            ax.legend(loc=&#34;upper right&#34;) 
+        if fname:
+            ax.savefig(fname, dpi= 200)
+            ax.cla()
+        if SHOW:
+            ax.show()
+        return ax 
+
+
+@dataclass
+class PointList:
+    points: tuple[Point] = ()
+    dim = None
+    plot_color = None
+    statistics : dict = None
+    filename = None
+    def __post_init__(self):
+        # Check if SINGLETON: allows for PointList((y)) where y is of class Point 
+        if isinstance(self.points, Point):
+            self.points = (self.points,)
+        else: #unpack list
+            self.points = tuple([y if isinstance(y, Point) else Point(y) for y in self.points])
+        if self.points:
+            self.dim = self.points[0].dim
+
+    def __iter__(self) -&gt; tuple[Point]:
+        return tuple(self.points).__iter__()
+    def __len__(self):
+        return tuple(self.points).__len__()
+    
+    def plot(self,  l =None,SHOW = False, fname = None, ax= None, line=False, color = None, point_labels = False, **kwargs):
+        ax = ax if ax else plt
+        assert self.dim&lt;=3, &#39;Not implemented for p &gt; 3&#39;
+        # color = self.plot_color if (color is not None) else color
+        color = color if (color is not None) else self.plot_color
+        kwargs[&#39;color&#39;] = color
+        
+        if self.dim == 3: 
+            ax.scatter = ax.scatter3D
+            ax.plot = ax.plot3D
+
+        if line:
+            plot = ax.plot(*zip(*self.points), label =l, **kwargs)
+            self.plot_color = plot[-1].get_color()
+        else:
+            plot = ax.scatter(*zip(*self.points), label =l, **kwargs)
+            # self.plot_color = plot.to_rgba(-1) # save used color to object
+            self.plot_color = plot.get_facecolors()
+        if l:
+            ax.legend(loc=&#34;upper right&#34;) 
+        if fname:
+            plt.savefig(fname, dpi= 200)
+            plt.cla()
+        if point_labels:
+            # add labels to points
+            for i,y in enumerate(self, start = 1):
+                y.plot(ax = ax, l=f&#34;$y^{i}$&#34;, label_only=True)
+           
+
+                
+        if SHOW:
+            ax.show()
+
+        return ax
+
+    def dominates_point(self, point:Point):
+        for y in self.points:
+            if y &lt; point:
+                return True
+        return False
+
+    def weakly_dominates_point(self, point:Point):
+        for y in self.points:
+            if y &lt;= point:
+                return True
+        return False
+
+
+
+    def __add__(self,other):
+        &#34;&#34;&#34;
+        input: list of two PointList
+        output: Minkowski sum of sets
+        &#34;&#34;&#34;
+        return PointList([y1 + y2 for y1 in self for y2 in other])
+
+    def __sub__(self,other):
+        &#34;&#34;&#34;
+        input: list of two PointList
+        output: Minkowski subtration of sets
+        &#34;&#34;&#34;
+        return PointList([y1 - y2 for y1 in self for y2 in other])
+
+
+
+
+
+
+    def dominates(self, other, power=&#34;default&#34;):
+        match power:
+            case &#34;default&#34;:
+                if self == other:
+                    return False
+                for y in other.points:
+                    if any((l &lt;= y for l in self.points)):
+                        continue
+                    else:
+                        return False
+                return True
+
+            case &#34;strict&#34;:
+                for y in other.points:
+                    if any((l &lt; y for l in self.points)):
+                        continue
+                    else:
+                        return False
+                return True
+
+
+    def save_csv(self, filename=&#34;testsets/disk.csv&#34;):
+        with open(f&#34;{filename}&#34;, &#34;w&#34;) as out:
+            csv_out=csv.writer(out)
+            for y in self.__iter__():
+                csv_out.writerow(y)   
+
+    def from_csv(filename = &#34;disk.csv&#34;):
+        with open(f&#34;{filename}&#34;, &#34;r&#34;) as csvfile:
+            points = []
+            for y in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
+                #points.append(Point(tuple(map(float,y))))
+                points.append(Point(y))
+            # self.points = points
+            return PointList(points)
+
+    def as_dict(self):
+
+        PointList_dict = {
+            &#34;points&#34;:
+                          [dict({f&#34;z{p+1}&#34;: point[p] for p in range(point.dim)},**({&#39;cls&#39;:None})) for point in self.points],
+            &#34;statistics&#34;: {
+                &#34;p&#34;: [self.dim],
+                &#34;card&#34;: [len(self.points)],
+                &#34;supported&#34;: [None],
+                &#34;extreme&#34;: [None],
+                &#34;unsupported&#34;: [None],
+                &#34;min&#34;: [None],
+                &#34;max&#34;: [None, None],
+                &#34;width&#34;: [None, None],
+                &#34;method&#34;: [None],
+              }
+          }
+        return PointList_dict 
+
+    def save_json(self, filename):
+        with open(filename, &#39;w&#39;) as json_file:
+            json.dump(self.as_dict(), json_file, indent=1)
+
+    def from_json(filename: str):
+        with open(filename, &#39;r&#39;) as json_file:
+            json_dict = json.load(json_file)
+        statistics = json_dict[&#39;statistics&#39;]
+        points = []
+        for json_point in json_dict[&#39;points&#39;]:
+            values = [json_point[f&#34;z{p+1}&#34;] for p in range(statistics[&#34;p&#34;][0])]
+            # TODO: Error if values not casted to float65  - does not work for int64? &lt;08-02-24&gt; #
+            values = np.float64(values)
+            point = Point(values)
+            point.cls = json_point[&#39;cls&#39;]
+            points.append(point)
+        Y = PointList(points)
+        Y.statistics = statistics
+
+        return Y
+
+    def print_data(self):
+        N_POINTS = len(self.points)
+        print(f&#34;{N_POINTS=}&#34;)
+
+    def __eq__(self, other):
+        return collections.Counter(self.points) == collections.Counter(other.points)
+    
+    def __getitem__(self, item):
+        return self.points[item]
+
+    def removed_duplicates(self):
+        return PointList(set(self.points))
+
+
+
+@dataclass
+class MinkowskiSumProblem:
+    Y_list: tuple[PointList]
+    filename : str = None
+    dim : int = None
+    
+    def from_json(filename: str):
+        with open(filename, &#39;r&#39;) as json_file:
+            json_dict = json.load(json_file)[0]
+
+        Y_list = []
+        for V, Y_filename in sorted(json_dict.items()):
+            Y = PointList.from_json(&#34;instances/&#34; + Y_filename)
+            Y_list.append(Y)
+
+        MSP = MinkowskiSumProblem(Y_list)
+        MSP.filename = filename
+        MSP.dim = Y_list[0].dim
+        return  MSP
+
+    def __repr__(self):
+        string = f&#34;MSP( filename={self.filename.split(&#39;/&#39;)[-1]}, dim={self.dim}, &#34;
+        for s,Y in enumerate(self.Y_list):
+            string+=f&#34;|Y{s+1}|={len(Y)} &#34;
+
+        string += &#34;)&#34;
+        return string
+
+
+    def plot(self,  hidelabel = False, ax = None, *kwargs):
+        ax = ax if ax else plt
+        for s, Y in enumerate(self.Y_list):
+            Y.plot(l= &#34;_&#34;*hidelabel + &#34;$\mathcal{Y}_{\mathcal{N}}^{&#34; + str(s+1) + &#34;}$&#34;, ax = ax, *kwargs)
+
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+        self.prev = None
+
+    def __repr__(self):
+        return f&#34;{str(self.data)}&#34;
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def __repr__(self):
+        node = self.head
+        nodes = []
+        while node is not None:
+            nodes.append(str(node.data))
+            node = node.next
+        nodes.append(&#34;None&#34;)
+        return &#34; -&gt; &#34;.join(nodes)
+
+    def __iter__(self):
+        node = self.head
+        # while node is not None:
+        while node is not None:
+            yield node
+            node = node.next
+
+    def add_first(self, node):
+        node.next = self.head
+        self.head = node
+        self.prev = None
+
+    def add_after(self, target_node_data, new_node):
+        if self.head is None:
+            raise Exception(&#34;List is empty&#34;)
+
+        for node in self:
+            if node.data == target_node_data:
+                new_node.next = node.next
+                node.next = new_node
+                return
+
+        raise Exception(&#34;Node with data &#39;%s&#39; not found&#34; % target_node_data)
+
+
+    def add_before(self, target_node_data, new_node):
+        if self.head is None:
+            raise Exception(&#34;List is empty&#34;)
+
+        if self.head.data == target_node_data:
+            return self.add_first(new_node)
+
+        prev_node = self.head
+        for node in self:
+            if node.data == target_node_data:
+                prev_node.next = new_node
+                new_node.next = node
+                return
+            prev_node = node
+
+        raise Exception(&#34;Node with data &#39;%s&#39; not found&#34; % target_node_data)
+
+
+    def remove_node(self, target_node_data):
+        if self.head is None:
+            raise Exception(&#34;List is empty&#34;)
+
+        if self.head.data == target_node_data:
+            self.head = self.head.next
+            return
+
+        previous_node = self.head
+        for node in self:
+            if node.data == target_node_data:
+                previous_node.next = node.next
+                return
+            previous_node = node
+
+        raise Exception(&#34;Node with data &#39;%s&#39; not found&#34; % target_node_data)
+
+
+@dataclass
+class KD_Node:
+    y : Point
+    l : int
+    parent : KD_Node  = None
+    LEFT : KD_Node = None
+    RIGHT : KD_Node = None
+    UB : Point = None
+    LB : Point = None
+    
+    # def __repr__(self):
+        # return f&#34;{str(self.y)}&#34;
+    def __str__(self, level=0):
+        ret = &#34;\t&#34;*level+repr(self.y) + f&#34;l={self.l}&#34; +&#34;\n&#34;
+        
+        if self.LEFT != None:
+            ret += self.LEFT.__str__(level+1)
+        else:
+            ret += &#34;\t&#34;*(level+1) + &#34;Ø \n&#34;
+
+        if self.RIGHT != None:
+            ret += self.RIGHT.__str__(level+1)
+        else:
+            ret += &#34;\t&#34;*(level+1) + &#34;Ø \n&#34;
+
+        return ret
+
+    def __repr__(self):
+        # return str(self.y)
+        return f&#34;KD_NODE(y={self.y}, parent={self.parent.y if self.parent else &#39;Ø&#39;}, LEFT={self.LEFT.y if self.LEFT else &#39;Ø&#39;}, RIGHT={self.RIGHT.y if self.RIGHT else &#39;Ø&#39;}, UB = {self.UB}, LB = {self.LB})&#34;
+
+@dataclass
+class KD_tree:
+    def dominates_point(r : KD_Node, p : Point):
+        &#34;&#34;&#34; checks if point is dominated by the KD-tree rooted at r 
+
+        Args:
+            p (Point): point
+
+        Returns: 
+            1, if p is dominated by a point in the KD-tree rooted at r, 
+            0, otherwise
+
+        &#34;&#34;&#34;
+        if r.y &lt;= p: return True
+        if r.LEFT != None and p &gt;= r.LEFT.LB:
+            return KD_tree.dominates_point(r.LEFT, p)
+        if r.RIGHT != None and p &gt;= r.RIGHT.LB:
+            return KD_tree.dominates_point(r.RIGHT, p)
+        return False
+    
+    def insert(r : KD_Node, l : int, p: Point):
+        # update r.UB, r.LB
+        r.UB = Point([max(r.UB[i], p[i]) for i in range(p.dim)])
+        r.LB = Point([min(r.LB[i], p[i]) for i in range(p.dim)])
+        
+        # compare l-th component of p and r
+        # print(f&#34;{r,l,p =}&#34;)
+        if p[l] &lt;= r.y[l]:
+            if r.LEFT == None:
+                r.LEFT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
+            elif r.LEFT != None:
+                KD_tree.insert(r.LEFT, (l + 1) % p.dim, p)
+        elif p[l] &gt;= r.y[l]:
+            if r.RIGHT == None:
+                r.RIGHT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
+            elif r.RIGHT != None:
+                KD_tree.insert(r.RIGHT, (l + 1) % p.dim, p)
+
+
+
+            
+            
+
+        </code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="classes.KD_Node"><code class="flex name class">
+<span>class <span class="ident">KD_Node</span></span>
+<span>(</span><span>y: <a title="classes.Point" href="#classes.Point">Point</a>, l: int, parent: <a title="classes.KD_Node" href="#classes.KD_Node">KD_Node</a> = None, LEFT: <a title="classes.KD_Node" href="#classes.KD_Node">KD_Node</a> = None, RIGHT: <a title="classes.KD_Node" href="#classes.KD_Node">KD_Node</a> = None, UB: <a title="classes.Point" href="#classes.Point">Point</a> = None, LB: <a title="classes.Point" href="#classes.Point">Point</a> = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>KD_Node(y: 'Point', l: 'int', parent: 'KD_Node' = None, LEFT: 'KD_Node' = None, RIGHT: 'KD_Node' = None, UB: 'Point' = None, LB: 'Point' = None)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class KD_Node:
+    y : Point
+    l : int
+    parent : KD_Node  = None
+    LEFT : KD_Node = None
+    RIGHT : KD_Node = None
+    UB : Point = None
+    LB : Point = None
+    
+    # def __repr__(self):
+        # return f&#34;{str(self.y)}&#34;
+    def __str__(self, level=0):
+        ret = &#34;\t&#34;*level+repr(self.y) + f&#34;l={self.l}&#34; +&#34;\n&#34;
+        
+        if self.LEFT != None:
+            ret += self.LEFT.__str__(level+1)
+        else:
+            ret += &#34;\t&#34;*(level+1) + &#34;Ø \n&#34;
+
+        if self.RIGHT != None:
+            ret += self.RIGHT.__str__(level+1)
+        else:
+            ret += &#34;\t&#34;*(level+1) + &#34;Ø \n&#34;
+
+        return ret
+
+    def __repr__(self):
+        # return str(self.y)
+        return f&#34;KD_NODE(y={self.y}, parent={self.parent.y if self.parent else &#39;Ø&#39;}, LEFT={self.LEFT.y if self.LEFT else &#39;Ø&#39;}, RIGHT={self.RIGHT.y if self.RIGHT else &#39;Ø&#39;}, UB = {self.UB}, LB = {self.LB})&#34;</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="classes.KD_Node.LB"><code class="name">var <span class="ident">LB</span> : <a title="classes.Point" href="#classes.Point">Point</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.KD_Node.LEFT"><code class="name">var <span class="ident">LEFT</span> : <a title="classes.KD_Node" href="#classes.KD_Node">KD_Node</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.KD_Node.RIGHT"><code class="name">var <span class="ident">RIGHT</span> : <a title="classes.KD_Node" href="#classes.KD_Node">KD_Node</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.KD_Node.UB"><code class="name">var <span class="ident">UB</span> : <a title="classes.Point" href="#classes.Point">Point</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.KD_Node.l"><code class="name">var <span class="ident">l</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.KD_Node.parent"><code class="name">var <span class="ident">parent</span> : <a title="classes.KD_Node" href="#classes.KD_Node">KD_Node</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.KD_Node.y"><code class="name">var <span class="ident">y</span> : <a title="classes.Point" href="#classes.Point">Point</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="classes.KD_tree"><code class="flex name class">
+<span>class <span class="ident">KD_tree</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>KD_tree()</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class KD_tree:
+    def dominates_point(r : KD_Node, p : Point):
+        &#34;&#34;&#34; checks if point is dominated by the KD-tree rooted at r 
+
+        Args:
+            p (Point): point
+
+        Returns: 
+            1, if p is dominated by a point in the KD-tree rooted at r, 
+            0, otherwise
+
+        &#34;&#34;&#34;
+        if r.y &lt;= p: return True
+        if r.LEFT != None and p &gt;= r.LEFT.LB:
+            return KD_tree.dominates_point(r.LEFT, p)
+        if r.RIGHT != None and p &gt;= r.RIGHT.LB:
+            return KD_tree.dominates_point(r.RIGHT, p)
+        return False
+    
+    def insert(r : KD_Node, l : int, p: Point):
+        # update r.UB, r.LB
+        r.UB = Point([max(r.UB[i], p[i]) for i in range(p.dim)])
+        r.LB = Point([min(r.LB[i], p[i]) for i in range(p.dim)])
+        
+        # compare l-th component of p and r
+        # print(f&#34;{r,l,p =}&#34;)
+        if p[l] &lt;= r.y[l]:
+            if r.LEFT == None:
+                r.LEFT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
+            elif r.LEFT != None:
+                KD_tree.insert(r.LEFT, (l + 1) % p.dim, p)
+        elif p[l] &gt;= r.y[l]:
+            if r.RIGHT == None:
+                r.RIGHT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
+            elif r.RIGHT != None:
+                KD_tree.insert(r.RIGHT, (l + 1) % p.dim, p)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="classes.KD_tree.dominates_point"><code class="name flex">
+<span>def <span class="ident">dominates_point</span></span>(<span>r: <a title="classes.KD_Node" href="#classes.KD_Node">KD_Node</a>, p: <a title="classes.Point" href="#classes.Point">Point</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>checks if point is dominated by the KD-tree rooted at r </p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>p</code></strong> :&ensp;<code><a title="classes.Point" href="#classes.Point">Point</a></code></dt>
+<dd>point</dd>
+</dl>
+<p>Returns:
+1, if p is dominated by a point in the KD-tree rooted at r,
+0, otherwise</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dominates_point(r : KD_Node, p : Point):
+    &#34;&#34;&#34; checks if point is dominated by the KD-tree rooted at r 
+
+    Args:
+        p (Point): point
+
+    Returns: 
+        1, if p is dominated by a point in the KD-tree rooted at r, 
+        0, otherwise
+
+    &#34;&#34;&#34;
+    if r.y &lt;= p: return True
+    if r.LEFT != None and p &gt;= r.LEFT.LB:
+        return KD_tree.dominates_point(r.LEFT, p)
+    if r.RIGHT != None and p &gt;= r.RIGHT.LB:
+        return KD_tree.dominates_point(r.RIGHT, p)
+    return False</code></pre>
+</details>
+</dd>
+<dt id="classes.KD_tree.insert"><code class="name flex">
+<span>def <span class="ident">insert</span></span>(<span>r: <a title="classes.KD_Node" href="#classes.KD_Node">KD_Node</a>, l: int, p: <a title="classes.Point" href="#classes.Point">Point</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def insert(r : KD_Node, l : int, p: Point):
+    # update r.UB, r.LB
+    r.UB = Point([max(r.UB[i], p[i]) for i in range(p.dim)])
+    r.LB = Point([min(r.LB[i], p[i]) for i in range(p.dim)])
+    
+    # compare l-th component of p and r
+    # print(f&#34;{r,l,p =}&#34;)
+    if p[l] &lt;= r.y[l]:
+        if r.LEFT == None:
+            r.LEFT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
+        elif r.LEFT != None:
+            KD_tree.insert(r.LEFT, (l + 1) % p.dim, p)
+    elif p[l] &gt;= r.y[l]:
+        if r.RIGHT == None:
+            r.RIGHT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
+        elif r.RIGHT != None:
+            KD_tree.insert(r.RIGHT, (l + 1) % p.dim, p)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="classes.LinkedList"><code class="flex name class">
+<span>class <span class="ident">LinkedList</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def __repr__(self):
+        node = self.head
+        nodes = []
+        while node is not None:
+            nodes.append(str(node.data))
+            node = node.next
+        nodes.append(&#34;None&#34;)
+        return &#34; -&gt; &#34;.join(nodes)
+
+    def __iter__(self):
+        node = self.head
+        # while node is not None:
+        while node is not None:
+            yield node
+            node = node.next
+
+    def add_first(self, node):
+        node.next = self.head
+        self.head = node
+        self.prev = None
+
+    def add_after(self, target_node_data, new_node):
+        if self.head is None:
+            raise Exception(&#34;List is empty&#34;)
+
+        for node in self:
+            if node.data == target_node_data:
+                new_node.next = node.next
+                node.next = new_node
+                return
+
+        raise Exception(&#34;Node with data &#39;%s&#39; not found&#34; % target_node_data)
+
+
+    def add_before(self, target_node_data, new_node):
+        if self.head is None:
+            raise Exception(&#34;List is empty&#34;)
+
+        if self.head.data == target_node_data:
+            return self.add_first(new_node)
+
+        prev_node = self.head
+        for node in self:
+            if node.data == target_node_data:
+                prev_node.next = new_node
+                new_node.next = node
+                return
+            prev_node = node
+
+        raise Exception(&#34;Node with data &#39;%s&#39; not found&#34; % target_node_data)
+
+
+    def remove_node(self, target_node_data):
+        if self.head is None:
+            raise Exception(&#34;List is empty&#34;)
+
+        if self.head.data == target_node_data:
+            self.head = self.head.next
+            return
+
+        previous_node = self.head
+        for node in self:
+            if node.data == target_node_data:
+                previous_node.next = node.next
+                return
+            previous_node = node
+
+        raise Exception(&#34;Node with data &#39;%s&#39; not found&#34; % target_node_data)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="classes.LinkedList.add_after"><code class="name flex">
+<span>def <span class="ident">add_after</span></span>(<span>self, target_node_data, new_node)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_after(self, target_node_data, new_node):
+    if self.head is None:
+        raise Exception(&#34;List is empty&#34;)
+
+    for node in self:
+        if node.data == target_node_data:
+            new_node.next = node.next
+            node.next = new_node
+            return
+
+    raise Exception(&#34;Node with data &#39;%s&#39; not found&#34; % target_node_data)</code></pre>
+</details>
+</dd>
+<dt id="classes.LinkedList.add_before"><code class="name flex">
+<span>def <span class="ident">add_before</span></span>(<span>self, target_node_data, new_node)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_before(self, target_node_data, new_node):
+    if self.head is None:
+        raise Exception(&#34;List is empty&#34;)
+
+    if self.head.data == target_node_data:
+        return self.add_first(new_node)
+
+    prev_node = self.head
+    for node in self:
+        if node.data == target_node_data:
+            prev_node.next = new_node
+            new_node.next = node
+            return
+        prev_node = node
+
+    raise Exception(&#34;Node with data &#39;%s&#39; not found&#34; % target_node_data)</code></pre>
+</details>
+</dd>
+<dt id="classes.LinkedList.add_first"><code class="name flex">
+<span>def <span class="ident">add_first</span></span>(<span>self, node)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_first(self, node):
+    node.next = self.head
+    self.head = node
+    self.prev = None</code></pre>
+</details>
+</dd>
+<dt id="classes.LinkedList.remove_node"><code class="name flex">
+<span>def <span class="ident">remove_node</span></span>(<span>self, target_node_data)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_node(self, target_node_data):
+    if self.head is None:
+        raise Exception(&#34;List is empty&#34;)
+
+    if self.head.data == target_node_data:
+        self.head = self.head.next
+        return
+
+    previous_node = self.head
+    for node in self:
+        if node.data == target_node_data:
+            previous_node.next = node.next
+            return
+        previous_node = node
+
+    raise Exception(&#34;Node with data &#39;%s&#39; not found&#34; % target_node_data)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="classes.MinkowskiSumProblem"><code class="flex name class">
+<span>class <span class="ident">MinkowskiSumProblem</span></span>
+<span>(</span><span>Y_list: tuple[<a title="classes.PointList" href="#classes.PointList">PointList</a>], filename: str = None, dim: int = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>MinkowskiSumProblem(Y_list: 'tuple[PointList]', filename: 'str' = None, dim: 'int' = None)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class MinkowskiSumProblem:
+    Y_list: tuple[PointList]
+    filename : str = None
+    dim : int = None
+    
+    def from_json(filename: str):
+        with open(filename, &#39;r&#39;) as json_file:
+            json_dict = json.load(json_file)[0]
+
+        Y_list = []
+        for V, Y_filename in sorted(json_dict.items()):
+            Y = PointList.from_json(&#34;instances/&#34; + Y_filename)
+            Y_list.append(Y)
+
+        MSP = MinkowskiSumProblem(Y_list)
+        MSP.filename = filename
+        MSP.dim = Y_list[0].dim
+        return  MSP
+
+    def __repr__(self):
+        string = f&#34;MSP( filename={self.filename.split(&#39;/&#39;)[-1]}, dim={self.dim}, &#34;
+        for s,Y in enumerate(self.Y_list):
+            string+=f&#34;|Y{s+1}|={len(Y)} &#34;
+
+        string += &#34;)&#34;
+        return string
+
+
+    def plot(self,  hidelabel = False, ax = None, *kwargs):
+        ax = ax if ax else plt
+        for s, Y in enumerate(self.Y_list):
+            Y.plot(l= &#34;_&#34;*hidelabel + &#34;$\mathcal{Y}_{\mathcal{N}}^{&#34; + str(s+1) + &#34;}$&#34;, ax = ax, *kwargs)</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="classes.MinkowskiSumProblem.Y_list"><code class="name">var <span class="ident">Y_list</span> : tuple[<a title="classes.PointList" href="#classes.PointList">PointList</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.MinkowskiSumProblem.dim"><code class="name">var <span class="ident">dim</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.MinkowskiSumProblem.filename"><code class="name">var <span class="ident">filename</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="classes.MinkowskiSumProblem.from_json"><code class="name flex">
+<span>def <span class="ident">from_json</span></span>(<span>filename: str)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_json(filename: str):
+    with open(filename, &#39;r&#39;) as json_file:
+        json_dict = json.load(json_file)[0]
+
+    Y_list = []
+    for V, Y_filename in sorted(json_dict.items()):
+        Y = PointList.from_json(&#34;instances/&#34; + Y_filename)
+        Y_list.append(Y)
+
+    MSP = MinkowskiSumProblem(Y_list)
+    MSP.filename = filename
+    MSP.dim = Y_list[0].dim
+    return  MSP</code></pre>
+</details>
+</dd>
+<dt id="classes.MinkowskiSumProblem.plot"><code class="name flex">
+<span>def <span class="ident">plot</span></span>(<span>self, hidelabel=False, ax=None, *kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot(self,  hidelabel = False, ax = None, *kwargs):
+    ax = ax if ax else plt
+    for s, Y in enumerate(self.Y_list):
+        Y.plot(l= &#34;_&#34;*hidelabel + &#34;$\mathcal{Y}_{\mathcal{N}}^{&#34; + str(s+1) + &#34;}$&#34;, ax = ax, *kwargs)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="classes.Node"><code class="flex name class">
+<span>class <span class="ident">Node</span></span>
+<span>(</span><span>data)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+        self.prev = None
+
+    def __repr__(self):
+        return f&#34;{str(self.data)}&#34;</code></pre>
+</details>
+</dd>
+<dt id="classes.Point"><code class="flex name class">
+<span>class <span class="ident">Point</span></span>
+<span>(</span><span>val: np.array(iter))</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Point(val: 'np.array(iter)')</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class Point:
+    val: np.array(iter)
+    dim = None
+    plot_color = None
+    cls = None
+
+    def __post_init__(self):
+        self.val = np.array(self.val)
+        self.dim = len(self.val)
+    def __lt__(self, other):
+        if all(self.val == other.val):
+            return False
+        return all(self.val &lt;= other.val)
+
+    def __le__(self, other):
+        return all(self.val &lt;= other.val)
+    
+    def strictly_dominates(self, other):
+        return all(self.val &lt; other.val)
+
+    def lex_le(self, other):
+        if len(self.val) == 2:
+            if self.val[0] &gt; other.val[0]:
+                return False
+            if self.val[0] &lt; other.val[0]:
+                return True
+            if self.val[0] == other.val[0] and self.val[1] &gt; other.val[1]:
+                return False
+            else:
+                return True
+        if len(self.val) &gt; 2:
+            for p in range(self.dim):
+                if self[p] &lt; other[p]:
+                    return True
+                elif self[p] &gt; other[p]:
+                    return False
+            return True
+
+
+    def __gt__(self, other):
+        if all(self.val == other.val):
+            return False
+        return all(self.val &gt;= other.val)
+    def __iter__(self):
+        return self.val.__iter__()
+    def __hash__(self):
+        return tuple(self.val).__hash__()
+    def __eq__(self, other):
+        return (self.val == other.val).all()
+    def __repr__(self):
+        return tuple(self.val).__repr__()
+    def __getitem__(self, item):
+        return self.val[item]
+    def __add__(self, other):
+        if isinstance(other, PointList):
+            return PointList((self,)) + other
+
+        return Point(self.val + other.val)
+    def __sub__(self, other):
+        return Point(self.val - other.val)
+    def __mul__(self, other):
+        if isinstance(other, int):
+            return Point(self.val * other)
+        elif isinstance(other, float):
+            return Point(self.val * other)
+        elif isinstance(other, Point):
+            return Point(self.val * other.val)
+        else:
+            raise TypeError(f&#39;__mul__ not implemented for {type(other)=}&#39;)
+    
+
+    def plot(self, SHOW = False, fname = None, ax = None, l =None,label_only = False, color = None,  **kwargs):
+        assert self.dim&lt;=3, &#39;Not implemented for p &gt; 3&#39;
+        ax = ax if ax else plt
+        color = color if (color is not None) else self.plot_color
+        kwargs[&#39;color&#39;] = color
+        if self.dim == 3: 
+            ax.scatter = ax.scatter3D
+
+        if not label_only:
+            plot = ax.scatter(*self.val, **kwargs)
+            self.plot_color = plot.get_facecolor()
+        if l != None:
+            if self.dim == 3:
+                ax.text(*self.val, l)
+            else:
+                ax.annotate(text=l, xy= self.val, xytext=self.val*1.02 )
+                
+        if l != None:
+            ax.legend(loc=&#34;upper right&#34;) 
+        if fname:
+            ax.savefig(fname, dpi= 200)
+            ax.cla()
+        if SHOW:
+            ax.show()
+        return ax </code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="classes.Point.cls"><code class="name">var <span class="ident">cls</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.Point.dim"><code class="name">var <span class="ident">dim</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.Point.plot_color"><code class="name">var <span class="ident">plot_color</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.Point.val"><code class="name">var <span class="ident">val</span> : array(<built-in function iter>, dtype=object)</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="classes.Point.lex_le"><code class="name flex">
+<span>def <span class="ident">lex_le</span></span>(<span>self, other)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def lex_le(self, other):
+    if len(self.val) == 2:
+        if self.val[0] &gt; other.val[0]:
+            return False
+        if self.val[0] &lt; other.val[0]:
+            return True
+        if self.val[0] == other.val[0] and self.val[1] &gt; other.val[1]:
+            return False
+        else:
+            return True
+    if len(self.val) &gt; 2:
+        for p in range(self.dim):
+            if self[p] &lt; other[p]:
+                return True
+            elif self[p] &gt; other[p]:
+                return False
+        return True</code></pre>
+</details>
+</dd>
+<dt id="classes.Point.plot"><code class="name flex">
+<span>def <span class="ident">plot</span></span>(<span>self, SHOW=False, fname=None, ax=None, l=None, label_only=False, color=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot(self, SHOW = False, fname = None, ax = None, l =None,label_only = False, color = None,  **kwargs):
+    assert self.dim&lt;=3, &#39;Not implemented for p &gt; 3&#39;
+    ax = ax if ax else plt
+    color = color if (color is not None) else self.plot_color
+    kwargs[&#39;color&#39;] = color
+    if self.dim == 3: 
+        ax.scatter = ax.scatter3D
+
+    if not label_only:
+        plot = ax.scatter(*self.val, **kwargs)
+        self.plot_color = plot.get_facecolor()
+    if l != None:
+        if self.dim == 3:
+            ax.text(*self.val, l)
+        else:
+            ax.annotate(text=l, xy= self.val, xytext=self.val*1.02 )
+            
+    if l != None:
+        ax.legend(loc=&#34;upper right&#34;) 
+    if fname:
+        ax.savefig(fname, dpi= 200)
+        ax.cla()
+    if SHOW:
+        ax.show()
+    return ax </code></pre>
+</details>
+</dd>
+<dt id="classes.Point.strictly_dominates"><code class="name flex">
+<span>def <span class="ident">strictly_dominates</span></span>(<span>self, other)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def strictly_dominates(self, other):
+    return all(self.val &lt; other.val)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="classes.PointList"><code class="flex name class">
+<span>class <span class="ident">PointList</span></span>
+<span>(</span><span>points: tuple[<a title="classes.Point" href="#classes.Point">Point</a>] = (), statistics: dict = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>PointList(points: 'tuple[Point]' = (), statistics: 'dict' = None)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class PointList:
+    points: tuple[Point] = ()
+    dim = None
+    plot_color = None
+    statistics : dict = None
+    filename = None
+    def __post_init__(self):
+        # Check if SINGLETON: allows for PointList((y)) where y is of class Point 
+        if isinstance(self.points, Point):
+            self.points = (self.points,)
+        else: #unpack list
+            self.points = tuple([y if isinstance(y, Point) else Point(y) for y in self.points])
+        if self.points:
+            self.dim = self.points[0].dim
+
+    def __iter__(self) -&gt; tuple[Point]:
+        return tuple(self.points).__iter__()
+    def __len__(self):
+        return tuple(self.points).__len__()
+    
+    def plot(self,  l =None,SHOW = False, fname = None, ax= None, line=False, color = None, point_labels = False, **kwargs):
+        ax = ax if ax else plt
+        assert self.dim&lt;=3, &#39;Not implemented for p &gt; 3&#39;
+        # color = self.plot_color if (color is not None) else color
+        color = color if (color is not None) else self.plot_color
+        kwargs[&#39;color&#39;] = color
+        
+        if self.dim == 3: 
+            ax.scatter = ax.scatter3D
+            ax.plot = ax.plot3D
+
+        if line:
+            plot = ax.plot(*zip(*self.points), label =l, **kwargs)
+            self.plot_color = plot[-1].get_color()
+        else:
+            plot = ax.scatter(*zip(*self.points), label =l, **kwargs)
+            # self.plot_color = plot.to_rgba(-1) # save used color to object
+            self.plot_color = plot.get_facecolors()
+        if l:
+            ax.legend(loc=&#34;upper right&#34;) 
+        if fname:
+            plt.savefig(fname, dpi= 200)
+            plt.cla()
+        if point_labels:
+            # add labels to points
+            for i,y in enumerate(self, start = 1):
+                y.plot(ax = ax, l=f&#34;$y^{i}$&#34;, label_only=True)
+           
+
+                
+        if SHOW:
+            ax.show()
+
+        return ax
+
+    def dominates_point(self, point:Point):
+        for y in self.points:
+            if y &lt; point:
+                return True
+        return False
+
+    def weakly_dominates_point(self, point:Point):
+        for y in self.points:
+            if y &lt;= point:
+                return True
+        return False
+
+
+
+    def __add__(self,other):
+        &#34;&#34;&#34;
+        input: list of two PointList
+        output: Minkowski sum of sets
+        &#34;&#34;&#34;
+        return PointList([y1 + y2 for y1 in self for y2 in other])
+
+    def __sub__(self,other):
+        &#34;&#34;&#34;
+        input: list of two PointList
+        output: Minkowski subtration of sets
+        &#34;&#34;&#34;
+        return PointList([y1 - y2 for y1 in self for y2 in other])
+
+
+
+
+
+
+    def dominates(self, other, power=&#34;default&#34;):
+        match power:
+            case &#34;default&#34;:
+                if self == other:
+                    return False
+                for y in other.points:
+                    if any((l &lt;= y for l in self.points)):
+                        continue
+                    else:
+                        return False
+                return True
+
+            case &#34;strict&#34;:
+                for y in other.points:
+                    if any((l &lt; y for l in self.points)):
+                        continue
+                    else:
+                        return False
+                return True
+
+
+    def save_csv(self, filename=&#34;testsets/disk.csv&#34;):
+        with open(f&#34;{filename}&#34;, &#34;w&#34;) as out:
+            csv_out=csv.writer(out)
+            for y in self.__iter__():
+                csv_out.writerow(y)   
+
+    def from_csv(filename = &#34;disk.csv&#34;):
+        with open(f&#34;{filename}&#34;, &#34;r&#34;) as csvfile:
+            points = []
+            for y in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
+                #points.append(Point(tuple(map(float,y))))
+                points.append(Point(y))
+            # self.points = points
+            return PointList(points)
+
+    def as_dict(self):
+
+        PointList_dict = {
+            &#34;points&#34;:
+                          [dict({f&#34;z{p+1}&#34;: point[p] for p in range(point.dim)},**({&#39;cls&#39;:None})) for point in self.points],
+            &#34;statistics&#34;: {
+                &#34;p&#34;: [self.dim],
+                &#34;card&#34;: [len(self.points)],
+                &#34;supported&#34;: [None],
+                &#34;extreme&#34;: [None],
+                &#34;unsupported&#34;: [None],
+                &#34;min&#34;: [None],
+                &#34;max&#34;: [None, None],
+                &#34;width&#34;: [None, None],
+                &#34;method&#34;: [None],
+              }
+          }
+        return PointList_dict 
+
+    def save_json(self, filename):
+        with open(filename, &#39;w&#39;) as json_file:
+            json.dump(self.as_dict(), json_file, indent=1)
+
+    def from_json(filename: str):
+        with open(filename, &#39;r&#39;) as json_file:
+            json_dict = json.load(json_file)
+        statistics = json_dict[&#39;statistics&#39;]
+        points = []
+        for json_point in json_dict[&#39;points&#39;]:
+            values = [json_point[f&#34;z{p+1}&#34;] for p in range(statistics[&#34;p&#34;][0])]
+            # TODO: Error if values not casted to float65  - does not work for int64? &lt;08-02-24&gt; #
+            values = np.float64(values)
+            point = Point(values)
+            point.cls = json_point[&#39;cls&#39;]
+            points.append(point)
+        Y = PointList(points)
+        Y.statistics = statistics
+
+        return Y
+
+    def print_data(self):
+        N_POINTS = len(self.points)
+        print(f&#34;{N_POINTS=}&#34;)
+
+    def __eq__(self, other):
+        return collections.Counter(self.points) == collections.Counter(other.points)
+    
+    def __getitem__(self, item):
+        return self.points[item]
+
+    def removed_duplicates(self):
+        return PointList(set(self.points))</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="classes.PointList.dim"><code class="name">var <span class="ident">dim</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.PointList.filename"><code class="name">var <span class="ident">filename</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.PointList.plot_color"><code class="name">var <span class="ident">plot_color</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.PointList.points"><code class="name">var <span class="ident">points</span> : tuple[<a title="classes.Point" href="#classes.Point">Point</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.PointList.statistics"><code class="name">var <span class="ident">statistics</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="classes.PointList.as_dict"><code class="name flex">
+<span>def <span class="ident">as_dict</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def as_dict(self):
+
+    PointList_dict = {
+        &#34;points&#34;:
+                      [dict({f&#34;z{p+1}&#34;: point[p] for p in range(point.dim)},**({&#39;cls&#39;:None})) for point in self.points],
+        &#34;statistics&#34;: {
+            &#34;p&#34;: [self.dim],
+            &#34;card&#34;: [len(self.points)],
+            &#34;supported&#34;: [None],
+            &#34;extreme&#34;: [None],
+            &#34;unsupported&#34;: [None],
+            &#34;min&#34;: [None],
+            &#34;max&#34;: [None, None],
+            &#34;width&#34;: [None, None],
+            &#34;method&#34;: [None],
+          }
+      }
+    return PointList_dict </code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.dominates"><code class="name flex">
+<span>def <span class="ident">dominates</span></span>(<span>self, other, power='default')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dominates(self, other, power=&#34;default&#34;):
+    match power:
+        case &#34;default&#34;:
+            if self == other:
+                return False
+            for y in other.points:
+                if any((l &lt;= y for l in self.points)):
+                    continue
+                else:
+                    return False
+            return True
+
+        case &#34;strict&#34;:
+            for y in other.points:
+                if any((l &lt; y for l in self.points)):
+                    continue
+                else:
+                    return False
+            return True</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.dominates_point"><code class="name flex">
+<span>def <span class="ident">dominates_point</span></span>(<span>self, point: <a title="classes.Point" href="#classes.Point">Point</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dominates_point(self, point:Point):
+    for y in self.points:
+        if y &lt; point:
+            return True
+    return False</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.from_csv"><code class="name flex">
+<span>def <span class="ident">from_csv</span></span>(<span>filename='disk.csv')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_csv(filename = &#34;disk.csv&#34;):
+    with open(f&#34;{filename}&#34;, &#34;r&#34;) as csvfile:
+        points = []
+        for y in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
+            #points.append(Point(tuple(map(float,y))))
+            points.append(Point(y))
+        # self.points = points
+        return PointList(points)</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.from_json"><code class="name flex">
+<span>def <span class="ident">from_json</span></span>(<span>filename: str)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_json(filename: str):
+    with open(filename, &#39;r&#39;) as json_file:
+        json_dict = json.load(json_file)
+    statistics = json_dict[&#39;statistics&#39;]
+    points = []
+    for json_point in json_dict[&#39;points&#39;]:
+        values = [json_point[f&#34;z{p+1}&#34;] for p in range(statistics[&#34;p&#34;][0])]
+        # TODO: Error if values not casted to float65  - does not work for int64? &lt;08-02-24&gt; #
+        values = np.float64(values)
+        point = Point(values)
+        point.cls = json_point[&#39;cls&#39;]
+        points.append(point)
+    Y = PointList(points)
+    Y.statistics = statistics
+
+    return Y</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.plot"><code class="name flex">
+<span>def <span class="ident">plot</span></span>(<span>self, l=None, SHOW=False, fname=None, ax=None, line=False, color=None, point_labels=False, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot(self,  l =None,SHOW = False, fname = None, ax= None, line=False, color = None, point_labels = False, **kwargs):
+    ax = ax if ax else plt
+    assert self.dim&lt;=3, &#39;Not implemented for p &gt; 3&#39;
+    # color = self.plot_color if (color is not None) else color
+    color = color if (color is not None) else self.plot_color
+    kwargs[&#39;color&#39;] = color
+    
+    if self.dim == 3: 
+        ax.scatter = ax.scatter3D
+        ax.plot = ax.plot3D
+
+    if line:
+        plot = ax.plot(*zip(*self.points), label =l, **kwargs)
+        self.plot_color = plot[-1].get_color()
+    else:
+        plot = ax.scatter(*zip(*self.points), label =l, **kwargs)
+        # self.plot_color = plot.to_rgba(-1) # save used color to object
+        self.plot_color = plot.get_facecolors()
+    if l:
+        ax.legend(loc=&#34;upper right&#34;) 
+    if fname:
+        plt.savefig(fname, dpi= 200)
+        plt.cla()
+    if point_labels:
+        # add labels to points
+        for i,y in enumerate(self, start = 1):
+            y.plot(ax = ax, l=f&#34;$y^{i}$&#34;, label_only=True)
+       
+
+            
+    if SHOW:
+        ax.show()
+
+    return ax</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.print_data"><code class="name flex">
+<span>def <span class="ident">print_data</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_data(self):
+    N_POINTS = len(self.points)
+    print(f&#34;{N_POINTS=}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.removed_duplicates"><code class="name flex">
+<span>def <span class="ident">removed_duplicates</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def removed_duplicates(self):
+    return PointList(set(self.points))</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.save_csv"><code class="name flex">
+<span>def <span class="ident">save_csv</span></span>(<span>self, filename='testsets/disk.csv')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_csv(self, filename=&#34;testsets/disk.csv&#34;):
+    with open(f&#34;{filename}&#34;, &#34;w&#34;) as out:
+        csv_out=csv.writer(out)
+        for y in self.__iter__():
+            csv_out.writerow(y)   </code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.save_json"><code class="name flex">
+<span>def <span class="ident">save_json</span></span>(<span>self, filename)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_json(self, filename):
+    with open(filename, &#39;w&#39;) as json_file:
+        json.dump(self.as_dict(), json_file, indent=1)</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.weakly_dominates_point"><code class="name flex">
+<span>def <span class="ident">weakly_dominates_point</span></span>(<span>self, point: <a title="classes.Point" href="#classes.Point">Point</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def weakly_dominates_point(self, point:Point):
+    for y in self.points:
+        if y &lt;= point:
+            return True
+    return False</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="classes.KD_Node" href="#classes.KD_Node">KD_Node</a></code></h4>
+<ul class="two-column">
+<li><code><a title="classes.KD_Node.LB" href="#classes.KD_Node.LB">LB</a></code></li>
+<li><code><a title="classes.KD_Node.LEFT" href="#classes.KD_Node.LEFT">LEFT</a></code></li>
+<li><code><a title="classes.KD_Node.RIGHT" href="#classes.KD_Node.RIGHT">RIGHT</a></code></li>
+<li><code><a title="classes.KD_Node.UB" href="#classes.KD_Node.UB">UB</a></code></li>
+<li><code><a title="classes.KD_Node.l" href="#classes.KD_Node.l">l</a></code></li>
+<li><code><a title="classes.KD_Node.parent" href="#classes.KD_Node.parent">parent</a></code></li>
+<li><code><a title="classes.KD_Node.y" href="#classes.KD_Node.y">y</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="classes.KD_tree" href="#classes.KD_tree">KD_tree</a></code></h4>
+<ul class="">
+<li><code><a title="classes.KD_tree.dominates_point" href="#classes.KD_tree.dominates_point">dominates_point</a></code></li>
+<li><code><a title="classes.KD_tree.insert" href="#classes.KD_tree.insert">insert</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="classes.LinkedList" href="#classes.LinkedList">LinkedList</a></code></h4>
+<ul class="">
+<li><code><a title="classes.LinkedList.add_after" href="#classes.LinkedList.add_after">add_after</a></code></li>
+<li><code><a title="classes.LinkedList.add_before" href="#classes.LinkedList.add_before">add_before</a></code></li>
+<li><code><a title="classes.LinkedList.add_first" href="#classes.LinkedList.add_first">add_first</a></code></li>
+<li><code><a title="classes.LinkedList.remove_node" href="#classes.LinkedList.remove_node">remove_node</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="classes.MinkowskiSumProblem" href="#classes.MinkowskiSumProblem">MinkowskiSumProblem</a></code></h4>
+<ul class="">
+<li><code><a title="classes.MinkowskiSumProblem.Y_list" href="#classes.MinkowskiSumProblem.Y_list">Y_list</a></code></li>
+<li><code><a title="classes.MinkowskiSumProblem.dim" href="#classes.MinkowskiSumProblem.dim">dim</a></code></li>
+<li><code><a title="classes.MinkowskiSumProblem.filename" href="#classes.MinkowskiSumProblem.filename">filename</a></code></li>
+<li><code><a title="classes.MinkowskiSumProblem.from_json" href="#classes.MinkowskiSumProblem.from_json">from_json</a></code></li>
+<li><code><a title="classes.MinkowskiSumProblem.plot" href="#classes.MinkowskiSumProblem.plot">plot</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="classes.Node" href="#classes.Node">Node</a></code></h4>
+</li>
+<li>
+<h4><code><a title="classes.Point" href="#classes.Point">Point</a></code></h4>
+<ul class="two-column">
+<li><code><a title="classes.Point.cls" href="#classes.Point.cls">cls</a></code></li>
+<li><code><a title="classes.Point.dim" href="#classes.Point.dim">dim</a></code></li>
+<li><code><a title="classes.Point.lex_le" href="#classes.Point.lex_le">lex_le</a></code></li>
+<li><code><a title="classes.Point.plot" href="#classes.Point.plot">plot</a></code></li>
+<li><code><a title="classes.Point.plot_color" href="#classes.Point.plot_color">plot_color</a></code></li>
+<li><code><a title="classes.Point.strictly_dominates" href="#classes.Point.strictly_dominates">strictly_dominates</a></code></li>
+<li><code><a title="classes.Point.val" href="#classes.Point.val">val</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="classes.PointList" href="#classes.PointList">PointList</a></code></h4>
+<ul class="">
+<li><code><a title="classes.PointList.as_dict" href="#classes.PointList.as_dict">as_dict</a></code></li>
+<li><code><a title="classes.PointList.dim" href="#classes.PointList.dim">dim</a></code></li>
+<li><code><a title="classes.PointList.dominates" href="#classes.PointList.dominates">dominates</a></code></li>
+<li><code><a title="classes.PointList.dominates_point" href="#classes.PointList.dominates_point">dominates_point</a></code></li>
+<li><code><a title="classes.PointList.filename" href="#classes.PointList.filename">filename</a></code></li>
+<li><code><a title="classes.PointList.from_csv" href="#classes.PointList.from_csv">from_csv</a></code></li>
+<li><code><a title="classes.PointList.from_json" href="#classes.PointList.from_json">from_json</a></code></li>
+<li><code><a title="classes.PointList.plot" href="#classes.PointList.plot">plot</a></code></li>
+<li><code><a title="classes.PointList.plot_color" href="#classes.PointList.plot_color">plot_color</a></code></li>
+<li><code><a title="classes.PointList.points" href="#classes.PointList.points">points</a></code></li>
+<li><code><a title="classes.PointList.print_data" href="#classes.PointList.print_data">print_data</a></code></li>
+<li><code><a title="classes.PointList.removed_duplicates" href="#classes.PointList.removed_duplicates">removed_duplicates</a></code></li>
+<li><code><a title="classes.PointList.save_csv" href="#classes.PointList.save_csv">save_csv</a></code></li>
+<li><code><a title="classes.PointList.save_json" href="#classes.PointList.save_json">save_json</a></code></li>
+<li><code><a title="classes.PointList.statistics" href="#classes.PointList.statistics">statistics</a></code></li>
+<li><code><a title="classes.PointList.weakly_dominates_point" href="#classes.PointList.weakly_dominates_point">weakly_dominates_point</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
