@@ -131,9 +131,18 @@ def test_pointlist_operators():
 
 
 def test_PointList_json():
+    # test small
     jsonfilename = "instances/subproblems/sp-2-10-l_1.json"
+    print(f"{jsonfilename=}")
     Y = PointList.from_json(jsonfilename)
-    print(f"{Y=}")
+    Y.save_json("tests/temp/PointList_small_save_json.json")
+    # test large
+    jsonfilename = "instances/results/algorithm1/alg1-prob-4-50|50|50|50-uuuu-4_2.json"
+    print(f"{jsonfilename=}")
+    Y = PointList.from_json(jsonfilename)
+    Y.save_json("tests/temp/PointList_large_save_json.json")
+
+
 
 def test_MSP_json():
     jsonfilename = "instances/problems/prob-2-200|200-ll-2_1.json"

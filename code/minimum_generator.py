@@ -73,7 +73,7 @@ def solve_model(model:pyomo.ConcreteModel(), solver_str = "cplex_direct"):
     print(f"Solving model..")
     # Solve model
     solver = pyomo.SolverFactory(solver_str)
-    solver.solve(model)
+    solver.solve(model, tee = True)
 
 
 @timeit
@@ -144,11 +144,11 @@ def display_solution(Y_list: list[PointList], Y_generator_list: list[PointList],
 def solve_instance(Y_list: list[PointList], verbose = 'all', plot = False):
     model = build_model(Y_list)
     solve_model(model)
-    Y_generator_list = retrieve_solution(model, Y_list)
+    Y_MIN_LIST = retrieve_solution(model, Y_list)
     if verbose or plot:
-        display_solution(Y_list, Y_generator_list, verbose = verbose, plot = plot)
+        display_solution(Y_list, Y_MIN_LIST, verbose = verbose, plot = plot)
 
-
+    return Y_MIN_LIST
 
 
 def main():

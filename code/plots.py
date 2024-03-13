@@ -10,7 +10,7 @@ import sys
 import numpy as np
 sys.path.insert(0, "../../code/")
 
-from classes import Point, PointList, LinkedList
+from classes import Point, PointList, LinkedList, MinkowskiSumProblem
 import methods
 from methods import N
 import matplotlib.pyplot as plt
@@ -47,8 +47,31 @@ def example():
     Y.plot()
     plt.show()
 
+def plot_ul():
 
-def matrix_plot(Y1,Y2, point_labels = False):
+    ######################## Figure plot_ul START ########################
+    fig_name = "plot_ul"
+    print(f"Plotting figure: {fig_name}")
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout='constrained')
+    
+    MSP = MinkowskiSumProblem.from_json('instances/problems/prob-2-100|100-ul-2_1.json')
+    Y1, Y2 = MSP.Y_list
+
+    Y1.label = f"${_Yn1}$"
+    Y2.label = f"${_Yn2}$"
+
+    for Y in MSP.Y_list:
+        Y.plot(l = Y.label)
+    
+
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure plot_ul END #########################
+
+
+def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False):
     """ plots similar to matrix plots in Hespe et al. 2023 """
     
     Y1 = methods.lex_sort(Y1)
@@ -61,12 +84,11 @@ def matrix_plot(Y1,Y2, point_labels = False):
     Yn_set = set(Yn.points)
 
     # ######################## Figure ax1 START ########################
-    fig_name = "ax1"
-    print(f"Plotting figure: {fig_name}")
+    # fig_name = "ax1"
     # # define new figure
     
 
-    fig = plt.figure(figsize=SIZE_LARGE_FIGURE, layout='constrained')
+    fig = plt.figure(figsize=SIZE_VERY_LARGE_FIGURE, layout='constrained')
     ax = list()
     projection = None if Y1.dim == 2 else '3d'
     ax.append(fig.add_subplot(1, 3, 1, projection= projection ))
@@ -74,8 +96,9 @@ def matrix_plot(Y1,Y2, point_labels = False):
     ax.append(fig.add_subplot(1, 3, 3, projection= projection ))
     # fig, ax = plt.subplots(ncols = 3, figsize=SIZE_LARGE_FIGURE, layout='constrained')
     
-    Y1.plot(ax = ax[0], l = f"${_Yn1}$", point_labels= point_labels)
-    Y2.plot(ax = ax[0], l = f"${_Yn2}$", point_labels= point_labels)
+    if not matrix_only:
+        Y1.plot(ax = ax[0], l = f"${_Yn1}$", point_labels= point_labels)
+        Y2.plot(ax = ax[0], l = f"${_Yn2}$", point_labels= point_labels)
 
     # # save or plot figure
     # plot_or_save(fig, fig_name)
@@ -83,9 +106,10 @@ def matrix_plot(Y1,Y2, point_labels = False):
     # add marking of point contributes to Pareto Sum point:
 
     Y1_MSP = PointList([y1 for y1 in Y1 if any((y1+y2 in Yn_set for y2 in Y2))])
-    Y1_MSP.plot(ax = ax[0], l = f"${_Yn2}\\rightarrow {_Yn}$",color = "yellow", marker='1')
     Y2_MSP = PointList([y2 for y2 in Y2 if any((y1+y2 in Yn_set for y1 in Y1))])
-    Y2_MSP.plot(ax = ax[0], l = f"${_Yn2}\\rightarrow {_Yn}$", color = "yellow", marker='1')
+    if not matrix_only:
+        Y1_MSP.plot(ax = ax[0], l = f"${_Yn1}\\rightarrow {_Yn}$",color = "yellow", marker='1')
+        Y2_MSP.plot(ax = ax[0], l = f"${_Yn2}\\rightarrow {_Yn}$", color = "yellow", marker='1')
 
     # ######################### Figure ax1 END #########################
 
@@ -99,10 +123,11 @@ def matrix_plot(Y1,Y2, point_labels = False):
     M = np.vstack([row_header, M.transpose()])
 
     ######################## Figure matrix_plot START ########################
-    fig_name = "matrix_plot"
     
     # Define your custom colors
     colors = ['lightgray', 'yellow', 'red', Y1.plot_color, Y2.plot_color, 'white']
+    if matrix_only:
+        colors = ['lightgray', 'yellow', 'red', 'red', 'blue', 'white']
     # Create a colormap with discrete colors
     cmap = matplotlib.colors.ListedColormap(colors)
 
@@ -119,9 +144,14 @@ def matrix_plot(Y1,Y2, point_labels = False):
 
 
     ax[1].pcolormesh(M, cmap = cmap, edgecolors='white', linewidth=0.5)
-    # ax[1] = plt.gca()
+    ax[1] = plt.gca()
     ax[1].set_aspect('equal')
-
+    # ax[0].set_aspect('equal')
+    # ax[2].set_aspect('equal')
+    
+    ax[0].set_title("Subproblem Pareto sets")
+    ax[1].set_title("Matrix")
+    
     print(f"|Yn| = {len(Yn)}")
     print(f"|Y1| + |Y2| = {len(Y1) + len(Y2)}")
     print(f"|Y1||Y2| = {len(Y1)*len(Y2)}")
@@ -137,25 +167,120 @@ def matrix_plot(Y1,Y2, point_labels = False):
 
 
     ######################## Figure pareto_sum START ########################
-    fig_name = "pareto_sum"
+    # fig_name = "pareto_sum"
     print(f"Plotting figure: {fig_name}")
     # define new figure
     # fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout='constrained')
  
-    Y.plot(ax = ax[2], l = f"${_Y}$", color = "lightgray")
-    Yn.plot(ax = ax[2], l = f"${_Yn}$", color = "yellow")
+    if not matrix_only:
+        Y.plot(ax = ax[2], l = f"${_Y}$", color = "lightgray")
+        Yn.plot(ax = ax[2], l = f"${_Yn}$", color = "yellow")
     
     # save or plot figure
     plot_or_save(fig, fig_name)
     ######################### Figure pareto_sum END #########################
         
+def make_matrix_plot():
+
+    plot_configs = [
+            {"fig_name": 'matrix_plot', 'scaling' : 1,
+             'Y1' : "instances/subproblems/sp-2-10-l_1.json",
+             'Y2' : "instances/subproblems/sp-2-10-u_1.json"},
+            {"fig_name": 'methods_lu', 'scaling' : 1,
+             'Y1' : "instances/subproblems/sp-2-100-l_1.json",
+             'Y2' : "instances/subproblems/sp-2-100-u_1.json"},
+            {"fig_name": 'methods_lm', 'scaling' : 1,
+             'Y1' : "instances/subproblems/sp-2-100-l_1.json",
+             'Y2' : "instances/subproblems/sp-2-100-m_1.json"},
+            {"fig_name": 'methods_mm', 'scaling' : 1,
+             'Y1' : "instances/subproblems/sp-2-100-m_1.json",
+             'Y2' : "instances/subproblems/sp-2-100-m_2.json"},
+            {"fig_name": 'scaling_lu_1', 'scaling' : 1,
+             'Y1' : "instances/subproblems/sp-2-100-l_1.json",
+             'Y2' : "instances/subproblems/sp-2-100-u_1.json"},
+            {"fig_name": 'scaling_lu_2', 'scaling' : 2,
+             'Y1' : "instances/subproblems/sp-2-100-l_1.json",
+             'Y2' : "instances/subproblems/sp-2-100-u_1.json"},
+            {"fig_name": 'scaling_lu_0_5', 'scaling' : 0.5,
+             'Y1' : "instances/subproblems/sp-2-100-l_1.json",
+             'Y2' : "instances/subproblems/sp-2-100-u_1.json"},
+            {"fig_name": 'scaling_lu_0_1', 'scaling' : 0.1,
+             'Y1' : "instances/subproblems/sp-2-100-l_1.json",
+             'Y2' : "instances/subproblems/sp-2-100-u_1.json"},
+            {"fig_name": 'dim_2', 'scaling' : 1,
+             'Y1' : "instances/subproblems/sp-2-100-l_1.json",
+             'Y2' : "instances/subproblems/sp-2-100-u_1.json"},
+            {"fig_name": 'dim_3', 'scaling' : 1,
+             'Y1' : "instances/subproblems/sp-3-100-l_1.json",
+             'Y2' : "instances/subproblems/sp-3-100-u_1.json"},
+            {"fig_name": 'dim_4', 'scaling' : 1,
+             'Y1' : "instances/subproblems/sp-4-100-l_1.json",
+             'Y2' : "instances/subproblems/sp-4-100-u_1.json"},
+            {"fig_name": 'dim_5', 'scaling' : 1,
+             'Y1' : "instances/subproblems/sp-5-100-l_1.json",
+             'Y2' : "instances/subproblems/sp-5-100-u_1.json"},
+            {"fig_name": 'magnitudes1', 'scaling' : 1,
+             'Y1' : "instances/subproblems/sp-2-10-u_1.json",
+             'Y2' : "instances/subproblems/sp-2-10-m_10.json"},
+            {"fig_name": 'magnitudes10', 'scaling' : 10,
+             'Y1' : "instances/subproblems/sp-2-10-u_1.json",
+             'Y2' : "instances/subproblems/sp-2-10-m_10.json"},
+            {"fig_name": 'magnitudes20', 'scaling' : 20,
+             'Y1' : "instances/subproblems/sp-2-10-u_1.json",
+             'Y2' : "instances/subproblems/sp-2-10-m_10.json"},
+            {"fig_name": 'magnitudes1_1', 'scaling' : 1,
+             'Y1' : "instances/subproblems/sp-2-10-u_1.json",
+             'Y2' : "instances/subproblems/sp-2-10-m_10.json"},
+            {"fig_name": 'magnitudes1_2', 'scaling' : -2,
+             'Y1' : "instances/subproblems/sp-2-10-u_1.json",
+             'Y2' : "instances/subproblems/sp-2-10-m_10.json"},
+            {"fig_name": 'magnitudes1_5', 'scaling' : -5,
+             'Y1' : "instances/subproblems/sp-2-10-u_1.json",
+             'Y2' : "instances/subproblems/sp-2-10-m_10.json"},
+            ]
+    
+    for P in plot_configs:
+        Y1 = PointList.from_json(P['Y1'])
+        Y2 = PointList.from_json(P['Y2'])
+        fig_name = P['fig_name']
+        scaling = P['scaling']
+
+        # scaling = 1
+        if scaling:
+            if scaling < 0:
+                Y1 = PointList([y*(-scaling) for y in Y1])
+            else:
+                Y2 = PointList([y*scaling for y in Y2])
+
+        point_labels = (len(Y1) <= 10 and len(Y2) <= 10)
+
+        matrix_only = Y1.dim > 3
+        
+        # fig_name = "matrix_plot"
+        if 'magnitudes' not in fig_name: continue
+
+        matrix_plot(Y1,Y2, fig_name = fig_name, point_labels= point_labels, matrix_only=matrix_only)
+
+
 def test_matrix_plot():
+    Y1 = PointList.from_json("instances/subproblems/sp-2-10-u_1.json")
+    Y2 = PointList.from_json("instances/subproblems/sp-2-10-m_10.json")
+    fig_name = "test_plot" 
+    scaling = 10
 
-    Y1 = PointList.from_json("instances/subproblems/sp-2-10-l_1.json")
-    Y2 = PointList.from_json("instances/subproblems/sp-2-10-u_9.json")
+    # scaling = 1
+    if scaling:
+        Y2 = PointList([y*scaling for y in Y2])
+
+    point_labels = (len(Y1) <= 10 and len(Y2) <= 10)
+
+    matrix_only = Y1.dim > 3
+    
+    # fig_name = "matrix_plot"
+
+    matrix_plot(Y1,Y2, fig_name = fig_name, point_labels= point_labels, matrix_only=matrix_only)
 
 
-    matrix_plot(Y1,Y2, point_labels=1)
 
 
 def klamroth2023_lemma2():
@@ -164,8 +289,8 @@ def klamroth2023_lemma2():
     A = PointList([(-1,-1,-0)] + [(-0, -i/l, -(l-i)/l) for i in range(1,l)])
     B = PointList([(-0,-1,-1)] + [(-i/m, -(m-i)/m, -0 ) for i in range(1,m)])
 
-    print(f"{A=}")
-    print(f"{B=}")
+    # print(f"{A=}")
+    # print(f"{B=}")
 
 
     fig = plt.figure()
@@ -173,29 +298,32 @@ def klamroth2023_lemma2():
     ax= plt.axes(projection = '3d')
     
 
-    A.plot(ax= ax, l="A")
-    B.plot(ax= ax, l="B")
+    A.plot(ax= ax, l=f"${_A}$")
+    B.plot(ax= ax, l=f"${_B}$")
 
     # S = PointList(A.points + B.points)
     S = A + B
 
-    S.plot(ax= ax, l = "A + B")
+    S.plot(ax= ax, l = f"${_A} + {_B}$")
     Sn = N(S)
-    print(f"A+B = {S}")
-    print(f"(A+B)_N = {Sn}")
-    Sn.plot(ax= ax, l= "(A + B)_N" , color="blue")
+    # print(f"$A+B = \{S}$")
+    # print(f"(A+B)_N = {Sn}")
+    Sn.plot(ax= ax, l= f"(${_A} + {_B} )_{_mcN}$" , color="blue")
 
-    print(f"{len(Sn.removed_duplicates())=}")
+    # print(f"{len(Sn.removed_duplicates())=}")
 
-    print(f"|A|={len(A)}")
-    print(f"|B|={len(B)}")
-    print(f"|A+B|={len(S)}")
-    print(f"|(A+B)_N|={len(Sn)}")
+    # print(f"|A|={len(A)}")
+    # print(f"|B|={len(B)}")
+    # print(f"|A+B|={len(S)}")
+    # print(f"|(A+B)_N|={len(Sn)}")
 
     plt.show()
 
 
+
 def main():
+
+    # plot_ul()
 
     # klamroth2023_lemma2()
     # example()
@@ -204,18 +332,21 @@ def main():
 
     # with plt.rcParams({"lines.linewidth": 2, "lines.color": "r"}):
     # with matplotlib.rc_context['xtick.bottom']:
-    test_matrix_plot()
+
+    # test_matrix_plot()
+    make_matrix_plot()
 
 if __name__ == '__main__':
 
-    SAVE_PLOTS = False
-    FIGURES_LOCATION = "figures/"
+    SAVE_PLOTS = True 
+    FIGURES_LOCATION = "../../papers/paper1/figures/matrix_plots/"
     NO_AXIS = False 
 
     # used figure sizes
     SIZE_STANDARD_FIGURE = (5,2)
     SIZE_SMALL_FIGURE = (2.5,2)
     SIZE_LARGE_FIGURE = (5,3)
+    SIZE_VERY_LARGE_FIGURE = (10,3)
 
     # Style options for plots
     # all_styles = ['Solarize_Light2', '_mpl-gallery', '_mpl-gallery-nogrid', 'bmh', 'classic', 'dark_background', 'fast', 'fivethirtyeight', 'ggplot', 'grayscale',  'tableau-colorblind10']
