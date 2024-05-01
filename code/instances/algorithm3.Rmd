@@ -33,7 +33,7 @@ library(tidyverse)
 knitr::opts_chunk$set(
   echo = FALSE,
   message=FALSE, include = TRUE, warning = FALSE,
-  out.width = "99%", fig.width = 12, fig.align = "center", fig.asp = 0.8
+  out.width = "69%", fig.width = 12, fig.align = "center", fig.asp = 0.8
 )
 ```
 
@@ -41,7 +41,7 @@ Testsets
 
 -	set_options = [‘l’,‘m’,‘u’] - three different levels of nonsupported points.
 -	seed_options = [1,2,3,4,5]
--	size_options = [10,50,100,150, 200] adding [ 300, 600]
+-	size_options = [10,50,100,150] adding [ 200 ,300, 600]
 -	UB_options = [‘lexmin’,‘extreme’,‘0.25’,‘0.5’,‘0.75’,‘all’]
 
 Note:
@@ -96,6 +96,9 @@ dat %>%
 ```
 
 
+
+Results: "The more #nonsupported points the more points are dominated by a generator upper bound set"
+
 ## In the following we evaluate different levels of partial sets Y2 used for the generator upper bound set
 -	UB_options = [‘lexmin’,‘extreme’,‘0.25’,‘0.5’,‘0.75’,‘all’]
 
@@ -132,4 +135,19 @@ In the following we show how long is spent calculating the generator upper bound
         x = "Y2 partial level") +
    theme(legend.position = "bottom", axis.text.x = element_text(angle = 90, hjust = 1))
 ```
+
+
+
+
+# The algorithm used to find the generator upper bound set
+
+- From report 6860 
+- Only works for $p=2$
+Notation: Opposite use of $Y^1$ and $Y^2$ with respect to the above.
+
+![Generator upper bound algorithm](U_alg.png)
+
+Example of algorithm run:
+
+![Example generator upper bound algorithm](U_alg_example.png)
 
