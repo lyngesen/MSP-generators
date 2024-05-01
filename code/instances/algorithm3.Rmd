@@ -41,7 +41,7 @@ Testsets
 
 -	set_options = [‘l’,‘m’,‘u’] - three different levels of nonsupported points.
 -	seed_options = [1,2,3,4,5]
--	size_options = [10,50,100,150] adding [ 200 ,300, 600]
+-	size_options = [10,50,100,150, 200] [300, 600]
 -	UB_options = [‘lexmin’,‘extreme’,‘0.25’,‘0.5’,‘0.75’,‘all’]
 
 Note:
@@ -84,7 +84,7 @@ dat$s1 <- factor(dat$s1)
 
 ```{r}
 dat %>% 
-   filter(Y1_size <=150) %>%
+   filter(Y1_size <=200) %>%
    filter(ub_level == 'extreme') %>%
    ggplot(aes(x = s1, y = dominated_relative_Y2)) +
    geom_boxplot() + 
@@ -112,7 +112,7 @@ In the following we consider the case where only a subset of  $Y^2$is used to de
 
 ```{r}
 dat %>% 
-   filter(Y1_size <=150) %>%
+   filter(Y1_size <=200) %>%
    ggplot(aes(x = ub_level, y = dominated_relative_Y2, color=s1)) +
    geom_boxplot() + 
    facet_grid(t2 ~ t1, margins = F, labeller = label_both) +

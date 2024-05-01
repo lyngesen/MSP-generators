@@ -151,6 +151,11 @@ def solve_instance(Y_list: list[PointList], verbose = 'all', plot = False):
     return Y_MIN_LIST
 
 
+
+
+def SimpleFilter(Y1, Y2):
+    pass
+
 def main():
 
     # setup test instance

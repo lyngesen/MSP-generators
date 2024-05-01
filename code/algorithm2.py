@@ -125,7 +125,12 @@ def main():
 
         plt.show()
     # save solution
-    
+ 
+
+
+
+
+
 
 
 if __name__ == "__main__":
