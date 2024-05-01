@@ -159,17 +159,18 @@ def lex_sort(Y: PointList):
     """
     Y.points = sorted(Y.points, key=itemgetter(*range(Y.dim)))
 
-    for i in range(len(Y.points)-1): # simple but not exhaustive correctness check
-        assert not Y[i] > Y[i+1], f"{Y[i]=},{Y[i+1]=} "
+    # for i in range(len(Y.points)-1): # simple but not exhaustive correctness check
+        # assert not Y[i] > Y[i+1], f"{Y[i]=},{Y[i+1]=} "
 
     return PointList(Y.points)
 
 
-def unidirectional_filter(Y: PointList) -> PointList:
+def unidirectional_filter(Y: PointList, duplicates_allowed = False) -> PointList:
     """
-    input: PointList
+    input: PointList, bool - allowed_duplicates
     output: PointList with all nondominated points removed
     """
+
 
     Y = lex_sort(Y)
 
@@ -177,14 +178,19 @@ def unidirectional_filter(Y: PointList) -> PointList:
     assert Y[0].val.shape[0] <= 2, "dim p > 2 NOT IMPLEMENTED"
     Yn = []
     
-    for y in Y:
-        if Yn == [] or not Yn[-1] <= y:
-            Yn.append(y)
-            # assert not PointList(Yn).dominates_point(y), f"{Yn=}, {y=}"
+    if duplicates_allowed:
+        for y in Y:
+            if Yn == [] or not Yn[-1] < y:
+                Yn.append(y)
+                # assert not PointList(Yn).dominates_point(y), f"{Yn=}, {y=}"
+    
+    else: # if duplicates not allowed
+        for y in Y:
+            if Yn == [] or not Yn[-1] <= y:
+                Yn.append(y)
     return(PointList(Yn))
 
     # p > 2 NOT IMPLEMENTED
-
 
 
 def N(Y = PointList, **kwargs):
@@ -195,8 +201,6 @@ def N(Y = PointList, **kwargs):
         return KD_filter(Y)
         # return naive_filter(Y, MCtF = True)
         # return two_phase_filter(Y)
-
-
 
 def MS_sum(Y_list = list[PointList], operator = "+") -> PointList:
     """

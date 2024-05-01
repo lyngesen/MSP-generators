@@ -8,6 +8,7 @@ Usage:
 
 import sys
 import numpy as np
+import os
 sys.path.insert(0, "../../code/")
 
 from classes import Point, PointList, LinkedList, MinkowskiSumProblem
@@ -15,6 +16,11 @@ import methods
 from methods import N
 import matplotlib.pyplot as plt
 import matplotlib
+import random
+import time
+import csv
+import math
+
 
 def plot_or_save(fig, fname: str):
     """ call to plot or save fig """
@@ -320,6 +326,106 @@ def klamroth2023_lemma2():
     plt.show()
 
 
+def induced_UB_plot(level, Y1,Y2, prefix='', plot=True):
+    print(f"{prefix}")
+    # print(f"{level=}")
+    def get_partial(Y, level='all'):   
+        Y = N(Y)
+        Y2e_points = [y for y in Y if y.cls == 'se']
+        Y2other_points = [y for y in Y if y.cls != 'se']
+        # random.shuffle(Y2other_points)
+        match level:
+            case 'all':
+                return Y
+            case 'lexmin': 
+                return PointList((Y[0], Y[-1]))
+            case 'extreme':
+                return PointList(Y2e_points)
+            # case float():
+            case _:
+                to_index = math.floor(float(level)*len(Y2other_points))
+                return PointList(Y2e_points + Y2other_points[:to_index])
+                # print(f"case not implemented {level}")
+    ######################## Figure Induced_UB START ########################
+    fig_name = f"Induced_UB_{level}".replace('lexmin','0.00lexmin')
+    
+
+    # print(f"Plotting figure: {fig_name}")
+    # define new figure
+    if plot:
+        fig, ax = plt.subplots(figsize=SIZE_SMALL_SQUARE, layout='constrained')
+    
+
+    Y2_partial = get_partial(Y2, level)
+
+
+    ub_time = time.time()
+    U = methods.find_generator_U(Y2_partial, Y1)
+    ub_time = time.time() - ub_time
+
+    Uline = methods.induced_UB(U,line=True)
+    
+    if plot:
+        Uline.plot(f"${_U}$", line=True)
+        Y1.plot(f"${_Y1}$")
+        Y2.plot(f"${_Y2}$")
+        Y2_partial.plot(f"${_Y2}$h")
+
+    Y2_dominated = [y for y in Y2 if y.cls != 'se' and U.dominates_point(y)]
+    if Y2_dominated and plot:
+        PointList(Y2_dominated).plot("dominated", marker='x')
+    print(f"{len(Y2_dominated)=}")
+    dominated_relative = len(Y2_dominated)/len(Y2)
+    print(f"dominated: {len(Y2_dominated)} \nrelative: {dominated_relative*100}\%")
+    if plot: plt.text(0.1,0.1,f"dominated: {len(Y2_dominated)} \n relative: {dominated_relative*100}\%")
+    
+    # save or plot figure
+    if plot: plot_or_save(fig, prefix + fig_name)
+    ######################### Figure Induced_UB END #########################
+
+    run_data = {'prefix' : prefix,
+                'Y1_size' : len(Y1),
+                'Y2_size' : len(Y2),
+                'U' : len(U),
+                'U_time' : ub_time,
+                'dominated_points' : len(Y2_dominated),
+                'dominated_relative_Y2' : dominated_relative,
+                }
+
+    return run_data
+def multiple_induced_UB():
+
+
+    set_options = ['l','m','u']
+    size_options = [10, 50, 100, 150, 200, 300, 600]
+    seed_options = [1,2,3,4,5]
+    UB_options = ['lexmin','extreme','0.25','0.5','0.75','all']
+
+    csv_file_path = './instances/results/algorithm3/result.csv'
+    # clear file
+    with open(csv_file_path, 'w') as csv_file:
+        pass
+
+    for s1 in size_options:
+        s2 = s1
+        for ub_level in UB_options:
+        # s1 = 100 
+        # s2 = 100
+            # for s2 in size_options:
+            for t1 in set_options:
+                for t2 in set_options:
+                    for seed in seed_options:
+                        Y1 = PointList.from_json(f"./instances/subproblems/sp-2-{s1}-{t1}_{seed}.json")
+                        Y2 = PointList.from_json(f"./instances/subproblems/sp-2-{s2}-{t2}_{max(seed_options)+1-seed}.json")
+                        prefix = f'{t1}-{t2}_{s1}_{s2}_{ub_level}_{seed}_'
+                        data = induced_UB_plot(ub_level, Y1,Y2, prefix, plot=False) 
+                        data.update({'t1':t1, 't2':t2, 's1':s1, 's2':s2,'seed':seed,'ub_level':ub_level})
+                        with open(csv_file_path, 'a') as csv_file:
+                            # add header if file empty
+                            writer = csv.writer(csv_file)
+                            if os.path.getsize(csv_file_path) == 0:
+                                writer.writerow(data.keys())
+                            writer.writerow(data.values())
 
 def main():
 
@@ -334,18 +440,28 @@ def main():
     # with matplotlib.rc_context['xtick.bottom']:
 
     # test_matrix_plot()
-    make_matrix_plot()
+    # make_matrix_plot()
+
+    multiple_induced_UB()
+    # induced_UB_plot('lexmin')
+    # induced_UB_plot(0.25)
+    # induced_UB_plot(0.50)
+    # induced_UB_plot(0.75)
+    # induced_UB_plot(1.0)
 
 if __name__ == '__main__':
 
-    SAVE_PLOTS = True 
-    FIGURES_LOCATION = "../../papers/paper1/figures/matrix_plots/"
+    SAVE_PLOTS = True
+    FIGURES_LOCATION = "../../papers/paper1/figures/UB_instances/"
+    FIGURES_LOCATION = "../../../phd/projects/papers/paper1/figures/UB_instances/multiple/"
+
     NO_AXIS = False 
 
     # used figure sizes
     SIZE_STANDARD_FIGURE = (5,2)
     SIZE_SMALL_FIGURE = (2.5,2)
     SIZE_LARGE_FIGURE = (5,3)
+    SIZE_SMALL_SQUARE = (3,3)
     SIZE_VERY_LARGE_FIGURE = (10,3)
 
     # Style options for plots

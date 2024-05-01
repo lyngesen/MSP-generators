@@ -1,0 +1,133 @@
+---
+title: "Results: Plots - Generator upper bound sets"
+output: html_document
+date: "`r Sys.Date()`"
+editor_options: 
+  chunk_output_type: console
+knit: (function(inputFile, encoding) { 
+    out_dir <- '../../docs/';
+    rmarkdown::render(inputFile,
+                      encoding=encoding, 
+                      output_file=file.path(dirname(inputFile), out_dir, 'algorithm3.html')) })
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r setup, include=FALSE}
+here::i_am("code/instances/algorithm3.Rmd")  # specify relative path given project
+# remotes::install_github("relund/gMOIP")
+# library(gMOIP)
+library(DT)
+library(tidyverse)
+# library(knitr)
+# library(rgl)
+# rgl::setupKnitr()
+# options(rgl.useNULL=TRUE)
+# rgl::par3d("family" = "serif")
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message=FALSE, include = TRUE, warning = FALSE,
+  out.width = "99%", fig.width = 12, fig.align = "center", fig.asp = 0.8
+)
+```
+
+Testsets
+
+-	set_options = [‘l’,‘m’,‘u’] - three different levels of nonsupported points.
+-	seed_options = [1,2,3,4,5]
+-	size_options = [10,50,100,150, 200] adding [ 300, 600]
+-	UB_options = [‘lexmin’,‘extreme’,‘0.25’,‘0.5’,‘0.75’,‘all’]
+
+Note:
+
+-	All sets are in p=2 dimensions.
+-	For each test the sets $Y^1$ and $Y^2$ are ‘scaled’ the same.
+
+
+
+## Statistics for the problems solved using alg3
+Testsets
+
+-	In each testset $|Y^1| = |Y^2|$
+
+Given a problem consisting of $2$ subproblems $Y^1$, $Y^2$ and a level of $Y^2$, we find a generator upper bound of $Y^2$ based on the points of $Y^1$ and a subset of  $Y^2$ (based on some level).
+Steps:
+1.	For each testset do:
+2.	Define subset of $Y^2$ based on ub_level - Here we use all extreme points of $Y^2$.
+3.	Define generator upper bound of the set  $Y^2$using the sets $Y^2$ and subset of $Y^2$.
+4.	Determine the points of  $Y^2$which are dominated by the generator upper bound set.
+5.	Record the number of dominated points along with the time spent calculating the generator upper bound set.
+
+The following grid shows an example of the number of dominated points. [size = 100, ub_option = 'extreme']
+![Example of instances](grid.jpg)
+
+
+In the following we plot the relative number of points dominated by the generator upper bound set. We plot this in a grid for different levels of nonsupported points. In each plot we present boxplots for several sizes of the input sets.
+
+
+
+
+```{r}
+dat <- read_csv(here::here("code/instances/results/algorithm3/result.csv"))
+dat$ub_level <- factor(dat$ub_level, levels = c("lexmin", "extreme", as.character(seq(0.25, 0.75, by = 0.25)), "all"))
+dat$s1 <- factor(dat$s1)
+
+```
+
+```{r}
+dat %>% 
+   filter(Y1_size <=150) %>%
+   filter(ub_level == 'extreme') %>%
+   ggplot(aes(x = s1, y = dominated_relative_Y2)) +
+   geom_boxplot() + 
+   facet_grid(t2 ~ t1, margins = F, labeller = label_both) +
+   labs(title = "Relativ number of dominated points given subproblem size",
+        y = "%",
+        x = "Subproblem size") +
+   theme(legend.position = "bottom")
+```
+
+
+## In the following we evaluate different levels of partial sets Y2 used for the generator upper bound set
+-	UB_options = [‘lexmin’,‘extreme’,‘0.25’,‘0.5’,‘0.75’,‘all’]
+
+In the following we consider the case where only a subset of  $Y^2$is used to define a generator upper bound set. We look at different levels of partial sets $\hat{Y}^2$ defined as follows:
+
+-	‘lexmin’ $\Rightarrow$ $\hat{Y}^2$ consists of only the lexmin solutions.
+-	‘extreme’ $\Rightarrow$ $\hat{Y}^2$ consists of only all extreme supported points.
+-	‘x%’ $\Rightarrow$ $\hat{Y}^2$ consists of all extreme supported points plus x% of the remaining points (eg. for x= 0.25 $\hat{Y}^2 = Y^2_{se} \cup $ 25% of the remaining points chosen in lex-order).
+-	‘all’ $\Rightarrow$ $\hat{Y}^2$ =$Y^2$
+
+
+```{r}
+dat %>% 
+   filter(Y1_size <=150) %>%
+   ggplot(aes(x = ub_level, y = dominated_relative_Y2, color=s1)) +
+   geom_boxplot() + 
+   facet_grid(t2 ~ t1, margins = F, labeller = label_both) +
+   labs(title = "Relativ number of dominated points given level of partial set Y2",
+        y = "%",
+        x = "Y2 partial level") +
+   theme(legend.position = "bottom", axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+In the following we show how long is spent calculating the generator upper bound sets
+
+```{r}
+ dat %>% 
+   ggplot(aes(x = ub_level, y = U_time, color=s1)) +
+   geom_boxplot() + 
+   facet_grid(t2 ~ t1, margins = F, labeller = label_both) +
+   labs(title = "Time spent on calculating generator upper bound",
+        y = "%",
+        x = "Y2 partial level") +
+   theme(legend.position = "bottom", axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
