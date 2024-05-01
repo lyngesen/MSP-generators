@@ -65,6 +65,8 @@ Steps:
 5.	Record the number of dominated points along with the time spent calculating the generator upper bound set.
 
 The following grid shows an example of the number of dominated points. [size = 100, ub_option = 'extreme']
+
+
 ![Example of instances](grid.jpg)
 
 
@@ -101,7 +103,7 @@ In the following we consider the case where only a subset of  $Y^2$is used to de
 
 -	‘lexmin’ $\Rightarrow$ $\hat{Y}^2$ consists of only the lexmin solutions.
 -	‘extreme’ $\Rightarrow$ $\hat{Y}^2$ consists of only all extreme supported points.
--	‘x%’ $\Rightarrow$ $\hat{Y}^2$ consists of all extreme supported points plus x% of the remaining points (eg. for x= 0.25 $\hat{Y}^2 = Y^2_{se} \cup $ 25% of the remaining points chosen in lex-order).
+-	‘x%’ $\Rightarrow$ $\hat{Y}^2$ consists of all extreme supported points plus x% of the remaining points (eg. for x= 0.25 $ \hat{Y}^2 = Y^2_{se} \cup $ 25% of the remaining points chosen in lex-order).
 -	‘all’ $\Rightarrow$ $\hat{Y}^2$ =$Y^2$
 
 
