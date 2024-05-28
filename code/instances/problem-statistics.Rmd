@@ -57,12 +57,6 @@ The following instance/problem groups are generated given:
 
 
 
-We consider 
-```{r}
-raw <- 
-```
-
-
 ```{r}
 raw <- read_csv(here::here("code/instances/stat-prob.csv"))
 dat <- raw %>% 
