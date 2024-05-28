@@ -1,5 +1,5 @@
 ---
-title: "Generation of instance files for subproblems"
+title: "Generation of instance files for subproblems and combining them into problems"
 output: html_document
 date: "`r Sys.Date()`"
 editor_options: 
@@ -17,6 +17,21 @@ library(gMOIP)
 library(tidyverse)
 library(knitr)
 library(rgl)
+library(tikzDevice)
+options(tikzLatexPackages = c(
+   getOption('tikzLatexPackages'),
+   "\\usepackage{xspace}",
+   "\\newcommand{\\Y}{\\mathcal{Y}}",
+   "\\newcommand{\\Yn}{\\mathcal{Y}_{\\textnormal{N}}}",
+   "\\newcommand{\\Yns}{\\mathcal{Y}_{\\textnormal{s}}}",
+   "\\newcommand{\\Ynse}{\\mathcal{Y}_{\\textnormal{se}}}",
+   "\\newcommand{\\Ynsne}{\\mathcal{Y}_{\\textnormal{sne}}}",
+   "\\newcommand{\\Ynu}{\\mathcal{Y}_{\\textnormal{u}}}",
+   "\\newcommand{\\Yd}{\\mathcal{Y}_{\\textnormal{d}}}",
+   "\\newcommand{\\mL}{\\texttt{\\textsc{l}}\\xspace}",
+   "\\newcommand{\\mU}{\\texttt{\\textsc{u}}\\xspace}",
+   "\\newcommand{\\mM}{\\texttt{\\textsc{m}}\\xspace}"
+))
 rgl::setupKnitr()
 options(rgl.useNULL=TRUE)
 rgl::par3d("family" = "serif")
@@ -203,12 +218,16 @@ deleteFilesProb <- function(delete = TRUE) {
 } 
   
   
+#' Delete supproblem files that don't have the correct size
+#'
+#' @param delete If false only print analysis.
 deleteFiles <- function(delete = TRUE) {
   paths <- fs::dir_ls("subproblems/")
-  paths <- str_subset(paths, "sp-")  # remove statistics file
-  if (delete == "m") {
-     fs::file_delete(str_subset(paths, "-m"))
-  }
+  paths <- str_subset(paths, "sp-")  # focus on sp files
+  # if (delete == "m") {
+  #    fs::file_delete(str_subset(paths, "-m"))
+  # }
+  ##
   for (p in sort(paths, decreasing = T)) {
     samples <- as.numeric(str_split_1(p, "-")[3])
     lst <- jsonlite::read_json(p)
@@ -263,7 +282,7 @@ saveSubproblems(pS, samplesS, dub, overwrite = F)
 ```
 
 ```{r, include=FALSE}
-path <- "subproblems/stat-sp.csv"
+path <- "stat-sp.csv"
 dat <- getStatistics()
 if (!is.null(dat)) write_csv(dat, file = path) 
 dat <- read_csv(path)
@@ -273,12 +292,20 @@ dat <- read_csv(path)
 
 In total there are `r nrow(dat)` subproblems. 
 
-```{r}
-ggplot(mapping = aes(x = card, y = unsupported/card, color = method), data = dat) +
+```{r, warning=FALSE}
+ggplot(mapping = aes(x = card, y = extreme/card, color = method), data = dat) +
   geom_point() + 
-  geom_smooth(se = F) +
+  stat_summary(fun="mean", geom="line") + 
   facet_wrap(vars(p)) + 
-  labs(title = "Percentage of unsupported given p",
+  labs(title = "Percentage of extreme given p",
+       y = "Pct.") +
+  theme(legend.position = "bottom")
+
+ggplot(mapping = aes(x = p, y = extreme/card, color = method), data = dat) +
+  geom_point() + 
+  stat_summary(fun="mean", geom="line") + 
+  facet_wrap(vars(card)) + 
+  labs(title = "Percentage of extreme given cardinality",
        y = "Pct.") +
   theme(legend.position = "bottom")
 
@@ -287,7 +314,7 @@ dat %>%
   mutate(avg_width = max(c_across(contains("width")), na.rm = TRUE)) %>% 
   ggplot(mapping = aes(x = card, y = avg_width, color = method)) +
   geom_point() + 
-  geom_smooth(se = F) +
+  stat_summary(fun="mean", geom="line") + 
   facet_wrap(vars(p)) + 
   labs(title = "Average width for all objectives given p") +
   theme(legend.position = "bottom")
@@ -296,9 +323,7 @@ dat %>%
 
 ## Generation of problems
 
-The problems generated consists of $m\leq 5$ subproblems and is generated so provide a good test bed for a research question. The naming convention is `prob-<p>-<cards>-<gen-methods>_<m>_<id>.json`
-
-### RQ: How large is $|Y_N|$ given $|y_N^s|, s\in S$?
+The problems generated consists of $2 \leq m\leq 5$ subproblems and is generated so provide a good test bed for a research question. The naming convention is `prob-<p>-<cards>-<gen-methods>_<m>_<id>.json`
 
 The following instance/problem groups are generated given:
 
@@ -360,11 +385,95 @@ saveProblemsAlg1 <- function(pS, mS, samplesS, methodS, dub, overwrite = TRUE) {
 ```{r, echo=TRUE, results='hide'}
 pS <- 2:5
 mS <- 2:5
-samplesS <- c(50, 100, 200, 300) # nd points set size
+samplesS <- c(50, 100, 200, 300, 600) # nd points set size
 methodS <- c("u", "l", "m", "ul")
 dub <- 5 # number of duplicates for each configuration
 saveProblemsAlg1(pS, mS, samplesS, methodS, dub, overwrite = F)
 ```
+
+
+
+<!-- Plots used in the paper-->
+
+```{r, eval=FALSE}
+## Number of extreme
+
+## how many sne?
+dat |> 
+  filter(card != 10, card != 150) |> 
+  mutate(e = extreme/card, sne = (supported-extreme)/card) |> 
+  group_by(method, p) |> 
+  summarise(e = mean(e), sne = mean(sne))
+
+dat1 <- dat |> 
+  filter(card != 10, card != 150) 
+
+pt1 <- dat1 |> 
+  ggplot(aes(x = card, y = extreme/card, shape = method, linetype = method)) +
+  stat_summary(fun="mean", geom="line") + 
+  geom_point(size = 0.75) + 
+  facet_grid(cols = vars(p)) +
+  labs(x = "$\\Yn^s$", y = NULL) +
+  theme_bw() +
+  theme(legend.position = "none")
+
+pt2 <- dat1 |> 
+  ggplot(aes(x = p, y = extreme/card, shape = method, linetype = method)) +
+  geom_point(size = 0.75) + 
+  stat_summary(fun="mean", geom="line") + 
+  facet_grid(cols = vars(card)) + 
+  labs(x = "$p$", y = NULL) +
+  theme_bw() +
+  theme(legend.position = "none")
+
+tikz("se-card.tex", width = 8, height = 3)
+pt1
+dev.off()
+tikz("se-p.tex", width = 8, height = 3)
+pt2
+dev.off()
+```
+
+```{r, eval=FALSE}
+## Example of generation method
+
+#' Custom theme 
+#'
+#' @return The theme object for ggplot
+theme_academic <- function(...) {
+   theme_bw() +
+      theme(
+         legend.position = "bottom",
+         # panel.grid.major = element_blank(),
+         panel.grid = element_blank(),
+         ...
+      )
+}
+
+path <- "subproblems/sp-2-50-"
+lst <- jsonlite::read_json(str_c(path, "l_1.json"), simplifyVector = T)
+dat <- lst$points |> mutate(method = "\\mL")
+lst <- jsonlite::read_json(str_c(path, "m_1.json"), simplifyVector = T)
+dat <- bind_rows(dat, lst$points |> mutate(method = "\\mM"))
+lst <- jsonlite::read_json(str_c(path, "u_1.json"), simplifyVector = T)
+dat <- bind_rows(dat, lst$points |> mutate(method = "\\mU"))
+
+pt <- dat |> 
+  ggplot(aes(x = z1, y = z2)) +
+  geom_point(size = 0.5) +
+  facet_grid(cols = vars(method)) +
+  coord_fixed() + 
+  labs(x = "$y_1$", y = "$y_2$", shape = NULL, color = NULL, label = NULL) +
+  theme_academic()
+pt
+
+tikz("sp-50-lmu.tex", width = 8, height = 3)
+pt
+dev.off()
+```
+
+
+
 
 
 

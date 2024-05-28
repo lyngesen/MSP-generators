@@ -48,6 +48,21 @@ This report contains different plots and tables that may be relevant for analysi
 
 Given a problem consisting of $m$ subproblems with $Y_N^s$ given for each subproblem $s$, we use a filtering algorithm to find $Y_N$ (`alg1`). 
 
+The following instance/problem groups are generated given:
+
+  * $p=2,\ldots, 5$. [4 options]
+  * $m=2,\ldots 5$ where $m$ is the number of subproblems. [4 options]
+  * All subproblems have the same method config or half have method `u` and `l`. [4 options]
+  * Five instances for each config. [5 options]
+
+
+
+We consider 
+```{r}
+raw <- 
+```
+
+
 ```{r}
 raw <- read_csv(here::here("code/instances/stat-prob.csv"))
 dat <- raw %>% 
@@ -91,7 +106,7 @@ dat <- dat %>%
 DT::datatable(dat)
 ```
 
-Note that the width of objective $i$, $w_i = [l_i, u_i]$ should be approx. $10000m$:
+Note that the width of objective $i = 1, \ldots p$, $w_i = [l_i, u_i]$ should be approx. $10000m$:
 
 ```{r}
 dat %>% 
