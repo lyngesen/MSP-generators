@@ -32,16 +32,16 @@ calcStat <- function(path) {
    return(calc)
 }
 
-classifyStat <- function(path) {
+classifyStat <- function(path, classifyExt = FALSE) {
    tictoc::tic()
    lst <- jsonlite::read_json(path, simplifyVector = T)
    cat("Classify", lst$statistics$card, "points:", path, "...")
    if (is.null(lst$points)) {
       calc <- FALSE
    } else {
-      calc <- is.null(lst$points$cls) | any(is.na(lst$points$cls))
+      calc <- is.null(lst$points$cls) #| any(is.na(lst$points$cls))
    }
-   if (calc) {
+   if (calc & !classifyExt) {
       p <- lst$statistics$p
       pts <- classifyNDSet(lst$points[, 1:p]);
       if (nrow(pts) > 0) pts <- pts %>% distinct();
@@ -52,16 +52,65 @@ classifyStat <- function(path) {
       lst$statistics$unsupported <- sum(pts$us);
       jsonlite::write_json(lst, path, pretty = FALSE)
       cat(" done.\n")
+   } else if (calc & classifyExt) {
+      p <- lst$statistics$p
+      pts <- classifyExt(lst$points[, 1:p]);
+      if (nrow(pts) > 0) pts <- pts %>% distinct();
+      lst$points <- pts %>% select(-se);
+      lst$statistics$card <- nrow(pts);
+      lst$statistics$extreme <- sum(pts$se);
+      jsonlite::write_json(lst, path, pretty = FALSE)
    } else {
       cat(" already calc.\n")
    }
-   if (fs::file_size(path) > "20MB" & !any(is.na(lst$statistics$min))) { # reduce file sizes
+   if (fs::file_size(path) > "20MB" & !any(is.na(lst$statistics$extreme))) { # reduce file sizes
       lst$points <- NULL
       jsonlite::write_json(lst, path, pretty = FALSE)
    }
    tictoc::toc()
    return(calc)
 }
+
+
+classifyExt <- function(pts) {
+   p <- ncol(pts)
+   colnames(pts)[1:p] <- paste0("z", 1:p)
+   direction <- rep(1,p)
+   nadir <-
+      purrr::map_dbl(1:p, function(i)
+         if (sign(direction[i]) > 0)
+            max(pts[, i]) + 5
+         else
+            min(pts[, i]) - 5) # add a number so
+   ideal <- purrr::map_dbl(1:p, function(i) if (sign(direction[i]) < 0) max(pts[, i]) else min(pts[, i]))
+   ## project on box so pts are the first rows and rest projections including upper corner points
+   set <- as.matrix(pts)
+   n <- nrow(set)
+   set <- rep(1, p + 1) %x% set  # repeat p + 1 times
+   for (i in 1:p) {
+      set[(i * n + 1):((i + 1) * n), i] <- nadir[i]
+   }
+   # find upper corner points of box
+   cP <- matrix(rep(nadir, p), byrow = T, ncol = p)   # repeat p + 1 times
+   diag(cP) <- ideal
+   cP <- rbind(cP, nadir)
+   # merge and tidy
+   set <- rbind(set, cP)
+   set <- set[!duplicated(set, MARGIN = 1), ]
+   # find hull of the unique points and classify
+   set <- convexHull(set, addRays = FALSE, direction = direction)
+   # hull <- set$hull
+   set <- set$pts
+   set$pt[(n+1):length(set$pt)] <- 0
+   colnames(set)[1:p] <- paste0("z", 1:p)
+   set <- set %>% # tidy and add old id
+      dplyr::filter(.data$pt == 1) %>%
+      dplyr::mutate(cls = dplyr::if_else(vtx, "se", NA_character_), se = vtx) |> 
+      dplyr::select(tidyselect::all_of(1:p), c("cls", "se")) 
+   rownames(set) <- NULL
+   return(set)
+}
+
 
 updateProbStatFile <- function() {
    cat("Update statistics for results.")
@@ -121,6 +170,13 @@ datError <- read_csv(here::here("code/instances/stat-prob-error.csv")) %>%
    filter(type == "classify")
 idx <- which(fs::path_file(paths) %in% fs::path_file(datError$path))
 paths1 <- paths[-idx]
+
+datErrorExt <- read_csv(here::here("code/instances/stat-prob-error.csv")) %>% 
+   filter(type == "classifyExt")
+idx <- which(fs::path_file(datError$path) %in% fs::path_file(datErrorExt$path))
+paths2 <- datError$path
+if (length(idx) > 0) paths2 <- datError$path[-idx]
+
 if (cpu < timeLimit) {
    for (path in paths1) {
       res <- tryCatchLog(classifyStat(path), 
@@ -139,7 +195,26 @@ if (cpu < timeLimit) {
       }
    }
    if (calc) updateProbStatFile()
-} 
+   
+   # try to calc just extreme
+   for (path in fs::path_file(paths2)) {
+      res <- tryCatchLog(classifyStat(str_c("results/algorithm1/", path), classifyExt = T), 
+                         error = function(c) {
+                            datError <- bind_rows(datError, c(path = path, type = "classifyExt", alg = "alg1"))
+                            write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
+                            return(NA)
+                         })
+      if (is.na(res)) break   # stop so can commit
+      calc <- any(calc, res)
+      cpu <- difftime(Sys.time(), start, units = "secs")
+      cat("Cpu total", cpu, "\n")
+      if (cpu > timeLimit) {
+         cat("Time limit reached! Stop R script.")
+         break
+      }
+   }
+   if (calc) updateProbStatFile()
+}
 
 cat("\n\nFinish running R script.\n\n")
 
@@ -155,3 +230,14 @@ cat("\n\nFinish running R script.\n\n")
 # pts[duplicated(pts),]
 # pts$nd <- T
 # plotly::plot_ly(pts, x = ~z1, y = ~z2)
+
+
+# 
+# for (path in paths) {
+#    lst <- jsonlite::read_json(path, simplifyVector = T)
+#    p <- lst$statistics$p
+#    pts <- classifyNDSet(lst$points[, 1:p]);
+#    cat("se:", sum(pts$se),"\n")
+#    pts <- classify(lst$points[, 1:p]);
+#    cat("se:", sum(pts$se),"\n")
+# }
