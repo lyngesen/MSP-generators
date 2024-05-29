@@ -185,6 +185,20 @@ dat %>%
 <!--   theme(legend.position = "bottom")  -->
 <!-- ``` -->
 
+```{r}
+dat %>% 
+  ggplot(aes(x = spAvePctExt, y = card, color = factor(spAveCard), shape = method, group = method)) +
+    stat_summary(fun="mean", geom="line", color = "gray70") +
+    # stat_summary(aes(group = factor(spAveCard), color = factor(spAveCard)), fun="mean", geom="line", size = 0.05) +
+    geom_point() + 
+    facet_grid(p ~ m, scales = "free_y", labeller =  "label_both")  + 
+    labs(title = "Number of nondominated points",
+       y = "Cardinality Yn",
+       x = "Ave relative number of subproblem extreme",
+       color = "Subproblem cardinality") +
+  theme(legend.position = "bottom") 
+```
+
 
 ### Relative size of $Y_N$
 
@@ -201,7 +215,7 @@ dat %>%
   theme(legend.position = "bottom") 
 ```
 
-```{r}
+```{r, eval=FALSE}
 dat %>% 
   ggplot(aes(x = spAveCard, y = card / ubCard, color = method)) +
   geom_point() + 
@@ -228,7 +242,7 @@ dat %>%
 ```
 
 
-```{r}
+```{r, eval=FALSE}
 dat %>% 
   ggplot(aes(y = card / ubCard, x = method, color = method)) +
   geom_boxplot() +
@@ -253,6 +267,7 @@ dat %>%
 <!--        color = "Method(s) used to generate subproblems") + -->
 <!--   theme(legend.position = "bottom") -->
 <!-- ``` -->
+
 
 ### Nondominated points classification
 
@@ -308,6 +323,20 @@ dat %>%
   theme(legend.position = "bottom")
 ```
 
+
+```{r}
+dat %>% 
+  ggplot(aes(x = spAvePctExt, y = pctExt, color = factor(spAveCard), shape = method)) +
+  geom_point() + 
+  facet_grid(p ~ m, margins = T, labeller = label_both) +
+  labs(title = "Relativ number of extreme points",
+       y = "% extreme master",
+       x = "Avg. % extreme subproblems",
+       color = "Subproblem cardinality") +
+  theme(legend.position = "bottom")
+```
+
+
 ```{r}
 dat %>% 
   ggplot(aes(y = pctExt/spAvePctExt, x = spAveCard, color = method)) +
@@ -319,4 +348,49 @@ dat %>%
        x = "Subproblem cardinality",
        color = "Method(s) used to generate subproblems") +
   theme(legend.position = "bottom")
+```
+
+
+
+## Plots used in the paper
+
+```{r, eval=FALSE}
+## Number of extreme
+
+## how many sne?
+dat |> 
+  filter(card != 10, card != 150) |> 
+  mutate(e = extreme/card, sne = (supported-extreme)/card) |> 
+  group_by(method, p) |> 
+  summarise(e = mean(e), sne = mean(sne))
+
+dat1 <- dat |> 
+  filter(card != 10, card != 150) 
+
+pt1 <- dat1 |> 
+  ggplot(aes(x = card, y = extreme/card, shape = method, linetype = method)) +
+  stat_summary(fun="mean", geom="line") + 
+  geom_point(size = 0.75) + 
+  facet_grid(cols = vars(p)) +
+  labs(x = "$\\Yn^s$", y = NULL) +
+  theme_bw() +
+  theme(legend.position = "none")
+pt1
+
+pt2 <- dat1 |> 
+  ggplot(aes(x = p, y = extreme/card, shape = method, linetype = method)) +
+  geom_point(size = 0.75) + 
+  stat_summary(fun="mean", geom="line") + 
+  facet_grid(cols = vars(card)) + 
+  labs(x = "$p$", y = NULL) +
+  theme_bw() +
+  theme(legend.position = "none")
+pt2
+
+tikz("se-card.tex", width = 8, height = 3)
+pt1
+dev.off()
+tikz("se-p.tex", width = 8, height = 3)
+pt2
+dev.off()
 ```
