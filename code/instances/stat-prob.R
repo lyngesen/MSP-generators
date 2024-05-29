@@ -198,7 +198,7 @@ if (cpu < timeLimit) {
    
    # try to calc just extreme
    for (path in fs::path_file(paths2)) {
-      res <- tryCatchLog(classifyStat(str_c("results/algorithm1/", path), classifyExt = T), 
+      res <- tryCatchLog(classifyStat(here::here(str_c("code/instances/results/algorithm1/", path)), classifyExt = T), 
                          error = function(c) {
                             datError <- bind_rows(datError, c(path = path, type = "classifyExt", alg = "alg1"))
                             write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
