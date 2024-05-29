@@ -79,7 +79,7 @@ dat <- raw %>%
 ## is the hypercube close to approx?
 #dat %>% mutate(cst = points_hypercube/(m * 10000)^p) %>% ungroup() %>% summarise(val = mean(cst, na.rm = T))
 
-# add stat for subproblems
+# add relative stat for subproblems
 for (s in 1:max(dat$m)) {
   dat[, str_c("spPctExt", s)] <- dat[, str_c("spExtreme", s)] / dat[, str_c("spCard", s)]
 } 
@@ -94,13 +94,13 @@ dat <- dat %>%
 dat <- dat %>% 
   group_by(p, m, method, spAveCard) %>% 
   mutate(instances = n()) %>% 
-  filter(instances == 5, spAveCard <= 300) %>% 
+  filter(instances == 5, spAveCard <= 600) %>% 
   select(-instances) %>% 
   ungroup()
 DT::datatable(dat)
 ```
 
-Note that the width of objective $i = 1, \ldots p$, $w_i = [l_i, u_i]$ should be approx. $10000m$:
+Note that the width of objective $i = 1, \ldots p$, $w_i = [l_i, u_i]$ should be approx. $10000m$. Check:
 
 ```{r}
 dat %>% 
@@ -149,8 +149,8 @@ dat %>%
 dat %>% 
   ggplot(aes(x = spAveCard, y = card, color = method)) +
   geom_point() + 
-  geom_smooth(se = F) +
-  facet_wrap(m ~ p, scales = "free", labeller = label_context)  + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, scales = "free_y", labeller =  "label_both")  + 
   labs(title = "Number of nondominated points given subproblem cardinality",
        y = "Cardinality Yn",
        x = "Subproblem cardinality",
@@ -162,8 +162,8 @@ dat %>%
 dat %>% 
   ggplot(aes(x = spAveCard, y = card, color = method)) +
   geom_point() + 
-  geom_smooth(se = F) +
-  facet_wrap(m ~ p, scales = "free", labeller = "label_both")  + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, scales = "free_y", labeller = "label_both")  + 
   labs(title = "Number of nondominated points given subproblem cardinality (log2) scale",
        y = "Cardinality Yn",
        x = "Subproblem cardinality",
@@ -176,7 +176,7 @@ dat %>%
 <!-- dat %>%  -->
 <!--   ggplot(aes(x = spAveCard, y = card, color = factor(p))) + -->
 <!--   geom_point() +  -->
-<!--   geom_smooth(se = F) + -->
+<!--   stat_summary(fun="mean", geom="line") + -->
 <!--   facet_wrap(vars(method), scales = "free", labeller = "label_both")  +  -->
 <!--   labs(title = "Number of nondominated points given subproblem cardinality", -->
 <!--        y = "Cardinality Yn", -->
@@ -190,15 +190,55 @@ dat %>%
 
 ```{r}
 dat %>% 
+  ggplot(aes(x = spAveCard, y = card / ubCard, color = method)) +
+  geom_point() + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, labeller = "label_both")  + 
+  labs(title = "Relative size of nondominated points compared to total enumeration given subproblem cardinality",
+       y = "Cardinality Yn",
+       x = "Subproblem cardinality",
+       color = "Methods used to generate subproblems") +
+  theme(legend.position = "bottom") 
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(x = spAveCard, y = card / ubCard, color = method)) +
+  geom_point() + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, labeller = "label_both")  + 
+  labs(title = "Relative size of nondominated points compared to total enumeration given subproblem cardinality (log2 scale)",
+       y = "Cardinality Yn",
+       x = "Subproblem cardinality",
+       color = "Methods used to generate subproblems") +
+  theme(legend.position = "bottom") +
+  scale_y_continuous(trans = "log2")
+```
+
+```{r}
+dat %>% 
   ggplot(aes(y = card / ubCard, x = method, color = method)) +
   geom_boxplot() +
-  facet_grid(m ~ p, margins = T, labeller = label_both) +
+  facet_grid(p ~ m, labeller = label_both) +
   labs(title = "Relative size of nondominated points compared to total enumeration",
        y = "%",
        x = "Method",
        color = "Method(s) used to generate subproblems") +
   theme(legend.position = "bottom")
+```
 
+
+```{r}
+dat %>% 
+  ggplot(aes(y = card / ubCard, x = method, color = method)) +
+  geom_boxplot() +
+  facet_grid(m ~ p, labeller = label_both) +
+  labs(title = "Relative size of nondominated points compared to total enumeration (log2 scale)",
+       y = "%",
+       x = "Method",
+       color = "Method(s) used to generate subproblems") +
+  theme(legend.position = "bottom") +
+  scale_y_continuous(trans = "log2")
 ```
 
 
@@ -222,8 +262,8 @@ We classify the nondominated points into, extreme, supported non-extreme and uns
 dat %>% 
   ggplot(aes(x = spAveCard, y = pctExt, color = method)) +
   geom_point() + 
-  geom_smooth(se = F) +
-  facet_grid(m ~ p, margins = T, labeller = label_both)  + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, margins = T, labeller = label_both)  + 
   labs(title = "Relativ number of extreme points given subproblem cardinality",
        y = "%",
        x = "Subproblem cardinality",
@@ -235,8 +275,8 @@ dat %>%
 dat %>% 
   ggplot(aes(x = spAveCard, y = pctSup, color = method)) +
   geom_point() + 
-  geom_smooth(se = F) +
-  facet_grid(m ~ p, margins = T, labeller = label_both)  + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, margins = T, labeller = label_both)  + 
   labs(title = "Relativ number of supported points given subproblem cardinality",
        y = "%",
        x = "Subproblem cardinality",
@@ -248,7 +288,7 @@ dat %>%
 dat %>% 
   ggplot(aes(x = method, y = pctExt, color = method)) +
   geom_boxplot() + 
-  facet_grid(m ~ p, margins = T, labeller = label_both) +
+  facet_grid(p ~ m, margins = T, labeller = label_both) +
   labs(title = "Relativ number of extreme points given method",
        y = "%",
        x = "Method",
@@ -260,7 +300,7 @@ dat %>%
 dat %>% 
   ggplot(aes(x = spAvePctExt, y = pctExt, color = method)) +
   geom_point() + 
-  facet_grid(m ~ p, margins = T, labeller = label_both) +
+  facet_grid(p ~ m, margins = T, labeller = label_both) +
   labs(title = "Relativ number of extreme points",
        y = "% extreme master",
        x = "Avg. % extreme subproblems",
@@ -272,9 +312,9 @@ dat %>%
 dat %>% 
   ggplot(aes(y = pctExt/spAvePctExt, x = spAveCard, color = method)) +
   geom_point() + 
-  geom_smooth(se = F) +
-  facet_grid(m ~ p, margins = T, labeller = label_both) +
-  labs(title = "Relativ number of extreme points",
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, margins = T, labeller = label_both) +
+  labs(title = "Relativ: % extreme master / % extreme subproblems",
        y = "% extreme master / % extreme subproblems",
        x = "Subproblem cardinality",
        color = "Method(s) used to generate subproblems") +
