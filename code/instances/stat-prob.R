@@ -60,6 +60,7 @@ classifyStat <- function(path, classifyExt = FALSE) {
       lst$statistics$card <- nrow(pts);
       lst$statistics$extreme <- sum(pts$se);
       jsonlite::write_json(lst, path, pretty = FALSE)
+      cat(" done (ext).\n")
    } else {
       cat(" already calc.\n")
    }

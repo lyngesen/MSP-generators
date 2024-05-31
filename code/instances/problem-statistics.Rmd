@@ -22,6 +22,7 @@ knit: (function(inputFile, encoding) {
 ```{r setup, include=FALSE}
 here::i_am("code/instances/problem-statistics.Rmd")  # specify relative path given project
 # remotes::install_github("relund/gMOIP")
+# remotes::install_github("fischuu/OjaNP")
 # library(gMOIP)
 library(DT)
 library(tidyverse)
@@ -116,6 +117,50 @@ dat %>%
 <!--   summarise(instances = n(), card = mean(card), pctSup = mean(pctSup)) %>%  -->
 <!--   filter(instances < 5) -->
 <!-- ``` -->
+
+```{r, eval=FALSE}
+# pts <- matrix(c(5,5,5), ncol = 3)
+# ini3D(argsPlot3d = list(xlim = c(0,10), ylim = c(0,10), zlim = c(0,10)))
+# plotCones3D(pts)
+# plotCones3D(pts, direction = -1)
+# finalize3D(argsAxes3d = list(edges = "bbox"))
+
+## try to estimate ub on integer nd points in a hypercube by fitting pts to hyperplane
+
+# library(eaf)
+# library(OjaNP)
+# estimateUbND <- function(ideal, nadir) {
+#   p <- length(ideal)
+#   # find lex max
+#   pts <- matrix(rep(ideal, p), ncol = p, byrow = T)
+#   diag(pts) <- nadir
+#   # calc hyperplane containing pts
+#   coeff <- hyperplane(pts)   # d^t * x + c = 0
+#   # find integer pts near hyperplane
+#   val <- map(1:(p-1), function(i) ideal[i]:nadir[i])
+#   res <- as.matrix(expand.grid(val))
+#   coeff1 <- coeff[1:(p-1)]
+#   tmp <- -(coeff1 %*% t(res) + coeff[p+1])/coeff[p]
+#   res <- cbind(res,tmp[1,])
+#   # tst <- coeff[1:p] %*% t(tst) + coeff[p]
+#   # any(tst != 0)
+#   res <- res[res[,p] >= ideal[p] & res[,p] <= nadir[p], ]
+#   # colnames(res) <- str_c("y", 1:(p-1))
+#   # res <- res |> 
+#   #   rowwise() |> 
+#   #   mutate(test = -(sum(coeff[1:(p-1)] * c_across(contains("y"))) + coeff[p+1]) / coeff[p]) |> 
+#   #   mutate(y = round(-(sum(coeff[1:(p-1)] * c_across(contains("y"))) + coeff[p+1]) / coeff[p])) |> 
+#   #   mutate(test = sum(coeff[1:p] * c_across(contains("y"))) + coeff[p+1]) 
+#   ndSet <- filter_dominated(res)
+#   return(nrow(ndSet))
+# }
+# p <- 3
+# ideal <- rep(0,p)
+# nadir <- rep(10000,p)
+# estimateUbND(ideal, nadir)
+```
+
+
 
 ### Size of $Y_N$
 
