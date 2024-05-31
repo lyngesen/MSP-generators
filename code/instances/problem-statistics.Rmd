@@ -45,7 +45,7 @@ This report contains different plots and tables that may be relevant for analysi
   * The number of integer points in the hypercube is $$\prod_{i = 1}^p (u_i - l_i + 1)$$
 
 
-## Statistics for the problems solved using `alg1`
+## Statistics for `alg1`
 
 Given a problem consisting of $m$ subproblems with $Y_N^s$ given for each subproblem $s$, we use a filtering algorithm to find $Y_N$ (`alg1`). 
 
@@ -56,10 +56,13 @@ The following instance/problem groups are generated given:
   * All subproblems have the same method config or half have method `u` and `l`. [4 options]
   * Five instances for each config. [5 options]
 
-
+### Status 
 
 ```{r}
-raw <- read_csv(here::here("code/instances/stat-prob.csv"))
+files <- fs::path_file(fs::dir_ls(here::here("code/instances/problems")))
+files <- str_c("alg1-", files)
+raw <- read_csv(here::here("code/instances/stat-prob.csv")) |> mutate(path = fs::path_file(path))
+raw <- full_join(tibble(path = files), raw)
 dat <- raw %>% 
   mutate(method = str_extract(path, "^.*-(.*)-.*$", group = 1)) %>% 
   mutate(method = map_chr(method, function (x) {
@@ -77,6 +80,7 @@ dat <- raw %>%
          pctExt = extreme/card,
          m = as.numeric(str_extract(path, "^.*-(.*)_.*$", group = 1))) 
 
+
 ## is the hypercube close to approx?
 #dat %>% mutate(cst = points_hypercube/(m * 10000)^p) %>% ungroup() %>% summarise(val = mean(cst, na.rm = T))
 
@@ -91,6 +95,7 @@ dat <- dat %>%
     ubCard = prod(c_across(starts_with("spCard")), na.rm = T)
   ) %>% 
   ungroup()
+datFull <- dat
 # remove results where have not solved all instances
 dat <- dat %>% 
   group_by(p, m, method, spAveCard) %>% 
@@ -98,6 +103,25 @@ dat <- dat %>%
   filter(instances == 5, spAveCard <= 600) %>% 
   select(-instances) %>% 
   ungroup()
+```
+
+  * `r datFull |> filter(!is.na(card)) |> nrow()`/`r nrow(datFull)` problems have been solved.
+  * `r nrow(dat)`/`r length(files)` problems have 5 instances solved for each configuration.
+  * `r datFull |> filter(is.na(extreme) & !is.na(card)) |> nrow()`/`r nrow(datFull)` have not been classified.
+  * `r datFull |> filter(is.na(unsupported) & !is.na(extreme)) |> nrow()`/`r nrow(datFull)` have not been fully classified (only classified extreme).
+  
+<!-- Overview over subproblems not solved yet -->
+
+<!-- ```{r} -->
+<!-- dat %>% -->
+<!--   filter(is.na(card)) |>  -->
+<!--   group_by(p, m, method, spAveCard) %>% -->
+<!--   count() -->
+<!-- ``` -->
+  
+### Problems solved for the analysis  
+
+```{r}
 DT::datatable(dat)
 ```
 
@@ -109,14 +133,7 @@ dat %>%
   summarize(across(starts_with("width"), ~ mean(.x, na.rm = TRUE), .names = "mean_{.col}"))
 ```
 
-<!-- Overview over subproblems not solved yet -->
 
-<!-- ```{r} -->
-<!-- dat %>%  -->
-<!--   group_by(p, m, method, spAveCard) %>%  -->
-<!--   summarise(instances = n(), card = mean(card), pctSup = mean(pctSup)) %>%  -->
-<!--   filter(instances < 5) -->
-<!-- ``` -->
 
 ```{r, eval=FALSE}
 # pts <- matrix(c(5,5,5), ncol = 3)
