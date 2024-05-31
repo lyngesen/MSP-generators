@@ -105,7 +105,7 @@ dat <- dat %>%
   ungroup()
 ```
 
-  * `r datFull |> filter(!is.na(card)) |> nrow()`/`r nrow(datFull)` problems have been solved.
+  * `r datFull |> filter(!is.na(card)) |> nrow()`/`r nrow(datFull)` problems have been solved, i.e. `r nrow(datFull) - datFull |> filter(!is.na(card)) |> nrow()` remaining.
   * `r nrow(dat)`/`r length(files)` problems have 5 instances solved for each configuration.
   * `r datFull |> filter(is.na(extreme) & !is.na(card)) |> nrow()`/`r nrow(datFull)` have not been classified.
   * `r datFull |> filter(is.na(unsupported) & !is.na(extreme)) |> nrow()`/`r nrow(datFull)` have not been fully classified (only classified extreme).
@@ -121,8 +121,8 @@ dat <- dat %>%
   
 ### Problems solved for the analysis  
 
-```{r}
-DT::datatable(dat)
+```{r, out.width = "100%"}
+DT::datatable(dat, width = "100%", options = list(autoWidth = T, scrollX = TRUE, columnDefs = list(list(width = '250px', targets = c(1)))))
 ```
 
 Note that the width of objective $i = 1, \ldots p$, $w_i = [l_i, u_i]$ should be approx. $10000m$. Check:
