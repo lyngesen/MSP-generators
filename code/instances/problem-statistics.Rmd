@@ -4,11 +4,11 @@ output: html_document
 date: "`r Sys.Date()`"
 editor_options: 
   chunk_output_type: console
-knit: (function(inputFile, encoding) { 
-    out_dir <- '../../docs/';
-    rmarkdown::render(inputFile,
-                      encoding=encoding, 
-                      output_file=file.path(dirname(inputFile), out_dir, 'problem-statistics.html')) })
+# knit: (function(inputFile, encoding) { 
+#     out_dir <- '../../docs/';
+#     rmarkdown::render(inputFile,
+#                       encoding=encoding, 
+#                       output_file=file.path(dirname(inputFile), out_dir, 'problem-statistics.html')) })
 ---
 
 <style type="text/css">
