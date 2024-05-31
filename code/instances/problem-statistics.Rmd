@@ -106,9 +106,9 @@ dat <- dat %>%
 ```
 
   * `r datFull |> filter(!is.na(card)) |> nrow()`/`r nrow(datFull)` problems have been solved, i.e. `r nrow(datFull) - datFull |> filter(!is.na(card)) |> nrow()` remaining.
-  * `r nrow(dat)`/`r length(files)` problems have 5 instances solved for each configuration.
-  * `r datFull |> filter(is.na(extreme) & !is.na(card)) |> nrow()`/`r nrow(datFull)` have not been classified.
-  * `r datFull |> filter(is.na(unsupported) & !is.na(extreme)) |> nrow()`/`r nrow(datFull)` have not been fully classified (only classified extreme).
+  * `r nrow(dat)`/`r datFull |> filter(!is.na(card)) |> nrow()` problems have 5 instances solved for each configuration.
+  * `r datFull |> filter(is.na(extreme) & !is.na(card)) |> nrow()`/`r datFull |> filter(!is.na(card)) |> nrow()` have not been classified.
+  * `r datFull |> filter(is.na(unsupported) & !is.na(extreme)) |> nrow()`/`r datFull |> filter(!is.na(card)) |> nrow()` have not been fully classified (only classified extreme).
   
 <!-- Overview over subproblems not solved yet -->
 
