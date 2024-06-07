@@ -1,0 +1,39 @@
+#!/bin/bash -l
+SBATCH --job-name=NonDomFilterAlg1
+#SBATCH --partition=q24
+SBATCH --mem=128G
+#SBATCH --ntasks=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=10
+SBATCH --time=23:00:00
+
+
+echo "========= Job started  at `date` =========="
+
+# Go to the directory where this job was submitted
+cd $SLURM_SUBMIT_DIR
+
+# load Python 3.11.1
+ml load python/3.11.1
+
+# copy inputdata and the executable to the scratch-directory
+# cp *.dat /scratch/$SLURM_JOB_ID
+#cp test_script.py /scratch/$SLURM_JOB_ID
+cp -R minkowski_project /scratch/$SLURM_JOB_ID/minkowski_project/
+
+# change directory to the local scratch-directory, and run:
+cd /scratch/$SLURM_JOB_ID/minkowski_project
+pip3 install -r requirements.txt
+export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK:-1}
+#tree
+#ls
+python3 algorithm1.py > out
+#python3 algorithm1.py
+
+# copy home the outputdata:
+#cp out $SLURM_SUBMIT_DIR/results/out.$SLURM_JOB_ID
+cp out $SLURM_SUBMIT_DIR/results/out.$SLURM_JOB_ID
+#cp alg1_grendel.csv $SLURM_SUBMIT_DIR/results/alg1_grendel.csv$SLURM_JOB_ID
+cp alg1_grendel.csv $SLURM_SUBMIT_DIR/results/alg1_grendel.csv
+
+echo "========= Job finished at `date` =========="
