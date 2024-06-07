@@ -2,6 +2,7 @@ from __future__ import annotations # allow annotation self references (eg. in KD
 from dataclasses import dataclass
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import csv
 import json
 # from itertools.collections import Counter
@@ -61,7 +62,15 @@ class Point:
 
     def __le__(self, other):
         return all(self.val <= other.val)
+
+    def le_d(self, other, d : int):
+        return all((self.val[p] <= other.val[p] for p in range(d)))
     
+    def lt_d(self, other, d : int):
+        if all((self.val[p] == other.val[p] for p in range(d))):
+            return False
+        return all((self.val[p] <= other.val[p] for p in range(d)))
+
     def strictly_dominates(self, other):
         return all(self.val < other.val)
 
@@ -100,8 +109,9 @@ class Point:
     def __add__(self, other):
         if isinstance(other, PointList):
             return PointList((self,)) + other
-
         return Point(self.val + other.val)
+
+  
     def __sub__(self, other):
         return Point(self.val - other.val)
     def __mul__(self, other):
@@ -141,6 +151,18 @@ class Point:
             ax.show()
         return ax 
 
+    def plot_cone(self, ax= None, quadrant = 1,color='darkgray', **kwargs):
+        assert self.dim<=2, 'plot_cone Not implemented for p > 2'
+        ax = ax if ax else plt
+        color = color if (color is not None) else self.plot_color
+        kwargs['color'] = color
+        ymin, ymax = ax.get_ylim()
+        xmin, xmax = ax.get_xlim()
+        if quadrant == 1:
+            ax.add_patch(Rectangle((self[0],self[1]), xmax-self[0], ymax-self[1], fill=False, hatch='xx', **kwargs))
+        if quadrant == 3:
+            ax.add_patch(Rectangle((xmin,ymin), self[0]- xmin, self[1] - ymin, fill=False, hatch='xx', **kwargs))
+        return ax
 
 @dataclass
 class PointList:
@@ -199,9 +221,12 @@ class PointList:
             plt.savefig(fname, dpi= 200)
             plt.cla()
         if point_labels:
+            if point_labels == True:
+                point_labels = ["$y^{" +  f"{i}" + "}$" for i, _ in enumerate(self, start = 1)]
             # add labels to points
-            for i,y in enumerate(self, start = 1):
-                y.plot(ax = ax, l= "$y^{" +  f"{i}" + "}$", label_only=True)
+            for i,y in enumerate(self):
+                # y.plot(ax = ax, l= "$y^{" +  f"{i}" + "}$", label_only=True)
+                y.plot(ax = ax, l= point_labels[i], label_only=True)
            
 
                 
@@ -230,13 +255,26 @@ class PointList:
         output: Minkowski sum of sets
         """
         return PointList([y1 + y2 for y1 in self for y2 in other])
-
+    
     def __sub__(self,other):
         """
         input: list of two PointList
         output: Minkowski subtration of sets
         """
         return PointList([y1 - y2 for y1 in self for y2 in other])
+
+    def __mul__(self,other):
+        """
+        input: list of two PointList
+        output: Minkowski subtration of sets
+        """
+        match other:
+            case ( float() | int() ):
+                return PointList([y*other for y in self])
+            case _:
+                print(f"{other=}")
+                print(f"{type(other)=}")
+                raise NotImplementedError
 
 
 

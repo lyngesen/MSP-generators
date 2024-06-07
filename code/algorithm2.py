@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import os
 import csv
 import time
-
+import itertools
 
 def plot_y_j(y_j, Y_list, marker = 'x'):
     y_j.plot(marker='x', color='black')
@@ -50,10 +50,11 @@ def main():
     # Y_MIN_LIST = solve_instance(MSP.Y_list, plot= False)
 
     MSP = MinkowskiSumProblem.from_json('instances/problems/prob-2-200|200-ul-2_1.json')
+    MSP = MinkowskiSumProblem.from_json('instances/problems/prob-2-200|200-mm-2_1.json')
     # MSP = MinkowskiSumProblem.from_json('instances/problems/prob-2-50|50|50-mmm-3_1.json')
     # MSP = MinkowskiSumProblem.from_json('instances/problems/prob-2-300|300|300-mmm-3_2.json')
     Y_list = MSP.Y_list
-    if True:
+    if False:
         Y_list = MSP.Y_list
         Y_list[0] = Y_list[0]*2
         Y_list[1] = Y_list[1]*1.5
@@ -63,8 +64,11 @@ def main():
         Y_list = [Y1,Y2]
         MSP = MinkowskiSumProblem(Y_list)
 
+    # MSP.plot()
+    # plt.show()
+
     print(f"Running simple filter...")
-    Yn, Y_ms, Yn_dict = SimpleFilter(Y_list)
+    Yn, Yn_dict = SimpleFilter(Y_list)
 
     duplicates = {y_j : y_j_list for y_j, y_j_list in Yn_dict.items() if len(y_j_list)>1}
     duplicates = dict(sorted(duplicates.items(), key=lambda item: len(item[1]), reverse=True))
@@ -76,15 +80,11 @@ def main():
                 # print(f"    {y_j_I}")
 
     
-        
-
-    print(f"{len(Y_ms)=}")
-    print(f"{len(Yn)=}")
-    print(f"{len(duplicates.keys())=}")
-
+    Y_ms = methods.MS_sum(Y_list)
     print_timeit()
     
 
+    print(f"{duplicates=}")
 
     Y_generator_index = {s:set() for s, _ in enumerate(Y_list)}
     for y_j, y_j_list in Yn_dict.items():
@@ -100,7 +100,7 @@ def main():
     print(f"Generated points of Yn {len(Yn_generated)} of {len(Yn)}")
     for y_j, y_j_list in duplicates.items():
         for y_j_I in y_j_list:
-            # print(f"{[y_j_I[s] in Y_generator_index[s] for s, _ in enumerate(Y_list)]}")
+            print(f"{[y_j_I[s] in Y_generator_index[s] for s, _ in enumerate(Y_list)]}")
             if all([y_j_I[s] in Y_generator_index[s] for s, _ in enumerate(Y_list)]):
                 Yn_generated.add(y_j)
                 break
@@ -129,9 +129,30 @@ def main():
 
 
 
+def alg2(Y1,Y2):
+    ''' Algorithm 2 special case two subproblems - For PhDSeminar CORAL May 2024 '''
+
+    print(f"Running simple filter...")
+    Y_list = [Y1, Y2]
+
+
+    G = solve_instance(Y_list, verbose = False, plot = False )
+
+    for i, g in enumerate(G):
+        print(f"|G{i+1}| = {len(g)}")
+
+    return None
+    
+def test_alg2():
+
+    Y1 = PointList.from_json('./instances/subproblems/sp-2-100-u_1.json')
+    Y2 = PointList.from_json('./instances/subproblems/sp-2-100-m_2.json')
+
+    G = alg2(Y1, Y2)
 
 
 
 
 if __name__ == "__main__":
-    main()
+    test_alg2()
+    # main()

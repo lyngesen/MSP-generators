@@ -1,0 +1,4 @@
+matplotlib==3.8.3
+numpy==1.25.2
+Pyomo==6.7.0
+pytest==7.4.2

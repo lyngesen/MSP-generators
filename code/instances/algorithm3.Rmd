@@ -23,13 +23,15 @@ knit: (function(inputFile, encoding) {
 here::i_am("code/instances/algorithm3.Rmd")  # specify relative path given project
 # remotes::install_github("relund/gMOIP")
 # library(gMOIP)
-library(DT)
+#library(DT)
 library(tidyverse)
+library(ggplot2)
 # library(knitr)
 # library(rgl)
 # rgl::setupKnitr()
 # options(rgl.useNULL=TRUE)
 # rgl::par3d("family" = "serif")
+# library(tikzDevice)
 knitr::opts_chunk$set(
   echo = FALSE,
   message=FALSE, include = TRUE, warning = FALSE,
@@ -73,24 +75,115 @@ The following grid shows an example of the number of dominated points. [size = 1
 In the following we plot the relative number of points dominated by the generator upper bound set. We plot this in a grid for different levels of nonsupported points. In each plot we present boxplots for several sizes of the input sets.
 
 
+```{r}
+dat <- read_csv(here::here("code/instances/results/algorithm3/result_slides_alg1_2.csv"))
+dat$s1 <- factor(dat$s1)
 
+```
+
+```{r}
+dat$t1 <- factor(dat$t1)
+dat$t2 <- factor(dat$t2)
+
+t1_labels <- c("l" = "No unsupported Y1", "m" ="Some unsupported Y1", "u" = "Many unsupported Y1")
+t1_labeller <- function(variable, value) {
+  return(t1_labels[value])
+}
+t2_labels <- c("l" = "No unsupported Y2", "m" ="Some unsupported Y2", "u" = "Many unsupported Y2")
+t2_labeller <- function(variable, value) {
+  return(t2_labels[value])
+}
+
+dat %>% 
+   filter(Y1_size <=300) %>%
+   mutate(relative = Yn_size/Y_size) %>%
+   ggplot(aes(x = s1, y = relative)) +
+   geom_boxplot() + 
+   facet_grid(t2 ~ t1, margins = F, labeller = labeller(t1 = t2_labeller, t2 = t1_labeller)) +
+   labs(
+        y = "Relative number of nondominated points",
+        x = "Subproblem size") +
+   theme(legend.position = "bottom")
+```
+
+
+# Algorithm 2
+Size of the minimum generator sets
+
+MGS size
+```{r}
+
+dat %>% 
+   filter(Y1_size <=300) %>%
+   mutate(MGS_size = G1_size + G2_size) %>%
+   ggplot(aes(x = s1, y = MGS_size)) +
+   geom_boxplot() + 
+   #facet_grid(t2 ~ t1, margins = F, labeller = label_both) +
+   facet_grid(t2 ~ t1, margins = F, labeller = labeller(t1 = t2_labeller, t2 = t1_labeller)) +
+   labs(
+        y = "Size of Minimum generator set",
+        x = "Subproblem size") +
+   theme(legend.position = "bottom")
+```
+
+
+MGS size relative
+```{r}
+
+dat %>% 
+   filter(Y1_size <=300) %>%
+   mutate(MGS_size_rel = (G1_size + G2_size) / (Y1_size + Y2_size) ) %>%
+   ggplot(aes(x = s1, y = MGS_size_rel)) +
+   geom_boxplot() + 
+   facet_grid(t2 ~ t1, margins = F, labeller = labeller(t1 = t2_labeller, t2 = t1_labeller)) +
+   #facet_grid(t2 ~ t1, margins = F, labeller = label_both) +
+   labs(
+        y = "Relative size of Minimum generator set",
+        x = "Subproblem size") +
+   theme(legend.position = "bottom")
+```
+
+MGS size Y1 relative
+```{r}
+
+dat %>% 
+   filter(Y1_size <=300) %>%
+   mutate(MGS_size_rel = (G2_size) / (Y2_size) ) %>%
+   #mutate(MGS_size_rel = (G1_size) / (Y1_size) ) %>%
+   ggplot(aes(x = s1, y = MGS_size_rel)) +
+   geom_boxplot() + 
+   #facet_grid(t2 ~ t1, margins = F, labeller = label_both) +
+   facet_grid(t2 ~ t1, margins = F, labeller = labeller(t1 = t2_labeller, t2 = t1_labeller)) +
+   labs(
+        y = "|G1|/|Y1|",
+        x = "Subproblem size") +
+   theme(legend.position = "bottom")
+```
+
+
+
+# Algorithm 3
 
 ```{r}
 dat <- read_csv(here::here("code/instances/results/algorithm3/result.csv"))
 dat$ub_level <- factor(dat$ub_level, levels = c("lexmin", "extreme", as.character(seq(0.25, 0.75, by = 0.25)), "all"))
 dat$s1 <- factor(dat$s1)
 
+figures_location <- '../../phd/projects/papers/slidesCORAL/figures/empirical/'
+
 ```
 
 ```{r}
+
 dat %>% 
    filter(Y1_size <=200) %>%
    filter(ub_level == 'extreme') %>%
    ggplot(aes(x = s1, y = dominated_relative_Y2)) +
    geom_boxplot() + 
-   facet_grid(t2 ~ t1, margins = F, labeller = label_both) +
-   labs(title = "Relativ number of dominated points given subproblem size",
-        y = "%",
+   #facet_grid(t2 ~ t1, margins = F, labeller = label_both) +
+   facet_grid(t2~ t1, margins = F, labeller = labeller(t1 = t1_labeller, t2 = t2_labeller)) +
+   labs(
+        y = "% dominated points",
         x = "Subproblem size") +
    theme(legend.position = "bottom")
 ```
@@ -112,13 +205,16 @@ In the following we consider the case where only a subset of  $Y^2$is used to de
 
 ```{r}
 dat %>% 
-   filter(Y1_size <=200) %>%
-   ggplot(aes(x = ub_level, y = dominated_relative_Y2, color=s1)) +
+   filter(Y1_size ==200) %>%
+   ggplot(aes(x = ub_level, y = dominated_relative_Y2)) +
    geom_boxplot() + 
-   facet_grid(t2 ~ t1, margins = F, labeller = label_both) +
-   labs(title = "Relativ number of dominated points given level of partial set Y2",
-        y = "%",
-        x = "Y2 partial level") +
+   #facet_grid(t2 ~ t1, margins = F, labeller = label_both) +
+   facet_grid(t2 ~ t1, margins = F, labeller = labeller(t1 = t1_labeller, t2 = t2_labeller)) +
+   labs(
+      #title = "Relativ number of dominated points given level of partial set Y1, dominated/|Y^2|",
+        #y = "%",
+        y = "% dominated points",
+        x = "Y1 partial level") +
    theme(legend.position = "bottom", axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
@@ -127,11 +223,13 @@ In the following we show how long is spent calculating the generator upper bound
 
 ```{r}
  dat %>% 
-   ggplot(aes(x = ub_level, y = U_time, color=s1)) +
+   filter(Y1_size ==200) %>%
+   ggplot(aes(x = ub_level, y = log(U_time), color=s1)) +
    geom_boxplot() + 
-   facet_grid(t2 ~ t1, margins = F, labeller = label_both) +
-   labs(title = "Time spent on calculating generator upper bound",
-        y = "%",
+   #facet_grid(t2 ~ t1, margins = F, labeller = label_both) +
+   facet_grid(t2 ~ t1, margins = F, labeller = labeller(t1 = t1_labeller, t2 = t2_labeller)) +
+   labs(title = "(log) Time spent on calculating generator upper bound",
+        y = "(log) time",
         x = "Y2 partial level") +
    theme(legend.position = "bottom", axis.text.x = element_text(angle = 90, hjust = 1))
 ```

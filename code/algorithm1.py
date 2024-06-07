@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import os
 import csv
 import time
+import itertools
 
 time_object(KD_tree)
 time_object(KD_Node)
@@ -32,26 +33,24 @@ def name_dict(problem_file):
     _, p, size, method, M = problem_file.split("-")
     size = size.split("|")[0]
     p, M, size = int(p), int(M), int(size)
-    D = {'filename': filename, 'p': p, 'method':method, 'M': M, 'size': size}
+    D = {'filename': filename, 'p': p, 'method':method, 'M': M, 'size': size, 'seed':seed}
     return D
     
 def name_dict_keys(problem_file):
     D = name_dict(problem_file)
     return (D['size'], D['p'], D['M'])
 
-def sorted_problems():
-    all_problems = os.listdir("instances/problems/")
+# def sorted_problems():
+    # all_problems = os.listdir("instances/problems/")
 
-    print(f"{name_dict(all_problems[0])=}")
+    # print(f"{name_dict(all_problems[0])=}")
 
-    all_problems = sorted(all_problems, key = name_dict_keys )
+    # all_problems = sorted(all_problems, key = name_dict_keys )
 
-    for p in all_problems[:100]:
-        # print(f"{name_dict(p)}")
-        print(" ".join(f"{k} = {v},\t" for k, v in name_dict(p).items()))
-    # print(f"{all_problems[:10]=}")
-
-
+    # for p in all_problems[:100]:
+        # # print(f"{name_dict(p)}")
+        # print(" ".join(f"{k} = {v},\t" for k, v in name_dict(p).items()))
+    # # print(f"{all_problems[:10]=}")
 
 def main():
 
@@ -110,33 +109,36 @@ def main():
 
 def test_times():
 
-    # MSP = MinkowskiSumProblem.from_json("instances/problems/prob-2-50|50-ll-2_1.json") 
-    # MSP = MinkowskiSumProblem.from_json("instances/problems/prob-5-300|300|300|300|300-lllll-5_3.json") 
-    MSP = MinkowskiSumProblem.from_json("instances/problems/prob-3-100|100|100-mmm-3_1.json") 
 
-    # MSP = MinkowskiSumProblem.from_json("instances/problems/prob-3-100|100-ll-2_1.json") 
+    MSP_list= [
+               # "./instances/problems/prob-5-100|100-ll-2_1.json",
+               # "./instances/problems/prob-4-100|100-ll-2_2.json",
+               #"./instances/problems/prob-5-50|50|50-lll-3_1.json",
+               # "./instances/problems/prob-3-50|50|50|50-uuuu-4_1.json",
+               # "./instances/problems/prob-5-600|600|600-uuu-3_1.json",
+               # "./instances/problems/prob-4-100|100|100-mmm-3_1.json",
+               "./instances/problems/prob-4-100|100|100|100-mmmm-4_1.json",
+               # "./instances/problems/prob-5-50|50|50|50-mmmm-4_1.json",
+               ]
 
-
-    # Y = methods.MS_sum(MSP.Y_list)
-    print(f"{MSP}")
-    filter_time = time.time()
-    Yn = methods.MS_sequential_filter(MSP.Y_list)
-    print(f"{Yn.statistics=}")
-    Yn.statistics['filter_time'] = time.time() - filter_time
-
-    print(f"{Yn.statistics=}")
-    print_timeit(0.1)
-
-    # plt.show()
-      
-#     print(f"{MSP=}")
-    # Yn = methods.MS_sequential_filter(MSP.Y_list, filter_alg = methods.KD_filter)
-    # print_timeit()
-    # print(f"{len(Yn)=}")
-    # reset_timeit()
-    # Yn = methods.MS_sequential_filter(MSP.Y_list, filter_alg = methods.naive_filter)
-    # print_timeit()
-
+    for MSP_name in MSP_list:
+        MSP = MinkowskiSumProblem.from_json(MSP_name)
+        csv_file_path = 'alg1_grendel.csv'
+        print(f"{MSP}")
+        filter_time = time.time()
+        Yn = methods.MS_sequential_filter(MSP.Y_list)
+        Yn.statistics['filter_time'] = time.time() - filter_time
+        print(f"{len(Yn)=}")
+        time_dict = print_timeit(0.1)
+        data = {'problem': MSP.filename}
+        data.update(Yn.statistics)
+        # data.update(time_dict)
+        with open(csv_file_path, 'a') as csv_file:
+            # add header if file empty
+            writer = csv.writer(csv_file)
+            if os.path.getsize(csv_file_path) == 0:
+                writer.writerow(data.keys())
+            writer.writerow(data.values())
 
 def json_files_to_csv():
 
@@ -184,13 +186,60 @@ def remaining_instances():
     # for p in not_solved:
         # print(f"{name_dict(p)}")
 
+    return not_solved
+
+
+
+
+
+def algorithm1():
+    # run algorithm 1 on specified test instances
+    
+    m_options = (2,3,4) # subproblems
+    p_options = (2,3,4, 5) # dimension
+    generation_options = ['m','u'] # generation method
+    size_options = (50, 100, 150) # subproblems size
+    seed_options = [1,2,3,4,5]
+    
+
+
+    # m,p,generation, size, seed = (2,2,'m',50, 2)
+    # filename = f"prob-{p}-{size}" + f"|{size}"*(m-1) + "-" + generation * m + f"-{m}_{seed}.json" 
+
+    not_solved = remaining_instances()
+
+
+    print(f"{name_dict(not_solved[0])}")
+    to_solve = 0
+    for filename in not_solved:
+        instance_dict = name_dict(filename)
+        if all((instance_dict['p'] in p_options,
+               instance_dict['M'] in m_options,
+               # set(instance_dict['method']) == set(generation_options),
+               instance_dict['size'] in size_options,
+               # instance_dict['seed'] in seed_options
+               )):
+            print(f"{filename=}")
+            to_solve +=1
+
+    print(f"{len(not_solved)=}")
+    print(f"{to_solve=}")
+
+    # MSP = MinkowskiSumProblem.from_json()
+
+
+
+
 if __name__ == "__main__":
     # remaining_instances()
+    algorithm1()
     # test_times()
     # example_Yn()
 
 
-    main()
+    # main()
+
+
     # json_files_to_csv()
 
     # sorted_problems()

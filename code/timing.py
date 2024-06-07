@@ -76,6 +76,9 @@ def print_timeit(tolerance = 0):
     print(f" {'Total time ':27} : {time.perf_counter() - START_TIME:10.2f} seconds")
     print("_"*hline)
 
+    # TIME_dict_return = {k: v for k, v in TIME_dict.items() if COUNT_dict[k]>0}
+    return TIME_dict
+
 def reset_timeit():
     global TIME_dict
     global COUNT_dict

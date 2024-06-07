@@ -73,7 +73,7 @@ def solve_model(model:pyomo.ConcreteModel(), solver_str = "cplex_direct"):
     print(f"Solving model..")
     # Solve model
     solver = pyomo.SolverFactory(solver_str)
-    solver.solve(model, tee = True)
+    solver.solve(model, tee = False)
 
 
 @timeit
@@ -153,8 +153,73 @@ def solve_instance(Y_list: list[PointList], verbose = 'all', plot = False):
 
 
 
-def SimpleFilter(Y1, Y2):
-    pass
+'''
+SimpleFilter(Y_N^1, ..., Y_N^m)
+   Input: Y^1, ..., Y^m
+   Output: Y = {(y_1, I_1), ..., (y_|Y|, I_|Y|)} where 
+    y_j = jth ND point and I_j = {(i_1, ..., i_m), ...} where 
+    a vector (i_1, ..., i_m) equal the index from each 
+    subproblem such that the MS gives y_j
+      
+   for (k = 1 to l) do I_k = {(k)} 
+   Y = {(y^1_1, I_1), ..., (y^1_|Y^1|, I_|Y^1|)}
+   for (s = 1 to m-1) do
+      Y := Filter(Y, Y^(s+1))  // MS of Y, Y_N^(s+1) and add index
+   next
+   return (Y, I)
+end
+
+Filter(Y, Z)
+   Q = {}   // contains pairs (y_i, I_i)
+   for k = 1 to |Y|
+      for t = 1 to |Z|
+         q = y_k + z_t    
+         Q := addPoint(q, Q, I_k, t) // add and update non dom set + add index (ties are updated too)
+      next
+   next
+   return Q
+end
+'''
+
+
+def SimpleFilterSub(Y, Ys):
+    Y_ms = []
+    for k, y in enumerate(Y):
+        for t, ys in enumerate(Ys):
+            y_new = y + ys
+            y_new.i = y.i + ys.i
+            Y_ms.append(y_new)
+
+    return methods.unidirectional_filter(PointList(Y_ms), duplicates_allowed=True)
+
+
+def SimpleFilter(Y_list):
+    """
+    input: list of PointList
+    output: nondominated points of Minkowski sum of sets Y_list
+    """
+ 
+    
+
+    # add index to each point
+    for Ys in Y_list:
+        for i, y in enumerate(Ys):
+            y.i = [i]
+
+    # Y_dict = {y:i for i,y in enumerate(Y_list[0]}
+    Y = Y_list[0]
+    
+    for s in range(1, len(Y_list)):
+        Yn = SimpleFilterSub(Y, Y_list[s])
+ 
+    # Yn_dict = {y:y.i for y in Yn}
+    Yn_dict = {y:[yn.i for yn in Yn if yn == y] for y in Yn}
+
+
+    return PointList(Yn), Yn_dict
+
+
+
 
 def main():
 
