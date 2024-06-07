@@ -196,9 +196,9 @@ def algorithm1():
     # run algorithm 1 on specified test instances
     
     m_options = (2,3,4) # subproblems
-    p_options = (2,3,4, 5) # dimension
+    p_options = (2,3,4) # dimension
     generation_options = ['m','u'] # generation method
-    size_options = (50, 100, 150) # subproblems size
+    size_options = (50, 100, 150, 200) # subproblems size
     seed_options = [1,2,3,4,5]
     
 
