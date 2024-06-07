@@ -2,13 +2,15 @@
 
 on:
   push:
-    paths:
-      - .github/workflows/al1-filter.yaml
-      - code/instances/stat-prob.R
-      - code/instances/results/**.json
+    branches-ignore:
+      - '**'
+    # paths:
+    #   - .github/workflows/al1-filter.yaml
+    #   - code/instances/stat-prob.R
+    #   - code/instances/results/**.json
       
-  schedule:
-    - cron: '15 5,17 * * *'
+  # schedule:
+  #   - cron: '15 5,17 * * *'
 
 name: Filter problems
 

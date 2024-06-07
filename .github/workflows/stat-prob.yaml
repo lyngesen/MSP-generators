@@ -42,6 +42,7 @@ jobs:
           Rscript -e 'rmarkdown::render(here::here("code/instances/problem-statistics.Rmd"), output_dir = here::here("docs"))'
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config pull.rebase false
           git commit docs/problem-statistics.html -m "update report" || echo "No changes to commit"
           git pull
           git push origin || echo "No changes to commit"
@@ -55,6 +56,7 @@ jobs:
             Rscript -e 'rmarkdown::render(here::here("code/instances/problem-statistics.Rmd"), output_dir = here::here("docs"))'
             git config --local user.name "$GITHUB_ACTOR"
             git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+            git config pull.rebase false
             git commit docs/problem-statistics.html -m "update report" || echo "No changes to commit"
             git commit code/instances/. -m "update stat in result files" || echo "No changes to commit"
             git pull
