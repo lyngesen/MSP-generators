@@ -32,13 +32,13 @@ def name_dict(problem_file):
     problem_file, seed = problem_file.split("_")
     _, p, size, method, M = problem_file.split("-")
     size = size.split("|")[0]
-    p, M, size = int(p), int(M), int(size)
+    p, M, size, seed = int(p), int(M), int(size), int(seed)
     D = {'filename': filename, 'p': p, 'method':method, 'M': M, 'size': size, 'seed':seed}
     return D
     
 def name_dict_keys(problem_file):
     D = name_dict(problem_file)
-    return (D['size'], D['p'], D['M'])
+    return ( D['M'],D['size'], D['p'], D['seed'])
 
 # def sorted_problems():
     # all_problems = os.listdir("instances/problems/")
@@ -53,9 +53,15 @@ def name_dict_keys(problem_file):
     # # print(f"{all_problems[:10]=}")
 
 def main():
+    
+    # run algorithm 1 on specified test instances
+    m_options = (2,3,4) # subproblems
+    p_options = (2,3,4) # dimension
+    generation_options = ['m','u'] # generation method
+    size_options = (50, 100, 200) # subproblems size
+    seed_options = [1,2,3,4,5]
+    
 
-
-    # problem_name = "prob-3-50|50-ul-2_1.json"
     all_problems = os.listdir("instances/problems/")
     all_problems = sorted(all_problems, key = name_dict_keys )
 
@@ -73,28 +79,44 @@ def main():
 
     # all_problems = [problem_name for problem_name in all_problems if "50" in problem_name]
     # all_problems = [problem_name for problem_name in all_problems if " in problem_name]
+    
     # print(f"{all_problems[:10]=}")
     save_prefix = "alg1-"
+    tosolve = 0
     for problem_name in all_problems:
-        print(" ".join(f"{k} = {v},\t" for k, v in name_dict(problem_name).items()))
+        # print(" ".join(f"{k} = {v},\t" for k, v in name_dict(problem_name).items()))
 
         if problem_name.split(".")[-1] != "json": continue
         if save_prefix + problem_name in os.listdir("instances/results/algorithm1/"):
-            print(f"  problem solved - skipping {problem_name}")
+            # print(f"  problem solved - skipping {problem_name}")
             continue
         MSP = MinkowskiSumProblem.from_json("instances/problems/"+ problem_name) 
 
         # if MSP.dim == 2:
             # continue
 
-        if len(MSP.Y_list[0]) == 50:
+        # if len(MSP.Y_list[0]) == 50:
+            # continue
+
+        instance_dict = name_dict(problem_name)
+        if not all((instance_dict['p'] in p_options,
+               instance_dict['M'] in m_options,
+               set(instance_dict['method']).issubset(set(generation_options)),
+               instance_dict['size'] in size_options,
+               instance_dict['seed'] in seed_options
+               )):
             continue
+
+        else:
+            print(f"solvinf instance {problem_name=}")
 
         if get_Y_max_size(MSP) > 100_000_000:
-            print(f"  problem too big (skipping): {get_Y_max_size(MSP)=}")
-            continue
+            # print(f"  problem too big (skipping): {get_Y_max_size(MSP)=}")
+            print(f"  problem very large (maybe skip): {get_Y_max_size(MSP)=}")
+            # continue
 
-        # print(f"{MSP=}")
+
+        tosolve +=1
         print(f"{get_Y_max_size(MSP)=}")
         filter_time = time.time()
         Yn = methods.MS_sequential_filter(MSP.Y_list)
@@ -107,6 +129,8 @@ def main():
         reset_timeit()
         print(" ")
 
+
+    print(f"{tosolve=}")
 def test_times():
 
 
@@ -232,12 +256,12 @@ def algorithm1():
 
 if __name__ == "__main__":
     # remaining_instances()
-    algorithm1()
+    # algorithm1()
     # test_times()
     # example_Yn()
 
 
-    # main()
+    main()
 
 
     # json_files_to_csv()
