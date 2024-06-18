@@ -1,5 +1,5 @@
 import pytest
-from classes import Point, PointList, LinkedList
+from classes import Point, PointList, LinkedList, MinkowskiSumProblem
 import methods
 from timing import timeit, print_timeit
 from functools import reduce
@@ -14,7 +14,6 @@ def test_sorting():
     YS2 = methods.lex_sort_linked(Y)
 
     assert YS == YS2
-
 
     Y = PointList(((1,2,3),(2,2,2),(3,2,1), (1,1,2)))
     Y_lex = PointList(((1,1,2), (1,2,3),(2,2,2),(3,2,1)))
@@ -50,12 +49,15 @@ def test_single():
     Yn8 = methods.KD_filter(Y)
     assert Y == Y_copy
     Yn9 = methods.two_phase_filter(Y)
+    assert Y == Y_copy
+    Yn10 = methods.nondomDC_wrapper(Y)
     assert Yn1 == Yn2
     assert Yn2 == Yn3
     assert Yn3 == Yn4
     assert Yn6 == Yn7
     assert Yn7 == Yn8
     assert Yn8 == Yn9
+    assert Yn9 == Yn10
 
     # Check input PointList unchanged by filtering algorithms
     assert Y == Y_copy
@@ -84,6 +86,73 @@ def test_single():
     assert methods.naive_filter(Y) == Yn
     assert methods.two_phase_filter(Y) == Yn
 
+
+
+def test_raw_write():
+    MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-3-100|100|100|100|100-mmmmm-5_3.json')
+    Y = reduce(lambda x,y: x+y, MSP.Y_list[:2])
+    # Y = Y + MSP.Y_list[-1]
+    # print(f"{len(Y)=}")
+    out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/pointsCin" # c script directory
+    Y.save_raw(out_file)
+    # print(f"saved")
+    # Yn = reduce(lambda x,y: methods.naive_filter(x+y), MSP.Y_list)
+    # print(f"{len(Yn)=}")
+
+def test_raw_read():
+    in_file = filepath = fr"/Users/au618299/Desktop/cythonTest/nondom/pointsCin" # c script directory
+    Y = PointList.from_raw(in_file)
+    print(f"{Y=}")
+    print(f"{Y.statistics=}")
+
+
+
+
+def test_python_c_wrapper():
+    MSP_list = [
+                './instances/problems/prob-2-50|50-mm-2_3.json',
+                './instances/problems/prob-3-50|50-mm-2_3.json',
+                './instances/problems/prob-4-50|50-ll-2_3.json',
+            ]
+    for i, MSP_name in enumerate(MSP_list):
+        MSP = MinkowskiSumProblem.from_json(MSP_name)
+        if i == 0:
+            MSP.Y_list = [Y*(1**10) for Y in MSP.Y_list] # check large values
+        if i == 1:
+            MSP.Y_list = [Y*(1/2) for Y in MSP.Y_list] # check small values
+
+        print(f"{i=}")
+        Y = reduce(lambda x,y: x+y, MSP.Y_list)
+        Y = PointList(Y.points)
+        # YnDC = reduce(lambda x,y: methods.nondomDC_wrapper(x+y), MSP.Y_list)
+        YnDC = methods.nondomDC_wrapper(Y)
+        print(f"{len(YnDC)=}")
+        Yn = methods.naive_filter(Y)
+        # Yn = reduce(lambda x,y: methods.KD_filter(x+y), MSP.Y_list)
+        print(f"{len(Yn)=}")
+        print(f"{len(methods.N(Yn))=}")
+        # print(f"{len(methods.nondomDC_wrapper(Yn))=}")
+
+        # Y =reduce(lambda x,y: x+y, MSP.Y_list)
+        
+        for yn in YnDC:
+            assert yn in Y
+            assert yn in Yn
+        for yn in Yn:
+            assert yn in YnDC
+
+        # Y.plot('Y')
+#         plt.cla()
+        # fig = plt.figure()
+        # ax= plt.axes(projection = '3d')
+        
+        assert len(Yn) == len(YnDC)
+        assert Yn == YnDC
+
+        # YnDC.plot("DC", ax=ax)
+        # Yn.plot("Yn",  ax = ax, marker='x')
+        # # plt.show()
+        # plt.cla()
 
 
 def test_MS(): 
