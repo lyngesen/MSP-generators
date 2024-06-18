@@ -307,14 +307,31 @@ class PointList:
             csv_out=csv.writer(out)
             for y in self.__iter__():
                 csv_out.writerow(y)   
+    def save_raw(self, filename : str):
+        # raw format used in c-interface
+        with open(filename, 'w') as out:
+            out.write(f"{self.statistics['p'][0]}" + "\n")
+            out.write(f"{self.statistics['card'][0]}" + "\n")
+            for y in self.__iter__():
+                out.write(" ".join([f"{yp:.6f}" for yp in y]) + "\n")
+
+    def from_raw(filename : str):
+        # raw format used in c-interface
+        with open(filename, "r") as rawfile:
+            dim = int(rawfile.readline())
+            n = int(rawfile.readline())
+            lines = rawfile.read().splitlines()
+        y_list = []
+        for line in lines:
+            y = Point([float(yp) for yp in line.split(' ') if yp != ''])
+            y_list.append(y)
+        return PointList(y_list)
 
     def from_csv(filename = "disk.csv"):
         with open(f"{filename}", "r") as csvfile:
             points = []
             for y in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
-                #points.append(Point(tuple(map(float,y))))
                 points.append(Point(y))
-            # self.points = points
             return PointList(points)
 
     def as_dict(self):
