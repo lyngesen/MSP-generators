@@ -196,17 +196,20 @@ def unidirectional_filter(Y: PointList, duplicates_allowed = False) -> PointList
 
 
 
+def call_c_nondomDC():
+    current_d = os.getcwd()
+    # move to c folder and execute
+    os.chdir('/Users/au618299/Desktop/cythonTest/nondom/')
+    subprocess.call(['./nondom'])
+    # return to initial directory
+    os.chdir(current_d)
+
 
 def nondomDC_wrapper(Y : PointList):
     # A python wrapper for the c implementation of NonDomDC [Bruno Lang]
     out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/pointsCin" # c script directory
+    call_c_nondomDC()
     Y.save_raw(out_file)
-    # move to c folder and execute
-    current_d = os.getcwd()
-    os.chdir('/Users/au618299/Desktop/cythonTest/nondom/')
-    subprocess.call(['./nondom'])
-    # return resulting pointlist
-    os.chdir(current_d)
     in_file = filepath = fr"/Users/au618299/Desktop/cythonTest/nondom/pointsCout" # c script directory
     return(PointList.from_raw(in_file))
 
