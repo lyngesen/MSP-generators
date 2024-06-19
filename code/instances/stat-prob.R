@@ -15,7 +15,7 @@ calcStat <- function(path) {
    tictoc::tic()
    cat("Update statistics:", path, "...")
    lst <- jsonlite::read_json(path, simplifyVector = T)
-   calc <- any(is.na(lst$statistics$min))
+   calc <- any(is.na(lst$statistics$min)) & length(lst$points) > 0
    if (calc) {
       p <- lst$statistics$p
       pts <- lst$points
