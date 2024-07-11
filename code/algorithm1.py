@@ -55,10 +55,10 @@ def name_dict_keys(problem_file):
 def main():
     
     # run algorithm 1 on specified test instances
-    m_options = (2,3,4) # subproblems
-    p_options = (2,3,4) # dimension
+    m_options = (2,3,4,5) # subproblems
+    p_options = (2,3,4,5) # dimension
     generation_options = ['m','u'] # generation method
-    size_options = (50, 100, 200) # subproblems size
+    size_options = (50, 100, 200, 300) # subproblems size
     seed_options = [1,2,3,4,5]
     
 
@@ -157,12 +157,12 @@ def test_times():
         data = {'problem': MSP.filename}
         data.update(Yn.statistics)
         # data.update(time_dict)
-        with open(csv_file_path, 'a') as csv_file:
-            # add header if file empty
-            writer = csv.writer(csv_file)
-            if os.path.getsize(csv_file_path) == 0:
-                writer.writerow(data.keys())
-            writer.writerow(data.values())
+#         with open(csv_file_path, 'a') as csv_file:
+            # # add header if file empty
+            # writer = csv.writer(csv_file)
+            # if os.path.getsize(csv_file_path) == 0:
+                # writer.writerow(data.keys())
+            # writer.writerow(data.values())
 
 def json_files_to_csv():
 
@@ -219,51 +219,65 @@ def remaining_instances():
 def algorithm1():
     # run algorithm 1 on specified test instances
     
-    m_options = (2,3,4) # subproblems
-    p_options = (2,3,4) # dimension
+    m_options = (2,3,4,5) # subproblems
+    p_options = (2,3,4,5) # dimension
     generation_options = ['m','u'] # generation method
-    size_options = (50, 100, 150, 200) # subproblems size
+    size_options = (50, 100, 150, 200,300, 600) # subproblems size
     seed_options = [1,2,3,4,5]
     
-
 
     # m,p,generation, size, seed = (2,2,'m',50, 2)
     # filename = f"prob-{p}-{size}" + f"|{size}"*(m-1) + "-" + generation * m + f"-{m}_{seed}.json" 
 
     not_solved = remaining_instances()
-
-
-    print(f"{name_dict(not_solved[0])}")
+    # print(f"{name_dict(not_solved[0])}")
+    not_solved_subset = list()
     to_solve = 0
     for filename in not_solved:
         instance_dict = name_dict(filename)
         if all((instance_dict['p'] in p_options,
                instance_dict['M'] in m_options,
-               # set(instance_dict['method']) == set(generation_options),
+               set(instance_dict['method']).issubset(set(generation_options)),
                instance_dict['size'] in size_options,
-               # instance_dict['seed'] in seed_options
+               instance_dict['seed'] in seed_options
                )):
-            print(f"{filename=}")
+            # print(f"{filename=}")
+            not_solved_subset.append(filename)
             to_solve +=1
-
+            
     print(f"{len(not_solved)=}")
     print(f"{to_solve=}")
 
-    # MSP = MinkowskiSumProblem.from_json()
+    # solve each selected instance and save PointList as file
+    print(f"{len(not_solved_subset)=}")
+
+    not_solved_subset = sorted(not_solved_subset, key = name_dict_keys )
+    
+    for filename in not_solved_subset:
+        MSP = MinkowskiSumProblem.from_json("instances/problems/"+ filename) 
+
+        print(f"{MSP=}")
+        return 
+        filter_time = time.time()
+        Yn = methods.MS_sequential_filter(MSP.Y_list)
+        Yn.statistics['filter_time'] = time.time() - filter_time
+        # Yn = methods.MS_sequential_filter(MSP.Y_list)
+        Yn.save_json("instances/results/algorithm1/"  +  save_prefix + problem_name)
+        print(f"{len(Yn)=}")
+
+        print_timeit()
+        reset_timeit()
+        print(" ")
+
 
 
 
 
 if __name__ == "__main__":
     # remaining_instances()
-    # algorithm1()
+    algorithm1()
     # test_times()
     # example_Yn()
-
-
-    main()
-
-
+    # main()
     # json_files_to_csv()
-
     # sorted_problems()
