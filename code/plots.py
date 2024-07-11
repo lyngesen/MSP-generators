@@ -139,6 +139,9 @@ def slides_MSP_example():
     # define new figure
     fig, ax = plt.subplots(figsize=(3,4), layout='constrained')
     
+    plt.xlabel('Time (Hours)')
+    plt.ylabel('Cost (DKK)')
+
     Y1 = PointList([(1, 700),(1.5, 1000),(3, 500),(4, 300)])
     Y2 = PointList([(1, 700),(1.5, 1000),(3, 500),(4, 300)])
     # Y1.plot(f"${_Y1}={_Y2}$")
@@ -401,10 +404,30 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
     ax = list()
     projection = None if Y1.dim == 2 else '3d'
     ax.append(fig.add_subplot(1, 3, 1, projection= projection ))
+
+    plt.xlabel('Objective 1')
+    plt.ylabel('Objective 2')
+    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    plt.xlim(-1000,11000*2)
+    plt.ylim(-1000,11000*2)
     ax.append(fig.add_subplot(1, 3, 2))
+
+    # plt.xlabel('f"${_Yn1}$"')
+    # plt.ylabel('f"${_Yn2}$"')
+
     ax.append(fig.add_subplot(1, 3, 3, projection= projection ))
     # fig, ax = plt.subplots(ncols = 3, figsize=SIZE_LARGE_FIGURE, layout='constrained')
     
+
+    plt.xlabel('Objective 1')
+    plt.ylabel('Objective 2')
+    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    plt.xlim(-1000,11000*1.9)
+    plt.ylim(-1000,11000*1.9)
+
+    # ax[2].xlabel('Objective 1')
+    # ax[2].plt.ylabel('Objective 2')
+    # ax[2].tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
 
     Y1 = methods.lex_sort(Y1)
     Y2 = methods.lex_sort(Y2)
@@ -433,8 +456,10 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
     Y2_MSP = PointList([y2 for y2 in Y2 if any((y1+y2 in Yn_set for y1 in Y1))])
 
     if not matrix_only and plot_mapping:
-        Y1_MSP.plot(ax = ax[0], l = f"${_Yn1}\\rightarrow {_Yn}$",color = "yellow", marker='1')
-        Y2_MSP.plot(ax = ax[0], l = f"${_Yn2}\\rightarrow {_Yn}$", color = "yellow", marker='1')
+        # Y1_MSP.plot(ax = ax[0], l = f"${_Yn1}\\rightarrow {_Yn}$",color = "yellow", marker='1')
+        # Y2_MSP.plot(ax = ax[0], l = f"${_Yn2}\\rightarrow {_Yn}$", color = "yellow", marker='1')
+        Y1_MSP.plot(ax = ax[0], l = f"_",color = "yellow", marker='1')
+        Y2_MSP.plot(ax = ax[0], l = f"_", color = "yellow", marker='1')
 
     # ######################### Figure ax1 END #########################
 
@@ -449,7 +474,7 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
     M = np.vstack([col_header, M])
     M = np.vstack([row_header, M.transpose()])
 
-    # ax[0].legend(loc='lower left')
+    ax[0].legend(loc='upper right')
 
     ######################## Figure matrix_plot START ########################
     
@@ -623,6 +648,15 @@ def slides_matrix_plot():
     # define new figure
     fig, ax = plt.subplots(figsize=(6,3), layout='constrained')
     
+
+
+
+    plt.xlabel('Objective 1')
+    plt.ylabel('Objective 2')
+
+    ax.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    
+
     plt.xlim(-1000,11000)
     plt.ylim(-1000,11000)
     Y1.plot(f"${_Y1}$")
@@ -632,6 +666,10 @@ def slides_matrix_plot():
 
     plot_or_save(fig, fig_name + str(1))
 
+
+    plt.xlabel('Objective 1')
+    plt.ylabel('Objective 2')
+
     Y1_dom = PointList([y1 for y1 in Y1 if y1 not in Yn1])
     Y2_dom = PointList((y2 for y2 in Y2 if y2 not in Yn2))
     Y1_dom.plot(marker = 'x', color = 'black')
@@ -639,6 +677,11 @@ def slides_matrix_plot():
     
     plot_or_save(fig, fig_name + str(2))
     plt.cla()
+
+
+    plt.xlabel('Objective 1')
+    plt.ylabel('Objective 2')
+
     plt.xlim(-1000,11000)
     plt.ylim(-1000,11000)
     Yn1 = N(Y1)
@@ -762,157 +805,192 @@ def induced_UB_plot(level, Y1,Y2, prefix='', plot=True):
                 # print(f"case not implemented {level}")
     ######################## Figure Induced_UB START ########################
     # fig_name = f"Induced_UB_{level}".replace('lexmin','0.00lexmin')
-    
-    fig_name = f"/RGS_example/RGS_"
+ 
+    def reset_graph():
+        plt.xlabel('Objective 1')
+        plt.ylabel('Objective 2')
+        plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False)
+
+    fig_name = f"/RGS_example/RGS_sup"
+
+
+    only_supported = True 
+
+    LB_assumption = 'consecutive'
+    if only_supported:
+        LB_assumption = 'supported'
+
 
     # print(f"Plotting figure: {fig_name}")
     # define new figure
     if plot:
         fig, ax = plt.subplots(figsize=(7,3.5), layout='constrained')
+
+        reset_graph()
+
         plot_count = 1
     
 
     Y2_partial = get_partial(Y2, level)
     Y = Y1 + Y2
     Y2.plot_color= 'lightcoral'
-    L1_line = methods.induced_UB(N(Y1), line=True, assumption='nonconsecutive')
-    L1 = N(methods.induced_UB(N(Y1),line=True, assumption='nonconsecutive'))
-    if plot:
-        Y_partial = Y2_partial + Y1
-        Y2.plot(f"${_Y1}$")
-        Y2_partial.plot("$\hat{"+f"{_Y1}" + "}$", marker='1', color='red')
-        Y1.plot(f"${_Y2}$", color ='blue')
-        L1_line.plot(f"${_L2}$", line=True, color=Y1.plot_color)
-        Y.plot(f"${_Y}= {_Y1}"  + "\oplus" + f"{_Y2}$", color='lightgray')
-        # Y_partial.plot("$\hat{"f"{_Y}" + "}=" + "\hat{"f"{_Y1}" + "}" + "\oplus" + f"{_Y2}$", marker='1')
-        plot_or_save(fig, fig_name + str(plot_count))
-        plot_count +=1
-        plt.cla()
+    # Y1_supported = N(PointList([y1_s for y1_s in Y1 if y1_s.cls =='s']))
+    Y1_supported = Y1
+    if only_supported:
+        # Y1_supported = N(PointList([y1_s for y1_s in Y1 if y1_s.cls =='s']))
+        Y1_supported = N(PointList([y1_s for y_id, y1_s in enumerate(N(Y1)) if y_id in {0,1,2,6,9}]))
+    # Y1_supported = Y1
+    # L1_line = methods.induced_UB(N(Y1), line=True, assumption=LB_assumption)
+    L1_line = methods.induced_UB(Y1_supported, line=True, assumption=LB_assumption)
+    L1 = N(methods.induced_UB(Y1_supported,line=True, assumption=LB_assumption))
 
-        # Y_partial = Y2_partial + Y1
-        Y2.plot(f"${_Y1}$")
-        L1_line.plot(f"${_L2}$", line=True, color=Y1.plot_color)
-        Y2_partial.plot("$\hat{"+f"{_Y1}" + "}$", marker='1')
-        Y1.plot(f"${_Y2}$")
-        Y.plot(f"${_Y}= {_Y1}"  + "\oplus" + f"{_Y2}$", color='lightgray')
-        Y_partial.plot("$\hat{"+f"{_Y}" + "}=" + "\hat{"f"{_Y1}" + "}" + "\oplus" + f"{_Y2}$", marker='1', color = 'gray')
+    label_hatY2 = "$\hat{"+f"{_Y1}" + "} \subseteq " + f"{_Y1}" + "$"
 
-        plot_or_save(fig, fig_name + str(plot_count))
-        plot_count +=1
+    for y2 in [y2_choice for y2_choice_id, y2_choice in enumerate(Y2) if y2_choice_id in {2,3,4}]:
+        print(f"{y2=}")
+        # y2 = Y2[2]
+        if plot:
+            Y_partial = Y2_partial + Y1
+            Y2.plot(f"${_Y1}$")
+            Y2_partial.plot(label_hatY2, marker='o', color='red')
 
+            Y1.plot(f"${_Y2}$", color ='blue')
+            # L1_line.plot(f"${_L2}$", line=True, color=Y1.plot_color)
+            Y.plot(f"${_Y}= {_Y1}"  + "\oplus" + f"{_Y2}$", color='lightgray')
+            # Y_partial.plot("$\hat{"f"{_Y}" + "}=" + "\hat{"f"{_Y1}" + "}" + "\oplus" + f"{_Y2}$", marker='1')
+            Y_partial.plot("$\hat{"+f"{_Y}" + "}=" + "\hat{"f"{_Y1}" + "}" + "\oplus" + f"{_Y2}$", marker='1', color = 'gray')
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+            plt.cla()
+            ax = reset_graph()
 
-        plt.cla()
-        # Y_partial = Y2_partial + Y1
-        Y2.plot(f"${_Y1}$")
-        Y2_partial.plot("$\hat{"+ f"{_Y1}" + "}$", marker='1')
-        Y1.plot(f"${_Y2}$")
+            # Y_partial = Y2_partial + Y1
+            Y2.plot(f"${_Y1}$")
+            Y2_partial.plot(label_hatY2, marker='o', color='red')
+            Y1.plot(f"${_Y2}$")
+            # L1_line.plot(f"${_L2}$", line=True, color=Y1.plot_color)
+            Y.plot(f"${_Y}= {_Y1}"  + "\oplus" + f"{_Y2}$", color='lightgray')
+            Y_partial.plot("$\hat{"+f"{_Y}" + "}=" + "\hat{"f"{_Y1}" + "}" + "\oplus" + f"{_Y2}$", marker='1', color = 'gray')
 
-
-        Y.plot(f"${_Y}= {_Y1}"  + "\oplus" + f"{_Y2}$", color='lightgray')
-        Y_partial.plot("$\hat{"+f"{_Y}" + "}=" + "\hat{"f"{_Y1}" + "}" + "\oplus" + f"{_Y2}$", marker='1')
-        y2 = Y2[4]
-        y2.plot(l='$y^1$',marker='x', label_only=True)
-        y2MSY1 = Y1 + PointList((y2,))
-        L1MSY1 = L1 + PointList((y2,))
-    
-        y2MSY1.plot("$\{y^1\}"  + "\oplus" + f"{_Y2}$", color='black')
-
-
-
-        # nonconsecutive
-
-        # L1_line.plot(f"${_L2}$", line=True, color=Y1.plot_color)
-        # L1.plot(f"${_L2}$", color = Y1.plot_color, marker='x')
-        # L1MSY1.plot("$\{y^1\}"  + "\oplus" + f"{_L2}$", color='blue', marker='x')
-
-        # supported
-        L1_line = methods.induced_UB(Y1, line=True, assumption='consecutive')
-        L1_line.plot(f"${_L2}$", line=True, color=Y1.plot_color)
-        U_partial = methods.induced_UB(Y_partial, line=True)
-        U_partial.plot(line=True, color='lightgray')
-        y2L = methods.induced_UB(y2MSY1, line=True, assumption='consecutive')
-        y2L.plot(line=True, color='blue')
-
-        plot_or_save(fig, fig_name + str(plot_count))
-        plot_count +=1
-        plt.cla()
+            U_partial = methods.induced_UB(Y_partial, line=True)
+            U_partial.plot(line=True, color='lightgray')
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
 
 
+            plt.cla()
+            reset_graph()
+            # Y_partial = Y2_partial + Y1
+            Y2.plot(f"${_Y1}$")
+            Y2_partial.plot(label_hatY2, marker='o', color='red')
+            Y1.plot(f"${_Y2}$")
+            # L1_line.plot(f"${_L2}$", line=True, color=Y1.plot_color)
 
 
+            Y.plot(f"${_Y}= {_Y1}"  + "\oplus" + f"{_Y2}$", color='lightgray')
+            Y_partial.plot("$\hat{"+f"{_Y}" + "}=" + "\hat{"f"{_Y1}" + "}" + "\oplus" + f"{_Y2}$", marker='1')
+            y2.plot(l='$y^1$',marker='x', label_only=True)
+            y2MSY1 = Y1_supported + PointList((y2,))
+            L1MSY1 = L1 + PointList((y2,))
+        
+            y2MSY1.plot("$\{y^1\}"  + "\oplus" + f"{_Y2}$", color='black')
 
+            # nonconsecutive
+            # L1_line.plot(f"${_L2}$", line=True, color=Y1.plot_color)
+            # L1.plot(f"${_L2}$", color = Y1.plot_color, marker='x')
+            # L1MSY1.plot("$\{y^1\}"  + "\oplus" + f"{_L2}$", color='blue', marker='x')
 
-    ub_time = time.time()
-    U = methods.find_generator_U(Y2_partial, Y1)
-    ub_time = time.time() - ub_time
+            # supported
+            # L1_line = methods.induced_UB(Y1, line=True, assumption=LB_assumption)
+            # L1_line.plot(f"${_L2}$", line=True, color=Y1.plot_color)
+            # U_partial = methods.induced_UB(Y_partial, line=True)
+            U_partial.plot(line=True, color='lightgray')
+            
 
-    Uline = methods.induced_UB(U,line=True)
-    Uline.plot_color = Y2.plot_color
-    
-    Y2_dominated = [y for y in Y2 if y.cls != 'se' and U.dominates_point(y)]
-    # if Y2_dominated and plot:
-        # PointList(Y2_dominated).plot("dominated", marker='x')
-    print(f"{len(Y2_dominated)=}")
-    dominated_relative = len(Y2_dominated)/len(Y2)
-    print(f"dominated: {len(Y2_dominated)} \nrelative: {dominated_relative*100}\%")
-    if plot:
-        Y2.plot(f"${_Y1}$")
-        Y2_partial.plot("$\hat{" + f"{_Y1}" + "}$", marker='1')
-        Y1.plot(f"${_Y2}$")
-        L1_line.plot(f"${_L2}$", line=True, color=Y1.plot_color)
-        Y.plot(f"${_Y}= {_Y1}"  + "\oplus" + f"{_Y2}$", color='lightgray')
-        Y_partial.plot("$\hat{" + f"{_Y}" + "}=" + "\hat{"f"{_Y1}" + "}" + "\oplus" + f"{_Y2}$", marker='1')
-        y2 = Y2[4]
-        y2.plot(l='$y^1$',marker='x', label_only=True)
-        # y2MSY1 = Y1 + PointList((y2,))
-        y2MSY1.plot("$\{y^1\}"  + "\oplus" + f"{_Y2}$")
-        # plot_or_save(fig, fig_name + '_1' )
-        # plt.cla()
-        Uline.plot(f"${_U}$", line=True)
-        # Y2.plot(f"${_Y1}$")
-        # Y1.plot(f"${_Y2}$")
-        # Y2_partial.plot("$\hat{"f"{_Y1}" + "}$", marker='1')
-
-        plot_or_save(fig, fig_name + str(plot_count))
-        plot_count +=1
-        plt.cla()
-        # new plot
-        Y2.plot(f"${_Y1}$")
-        Y2_partial.plot("$\hat{" + f"{_Y1}" + "}$", marker='1')
-        Y1.plot(f"${_Y2}$")
-        Y.plot(f"${_Y}= {_Y1}"  + "\oplus" + f"{_Y2}$", color='lightgray')
-        Y_partial.plot("$\hat{"f"{_Y}" + "}=" + "\hat{"f"{_Y1}" + "}" + "\oplus" + f"{_Y2}$", marker='1')
-        y2 = Y2[4]
-        # y2.plot(l='$y^1$',marker='x', label_only=True)
-        # y2MSY1 = Y1 + PointList((y2,))
-        # y2MSY1.plot("$\{y^1\}"  + "\oplus" + f"{_Y2}$")
-        # plot_or_save(fig, "slides_" + fig_name + '_1' )
-        # plt.cla()
-        Uline.plot(f"${_U}$", line=True)
-        # Y2.plot(f"${_Y1}$")
-        # Y1.plot(f"${_Y2}$")
-        # Y2_partial.plot("$\hat{"f"{_Y1}" + "}$", marker='1')
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+            plt.cla()
+            reset_graph()
 
 
 
-    # if plot: plt.text(0.1,0.1,f"dominated: {len(Y2_dominated)} \n relative: {dominated_relative*100}\%")
-    
-    # save or plot figure
-    if plot:
-        plot_or_save(fig, fig_name + str(plot_count))
-        plot_count +=1
-    ######################### Figure Induced_UB END #########################
 
-    run_data = {'prefix' : prefix,
-                'Y1_size' : len(Y1),
-                'Y2_size' : len(Y2),
-                'U' : len(U),
-                'U_time' : ub_time,
-                'dominated_points' : len(Y2_dominated),
-                'dominated_relative_Y2' : dominated_relative,
-                }
 
-    return run_data
+
+        ub_time = time.time()
+        U = methods.find_generator_U(Y2_partial, Y1)
+        ub_time = time.time() - ub_time
+
+        Uline = methods.induced_UB(U,line=True, assumption=LB_assumption)
+        Uline.plot_color = Y2.plot_color
+        
+        Y2_dominated = [y for y in Y2 if y.cls != 'se' and U.dominates_point(y)]
+        # if Y2_dominated and plot:
+            # PointList(Y2_dominated).plot("dominated", marker='x')
+        print(f"{len(Y2_dominated)=}")
+        dominated_relative = len(Y2_dominated)/len(Y2)
+        print(f"dominated: {len(Y2_dominated)} \nrelative: {dominated_relative*100}\%")
+        if plot:
+
+
+            Y2.plot(f"${_Y1}$")
+            Y2_partial.plot(label_hatY2, marker='o', color='red')
+            Y1.plot(f"${_Y2}$")
+            L1_line.plot(f"${_L2}$", line=True, color=Y1.plot_color)
+            Y.plot(f"${_Y}= {_Y1}"  + "\oplus" + f"{_Y2}$", color='lightgray')
+            Y_partial.plot("$\hat{" + f"{_Y}" + "}=" + "\hat{"f"{_Y1}" + "}" + "\oplus" + f"{_Y2}$", marker='1')
+            y2.plot(l='$y^1$',marker='x', label_only=True)
+            y2MSY1.plot("$\{y^1\}"  + "\oplus" + f"{_L2}$")
+            y2L = methods.induced_UB(y2MSY1, line=True, assumption=LB_assumption)
+            y2L.plot(line=True, color='black')
+            U_partial.plot(line=True, color='lightgray')
+            # L1_line.plot(f"${_L2}$", line=True, color=Y1.plot_color)
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+
+
+            plt.cla()
+            reset_graph()
+
+            # new plot
+            Y2.plot(f"${_Y1}$")
+            Y2_partial.plot(label_hatY2, marker='o', color='red')
+            Y1.plot(f"${_Y2}$")
+            Y.plot(f"${_Y}= {_Y1}"  + "\oplus" + f"{_Y2}$", color='lightgray')
+            Y_partial.plot("$\hat{"f"{_Y}" + "}=" + "\hat{"f"{_Y1}" + "}" + "\oplus" + f"{_Y2}$", marker='1')
+            y2.plot(l='$y^1$',marker='x', label_only=False, color ="black")
+            # Uline.plot(f"${_U}$", line=True)
+            # y2 = Y2[4]
+            # y2.plot(l='$y^1$',marker='x', label_only=True)
+            # y2MSY1 = Y1 + PointList((y2,))
+            # y2MSY1.plot("$\{y^1\}"  + "\oplus" + f"{_Y2}$")
+            # plot_or_save(fig, "slides_" + fig_name + '_1' )
+            # plt.cla()
+            # Uline.plot(f"${_U}$", line=True)
+            # Y2.plot(f"${_Y1}$")
+            # Y1.plot(f"${_Y2}$")
+            # Y2_partial.plot("$\hat{"f"{_Y1}" + "}$", marker='1')
+
+
+
+        # if plot: plt.text(0.1,0.1,f"dominated: {len(Y2_dominated)} \n relative: {dominated_relative*100}\%")
+        
+        # save or plot figure
+        if plot:
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+        ######################### Figure Induced_UB END #########################
+
+        run_data = {'prefix' : prefix,
+                    'Y1_size' : len(Y1),
+                    'Y2_size' : len(Y2),
+                    'U' : len(U),
+                    'U_time' : ub_time,
+                    'dominated_points' : len(Y2_dominated),
+                    'dominated_relative_Y2' : dominated_relative,
+                    }
+
+        # return run_data
 def multiple_induced_UB():
 
 
@@ -1016,7 +1094,7 @@ def empirical_matrix():
 
 def RGS_slides():
 
-    Y1 = PointList.from_json('./instances/subproblems/sp-2-10-m_1.json')
+    Y1 = PointList.from_json('./instances/subproblems/sp-2-10-m_1.json')*2
     Y2 = PointList.from_json('./instances/subproblems/sp-2-10-u_4.json')
     # Y1.points = [y2 for y2 in list(Y1)[::2]]
     point_labels = ['plane1','Plane 2', 'Train','Bus']
@@ -1032,6 +1110,10 @@ def phase_1_slides():
     # define new figure
     fig, ax = plt.subplots(figsize=(6,2), layout='constrained')
     
+
+    plt.xlabel('Objective 1')
+    plt.ylabel('Objective 2')
+    ax.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
     plt.xlim(0,5)
     plt.ylim(-100,1100)
 
@@ -1160,10 +1242,11 @@ def all_slides():
     ''' Figures for PhD Seminar April 2024 '''
     global FIGURES_LOCATION
     FIGURES_LOCATION = "../../../phd/projects/papers/slidesCORAL/figures/"
-    phase_1_slides()
-    slides_MO_example()
-    slides_MS_example()
-    slides_MSP_example()
+    FIGURES_LOCATION = "../../../phd/projects/papers/slidesEURO24/figures/"
+#     phase_1_slides()
+    # slides_MO_example()
+    # # # slides_MS_example()
+    # slides_MSP_example()
     slides_matrix_plot()
     RGS_slides()
 
@@ -1173,9 +1256,9 @@ def all_slides():
 
 def main():
 
-    RGS_slides()
+    # RGS_slides()
     # phase_1_slides()
-    # all_slides()
+    all_slides()
 
     # Week 22, 2024
     # counter_example_reduction()
