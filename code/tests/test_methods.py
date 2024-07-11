@@ -51,6 +51,7 @@ def test_single():
     Yn9 = methods.two_phase_filter(Y)
     assert Y == Y_copy
     Yn10 = methods.nondomDC_wrapper(Y)
+    print(f"{Yn10=}")
     assert Yn1 == Yn2
     assert Yn2 == Yn3
     assert Yn3 == Yn4
@@ -112,9 +113,10 @@ def test_python_c_wrapper():
     MSP_list = [
                 './instances/problems/prob-2-50|50-mm-2_3.json',
                 './instances/problems/prob-3-50|50-mm-2_3.json',
-                './instances/problems/prob-4-50|50-ll-2_3.json',
+                './instances/problems/prob-4-100|100-ll-2_3.json',
             ]
     for i, MSP_name in enumerate(MSP_list):
+        print(f"{MSP_name=}")
         MSP = MinkowskiSumProblem.from_json(MSP_name)
         if i == 0:
             MSP.Y_list = [Y*(1**10) for Y in MSP.Y_list] # check large values
@@ -135,9 +137,18 @@ def test_python_c_wrapper():
 
         # Y =reduce(lambda x,y: x+y, MSP.Y_list)
         
+
         for yn in YnDC:
             assert yn in Y
             assert yn in Yn
+        for yn in Yn:
+            res = Yn.dominates_point(yn)
+            if res:
+                print(f"{yn=}")
+                print(f"{res=}")
+                print(f"{res in Yn=}")
+                print(f"{res in YnDC=}")
+            assert not res
         for yn in Yn:
             assert yn in YnDC
 
