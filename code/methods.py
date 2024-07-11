@@ -132,7 +132,6 @@ def KD_filter(Y: PointList):
             R.append(y)
             k += 1
 
-
     r = None
     Yn = []
     for i, y in enumerate(reversed(R)):
@@ -161,8 +160,8 @@ def lex_sort(Y: PointList):
     """
     Y.points = sorted(Y.points, key=itemgetter(*range(Y.dim)))
 
-    # for i in range(len(Y.points)-1): # simple but not exhaustive correctness check
-        # assert not Y[i] > Y[i+1], f"{Y[i]=},{Y[i+1]=} "
+    for i in range(len(Y.points)-1): # simple but not exhaustive correctness check
+        assert not Y[i] > Y[i+1], f"{Y[i]=},{Y[i+1]=} "
 
     return PointList(Y.points)
 
@@ -208,8 +207,8 @@ def call_c_nondomDC():
 def nondomDC_wrapper(Y : PointList):
     # A python wrapper for the c implementation of NonDomDC [Bruno Lang]
     out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/pointsCin" # c script directory
-    call_c_nondomDC()
     Y.save_raw(out_file)
+    call_c_nondomDC()
     in_file = filepath = fr"/Users/au618299/Desktop/cythonTest/nondom/pointsCout" # c script directory
     return(PointList.from_raw(in_file))
 
