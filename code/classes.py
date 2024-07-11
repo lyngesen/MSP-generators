@@ -238,13 +238,15 @@ class PointList:
     def dominates_point(self, point:Point):
         for y in self.points:
             if y < point:
-                return True
+                # return True
+                return y
         return False
 
     def weakly_dominates_point(self, point:Point):
         for y in self.points:
             if y <= point:
-                return True
+                return y
+                # return True
         return False
 
 
@@ -543,9 +545,9 @@ class KD_tree:
         # seperated for timing purposes
 
         if r.y <= p: return True
-        if r.LEFT != None and p >= r.LEFT.LB:
+        if r.LEFT != None and p > r.LEFT.LB:
             return KD_tree.dominates_point_recursion(r.LEFT, p)
-        if r.RIGHT != None and p >= r.RIGHT.LB:
+        if r.RIGHT != None and p > r.RIGHT.LB:
             return KD_tree.dominates_point_recursion(r.RIGHT, p)
         return False
      
@@ -579,12 +581,12 @@ class KD_tree:
         
         # compare l-th component of p and r
         # print(f"{r,l,p =}")
-        if p[l] <= r.y[l]:
+        if p[l] < r.y[l]:
             if r.LEFT == None:
                 r.LEFT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
             elif r.LEFT != None:
                 KD_tree.insert_recursion(r.LEFT, (l + 1) % p.dim, p)
-        elif p[l] >= r.y[l]:
+        elif p[l] > r.y[l]:
             if r.RIGHT == None:
                 r.RIGHT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
             elif r.RIGHT != None:
