@@ -309,6 +309,8 @@ class PointList:
             csv_out=csv.writer(out)
             for y in self.__iter__():
                 csv_out.writerow(y)   
+
+
     def save_raw(self, filename : str):
         # raw format used in c-interface
         with open(filename, 'w') as out:
@@ -345,15 +347,21 @@ class PointList:
           }
         return PointList_dict 
 
+
     def save_json(self, filename, max_file_size = 100):
         json_str = json.dumps(self.as_dict(), indent=None, separators=(',', ':'))
         # Calculate size (approx) in bytes
         size_mb = len(json_str.encode('utf-8')) / 1_000_000
         if size_mb >= max_file_size:
-            print(f"*** {filename}, pointlist with {len(self)} points too large for json. Saving json without points. ESTIMATED MB {size_mb} > {max_file_size}=MAX")
-            json_str = self.as_dict()
-            json_str['points'] = []
-            json_str = json.dumps(json_str, indent=None, separators=(',', ':'))
+            if True:
+                print(f"*** {filename}, pointlist with {len(self)} points too large for json. Saving raw format. ESTIMATED MB {size_mb} > {max_file_size}=MAX")
+                self.save_raw(filename.replace('.json','.raw'))
+                # return
+            if True:
+                # print(f"*** {filename}, pointlist with {len(self)} points too large for json. Saving json without points. ESTIMATED MB {size_mb} > {max_file_size}=MAX")
+                json_str = self.as_dict()
+                json_str['points'] = []
+                json_str = json.dumps(json_str, indent=None, separators=(',', ':'))
         with open(filename, 'w') as json_file:
             json_file.write(json_str)
             # json.dump(self.as_dict(), json_file)

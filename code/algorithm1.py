@@ -222,9 +222,17 @@ def algorithm1():
     m_options = (2,3,4,5) # subproblems
     p_options = (2,3,4,5) # dimension
     generation_options = ['m','u'] # generation method
-    size_options = (50, 100, 150, 200,300, 600) # subproblems size
+    # size_options = (50, 100, 150, 200,300, 600) # subproblems size
+    size_options = (50, 100, 150, 200, 300) # subproblems size
     seed_options = [1,2,3,4,5]
     
+
+    if False: # testing
+        m_options = (3,) # subproblems
+        p_options = (4,) # dimension
+        size_options = (200,) # subproblems size
+        generation_options = ['l'] # generation method
+
 
     # m,p,generation, size, seed = (2,2,'m',50, 2)
     # filename = f"prob-{p}-{size}" + f"|{size}"*(m-1) + "-" + generation * m + f"-{m}_{seed}.json" 
@@ -253,21 +261,23 @@ def algorithm1():
 
     not_solved_subset = sorted(not_solved_subset, key = name_dict_keys )
     
+
+    save_prefix = "alg1-"
     for filename in not_solved_subset:
         MSP = MinkowskiSumProblem.from_json("instances/problems/"+ filename) 
 
         print(f"{MSP=}")
-        return 
         filter_time = time.time()
         Yn = methods.MS_sequential_filter(MSP.Y_list)
         Yn.statistics['filter_time'] = time.time() - filter_time
-        # Yn = methods.MS_sequential_filter(MSP.Y_list)
-        Yn.save_json("instances/results/algorithm1/"  +  save_prefix + problem_name)
+
+        Yn.save_json("instances/results/algorithm1/"  +  save_prefix + filename)
         print(f"{len(Yn)=}")
 
         print_timeit()
         reset_timeit()
         print(" ")
+        # return 
 
 
 
