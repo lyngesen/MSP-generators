@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import csv
 import json
+import os
 # from itertools.collections import Counter
 import collections
 
@@ -403,7 +404,11 @@ class MinkowskiSumProblem:
     Y_list: tuple[PointList]
     filename : str = None
     dim : int = None
+    S : int = None
     
+    def __post_init__(self):
+        self.S = len(self.Y_list)
+
     def from_json(filename: str):
         with open(filename, 'r') as json_file:
             json_dict = json.load(json_file)[0]
@@ -413,6 +418,21 @@ class MinkowskiSumProblem:
             Y = PointList.from_json("instances/" + Y_filename)
             Y_list.append(Y)
 
+        MSP = MinkowskiSumProblem(Y_list)
+        MSP.filename = filename
+        MSP.dim = Y_list[0].dim
+        return  MSP
+
+    def from_subsets(filenames : iter[str]):
+        Y_list = []
+        sizes =  '|'
+        method = ''
+        for Y_filename in filenames:
+            Y = PointList.from_json("./instances/subproblems/" + Y_filename)
+            Y_list.append(Y)
+            sizes += Y_filename.split('-')[2] + '|'
+            method += Y_filename.split('-')[3]
+        filename = f'MSP-special-{sizes}-method'
         MSP = MinkowskiSumProblem(Y_list)
         MSP.filename = filename
         MSP.dim = Y_list[0].dim
@@ -432,6 +452,86 @@ class MinkowskiSumProblem:
         for s, Y in enumerate(self.Y_list):
             Y.plot(l= "_"*hidelabel + "$\mathcal{Y}_{\mathcal{N}}^{" + str(s+1) + "}$", ax = ax, *kwargs)
 
+
+@dataclass
+class MSPInstances:
+    preset : str = 'all' 
+    options : dict = None
+    filename_list : list[str] = None
+    max_instances : int = 0 
+    m_options : tuple[int]= (2,3,4,5) # subproblems
+    p_options : tuple[int]= (2,3,4,5) # dimension
+    generation_options : tuple[str]= ('l','m','u') # generation method
+    size_options : tuple[int]= (50, 100, 150, 200, 300,600) # subproblems size
+    seed_options : tuple[int]=  (1,2,3,4,5)
+
+
+    def instance_name_dict(problem_file):
+        filename = problem_file
+        problem_file = problem_file.split(".json")[0]
+        problem_file, seed = problem_file.split("_")
+        _, p, size, method, M = problem_file.split("-")
+        size = size.split("|")[0]
+        p, M, size, seed = int(p), int(M), int(size), int(seed)
+        D = {'filename': filename, 'p': p, 'method':method, 'M': M, 'size': size, 'seed':seed}
+        return D
+        
+    def instance_name_dict_keys(problem_file):
+        D = MSPInstances.instance_name_dict(problem_file)
+        return ( D['M'],D['size'], D['p'], D['seed'])
+
+    def __post_init__(self):
+        all_problems = os.listdir("instances/problems/")
+        # print(f"{all_problems=}")
+        all_problems = sorted(all_problems, key = MSPInstances.instance_name_dict_keys )
+        
+        self.filename_list = []
+
+        match self.preset:
+            case 'all':
+                pass
+            case '2d':
+                self.p_options = (2,)
+            case 'algorithm1':
+                self.generation_options = ['m','u'] # generation method
+                self.size_options = (50, 100, 150, 200, 300) # subproblems size
+            case 'algorithm2':
+                self.generation_options = ['m','u'] # generation method
+                self.p_options = (4,)
+                self.m_options = (4,)
+                self.size_options = (50, 100, 150, 200, 300) # subproblems size
+            case 'algorithm2_test':
+                self.seed_options = (0,) # ignora alle other test problems
+                subsets_list = []
+                subsets_list.append(('sp-2-10-u_1.json', 'sp-2-10-u_1.json', 'sp-2-10-u_2.json'))
+                subsets_list.append(('sp-2-50-u_1.json', 'sp-2-50-u_1.json', 'sp-2-10-u_1.json'))
+                for subsets in subsets_list:
+                    self.filename_list.append(MinkowskiSumProblem.from_subsets(subsets))
+            case _:
+                print(f"preset '{self.preset}' not recognised")
+                raise NotImplementedError
+    
+        for filename in all_problems:
+            instance_dict = MSPInstances.instance_name_dict(filename)
+            if all((instance_dict['p'] in self.p_options,
+                   instance_dict['M'] in self.m_options,
+                   set(instance_dict['method']).issubset(set(self.generation_options)),
+                   instance_dict['size'] in self.size_options,
+                   instance_dict['seed'] in self.seed_options
+                   )):
+                self.filename_list.append(filename)
+            
+        # limit number of files
+        if self.max_instances:
+            self.filename_list = self.filename_list[:self.max_instances]
+
+
+
+    def __repr__(self):
+        return f"TestInstances(size='{len(self.filename_list)}', preset='{self.preset}')"
+
+    def __iter__(self) -> iter[MinkowskiSumProblem]:
+        return (filename if isinstance(filename, MinkowskiSumProblem) else MinkowskiSumProblem.from_json('./instances/problems/' + filename) for filename in self.filename_list)
 
 class Node:
     def __init__(self, data):
