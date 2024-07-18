@@ -7,18 +7,31 @@ For each problem MSP (from instances/problem)
 '''
 
 # local library imports
-from classes import Point, PointList, MinkowskiSumProblem, KD_Node, KD_tree
+from classes import Point, PointList, MinkowskiSumProblem, KD_Node, KD_tree, MSPInstances
 import methods
-from timing import timeit, print_timeit, reset_timeit
+from timing import timeit, print_timeit, reset_timeit, time_object
 from methods import N
 
-from minimum_generator import solve_instance, SimpleFilter
+from minimum_generator import solve_MGS_instance, SimpleFilter, build_model_covering, solve_model, display_solution, retrieve_solution_covering
 # public library imports
+from alive_progress import alive_bar
 import matplotlib.pyplot as plt
 import os
 import csv
 import time
 import itertools
+import pprint
+
+# timing
+
+SimpleFilter = timeit(SimpleFilter)
+time_object(KD_tree)
+time_object(KD_Node)
+time_object(PointList)
+time_object(Point)
+time_object(MinkowskiSumProblem,'MSP')
+time_object(methods, prefix ="ALG")
+
 
 def plot_y_j(y_j, Y_list, marker = 'x'):
     y_j.plot(marker='x', color='black')
@@ -34,7 +47,7 @@ def plot_y_j(y_j, Y_list, marker = 'x'):
 
 
 
-def main():
+def main_old():
 
 
     # MSP = MinkowskiSumProblem.from_json('instances/problems/prob-3-100|100|100-mmm-3_1.json')
@@ -129,30 +142,119 @@ def main():
 
 
 
-def alg2(Y1,Y2):
-    ''' Algorithm 2 special case two subproblems - For PhDSeminar CORAL May 2024 '''
+def alg2(MSP):
+    ''' Algorithm 2 - Large IP model (SLOW) - For PhDSeminar CORAL May 2024 '''
 
-    print(f"Running simple filter...")
-    Y_list = [Y1, Y2]
+    Y_MGS = solve_MGS_instance(MSP.Y_list, verbose = False, plot = False )
+
+    return Y_MGS
+
+@timeit
+def get_fixed_and_reduced(C_dict, Y_list):
+
+    # pprint.pprint(C_dict)
+
+    Y_fixed = [set() for s, _ in enumerate(Y_list)]
+    Y_reduced = [set() for s, _ in enumerate(Y_list)]
+
+    for y, C in C_dict.items():
+        for s,_ in enumerate(Y_list):
+            is_fixed =True 
+            ys = None
+
+            for c in C:
+                if ys == None:
+                    ys = c[s]
+                Y_reduced[s].add(c[s])
+                if c[s] != ys:
+                    is_fixed =False 
+                    # break
+            if is_fixed: # FINALLY
+                Y_fixed[s].add(ys)
+                
+
+    if False:
+        print(f"{[len(Y) for Y in Y_reduced]=}")
+        print(f"{[len(Y) for Y in Y_fixed]=}")
+        
+        print(f"{Y_reduced=}")
+        print(f"{Y_fixed=}")
+        assert 1 == 0
+
+    return Y_fixed, Y_reduced
 
 
-    G = solve_instance(Y_list, verbose = False, plot = False )
 
-    for i, g in enumerate(G):
-        print(f"|G{i+1}| = {len(g)}")
 
-    return None
+def algorithm2(MSP):
+
+    # print(f"Running simple filter...")
+    Yn, C_dict = SimpleFilter(MSP.Y_list)
+
+    # derive sets
+    #   Y_fixed = nessesary points
+    #   Y_reduced = subproblem points which contribute to at least one nondom solution
+    Y_fixed, Y_reduced = get_fixed_and_reduced(C_dict, MSP.Y_list)
+
+    # print(f"{[len(Y) for Y in Y_fixed]=}")
+    # print(f"{[len(Y) for Y in Y_reduced]=}")
+    # if the two sets are equal no further computation needed
+    # print(f"{len(Yn)=}")
+    # Y_fixed_pointlist = [[MSP.Y_list[s][i] for i,_ in enumerate(MSP.Y_list[s]) if i in Y_s_fixed] for s, Y_s_fixed in enumerate(MSP.Y_list)]
     
-def test_alg2():
+    @timeit
+    def check_fixed_sufficient():
+        Y_fixed_pointlist = [PointList([MSP.Y_list[s][i] for i in Y_fixed[s]]) for s in range(MSP.S)]
+        Yn_fixed = methods.MS_sequential_filter(Y_fixed_pointlist)
+        if set(Yn_fixed.points).issubset(set(Yn.points)):
+            return True, Yn_fixed
+        else:
+            return False, Yn_fixed
 
-    Y1 = PointList.from_json('./instances/subproblems/sp-2-100-u_1.json')
-    Y2 = PointList.from_json('./instances/subproblems/sp-2-100-m_2.json')
+    check_val, Yn_fixed = check_fixed_sufficient()
+    if check_val:
+        Y_solution = Y_fixed
+    else:
+            # if the two sets are not equal a set partition problem must be solved
+        Yn_fixed_set = set(Yn_fixed.points)
+        Yn_nongenerated = [y for y in Yn if y not in Yn_fixed_set]
+        model = build_model_covering(MSP.Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
+        solve_model(model)
+        Y_chosen_dict = retrieve_solution_covering(model, MSP.Y_list)
+        Y_solution = {s: Y_chosen_dict[s].union(set(Y_fixed[s])) for s in range(len(MSP.Y_list))}
+        print(f"{Y_chosen_dict=}")
+        print(f"{Y_solution=}")
+    
+    Y_MGS = [PointList([MSP.Y_list[s][i] for i in Y_solution[s]]) for s in range(MSP.S)]
+    # print(f"{[len(Y) for Y in Y_MGS]=}")
+    if True: # check of generating property
+        Y_solution_pointlist = [PointList([MSP.Y_list[s][i] for i in Y_solution[s]]) for s in range(MSP.S)]
+        Yn_solution = methods.MS_sequential_filter(Y_solution_pointlist)
+        assert set(Yn_solution.points).issubset(set(Yn.points))
 
-    G = alg2(Y1, Y2)
+
+    return Y_MGS
 
 
+def main():
 
+    TI = MSPInstances('algorithm2')
+
+    print(f"{TI=}")
+
+    with alive_bar(len(TI.filename_list), enrich_print=False) as bar:
+        for MSP in TI:
+            print(f"{MSP}")
+            Y_MGS = algorithm2(MSP)
+            MGS_sizes = [len(Y) for Y in Y_MGS]
+            MGS_size = sum(MGS_sizes)
+            if False:
+                print_timeit()
+                reset_timeit()
+            print(f"{MGS_size=},  rel_size={MGS_size/sum([len(Y) for Y in MSP.Y_list])*100:.0f}%,  {MGS_sizes=} \n \n")
+            print(f"")
+            bar()
 
 if __name__ == "__main__":
-    test_alg2()
-    # main()
+
+    main()
