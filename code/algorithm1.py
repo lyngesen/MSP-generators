@@ -260,10 +260,13 @@ def algorithm1():
     print(f"{len(not_solved_subset)=}")
 
     not_solved_subset = sorted(not_solved_subset, key = name_dict_keys )
-    
+ 
+
+    print(f"{not_solved_subset=}")
 
     save_prefix = "alg1-"
     for filename in not_solved_subset:
+        if True: return
         MSP = MinkowskiSumProblem.from_json("instances/problems/"+ filename) 
 
         print(f"{MSP=}")

@@ -13,7 +13,7 @@ import time
 import csv
 import math
 import os
-from minimum_generator import solve_instance
+from minimum_generator import solve_MGS_instance
 
 def induced_UB_plot(level, Y1,Y2, prefix='', plot=True):
     print(f"{prefix}")
@@ -101,7 +101,7 @@ def multiple_induced_UB():
                         Yn = N(Y)
                         data.update({'Y_size':len(Y), 'Yn_size':len(Yn)})
                         print(f"Solving MSG")
-                        G = solve_instance([Y1,Y2])
+                        G = solve_MGS_instance([Y1,Y2])
                         data.update({'G1_size':len(G[0]), 'G2_size':len(G[1])})
                         with open(csv_file_path, 'a') as csv_file:
                             # add header if file empty

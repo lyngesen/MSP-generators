@@ -268,8 +268,8 @@ def MS_sequential_filter(Y_list = list[PointList], N = N) -> PointList:
     Y_ms = N(Y_list[0])
 
     for s in range(1, len(Y_list)):
-        print(f"{s=}")
-        print(f"{len(Y_ms)=}")
+        # print(f"{s=}")
+        # print(f"{len(Y_ms)=}")
         Y_ms = N(Y_ms + N(Y_list[s]))
 
     return PointList(Y_ms)
