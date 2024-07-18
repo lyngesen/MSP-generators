@@ -66,9 +66,103 @@ def build_model(Y_list) -> pyomo.ConcreteModel():
 
     return model
 
+@timeit
+def build_model_covering(Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced) -> pyomo.ConcreteModel():
+    print(f"Setting up model..")
+    P = Y_list[0][0].dim
+    S = len(Y_list)
+    assert all((P == Y.dim for Y in Y_list))
+
+    # Yn = methods.MS_sequential_filter(Y_list)
+
+
+    # index sets
+    S = list(range(len(Y_list)))
+    J = list(range(len(Yn_nongenerated)))
+    C = list(range(max([len(C_dict[Yn_nongenerated[j]]) for j in J])))
+    I = list(range(max([len(Y) for Y in Y_list])))
+    print(f"{len(C)=}")
+    print(f"{S=}")
+    # print(f"{J=}")
+    print(f"{I=}")
+
+    Y_unfixed_dict = {s: tuple(set(Y_reduced[s])-set(Y_fixed[s])) for s in S}
+    Y_unfixed_set_dict = {s: set(Y_reduced[s])-set(Y_fixed[s]) for s in S}
+    print(f"{[len(Y) for Y in Y_unfixed_dict.values()]=}")
+
+    print(f"{len(Yn),len(Yn_nongenerated)=}")
+    
+
+    # X_dict = {s : list(range(len(Y_list[s]))) for s in S}
+    # X_dict = {s : list(range(len(Y_list[s]))) for s in S}
+    print(f"{Y_fixed=}")
+    print(f"{Y_reduced=}")
+    print(f"{Y_unfixed_dict=}")
+    Yn_comb_dict = {j:C_dict[Yn_nongenerated[j]] for j in J}
+    for k,v in Yn_comb_dict.items():
+        assert len(v) >1
+    Yn_comb_reduced_dict = {j:[tuple([ci  if ci in Y_unfixed_set_dict[s] else None for s,ci in enumerate(c)]) for c in C_dict[Yn_nongenerated[j]]] for j in J}
+
+    Yn_comb_index = {j:tuple(range(len(C_dict[Yn_nongenerated[j]]))) for j in J}
+    print(f"{Yn_comb_dict[0]=}")
+    print(f"{Yn_comb_reduced_dict[0]=}")
+    print(f"{Yn_comb_index[0]=}")
+    # Define your model
+    model = pyomo.ConcreteModel()
+
+    # Define your sets
+    model.S = pyomo.Set(initialize=S)
+    model.J = pyomo.Set(initialize=J)
+    model.C = pyomo.Set(initialize=C)
+    model.I = pyomo.Set(initialize=I)
+    model.I_s = pyomo.Set(model.S, initialize=Y_unfixed_dict)
+    model.J_c = pyomo.Set(model.J, initialize=Yn_comb_index)
+
+    # Create an intermediate set of valid combinations
+    def SI_rule(model):
+        return [(s, i) for s in S for i in model.I_s[s]]
+
+    def JC_rule(model):
+        return [(j, c) for j in J for c in model.J_c[j]]
+
+    model.SI = pyomo.Set(within=model.S*model.I, initialize=SI_rule)
+    model.JC = pyomo.Set(within=model.J*model.C, initialize=JC_rule)
+
+    # Define binary variables
+    model.x = pyomo.Var(model.SI, within=pyomo.Binary)
+    model.z = pyomo.Var(model.JC, within=pyomo.Binary)
+
+    # Define constraints
+    model.cons = pyomo.ConstraintList()
+    
+    for j in model.J:
+        model.cons.add(sum(model.z[j,c] for c in Yn_comb_index[j]) >= 1)
+    for j in model.J:
+        for c in Yn_comb_index[j]:
+            assert (j,c) in model.JC
+            incident_s_ys = [(s,ys) for (s,ys) in enumerate(Yn_comb_reduced_dict[j][c]) if ys is not None]
+            # print(f"{j,c,incident_s_ys=}")
+            # print(f"{len(incident_s_ys)=}")
+            assert len(incident_s_ys)>0
+            model.cons.add(model.z[j,c]*len(incident_s_ys) <= sum(model.x[s,ys] for s,ys in incident_s_ys))
+    
+#     if True:
+        # for (s,i) in model.SI:
+            # model.cons.add(model.x[s,i] >=1)
+
+    # Define objective
+    def objective_rule(model):
+        return sum(model.x[s, i] for s, i in model.SI)
+
+    model.obj = pyomo.Objective(rule=objective_rule, sense=pyomo.minimize)
+
+    return model
+
+
+
 
 @timeit
-def solve_model(model:pyomo.ConcreteModel(), solver_str = "cplex_direct"):
+def solve_model(model:pyomo.ConcreteModel(), solver_str = "cbc"):
     assert solver_str in ["cbc", "cplex_direct", "plpk"]
     print(f"Solving model..")
     # Solve model
@@ -97,6 +191,23 @@ def retrieve_solution(model:pyomo.ConcreteModel(), Y_list: list[PointList], verb
         Y_generator_list.append(PointList(Y_generator))
 
     return Y_generator_list
+
+@timeit
+def retrieve_solution_covering(model:pyomo.ConcreteModel(), Y_list: list[PointList], verbose = False) -> list[PointList]:
+    # Retrieve solution
+
+    Y_generator_list = []
+
+    Y_chosen_dict = {s: {i for i in model.I_s[s] if math.isclose(pyomo.value(model.x[s,i]),1) } for s in model.S}
+
+    # for (j,c) in model.JC:
+        # incident_s_ys = [(s,ys) for (s,ys) in enumerate(Yn_comb_reduced_dict[j][c]) if ys is not None]
+        # print('    z[{}]={}'.format((j,c), pyomo.value(model.z[j, c])))
+    
+    return Y_chosen_dict
+
+
+
 
 
     
@@ -134,14 +245,14 @@ def display_solution(Y_list: list[PointList], Y_generator_list: list[PointList],
         Yn.plot(l="Yn")
 
         Yn_hat = methods.MS_sum(Y_generator_list)
-        assert N(Yn_hat.removed_duplicates()) == N(Yn.removed_duplicates())
+        # assert N(Yn_hat.removed_duplicates()) == N(Yn.removed_duplicates())
         Yn_hat.plot(l="^Yn", marker= "3")
 
         plt.show()
 
 
 
-def solve_instance(Y_list: list[PointList], verbose = 'all', plot = False):
+def solve_MGS_instance(Y_list: list[PointList], verbose = 'all', plot = False):
     model = build_model(Y_list)
     solve_model(model)
     Y_MIN_LIST = retrieve_solution(model, Y_list)
@@ -190,7 +301,14 @@ def SimpleFilterSub(Y, Ys):
             y_new.i = y.i + ys.i
             Y_ms.append(y_new)
 
-    return methods.unidirectional_filter(PointList(Y_ms), duplicates_allowed=True)
+
+    Yn_points = set(methods.N(PointList(Y_ms)).points)
+
+    Y_ms_N = PointList([y for y in Y_ms if y in Yn_points])
+
+    return Y_ms_N
+
+    # return methods.unidirectional_filter(PointList(Y_ms), duplicates_allowed=True)
 
 
 def SimpleFilter(Y_list):
@@ -198,8 +316,6 @@ def SimpleFilter(Y_list):
     input: list of PointList
     output: nondominated points of Minkowski sum of sets Y_list
     """
- 
-    
 
     # add index to each point
     for Ys in Y_list:
@@ -207,16 +323,23 @@ def SimpleFilter(Y_list):
             y.i = [i]
 
     # Y_dict = {y:i for i,y in enumerate(Y_list[0]}
-    Y = Y_list[0]
+    Yn = Y_list[0]
     
     for s in range(1, len(Y_list)):
-        Yn = SimpleFilterSub(Y, Y_list[s])
+        Yn = SimpleFilterSub(Yn, Y_list[s])
  
-    # Yn_dict = {y:y.i for y in Yn}
-    Yn_dict = {y:[yn.i for yn in Yn if yn == y] for y in Yn}
+    @timeit
+    def get_dict():
+        C_dict = {y:[] for y in Yn}
+        for y in Yn:
+            C_dict[y].append(tuple(y.i))
+        # Yn_dict_old = {y:[tuple(yn.i) for yn in Yn if yn == y] for y in Yn}
+        # DONE: speed up the above <15-07-24, yourname> #
 
+        return C_dict
+    C_dict = get_dict()
 
-    return PointList(Yn), Yn_dict
+    return PointList(Yn), C_dict
 
 
 
@@ -244,7 +367,7 @@ def main():
     # print(f"{MSP=}")
     # Y_list =  MSP.Y_list
 
-    solve_instance(Y_list, verbose = 'all', plot = True )
+    solve_MGS_instance(Y_list, verbose = 'all', plot = True )
 
     print_timeit()
 
