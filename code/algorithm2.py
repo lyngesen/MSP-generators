@@ -188,6 +188,7 @@ def get_fixed_and_reduced(C_dict, Y_list):
 
 def algorithm2(MSP):
 
+
     # print(f"Running simple filter...")
     Yn, C_dict = SimpleFilter(MSP.Y_list)
 
@@ -196,8 +197,8 @@ def algorithm2(MSP):
     #   Y_reduced = subproblem points which contribute to at least one nondom solution
     Y_fixed, Y_reduced = get_fixed_and_reduced(C_dict, MSP.Y_list)
 
-    # print(f"{[len(Y) for Y in Y_fixed]=}")
-    # print(f"{[len(Y) for Y in Y_reduced]=}")
+    print(f"{[len(Y) for Y in Y_fixed]=}")
+    print(f"{[len(Y) for Y in Y_reduced]=}")
     # if the two sets are equal no further computation needed
     # print(f"{len(Yn)=}")
     # Y_fixed_pointlist = [[MSP.Y_list[s][i] for i,_ in enumerate(MSP.Y_list[s]) if i in Y_s_fixed] for s, Y_s_fixed in enumerate(MSP.Y_list)]
@@ -216,6 +217,9 @@ def algorithm2(MSP):
         Y_solution = Y_fixed
     else:
             # if the two sets are not equal a set partition problem must be solved
+        if MSP.filename: # log that a covering problem as to be solved
+            with open('./instances/results/algorithm2_log', 'a') as logfile:
+                logfile.write('MSP.filename' + '\n')
         Yn_fixed_set = set(Yn_fixed.points)
         Yn_nongenerated = [y for y in Yn if y not in Yn_fixed_set]
         model = build_model_covering(MSP.Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
@@ -238,23 +242,53 @@ def algorithm2(MSP):
 
 def main():
 
-    TI = MSPInstances('algorithm2')
 
+
+    save_prefix = 'alg2-'
+    save_solution_dir = './instances/results/algorithm2/'
+    TI = MSPInstances('algorithm1')
+    TI.filter_out_solved(save_prefix, save_solution_dir )
+    
     print(f"{TI=}")
 
     with alive_bar(len(TI.filename_list), enrich_print=False) as bar:
         for MSP in TI:
+            
+            time_start = time.time()
             print(f"{MSP}")
             Y_MGS = algorithm2(MSP)
-            MGS_sizes = [len(Y) for Y in Y_MGS]
+            MGS_sizes = tuple([len(Y) for Y in Y_MGS])
             MGS_size = sum(MGS_sizes)
-            if False:
-                print_timeit()
-                reset_timeit()
             print(f"{MGS_size=},  rel_size={MGS_size/sum([len(Y) for Y in MSP.Y_list])*100:.0f}%,  {MGS_sizes=} \n \n")
             print(f"")
+            MGS = MinkowskiSumProblem(Y_MGS)
+            MGS.filename = save_solution_dir + save_prefix + MSP.filename.split('/')[-1]
+
+
+            # update run statistics
+            statistics = {'filename':MSP.filename.split('/')[-1], 
+                          'running_time': time.time() - time_start, 
+                          'max_size': sum([len(Y) for Y in MSP.Y_list]),
+                          'MGS_size': MGS_size, 
+                          'MGS_sizes':MGS_sizes, 
+                          }
+
+            MGS.statistics = statistics
+            if True:
+                print_timeit()
+                reset_timeit()
+            print(f"{MGS.filename=}")
+            # MGS.save_json(MGS.filename)
+
+
             bar()
 
+
+    # MGS2 = MinkowskiSumProblem.from_json('./instances/')
+    # MGS.plot()
+    # MGS2.plot(marker='x')
+    # plt.show()
+    # print(f"{MGS2=}")
 if __name__ == "__main__":
 
     main()
