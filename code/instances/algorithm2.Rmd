@@ -1,0 +1,147 @@
+---
+title: "Results: Plots - Generator upper bound sets"
+output: html_document
+date: "`r Sys.Date()`"
+editor_options: 
+  chunk_output_type: console
+knit: (function(inputFile, encoding) { 
+    out_dir <- '../../docs/';
+    rmarkdown::render(inputFile,
+                      encoding=encoding, 
+                      output_file=file.path(dirname(inputFile), out_dir, 'algorithm2.html')) })
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r setup, include=FALSE}
+here::i_am("code/instances/algorithm2.Rmd")  # specify relative path given project
+# remotes::install_github("relund/gMOIP")
+# library(gMOIP)
+#library(DT)
+library(tidyverse)
+library(ggplot2)
+# library(knitr)
+# library(rgl)
+# rgl::setupKnitr()
+# options(rgl.useNULL=TRUE)
+# rgl::par3d("family" = "serif")
+# library(tikzDevice)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message=FALSE, include = TRUE, warning = FALSE,
+  out.width = "69%", fig.width = 12, fig.align = "center", fig.asp = 0.8
+)
+```
+
+
+```{r, eval=FALSE}
+cat("Update statistics for results.")
+paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
+prefix <- str_extract(paths, ".*/")
+
+filename <- str_extract(paths, "^.*/(.*)$", group = 1)
+alg <- unique(str_extract(filename, "(.*?)-", group = 1))
+head(alg)
+
+
+a <- "alg2"
+
+algPaths <- str_subset(paths, a)
+head(algPaths)
+datRes <- NULL
+
+for (i in 1:length(algPaths)) {
+   algFile <- algPaths[i]
+   algFile
+   lstAlg <- jsonlite::read_json(algFile, simplifyVector = F)
+   row <- lstAlg[[2]]
+   row$MGS_sizes <- paste(row$MGS_sizes, collapse = "-")
+   datRes <- datRes %>% bind_rows(row)
+}
+datRes
+write_csv(datRes, here::here("code/instances/stat-alg2.csv"))
+```
+
+```{r}
+dat <- read_csv(here::here("code/instances/stat-alg2.csv"))
+head(dat)
+
+```
+
+Total time used in computing minimum generator sets (MGS)
+Hours used: `r sum(dat$running_time) /60 / 60`
+
+
+
+Mutate the filename to columns
+```{r}
+dat <- dat %>%
+  mutate(method = str_extract(filename, "^.*-(.*)-.*$", group = 1)) %>% 
+  mutate(method = map_chr(method, function (x) {
+  x <- str_split_1(x, "")
+  x <- unique(x)
+  str_c(x, collapse = "")
+  })) %>%
+  mutate(p = str_extract(filename, "-(\\d+)-", group = 1)) %>% 
+  mutate(m = str_extract(filename, "-(\\d+)_", group = 1)) %>%
+  mutate(rel_size = MGS_size / max_size)  %>%
+  mutate(avg_sp_size = max_size / as.numeric(m))  %>%
+   filter(method != 'l')
+```
+
+
+
+
+
+
+plot the MGS size as a function of max size.
+```{r}
+
+dat$m <- as.factor(dat$m)
+dat$p <- as.factor(dat$p)
+
+dat %>% ggplot(aes(x = max_size, y = MGS_size, color = p)) +
+   geom_point() + 
+   #facet_grid(t2 ~ t1, margins = F, labeller = labeller(t1 = t2_labeller, t2 = t1_labeller)) +
+   labs(
+        y = "Size of MGS",
+        x = "Total subproblem points") +
+   theme(legend.position = "bottom")
+```
+
+
+```{r}
+dat %>% 
+  ggplot(aes(x = avg_sp_size, y = rel_size, color = method)) +
+  geom_point() + 
+  #geom_boxplot() + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, labeller =  "label_both")  + 
+  labs(title = "Size of MGS given subproblem cardinality",
+       y = "Relative cardinality MGS/Max MGS",
+       x = "Average subproblem cardinality",
+       color = "Methods used to generate subproblems") +
+  theme(legend.position = "bottom") 
+```
+
+
+
+```{r}
+dat %>% 
+  ggplot(aes(x = max_size, y = rel_size, color = method)) +
+  geom_point() + 
+  #geom_boxplot() + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, labeller =  "label_both")  + 
+  labs(title = "Size of MGS given subproblem cardinality",
+       y = "Cardinality MGS",
+       x = "Total subproblem cardinality",
+       color = "Methods used to generate subproblems") +
+  theme(legend.position = "bottom") 
+```
