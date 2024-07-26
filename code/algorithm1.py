@@ -5,13 +5,14 @@ For each problem MSP (from instances/problem)
     Find Yn and save solution (PointList) to json file and add statistics with |Yn|
 '''
 
-from classes import Point, PointList, MinkowskiSumProblem, KD_Node, KD_tree
+from classes import Point, PointList, MinkowskiSumProblem, KD_Node, KD_tree, MSPInstances
 import methods
 import timing
 from timing import timeit, print_timeit, reset_timeit, time_object
 from methods import N
 # public library imports
 import matplotlib.pyplot as plt
+from alive_progress import alive_bar
 import os
 import csv
 import time
@@ -234,11 +235,7 @@ def algorithm1():
         generation_options = ['l'] # generation method
 
 
-    # m,p,generation, size, seed = (2,2,'m',50, 2)
-    # filename = f"prob-{p}-{size}" + f"|{size}"*(m-1) + "-" + generation * m + f"-{m}_{seed}.json" 
-
     not_solved = remaining_instances()
-    # print(f"{name_dict(not_solved[0])}")
     not_solved_subset = list()
     to_solve = 0
     for filename in not_solved:
@@ -285,10 +282,40 @@ def algorithm1():
 
 
 
+def main():
+
+    save_prefix = 'alg1-'
+    save_solution_dir = './instances/results/algorithm1/'
+    TI = MSPInstances('algorithm1')
+    TI.filter_out_solved(save_prefix, save_solution_dir )
+    print(f"{TI=}")
+
+    with alive_bar(len(TI.filename_list), enrich_print=False) as bar:
+        for MSP in TI:
+            
+            time_start = time.time()
+            print(f"{MSP}")
+            filter_time = time.time()
+            Yn = methods.MS_sequential_filter(MSP.Y_list)
+            Yn.statistics['filter_time'] = time.time() - filter_time
+            # Yn.save_json(save_solution_dir  +  save_prefix + filename)
+            print(f"{len(Yn)=}")
+            
+            if True:
+                print_timeit()
+                reset_timeit()
+
+            print(" ")
+            bar()
+
+
+
+
 
 if __name__ == "__main__":
     # remaining_instances()
-    algorithm1()
+    # algorithm1()
+    main()
     # test_times()
     # example_Yn()
     # main()
