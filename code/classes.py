@@ -287,6 +287,21 @@ class PointList:
 
 
 
+    def get_nadir(self):
+        nadir_vals = list(tuple(self.points[0].val))
+        for point in self.points:
+            for p in range(self.dim):
+                if nadir_vals[p] < point.val[p]:
+                    nadir_vals[p] = point.val[p]
+        return Point(nadir_vals)
+    def get_ideal(self):
+        ideal_vals = list(tuple(self.points[0].val))
+        for point in self.points:
+            for p in range(self.dim):
+                if ideal_vals[p] > point.val[p]:
+                    ideal_vals[p] = point.val[p]
+        return Point(ideal_vals)
+
 
 
     def dominates(self, other, power="default"):
