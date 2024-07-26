@@ -6,8 +6,13 @@ from matplotlib.patches import Rectangle
 import csv
 import json
 import os
+
+import pprint
+import traceback
+import sys
 # from itertools.collections import Counter
 import collections
+
 
 """
 Class
@@ -367,9 +372,10 @@ class PointList:
             json_file.write(json_str)
             # json.dump(self.as_dict(), json_file)
 
-    def from_json(filename: str):
-        with open(filename, 'r') as json_file:
-            json_dict = json.load(json_file)
+
+
+
+    def from_json_str(json_dict):
         statistics = json_dict['statistics']
         points = []
         for json_point in json_dict['points']:
@@ -383,6 +389,16 @@ class PointList:
         Y.statistics = statistics
 
         return Y
+
+    def from_json(filename: str):
+
+        with open(filename, 'r') as json_file:
+            json_dict = json.load(json_file)
+
+        return PointList.from_json_str(json_dict)
+        
+        
+
 
     def print_data(self):
         N_POINTS = len(self.points)
@@ -415,13 +431,27 @@ class MinkowskiSumProblem:
 
         Y_list = []
         for V, Y_filename in sorted(json_dict.items()):
-            Y = PointList.from_json("instances/" + Y_filename)
+            if isinstance(Y_filename, str):
+                Y = PointList.from_json("instances/" + Y_filename)
+            else:
+                Y = PointList.from_json_str(Y_filename)
             Y_list.append(Y)
 
         MSP = MinkowskiSumProblem(Y_list)
         MSP.filename = filename
         MSP.dim = Y_list[0].dim
         return  MSP
+
+    def save_json(self, filename):
+        out_dict = [
+                {f"V{s}":Y.as_dict() for s,Y in enumerate(self.Y_list, start=1)},
+                self.statistics
+                ]
+        json_str = json.dumps(out_dict, indent=1, separators=(',', ':'))
+        with open(filename, 'w') as json_file:
+            json_file.write(json_str)
+
+
 
     def from_subsets(filenames : iter[str]):
         Y_list = []
@@ -431,8 +461,8 @@ class MinkowskiSumProblem:
             Y = PointList.from_json("./instances/subproblems/" + Y_filename)
             Y_list.append(Y)
             sizes += Y_filename.split('-')[2] + '|'
-            method += Y_filename.split('-')[3]
-        filename = f'MSP-special-{sizes}-method'
+            method += Y_filename.split('-')[3].split('.')[0]
+        filename = f'MSP-special-{sizes}-{method}'
         MSP = MinkowskiSumProblem(Y_list)
         MSP.filename = filename
         MSP.dim = Y_list[0].dim
@@ -447,10 +477,10 @@ class MinkowskiSumProblem:
         return string
 
 
-    def plot(self,  hidelabel = False, ax = None, *kwargs):
+    def plot(self,  hidelabel = False, ax = None, **kwargs):
         ax = ax if ax else plt
         for s, Y in enumerate(self.Y_list):
-            Y.plot(l= "_"*hidelabel + "$\mathcal{Y}_{\mathcal{N}}^{" + str(s+1) + "}$", ax = ax, *kwargs)
+            Y.plot(l= "_"*hidelabel + "$\mathcal{Y}_{\mathcal{N}}^{" + str(s+1) + "}$", ax = ax, **kwargs)
 
 
 @dataclass
@@ -462,6 +492,7 @@ class MSPInstances:
     m_options : tuple[int]= (2,3,4,5) # subproblems
     p_options : tuple[int]= (2,3,4,5) # dimension
     generation_options : tuple[str]= ('l','m','u') # generation method
+    ignore_ifonly_l : bool = False # if true ignore MSP where method i only l
     size_options : tuple[int]= (50, 100, 150, 200, 300,600) # subproblems size
     seed_options : tuple[int]=  (1,2,3,4,5)
 
@@ -496,15 +527,18 @@ class MSPInstances:
                 self.generation_options = ['m','u'] # generation method
                 self.size_options = (50, 100, 150, 200, 300) # subproblems size
             case 'algorithm2':
-                self.generation_options = ['m','u'] # generation method
-                self.p_options = (4,)
-                self.m_options = (4,)
+                self.generation_options = ['m','u', 'l'] # generation method
+                # self.p_options = (4,)
+                # self.m_options = (4,)
                 self.size_options = (50, 100, 150, 200, 300) # subproblems size
             case 'algorithm2_test':
                 self.seed_options = (0,) # ignora alle other test problems
                 subsets_list = []
                 subsets_list.append(('sp-2-10-u_1.json', 'sp-2-10-u_1.json', 'sp-2-10-u_2.json'))
                 subsets_list.append(('sp-2-50-u_1.json', 'sp-2-50-u_1.json', 'sp-2-10-u_1.json'))
+                subsets_list.append(('sp-2-100-u_1.json', 'sp-2-100-l_1.json', 'sp-2-100-u_1.json'))
+                subsets_list.append(('sp-4-100-u_1.json', 'sp-4-100-l_1.json', 'sp-4-100-u_1.json'))
+                subsets_list.append(('sp-4-100-u_2.json', 'sp-4-100-l_1.json', 'sp-4-100-u_2.json'))
                 for subsets in subsets_list:
                     self.filename_list.append(MinkowskiSumProblem.from_subsets(subsets))
             case _:
@@ -513,6 +547,9 @@ class MSPInstances:
     
         for filename in all_problems:
             instance_dict = MSPInstances.instance_name_dict(filename)
+
+            if self.ignore_ifonly_l and set(instance_dict['method']).issubset(set(('l',))):
+                continue
             if all((instance_dict['p'] in self.p_options,
                    instance_dict['M'] in self.m_options,
                    set(instance_dict['method']).issubset(set(self.generation_options)),
@@ -525,6 +562,18 @@ class MSPInstances:
         if self.max_instances:
             self.filename_list = self.filename_list[:self.max_instances]
 
+    def filter_out_solved(self, save_prefix : str, solved_folder : str):
+        self.not_solved = []
+        self.solved = []
+        for p in self.filename_list:
+            if save_prefix + p in os.listdir(solved_folder):
+                self.solved.append(p)
+            else:
+                self.not_solved.append(p)
+
+        print(f"|solved| = {len(self.solved)}    |not solved| = {len(self.not_solved)}")
+
+        self.filename_list = self.not_solved
 
 
     def __repr__(self):
@@ -703,10 +752,3 @@ class KD_tree:
     def insert(r : KD_Node, l : int, p: Point):
         return KD_tree.insert_recursion(r,l,p)
             
-            
-
-        
-
-
-
-
