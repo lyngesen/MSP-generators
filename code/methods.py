@@ -21,7 +21,7 @@ import subprocess # for running c execute
 from collections import deque # for fast leftappend
 from operator import itemgetter # for lexsort function to define keys
 import math
-
+import uuid
 
 def basic_filter(Y:PointList):
     """
@@ -195,23 +195,30 @@ def unidirectional_filter(Y: PointList, duplicates_allowed = False) -> PointList
 
 
 
-def call_c_nondomDC():
-    current_d = os.getcwd()
+def call_c_nondomDC(call_id:str):
+    # current_d = os.getcwd()
     # move to c folder and execute
-    os.chdir('/Users/au618299/Desktop/cythonTest/nondom/')
-    subprocess.call(['./nondom'])
+    # os.chdir('/Users/au618299/Desktop/cythonTest/nondom/')
+    # subprocess.call(['./nondom',call_id])
     # return to initial directory
-    os.chdir(current_d)
+    # os.chdir(current_d)
+    subprocess.call(['/Users/au618299/Desktop/cythonTest/nondom/./nondom',call_id])
 
 
 def nondomDC_wrapper(Y : PointList):
     # A python wrapper for the c implementation of NonDomDC [Bruno Lang]
-    out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/pointsCin" # c script directory
+    call_id = str(uuid.uuid4())
+    # out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}" # c script directory
+    out_file = fr"temp/pointsIn-{call_id}" # c script directory
     Y.save_raw(out_file)
-    call_c_nondomDC()
-    in_file = filepath = fr"/Users/au618299/Desktop/cythonTest/nondom/pointsCout" # c script directory
-    return(PointList.from_raw(in_file))
-
+    call_c_nondomDC(call_id)
+    # in_file = filepath = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsOut-{call_id}" # c script directory
+    in_file = filepath = fr"temp/pointsOut-{call_id}" # c script directory
+    Yn = PointList.from_raw(in_file)
+    if True: # clear temp folder
+        os.remove(out_file)
+        os.remove(in_file)
+    return Yn
 
 def N(Y = PointList, **kwargs):
     """ 'best' implemented nondominance filter """
