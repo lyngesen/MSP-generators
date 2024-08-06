@@ -242,10 +242,11 @@ def algorithm2(MSP):
     if True: # check of generating property
         Y_solution_pointlist = [PointList([MSP.Y_list[s][i] for i in Y_solution[s]]) for s in range(MSP.S)]
         Yn_solution = methods.MS_sequential_filter(Y_solution_pointlist)
+        
         assert set(Yn_solution.points).issubset(set(Yn.points))
 
 
-    return Y_MGS
+    return Y_MGS, len(Yn_solution)
 
 
 # for logging
@@ -260,13 +261,14 @@ def algorithm2_run(MSP):
     time_start = time.time()
     # print(f"{MSP}")
     logger.info(MSP)
-    Y_MGS = algorithm2(MSP)
+    Y_MGS, Yn_size = algorithm2(MSP)
     MGS_sizes = tuple([len(Y) for Y in Y_MGS])
     MGS_size = sum(MGS_sizes)
     str_out = f"{MSP.filename}, {MGS_size=},  rel_size={MGS_size/sum([len(Y) for Y in MSP.Y_list])*100:.0f}%,  {MGS_sizes=} \n \n"
     # print(str_out)
     logger.info(str_out)
     MGS = MinkowskiSumProblem(Y_MGS)
+
     MGS.filename = save_solution_dir + save_prefix + MSP.filename.split('/')[-1]
 
 
@@ -276,13 +278,18 @@ def algorithm2_run(MSP):
                   'max_size': sum([len(Y) for Y in MSP.Y_list]),
                   'MGS_size': MGS_size, 
                   'MGS_sizes':MGS_sizes, 
+                  'Yn_size':Yn_size, 
                   }
 
     MGS.statistics = statistics
     if 'timing' in sys.argv:
         print_timeit()
         reset_timeit()
+
+    # print(f"{MGS.statistics=}")
     # print(f"{MGS.filename=}")
+
+
     MGS.save_json(MGS.filename)
 
     return statistics
