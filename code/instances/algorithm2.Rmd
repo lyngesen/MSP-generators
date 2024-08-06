@@ -1,5 +1,5 @@
 ---
-title: "Results: Plots - Generator upper bound sets"
+title: "Results: Algorithm 2"
 output: html_document
 date: "`r Sys.Date()`"
 editor_options: 
@@ -64,23 +64,34 @@ for (i in 1:length(algPaths)) {
    row$MGS_sizes <- paste(row$MGS_sizes, collapse = "-")
    datRes <- datRes %>% bind_rows(row)
 }
-datRes
 write_csv(datRes, here::here("code/instances/stat-alg2.csv"))
 ```
 
 ```{r}
 dat <- read_csv(here::here("code/instances/stat-alg2.csv"))
-head(dat)
 
 ```
 
+```{r, eval=FALSE}
+head(dat)
+```
+
+
 Total time used in computing minimum generator sets (MGS)
-Hours used: `r sum(dat$running_time) /60 / 60`
+
+*Hours used: `r sum(dat$running_time) /60 / 60`*
+
+
+*Note:*
+
+For all the experiments the minimum generator sets are unique. In particular every generator $\mathcal{G}$ with corrosponding set $$ (\mathcal{Y}^1, \mathcal{Y}^2... \mathcal{Y}^S)$$ we have:
+$$ \mathcal{Y} = \left\{ y^s \vert \exists y \in \mathcal{Y}_N, c_s = y^s, \forall c \in \mathcal{C}(y) \right\} $$
+This also implies that the found minimum generator sets are unique minimal generator sets. This is not generally the case as seen in example [ref generatorNotUnique]. It implies however that minimal generator sets are likely to be unique.
 
 
 
-Mutate the filename to columns
 ```{r}
+# Mutate the filename to columns
 dat <- dat %>%
   mutate(method = str_extract(filename, "^.*-(.*)-.*$", group = 1)) %>% 
   mutate(method = map_chr(method, function (x) {
@@ -91,31 +102,51 @@ dat <- dat %>%
   mutate(p = str_extract(filename, "-(\\d+)-", group = 1)) %>% 
   mutate(m = str_extract(filename, "-(\\d+)_", group = 1)) %>%
   mutate(rel_size = MGS_size / max_size)  %>%
-  mutate(avg_sp_size = max_size / as.numeric(m))  %>%
-   filter(method != 'l')
+  mutate(avg_sp_size = max_size / as.numeric(m))  #%>% filter(method != 'l')
+
+
+
+dat$m <- as.factor(dat$m)
+dat$p <- as.factor(dat$p)
 ```
 
 
 
 
 
-
-plot the MGS size as a function of max size.
+# MGS size as a function of maximum possible size.
 ```{r}
-
-dat$m <- as.factor(dat$m)
-dat$p <- as.factor(dat$p)
-
-dat %>% ggplot(aes(x = max_size, y = MGS_size, color = p)) +
-   geom_point() + 
-   #facet_grid(t2 ~ t1, margins = F, labeller = labeller(t1 = t2_labeller, t2 = t1_labeller)) +
+dat %>%
+   #ggplot(aes(x = max_size, y = MGS_size, color = method)) +
+   ggplot(aes(x = method, y = rel_size, color = method)) +
+   geom_boxplot() + 
+   stat_summary(fun="mean", geom="line") +
    labs(
-        y = "Size of MGS",
-        x = "Total subproblem points") +
+        y = "Size of MGS relative to total enumeration",
+        x = "Method") +
    theme(legend.position = "bottom")
 ```
 
 
+```{r}
+mean_m <- dat %>% filter(method == 'm') %>% summarise(mean(rel_size))
+mean_m_format <- sprintf("%.2f%%", mean_m * 100)
+mean_ul <- dat %>% filter(method == 'ul') %>% summarise(mean(rel_size))
+mean_ul_format <- sprintf("%.2f%%", mean_ul * 100)
+mean_both <- dat %>% filter(method == 'ul' | method == 'm') %>% summarise(mean(rel_size))
+remain_format <- sprintf("%.0f%%", (1-mean_both) * 100)
+```
+
+
+ For the instances *l* the MGS tend to consist of all subproblem points. Also for the *u* instances a large number of the subproblem points are used in the minimum generator sets, however the spread is significantly higher than that of *l*, and in some cases for *u* the MGS consists of only half the total subproblem points. 
+
+The instances *m* and *ul* both contain a larger amount of unsupported and supported points. [TODO Show how many approx 50% of each?]. The difference between the instances are that for *m* each subset consists of a mix of supported and unsupported points, while the *ul* instances consists of subsets which have either many unsupported (*u*), or many supported points (*l*). For *m* and *ul* we find that the MGS is unlikely to consist of all the subproblem points. On average the MGS consists of only `r mean_m_format` of the total subproblem points for *m* instances and `r mean_ul_format` for *ul* instances. This implies that around `r remain_format` of the generated subproblem points are not needed for generating the nondominated sum.
+```{r}
+# Bar chart the distribution (supported, unsupported) of each MSP instance
+```
+
+
+# Relative size of MGS wrt. average subproblem cardinality
 ```{r}
 dat %>% 
   ggplot(aes(x = avg_sp_size, y = rel_size, color = method)) +
@@ -130,7 +161,15 @@ dat %>%
   theme(legend.position = "bottom") 
 ```
 
+In [above] we see that the relative size of the MGS for the instances *m* and *ul* decrease in the total number of subproblem points and in the number of subproblems.  
 
+For the instances *l* we see that in almost all instances the MGS consists of all subproblem points. 
+
+The *u* exibit a different pattern from the rest. Here we find that for instances $p>3$ the MGS tend to consist of all subproblem points. For the remaining instances we find that like *ul* and *m* the size of MGS is decreasing in the number of subproblems.
+
+
+
+# Relative size of MGS wrt. total subproblem cardinality
 
 ```{r}
 dat %>% 
