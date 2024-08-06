@@ -177,6 +177,7 @@ class PointList:
     plot_color = None
     statistics : dict = None
     filename = None
+    np_array : np_array = None
     def __post_init__(self):
         # Check if SINGLETON: allows for PointList((y)) where y is of class Point 
         if isinstance(self.points, Point):
@@ -367,7 +368,14 @@ class PointList:
             'statistics': self.statistics
           }
         return PointList_dict 
-
+    
+    def as_np_array(self):
+        # if self.np_array is not None:
+        # if isinstance(self.np_array, NoneType):
+            # print(f"bla bla")
+            # self.np_array = np.array([y.val for y in self.points])
+        return np.array([y.val for y in self.points])
+        # return self.np_array
 
     def save_json(self, filename, max_file_size = 100):
         json_str = json.dumps(self.as_dict(), indent=None, separators=(',', ':'))
@@ -539,7 +547,7 @@ class MSPInstances:
             case '2d':
                 self.p_options = (2,)
             case 'algorithm1':
-                self.generation_options = ['m','u'] # generation method
+                self.generation_options = ['m','u','ul'] # generation method
                 self.size_options = (50, 100, 150, 200, 300) # subproblems size
             case 'algorithm2':
                 self.generation_options = ['m','u', 'l'] # generation method
