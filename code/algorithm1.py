@@ -18,6 +18,13 @@ import csv
 import time
 import itertools
 
+# for logging
+import logging
+logname = 'algorithm1.log'
+logging.basicConfig(level=logging.INFO, filename=logname)
+logger = logging.getLogger(logname)
+
+
 time_object(KD_tree)
 time_object(KD_Node)
 time_object(PointList)
@@ -287,28 +294,28 @@ def main():
     save_prefix = 'alg1-'
     save_solution_dir = './instances/results/algorithm1/'
     TI = MSPInstances('algorithm1')
-    TI.filter_out_solved(save_prefix, save_solution_dir )
+    TI.filter_out_solved(save_prefix, save_solution_dir)
     print(f"{TI=}")
 
-    with alive_bar(len(TI.filename_list), enrich_print=False) as bar:
+    logger.info(f'Running algorithm1 on test instance set {TI}')
+
+    with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
         for MSP in TI:
             
             time_start = time.time()
-            print(f"{MSP}")
+            logger.info(f"{MSP}")
             filter_time = time.time()
             Yn = methods.MS_sequential_filter(MSP.Y_list)
             Yn.statistics['filter_time'] = time.time() - filter_time
-            # Yn.save_json(save_solution_dir  +  save_prefix + filename)
-            print(f"{len(Yn)=}")
+            Yn.save_json(save_solution_dir  +  save_prefix + MSP.filename.split('/')[-1])
+            logger.info(f"{MSP.filename=}, {len(Yn)=}")
             
             if True:
                 print_timeit()
                 reset_timeit()
 
-            print(" ")
+            # print(" ")
             bar()
-
-
 
 
 
