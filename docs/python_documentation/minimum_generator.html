@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>minimum_generator API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>minimum_generator</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from classes import Point, PointList, LinkedList, MinkowskiSumProblem
+import methods
+from methods import N
+import math
+import matplotlib.pyplot as plt
+import matplotlib
+import pyomo.environ as pyomo
+from timing import timeit, print_timeit
+
+# def buildModel(Y_list: list[PointList],) -&gt; pyomo.ConcreteModel():
+    # pass
+
+
+@timeit
+def build_model(Y_list) -&gt; pyomo.ConcreteModel():
+    print(f&#34;Setting up model..&#34;)
+    P = Y_list[0][0].dim
+    assert all((P == Y.dim for Y in Y_list))
+
+    Yn = methods.MS_sequential_filter(Y_list)
+
+    S = list(range(len(Y_list)))
+    J = list(range(len(Yn)))
+    I_dict = {s : list(range(len(Y_list[s]))) for s in S}
+
+    # Define your model
+    model = pyomo.ConcreteModel()
+
+    # Define your sets
+    model.S = pyomo.Set(initialize=S)
+    model.J = pyomo.Set(initialize=J)
+    model.I_s = pyomo.Set(model.S, initialize=I_dict)
+
+    # Create an intermediate set
+    def IS_rule(model):
+        return [(s, i) for s in S for i in model.I_s[s]]
+
+    model.IS = pyomo.Set(within=model.S*model.J, initialize=IS_rule)
+
+    # Define binary variables
+    model.x = pyomo.Var(model.IS, within=pyomo.Binary)
+    model.w = pyomo.Var(model.IS, model.J, within=pyomo.Binary)
+
+    # Define constraints
+    model.cons = pyomo.ConstraintList()
+    for s in S: # at least one solution to each subproblem
+        model.cons.add(sum(model.x[s, i] for i in model.I_s[s]) &gt;= 1)
+        # at most one part of j can be composed of points in subproblem s
+        for j in model.J:
+            model.cons.add(sum(model.w[s, i, j] for i in model.I_s[s]) == 1)
+        
+
+    for s, i in model.IS: 
+        for j in model.J:
+            # ys_i covers j only if ys_i is chosen
+            model.cons.add(model.w[s, i, j] &lt;= model.x[s, i])
+    
+    for j in model.J:
+        for p in range(P):
+
+            model.cons.add(sum(model.w[s, i, j]*Y_list[s][i][p] for s in S for i in I_dict[s]) - Yn[j][p]  == 0)
+    
+    # Define objective
+    def objective_rule(model):
+        return sum(model.x[s, i] for s, i in model.IS)
+
+    model.obj = pyomo.Objective(rule=objective_rule, sense=pyomo.minimize)
+
+    return model
+
+@timeit
+def build_model_covering(Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced) -&gt; pyomo.ConcreteModel():
+    print(f&#34;Setting up model..&#34;)
+    P = Y_list[0][0].dim
+    S = len(Y_list)
+    assert all((P == Y.dim for Y in Y_list))
+
+    # Yn = methods.MS_sequential_filter(Y_list)
+
+
+    # index sets
+    S = list(range(len(Y_list)))
+    J = list(range(len(Yn_nongenerated)))
+    C = list(range(max([len(C_dict[Yn_nongenerated[j]]) for j in J])))
+    I = list(range(max([len(Y) for Y in Y_list])))
+    print(f&#34;{len(C)=}&#34;)
+    print(f&#34;{S=}&#34;)
+    # print(f&#34;{J=}&#34;)
+    print(f&#34;{I=}&#34;)
+
+    Y_unfixed_dict = {s: tuple(set(Y_reduced[s])-set(Y_fixed[s])) for s in S}
+    Y_unfixed_set_dict = {s: set(Y_reduced[s])-set(Y_fixed[s]) for s in S}
+    print(f&#34;{[len(Y) for Y in Y_unfixed_dict.values()]=}&#34;)
+
+    print(f&#34;{len(Yn),len(Yn_nongenerated)=}&#34;)
+    
+
+    # X_dict = {s : list(range(len(Y_list[s]))) for s in S}
+    # X_dict = {s : list(range(len(Y_list[s]))) for s in S}
+    print(f&#34;{Y_fixed=}&#34;)
+    print(f&#34;{Y_reduced=}&#34;)
+    print(f&#34;{Y_unfixed_dict=}&#34;)
+    Yn_comb_dict = {j:C_dict[Yn_nongenerated[j]] for j in J}
+    for k,v in Yn_comb_dict.items():
+        assert len(v) &gt;1
+    Yn_comb_reduced_dict = {j:[tuple([ci  if ci in Y_unfixed_set_dict[s] else None for s,ci in enumerate(c)]) for c in C_dict[Yn_nongenerated[j]]] for j in J}
+
+    Yn_comb_index = {j:tuple(range(len(C_dict[Yn_nongenerated[j]]))) for j in J}
+    print(f&#34;{Yn_comb_dict[0]=}&#34;)
+    print(f&#34;{Yn_comb_reduced_dict[0]=}&#34;)
+    print(f&#34;{Yn_comb_index[0]=}&#34;)
+    # Define your model
+    model = pyomo.ConcreteModel()
+
+    # Define your sets
+    model.S = pyomo.Set(initialize=S)
+    model.J = pyomo.Set(initialize=J)
+    model.C = pyomo.Set(initialize=C)
+    model.I = pyomo.Set(initialize=I)
+    model.I_s = pyomo.Set(model.S, initialize=Y_unfixed_dict)
+    model.J_c = pyomo.Set(model.J, initialize=Yn_comb_index)
+
+    # Create an intermediate set of valid combinations
+    def SI_rule(model):
+        return [(s, i) for s in S for i in model.I_s[s]]
+
+    def JC_rule(model):
+        return [(j, c) for j in J for c in model.J_c[j]]
+
+    model.SI = pyomo.Set(within=model.S*model.I, initialize=SI_rule)
+    model.JC = pyomo.Set(within=model.J*model.C, initialize=JC_rule)
+
+    # Define binary variables
+    model.x = pyomo.Var(model.SI, within=pyomo.Binary)
+    model.z = pyomo.Var(model.JC, within=pyomo.Binary)
+
+    # Define constraints
+    model.cons = pyomo.ConstraintList()
+    
+    for j in model.J:
+        model.cons.add(sum(model.z[j,c] for c in Yn_comb_index[j]) &gt;= 1)
+    for j in model.J:
+        for c in Yn_comb_index[j]:
+            assert (j,c) in model.JC
+            incident_s_ys = [(s,ys) for (s,ys) in enumerate(Yn_comb_reduced_dict[j][c]) if ys is not None]
+            # print(f&#34;{j,c,incident_s_ys=}&#34;)
+            # print(f&#34;{len(incident_s_ys)=}&#34;)
+            assert len(incident_s_ys)&gt;0
+            model.cons.add(model.z[j,c]*len(incident_s_ys) &lt;= sum(model.x[s,ys] for s,ys in incident_s_ys))
+    
+#     if True:
+        # for (s,i) in model.SI:
+            # model.cons.add(model.x[s,i] &gt;=1)
+
+    # Define objective
+    def objective_rule(model):
+        return sum(model.x[s, i] for s, i in model.SI)
+
+    model.obj = pyomo.Objective(rule=objective_rule, sense=pyomo.minimize)
+
+    return model
+
+
+
+
+@timeit
+def solve_model(model:pyomo.ConcreteModel(), solver_str = &#34;cbc&#34;):
+    assert solver_str in [&#34;cbc&#34;, &#34;cplex_direct&#34;, &#34;plpk&#34;]
+    print(f&#34;Solving model..&#34;)
+    # Solve model
+    solver = pyomo.SolverFactory(solver_str)
+    solver.solve(model, tee = False)
+
+
+@timeit
+def retrieve_solution(model:pyomo.ConcreteModel(), Y_list: list[PointList], verbose = False) -&gt; list[PointList]:
+    # Retrieve solution
+    xVal =[]
+    Y_generator_list = []
+    for s in model.S:
+        Y_generator = []
+        if verbose:
+            print(f&#34;{s=}&#34;)
+        for i in model.I_s[s]:
+            if verbose:
+                print(&#39;    x[{}]={}&#39;.format(i, pyomo.value(model.x[s, i])))
+            if pyomo.value(model.x[s,i]) == 1:
+                Y_generator.append(Y_list[s][i])
+            elif math.isclose(pyomo.value(model.x[s,i]),1):
+                if verbose:
+                    print(f&#34;  math.isclose() rounding used..&#34;)
+                Y_generator.append(Y_list[s][i])
+        Y_generator_list.append(PointList(Y_generator))
+
+    return Y_generator_list
+
+@timeit
+def retrieve_solution_covering(model:pyomo.ConcreteModel(), Y_list: list[PointList], verbose = False) -&gt; list[PointList]:
+    # Retrieve solution
+
+    Y_generator_list = []
+
+    Y_chosen_dict = {s: {i for i in model.I_s[s] if math.isclose(pyomo.value(model.x[s,i]),1) } for s in model.S}
+
+    # for (j,c) in model.JC:
+        # incident_s_ys = [(s,ys) for (s,ys) in enumerate(Yn_comb_reduced_dict[j][c]) if ys is not None]
+        # print(&#39;    z[{}]={}&#39;.format((j,c), pyomo.value(model.z[j, c])))
+    
+    return Y_chosen_dict
+
+
+
+
+
+    
+@timeit
+def display_solution(Y_list: list[PointList], Y_generator_list: list[PointList], verbose = True, plot = True):
+    # Display solution
+    if verbose:
+        total_standard, total_generator = 0, 0
+        if verbose == &#34;all&#34;:
+            print(&#34;_&#34;*55)
+        for s, _ in enumerate(Y_list):
+            total_standard += len(Y_list[s])
+            if verbose == &#34;all&#34;:
+                print(f&#34;|Y{s}| = {len(Y_list[s])}&#34;)
+                print(f&#34;|^Y{s}| = {len(Y_generator_list[s])}&#34;)
+            total_generator += len(Y_generator_list[s])
+        print(&#34;_&#34;*55)
+        print(f&#34;SUM|Y| = {total_standard}&#34;)
+        print(f&#34;SUM|^Y| = {total_generator}&#34;)
+        print(&#34;_&#34;*55)
+
+    if plot:
+        plt.style.use(&#34;ggplot&#34;)
+        Yn_all = methods.MS_sum(Y_list)
+        Yn_all.plot(&#34;Y1n + Y2n +...&#34;, color=&#34;gray&#34;)
+
+
+        for s, Y in enumerate(Y_list):
+            Y.plot(l=f&#34;Y{s}&#34;, marker = &#34;o&#34;)
+        for s, Y_generator in enumerate(Y_generator_list):
+            Y_generator.plot(l=f&#34;^Y{s}&#34;, marker = f&#34;{s+1}&#34;)
+        
+
+        Yn = methods.MS_sequential_filter(Y_list)
+        Yn.plot(l=&#34;Yn&#34;)
+
+        Yn_hat = methods.MS_sum(Y_generator_list)
+        # assert N(Yn_hat.removed_duplicates()) == N(Yn.removed_duplicates())
+        Yn_hat.plot(l=&#34;^Yn&#34;, marker= &#34;3&#34;)
+
+        plt.show()
+
+
+
+def solve_MGS_instance(Y_list: list[PointList], verbose = &#39;all&#39;, plot = False):
+    model = build_model(Y_list)
+    solve_model(model)
+    Y_MIN_LIST = retrieve_solution(model, Y_list)
+    if verbose or plot:
+        display_solution(Y_list, Y_MIN_LIST, verbose = verbose, plot = plot)
+
+    return Y_MIN_LIST
+
+
+
+
+&#39;&#39;&#39;
+SimpleFilter(Y_N^1, ..., Y_N^m)
+   Input: Y^1, ..., Y^m
+   Output: Y = {(y_1, I_1), ..., (y_|Y|, I_|Y|)} where 
+    y_j = jth ND point and I_j = {(i_1, ..., i_m), ...} where 
+    a vector (i_1, ..., i_m) equal the index from each 
+    subproblem such that the MS gives y_j
+      
+   for (k = 1 to l) do I_k = {(k)} 
+   Y = {(y^1_1, I_1), ..., (y^1_|Y^1|, I_|Y^1|)}
+   for (s = 1 to m-1) do
+      Y := Filter(Y, Y^(s+1))  // MS of Y, Y_N^(s+1) and add index
+   next
+   return (Y, I)
+end
+
+Filter(Y, Z)
+   Q = {}   // contains pairs (y_i, I_i)
+   for k = 1 to |Y|
+      for t = 1 to |Z|
+         q = y_k + z_t    
+         Q := addPoint(q, Q, I_k, t) // add and update non dom set + add index (ties are updated too)
+      next
+   next
+   return Q
+end
+&#39;&#39;&#39;
+
+
+def SimpleFilterSub(Y, Ys):
+    Y_ms = []
+    for k, y in enumerate(Y):
+        for t, ys in enumerate(Ys):
+            y_new = y + ys
+            y_new.i = y.i + ys.i
+            Y_ms.append(y_new)
+
+
+    Yn_points = set(methods.N(PointList(Y_ms)).points)
+
+    Y_ms_N = PointList([y for y in Y_ms if y in Yn_points])
+
+    return Y_ms_N
+
+    # return methods.unidirectional_filter(PointList(Y_ms), duplicates_allowed=True)
+
+
+def SimpleFilter(Y_list):
+    &#34;&#34;&#34;
+    input: list of PointList
+    output: nondominated points of Minkowski sum of sets Y_list
+    &#34;&#34;&#34;
+
+    # add index to each point
+    for Ys in Y_list:
+        for i, y in enumerate(Ys):
+            y.i = [i]
+
+    # Y_dict = {y:i for i,y in enumerate(Y_list[0]}
+    Yn = Y_list[0]
+    
+    for s in range(1, len(Y_list)):
+        Yn = SimpleFilterSub(Yn, Y_list[s])
+ 
+    @timeit
+    def get_dict():
+        C_dict = {y:[] for y in Yn}
+        for y in Yn:
+            C_dict[y].append(tuple(y.i))
+        # Yn_dict_old = {y:[tuple(yn.i) for yn in Yn if yn == y] for y in Yn}
+        # DONE: speed up the above &lt;15-07-24, yourname&gt; #
+
+        return C_dict
+    C_dict = get_dict()
+
+    return PointList(Yn), C_dict
+
+
+
+
+def main():
+
+    # setup test instance
+    Y1 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n100-s1&#34;)
+    # Y2 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n10-s2&#34;)
+    Y2 = PointList.from_csv(&#34;instances/testsets/BINOM-p2-n20-s1&#34;)
+    Y3 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n20-s2&#34;)
+    Y4 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n100-s2&#34;)
+    Y2 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n100-s2&#34;)
+    # Y1 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n20-s1&#34;)
+    # Y3 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n100-s1&#34;)
+    # Y4 = PointList.from_csv(&#34;instances/testsets/DISK-p2-n10-s1&#34;)
+    
+    Y_list = [Y1, Y2, Y3, Y4] 
+    # Y_list = [N(Y.removed_duplicates()) for Y in Y_list]
+    Y_list = [N(Y) for Y in Y_list]
+ 
+    # problem_instance = &#34;instances/problems/prob-2-50|50|50-ull-3_5.json&#34; 
+    # print(f&#34;Reading MSP problem {problem_instance}&#34;)
+    # MSP = MinkowskiSumProblem.from_json(problem_instance)
+    # print(f&#34;{MSP=}&#34;)
+    # Y_list =  MSP.Y_list
+
+    solve_MGS_instance(Y_list, verbose = &#39;all&#39;, plot = True )
+
+    print_timeit()
+
+if __name__ == &#34;__main__&#34;:
+    main()  </code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="minimum_generator.SimpleFilter"><code class="name flex">
+<span>def <span class="ident">SimpleFilter</span></span>(<span>Y_list)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>input: list of PointList
+output: nondominated points of Minkowski sum of sets Y_list</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def SimpleFilter(Y_list):
+    &#34;&#34;&#34;
+    input: list of PointList
+    output: nondominated points of Minkowski sum of sets Y_list
+    &#34;&#34;&#34;
+
+    # add index to each point
+    for Ys in Y_list:
+        for i, y in enumerate(Ys):
+            y.i = [i]
+
+    # Y_dict = {y:i for i,y in enumerate(Y_list[0]}
+    Yn = Y_list[0]
+    
+    for s in range(1, len(Y_list)):
+        Yn = SimpleFilterSub(Yn, Y_list[s])
+ 
+    @timeit
+    def get_dict():
+        C_dict = {y:[] for y in Yn}
+        for y in Yn:
+            C_dict[y].append(tuple(y.i))
+        # Yn_dict_old = {y:[tuple(yn.i) for yn in Yn if yn == y] for y in Yn}
+        # DONE: speed up the above &lt;15-07-24, yourname&gt; #
+
+        return C_dict
+    C_dict = get_dict()
+
+    return PointList(Yn), C_dict</code></pre>
+</details>
+</dd>
+<dt id="minimum_generator.SimpleFilterSub"><code class="name flex">
+<span>def <span class="ident">SimpleFilterSub</span></span>(<span>Y, Ys)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def SimpleFilterSub(Y, Ys):
+    Y_ms = []
+    for k, y in enumerate(Y):
+        for t, ys in enumerate(Ys):
+            y_new = y + ys
+            y_new.i = y.i + ys.i
+            Y_ms.append(y_new)
+
+
+    Yn_points = set(methods.N(PointList(Y_ms)).points)
+
+    Y_ms_N = PointList([y for y in Y_ms if y in Yn_points])
+
+    return Y_ms_N
+
+    # return methods.unidirectional_filter(PointList(Y_ms), duplicates_allowed=True)</code></pre>
+</details>
+</dd>
+<dt id="minimum_generator.build_model"><code class="name flex">
+<span>def <span class="ident">build_model</span></span>(<span>Y_list) ‑> <pyomo.core.base.PyomoModel.ConcreteModel object at 0x11ac74280></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@timeit
+def build_model(Y_list) -&gt; pyomo.ConcreteModel():
+    print(f&#34;Setting up model..&#34;)
+    P = Y_list[0][0].dim
+    assert all((P == Y.dim for Y in Y_list))
+
+    Yn = methods.MS_sequential_filter(Y_list)
+
+    S = list(range(len(Y_list)))
+    J = list(range(len(Yn)))
+    I_dict = {s : list(range(len(Y_list[s]))) for s in S}
+
+    # Define your model
+    model = pyomo.ConcreteModel()
+
+    # Define your sets
+    model.S = pyomo.Set(initialize=S)
+    model.J = pyomo.Set(initialize=J)
+    model.I_s = pyomo.Set(model.S, initialize=I_dict)
+
+    # Create an intermediate set
+    def IS_rule(model):
+        return [(s, i) for s in S for i in model.I_s[s]]
+
+    model.IS = pyomo.Set(within=model.S*model.J, initialize=IS_rule)
+
+    # Define binary variables
+    model.x = pyomo.Var(model.IS, within=pyomo.Binary)
+    model.w = pyomo.Var(model.IS, model.J, within=pyomo.Binary)
+
+    # Define constraints
+    model.cons = pyomo.ConstraintList()
+    for s in S: # at least one solution to each subproblem
+        model.cons.add(sum(model.x[s, i] for i in model.I_s[s]) &gt;= 1)
+        # at most one part of j can be composed of points in subproblem s
+        for j in model.J:
+            model.cons.add(sum(model.w[s, i, j] for i in model.I_s[s]) == 1)
+        
+
+    for s, i in model.IS: 
+        for j in model.J:
+            # ys_i covers j only if ys_i is chosen
+            model.cons.add(model.w[s, i, j] &lt;= model.x[s, i])
+    
+    for j in model.J:
+        for p in range(P):
+
+            model.cons.add(sum(model.w[s, i, j]*Y_list[s][i][p] for s in S for i in I_dict[s]) - Yn[j][p]  == 0)
+    
+    # Define objective
+    def objective_rule(model):
+        return sum(model.x[s, i] for s, i in model.IS)
+
+    model.obj = pyomo.Objective(rule=objective_rule, sense=pyomo.minimize)
+
+    return model</code></pre>
+</details>
+</dd>
+<dt id="minimum_generator.build_model_covering"><code class="name flex">
+<span>def <span class="ident">build_model_covering</span></span>(<span>Y_list, Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced) ‑> <pyomo.core.base.PyomoModel.ConcreteModel object at 0x11bcecbe0></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@timeit
+def build_model_covering(Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced) -&gt; pyomo.ConcreteModel():
+    print(f&#34;Setting up model..&#34;)
+    P = Y_list[0][0].dim
+    S = len(Y_list)
+    assert all((P == Y.dim for Y in Y_list))
+
+    # Yn = methods.MS_sequential_filter(Y_list)
+
+
+    # index sets
+    S = list(range(len(Y_list)))
+    J = list(range(len(Yn_nongenerated)))
+    C = list(range(max([len(C_dict[Yn_nongenerated[j]]) for j in J])))
+    I = list(range(max([len(Y) for Y in Y_list])))
+    print(f&#34;{len(C)=}&#34;)
+    print(f&#34;{S=}&#34;)
+    # print(f&#34;{J=}&#34;)
+    print(f&#34;{I=}&#34;)
+
+    Y_unfixed_dict = {s: tuple(set(Y_reduced[s])-set(Y_fixed[s])) for s in S}
+    Y_unfixed_set_dict = {s: set(Y_reduced[s])-set(Y_fixed[s]) for s in S}
+    print(f&#34;{[len(Y) for Y in Y_unfixed_dict.values()]=}&#34;)
+
+    print(f&#34;{len(Yn),len(Yn_nongenerated)=}&#34;)
+    
+
+    # X_dict = {s : list(range(len(Y_list[s]))) for s in S}
+    # X_dict = {s : list(range(len(Y_list[s]))) for s in S}
+    print(f&#34;{Y_fixed=}&#34;)
+    print(f&#34;{Y_reduced=}&#34;)
+    print(f&#34;{Y_unfixed_dict=}&#34;)
+    Yn_comb_dict = {j:C_dict[Yn_nongenerated[j]] for j in J}
+    for k,v in Yn_comb_dict.items():
+        assert len(v) &gt;1
+    Yn_comb_reduced_dict = {j:[tuple([ci  if ci in Y_unfixed_set_dict[s] else None for s,ci in enumerate(c)]) for c in C_dict[Yn_nongenerated[j]]] for j in J}
+
+    Yn_comb_index = {j:tuple(range(len(C_dict[Yn_nongenerated[j]]))) for j in J}
+    print(f&#34;{Yn_comb_dict[0]=}&#34;)
+    print(f&#34;{Yn_comb_reduced_dict[0]=}&#34;)
+    print(f&#34;{Yn_comb_index[0]=}&#34;)
+    # Define your model
+    model = pyomo.ConcreteModel()
+
+    # Define your sets
+    model.S = pyomo.Set(initialize=S)
+    model.J = pyomo.Set(initialize=J)
+    model.C = pyomo.Set(initialize=C)
+    model.I = pyomo.Set(initialize=I)
+    model.I_s = pyomo.Set(model.S, initialize=Y_unfixed_dict)
+    model.J_c = pyomo.Set(model.J, initialize=Yn_comb_index)
+
+    # Create an intermediate set of valid combinations
+    def SI_rule(model):
+        return [(s, i) for s in S for i in model.I_s[s]]
+
+    def JC_rule(model):
+        return [(j, c) for j in J for c in model.J_c[j]]
+
+    model.SI = pyomo.Set(within=model.S*model.I, initialize=SI_rule)
+    model.JC = pyomo.Set(within=model.J*model.C, initialize=JC_rule)
+
+    # Define binary variables
+    model.x = pyomo.Var(model.SI, within=pyomo.Binary)
+    model.z = pyomo.Var(model.JC, within=pyomo.Binary)
+
+    # Define constraints
+    model.cons = pyomo.ConstraintList()
+    
+    for j in model.J:
+        model.cons.add(sum(model.z[j,c] for c in Yn_comb_index[j]) &gt;= 1)
+    for j in model.J:
+        for c in Yn_comb_index[j]:
+            assert (j,c) in model.JC
+            incident_s_ys = [(s,ys) for (s,ys) in enumerate(Yn_comb_reduced_dict[j][c]) if ys is not None]
+            # print(f&#34;{j,c,incident_s_ys=}&#34;)
+            # print(f&#34;{len(incident_s_ys)=}&#34;)
+            assert len(incident_s_ys)&gt;0
+            model.cons.add(model.z[j,c]*len(incident_s_ys) &lt;= sum(model.x[s,ys] for s,ys in incident_s_ys))
+    
+#     if True:
+        # for (s,i) in model.SI:
+            # model.cons.add(model.x[s,i] &gt;=1)
+
+    # Define objective
+    def objective_rule(model):
+        return sum(model.x[s, i] for s, i in model.SI)
+
+    model.obj = pyomo.Objective(rule=objective_rule, sense=pyomo.minimize)
+
+    return model</code></pre>
+</details>
+</dd>
+<dt id="minimum_generator.display_solution"><code class="name flex">
+<span>def <span class="ident">display_solution</span></span>(<span>Y_list: list[<a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>], Y_generator_list: list[<a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>], verbose=True, plot=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@timeit
+def display_solution(Y_list: list[PointList], Y_generator_list: list[PointList], verbose = True, plot = True):
+    # Display solution
+    if verbose:
+        total_standard, total_generator = 0, 0
+        if verbose == &#34;all&#34;:
+            print(&#34;_&#34;*55)
+        for s, _ in enumerate(Y_list):
+            total_standard += len(Y_list[s])
+            if verbose == &#34;all&#34;:
+                print(f&#34;|Y{s}| = {len(Y_list[s])}&#34;)
+                print(f&#34;|^Y{s}| = {len(Y_generator_list[s])}&#34;)
+            total_generator += len(Y_generator_list[s])
+        print(&#34;_&#34;*55)
+        print(f&#34;SUM|Y| = {total_standard}&#34;)
+        print(f&#34;SUM|^Y| = {total_generator}&#34;)
+        print(&#34;_&#34;*55)
+
+    if plot:
+        plt.style.use(&#34;ggplot&#34;)
+        Yn_all = methods.MS_sum(Y_list)
+        Yn_all.plot(&#34;Y1n + Y2n +...&#34;, color=&#34;gray&#34;)
+
+
+        for s, Y in enumerate(Y_list):
+            Y.plot(l=f&#34;Y{s}&#34;, marker = &#34;o&#34;)
+        for s, Y_generator in enumerate(Y_generator_list):
+            Y_generator.plot(l=f&#34;^Y{s}&#34;, marker = f&#34;{s+1}&#34;)
+        
+
+        Yn = methods.MS_sequential_filter(Y_list)
+        Yn.plot(l=&#34;Yn&#34;)
+
+        Yn_hat = methods.MS_sum(Y_generator_list)
+        # assert N(Yn_hat.removed_duplicates()) == N(Yn.removed_duplicates())
+        Yn_hat.plot(l=&#34;^Yn&#34;, marker= &#34;3&#34;)
+
+        plt.show()</code></pre>
+</details>
+</dd>
+<dt id="minimum_generator.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main():
+
+    # setup test instance
+    Y1 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n100-s1&#34;)
+    # Y2 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n10-s2&#34;)
+    Y2 = PointList.from_csv(&#34;instances/testsets/BINOM-p2-n20-s1&#34;)
+    Y3 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n20-s2&#34;)
+    Y4 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n100-s2&#34;)
+    Y2 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n100-s2&#34;)
+    # Y1 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n20-s1&#34;)
+    # Y3 = PointList.from_csv(&#34;instances/testsets/CONCAVE-p2-n100-s1&#34;)
+    # Y4 = PointList.from_csv(&#34;instances/testsets/DISK-p2-n10-s1&#34;)
+    
+    Y_list = [Y1, Y2, Y3, Y4] 
+    # Y_list = [N(Y.removed_duplicates()) for Y in Y_list]
+    Y_list = [N(Y) for Y in Y_list]
+ 
+    # problem_instance = &#34;instances/problems/prob-2-50|50|50-ull-3_5.json&#34; 
+    # print(f&#34;Reading MSP problem {problem_instance}&#34;)
+    # MSP = MinkowskiSumProblem.from_json(problem_instance)
+    # print(f&#34;{MSP=}&#34;)
+    # Y_list =  MSP.Y_list
+
+    solve_MGS_instance(Y_list, verbose = &#39;all&#39;, plot = True )
+
+    print_timeit()</code></pre>
+</details>
+</dd>
+<dt id="minimum_generator.retrieve_solution"><code class="name flex">
+<span>def <span class="ident">retrieve_solution</span></span>(<span>model: <pyomo.core.base.PyomoModel.ConcreteModel object at 0x11be97a70>, Y_list: list[<a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>], verbose=False) ‑> list[<a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@timeit
+def retrieve_solution(model:pyomo.ConcreteModel(), Y_list: list[PointList], verbose = False) -&gt; list[PointList]:
+    # Retrieve solution
+    xVal =[]
+    Y_generator_list = []
+    for s in model.S:
+        Y_generator = []
+        if verbose:
+            print(f&#34;{s=}&#34;)
+        for i in model.I_s[s]:
+            if verbose:
+                print(&#39;    x[{}]={}&#39;.format(i, pyomo.value(model.x[s, i])))
+            if pyomo.value(model.x[s,i]) == 1:
+                Y_generator.append(Y_list[s][i])
+            elif math.isclose(pyomo.value(model.x[s,i]),1):
+                if verbose:
+                    print(f&#34;  math.isclose() rounding used..&#34;)
+                Y_generator.append(Y_list[s][i])
+        Y_generator_list.append(PointList(Y_generator))
+
+    return Y_generator_list</code></pre>
+</details>
+</dd>
+<dt id="minimum_generator.retrieve_solution_covering"><code class="name flex">
+<span>def <span class="ident">retrieve_solution_covering</span></span>(<span>model: <pyomo.core.base.PyomoModel.ConcreteModel object at 0x11bea23f0>, Y_list: list[<a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>], verbose=False) ‑> list[<a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@timeit
+def retrieve_solution_covering(model:pyomo.ConcreteModel(), Y_list: list[PointList], verbose = False) -&gt; list[PointList]:
+    # Retrieve solution
+
+    Y_generator_list = []
+
+    Y_chosen_dict = {s: {i for i in model.I_s[s] if math.isclose(pyomo.value(model.x[s,i]),1) } for s in model.S}
+
+    # for (j,c) in model.JC:
+        # incident_s_ys = [(s,ys) for (s,ys) in enumerate(Yn_comb_reduced_dict[j][c]) if ys is not None]
+        # print(&#39;    z[{}]={}&#39;.format((j,c), pyomo.value(model.z[j, c])))
+    
+    return Y_chosen_dict</code></pre>
+</details>
+</dd>
+<dt id="minimum_generator.solve_MGS_instance"><code class="name flex">
+<span>def <span class="ident">solve_MGS_instance</span></span>(<span>Y_list: list[<a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>], verbose='all', plot=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def solve_MGS_instance(Y_list: list[PointList], verbose = &#39;all&#39;, plot = False):
+    model = build_model(Y_list)
+    solve_model(model)
+    Y_MIN_LIST = retrieve_solution(model, Y_list)
+    if verbose or plot:
+        display_solution(Y_list, Y_MIN_LIST, verbose = verbose, plot = plot)
+
+    return Y_MIN_LIST</code></pre>
+</details>
+</dd>
+<dt id="minimum_generator.solve_model"><code class="name flex">
+<span>def <span class="ident">solve_model</span></span>(<span>model: <pyomo.core.base.PyomoModel.ConcreteModel object at 0x11be7eda0>, solver_str='cbc')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@timeit
+def solve_model(model:pyomo.ConcreteModel(), solver_str = &#34;cbc&#34;):
+    assert solver_str in [&#34;cbc&#34;, &#34;cplex_direct&#34;, &#34;plpk&#34;]
+    print(f&#34;Solving model..&#34;)
+    # Solve model
+    solver = pyomo.SolverFactory(solver_str)
+    solver.solve(model, tee = False)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="minimum_generator.SimpleFilter" href="#minimum_generator.SimpleFilter">SimpleFilter</a></code></li>
+<li><code><a title="minimum_generator.SimpleFilterSub" href="#minimum_generator.SimpleFilterSub">SimpleFilterSub</a></code></li>
+<li><code><a title="minimum_generator.build_model" href="#minimum_generator.build_model">build_model</a></code></li>
+<li><code><a title="minimum_generator.build_model_covering" href="#minimum_generator.build_model_covering">build_model_covering</a></code></li>
+<li><code><a title="minimum_generator.display_solution" href="#minimum_generator.display_solution">display_solution</a></code></li>
+<li><code><a title="minimum_generator.main" href="#minimum_generator.main">main</a></code></li>
+<li><code><a title="minimum_generator.retrieve_solution" href="#minimum_generator.retrieve_solution">retrieve_solution</a></code></li>
+<li><code><a title="minimum_generator.retrieve_solution_covering" href="#minimum_generator.retrieve_solution_covering">retrieve_solution_covering</a></code></li>
+<li><code><a title="minimum_generator.solve_MGS_instance" href="#minimum_generator.solve_MGS_instance">solve_MGS_instance</a></code></li>
+<li><code><a title="minimum_generator.solve_model" href="#minimum_generator.solve_model">solve_model</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

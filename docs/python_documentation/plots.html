@@ -1,0 +1,2979 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>plots API documentation</title>
+<meta name="description" content="File containing code for plots used in tex project …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>plots</code></h1>
+</header>
+<section id="section-intro">
+<p>File containing code for plots used in tex project.</p>
+<h2 id="usage">Usage</h2>
+<p>Run as main to update plots with new style.
+change style in if main statement</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+File containing code for plots used in tex project.
+
+Usage:
+    Run as main to update plots with new style.
+    change style in if main statement
+&#34;&#34;&#34;
+
+import sys
+import numpy as np
+import os
+sys.path.insert(0, &#34;../../code/&#34;)
+
+from classes import Point, PointList, LinkedList, MinkowskiSumProblem
+import methods
+from methods import N
+import matplotlib.pyplot as plt
+import matplotlib
+import random
+import time
+import csv
+import math
+from algorithm2 import algorithm2
+
+def plot_or_save(fig, fname: str):
+    &#34;&#34;&#34; call to plot or save fig &#34;&#34;&#34;
+    if SAVE_PLOTS:
+        print(f&#34;{FIGURES_LOCATION=}&#34;)
+        fig.savefig(fname = FIGURES_LOCATION + f&#34;{fname}.pgf&#34;)
+        fig.savefig(fname = FIGURES_LOCATION + f&#34;{fname}.pdf&#34;)
+    else:
+        plt.title(fname)
+        plt.show()
+
+    
+def example():
+    N_list = range(10)
+
+    Y1 = PointList(([(i,0) for i in N_list]))
+    Y2 = PointList(([(i,i) for i in N_list]))
+    Y3 = PointList(([(i,len(N_list)-1-i) for i in N_list]))
+
+    # Y1.plot()
+    # Y2.plot()
+    # Y3.plot()
+    Y1.plot()
+    Y2.plot()
+    Y3.plot()
+    Y = methods.MS_sum((Y1,Y2))
+    Y = PointList([y+Point((20,0)) for y in Y])
+    Y.plot()
+    Y = methods.MS_sum((Y1,Y2,Y3))
+    Y = PointList([y+Point((50,0)) for y in Y])
+    Y.plot()
+    plt.show()
+
+
+def example():
+
+
+        
+
+    ######################## Figure example START ########################
+    fig_name = &#34;example&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    
+    
+    Y1 = PointList([(1,10),(9,9),(10,1)])
+
+    U = methods.induced_UB(Y1, line=True)
+
+
+    y = Point((3,3))
+    y.plot(l=&#39;y&#39;)
+
+    Y1.plot(f&#34;${_Y1}$&#34;)
+    # y.plot_cone(ax=ax)
+
+    for u in U:
+        u.plot_cone(ax=ax, quadrant=1)
+    
+    for y in Y1:
+        y.plot_cone(ax=ax, quadrant=3, color=&#39;blue&#39;)
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure example END #########################
+
+
+def slides_MO_example():
+
+    ######################## Figure slides_MSP_example START ########################
+    fig_name = &#34;slides_MO_example&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=(2.7,2.7), layout=&#39;constrained&#39;)
+    
+    Y1_list = []
+    Y1_list.append(PointList(((1, 700),)))
+    Y1_list.append(PointList([(1, 700),(1.5, 1000)]))
+    Y1_list.append(PointList([(1, 700),(1.5, 1000), (3,500)]))
+    Y1_list.append(PointList([(1, 700),(1.5, 1000), (3,500), (4,300)]))
+    point_labels = [&#39;plane1&#39;,&#39;Plane 2&#39;, &#39;Train&#39;,&#39;Bus&#39;]
+    for i,Y1 in enumerate(Y1_list):
+
+        Y1.plot(f&#34;${_Y1}$&#34;, point_labels = point_labels[:i+1])
+        plt.xlabel(&#39;Time (Hours)&#39;)
+        plt.ylabel(&#39;Cost (DKK)&#39;)
+        plt.xlim(0,5)
+        plt.ylim(250,1100)
+        # save or plot figure
+        plot_or_save(fig, fig_name + f&#39;_{i}&#39;)
+        
+        plt.cla()
+        ######################### Figure slides_MSP_example END #########################
+
+    # plot last point dominated
+    Y1 = Y1_list[-1]
+    i = len(Y1)
+    Y1.plot(f&#34;${_Y1}$&#34;, point_labels = point_labels)
+    plt.xlabel(&#39;Time (Hours)&#39;)
+    plt.ylabel(&#39;Cost (DKK)&#39;)
+    plt.xlim(0,5)
+    plt.ylim(250,1100)
+    # save or plot figure
+    Y_dom = PointList([y for y in Y1 if y not in N(Y1)])
+    Y_dom.plot(marker = &#39;x&#39;, color = &#39;black&#39;)
+    plot_or_save(fig, fig_name + f&#39;_{i}&#39;)
+
+
+
+def slides_MSP_example():
+
+    ######################## Figure slides_MSP_example START ########################
+    fig_name = &#34;slides_MSP_example&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=(3,4), layout=&#39;constrained&#39;)
+    
+    plt.xlabel(&#39;Time (Hours)&#39;)
+    plt.ylabel(&#39;Cost (DKK)&#39;)
+
+    Y1 = PointList([(1, 700),(1.5, 1000),(3, 500),(4, 300)])
+    Y2 = PointList([(1, 700),(1.5, 1000),(3, 500),(4, 300)])
+    # Y1.plot(f&#34;${_Y1}={_Y2}$&#34;)
+    point_labels = [&#39;plane1&#39;,&#39;Plane 2&#39;, &#39;Train&#39;,&#39;Bus&#39;]
+    Y1.plot(f&#34;${_Y1}={_Y2}$&#34;, point_labels = point_labels)
+    # Y2.plot(f&#34;_${_Y2}$&#34;, marker=&#39;x&#39;)
+    Y = Y1 + Y2
+
+    point_labels = False
+    if point_labels:
+        Y.plot(f&#34;${_Y}$&#34;, point_labels = [f&#34;{pl},{pl2}&#34; for pl in point_labels for pl2 in point_labels ])
+    else:
+        Y.plot(f&#34;${_Y}={_Y1}&#34; +  &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;lightgray&#39;)
+
+    plt.xlabel(&#39;Time (Hours)&#39;)
+    plt.ylabel(&#39;Cost (DKK)&#39;)
+
+    # save or plot figure
+    plot_or_save(fig, fig_name + &#39;_1&#39;)
+    Yn = N(Y)
+    # Yn.plot(f&#34;${_Yn}$&#34;, marker=&#39;x&#39;)
+    Y_dom = PointList([y for y in Y if y not in N(Y)])
+    Y_dom.plot(marker = &#39;x&#39;, color = &#39;red&#39;)
+    plot_or_save(fig, fig_name + &#39;_2&#39;)
+    ######################### Figure slides_MSP_example END #########################
+
+
+def slides_MS_example():
+
+    ######################## Figure MS_example START ########################
+    fig_name = &#34;/MS_example/MS_example_&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize = (6,2.5), layout=&#39;constrained&#39;)
+    
+
+    Y1 = PointList([(1, 700),(1.5, 1000), (3,500), (4,300)])
+    Y2 = PointList([(1, 700),(1.5, 1000), (3,500), (4,300)])
+    # point_labels = [&#39;plane1&#39;,&#39;Plane 2&#39;, &#39;Train&#39;,&#39;Bus&#39;]
+    point_labels = True
+
+    Yh_plot_color = &#39;gray&#39;
+
+    # plot 1 show Y1 = Y2
+    plot_count = 2
+    Y1.plot(f&#34;${_Y1}={_Y2}$&#34;, point_labels = point_labels)
+    plt.xlim(0,10)
+    plt.ylim(0,2200)
+    plot_or_save(fig, fig_name + str(plot_count))
+    plt.cla()
+    plot_count +=1
+    
+    # plot 2 show y11 + y21
+    n_points1 = 1
+
+    points_in_plot = []
+    for n_points1, y1 in enumerate(Y1, start=1):
+    # if True:
+        # y1 = Y1[0]
+        for n_points, y2 in enumerate(Y2, start=1):
+            # if n_points1 &gt;= 2:
+                # n_points = len(Y2)
+    #         Y1.plot(f&#34;${_Y1}={_Y2}$&#34;, point_labels = point_labels)
+            # Yh = PointList((Y1[0] + Y2[0],))
+            # Yh.plot(&#34;$\{y^1\} \oplus \{y^2\}$&#34;, color=Yh_plot_color)
+            # plot_or_save(fig, fig_name + str(plot_count))
+            # plot_count +=1
+        # plot 3 show {y11 + y21} + {y11 + y22}
+            # n_points = 1
+
+            plt.xlim(0,10)
+            plt.ylim(0,2200)
+            Y1h = PointList(Y1[j] for j in range(n_points1))
+            print(f&#34;{len(Y1h)=}&#34;)
+            Y2h = PointList(Y2[i] for i in range(n_points))
+            print(f&#34;{len(Y2h)=}&#34;)
+            Yh = Y1h + Y2h
+            points_in_plot += list(Yh.points)
+            # Yh = PointList((Y1[j] + Y2[i] for j in range(n_points1) for i in range(n_points)))
+            Yh = PointList((y1 + Y2[i] for i in range(n_points)))
+            # label = &#34;$\{&#34; + &#34;,&#34;.join([f&#34;y^{i+1}&#34; for i in range(n_points1)]) +&#34;\}$&#34; + &#34;$\oplus \{&#34; + &#34;,&#34;.join([f&#34;y^{i+1}&#34; for i in range(n_points)]) +&#34;\}$&#34;
+            label = &#34;$\{y^&#34;+ str(n_points1) +&#34;\}$&#34; + &#34;$\oplus \{&#34; + &#34;,&#34;.join([f&#34;y^{i+1}&#34; for i in range(n_points)]) +&#34;\}$&#34;
+            Yh_all = PointList(set(points_in_plot))
+
+
+
+            Y1.plot(f&#34;${_Y1}={_Y2}$&#34;, point_labels = point_labels)
+            Yh_all.plot(l = &#34;$\hat{&#34; + f&#34;{_Y}&#34; + &#34;}\subseteq&#34; + f&#34;{_Y}$&#34;, color = Yh_plot_color)
+            Yh.plot(l = label, color = &#39;black&#39;,marker=&#39;x&#39;)
+            # Yh.plot(label, color=Yh_plot_color)
+            y1.plot(marker=&#39;x&#39;, color=&#39;black&#39;)
+            y2.plot(marker=&#39;x&#39;, color=&#39;black&#39;)
+            line_color = &#39;lightgray&#39;
+            # for y2 in Y2h[-1]:
+            if True:
+                line = PointList((y2,y1+y2))
+                line.plot(line=True, linestyle=&#39;dashed&#39;, color=line_color)
+                line = PointList((y1,y1+y2))
+                line.plot(line=True, linestyle=&#39;dashed&#39;, color=line_color)
+                # line = PointList((y1,y1+y2))
+                line = PointList((Point((0,0)), y1))
+                line.plot(line=True, linestyle=&#39;dashed&#39;, color=line_color)
+                line = PointList((Point((0,0)), y2))
+                line.plot(line=True, linestyle=&#39;dashed&#39;, color=line_color)
+
+            plot_or_save(fig, fig_name + str(plot_count))
+            plt.cla()
+            plot_count +=1
+     
+
+    plt.xlim(0,10)
+    plt.ylim(0,2200)
+    Y1.plot(f&#34;${_Y1}={_Y2}$&#34;, point_labels = point_labels)
+    Y = Y1 + Y2
+    Y.plot(f&#34;${_Y} = &#34; +f&#34;{_Y1}&#34; +  &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color =Yh_plot_color)
+    plot_or_save(fig, fig_name + str(plot_count))
+    
+def counter_example_reduction():
+
+    ######################## Figure counter_example_reduction START ########################
+    fig_name = &#34;&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(layout=&#39;constrained&#39;)
+    
+    Y1 = PointList([(1,10),(9,9),(10,1)])*0.2
+    Y2_list = [PointList([(3,6),(6,3)]), PointList([(3,6),(6,3),(10,-10)])]
+    Y2_list = [PointList([(3,6),(6,3),(10,-10),(13,-13)]), PointList([(3,6),(6,3),(8,3-6.5),(10,-10),(13,-13)])]
+    Y2_list = [
+            PointList([(1,10),(2,9),(9,2),(10,1)]), 
+            PointList([(1,10),(2,9),(5,4),(9,2),(10,1)]), 
+               # PointList([(3,6),(6,3),(8,3-6.5),(10,-10),(13,-13)])
+               ]
+
+    for Y2 in Y2_list:
+        Y = Y1 + Y2
+        y1 = Y1[1]
+        y2 = Y2[2]
+        y1MSY2 = PointList((Y1[1],))+ Y2
+        print(f&#34;{Y.dominates(y1MSY2)=}&#34;)
+
+        Y1.plot(f&#34;${_Y1}$&#34;, color=&#39;red&#39;, point_labels=False)
+        y1.plot(l=&#39;$y^1$&#39;, label_only=True)
+        if Y2 == Y2_list[0]:
+            Y2.plot(f&#34;${_Yh2} \subseteq {_Y2}$&#34;, color = &#39;blue&#39;, point_labels=False)
+        else:
+            y2.plot(l=&#39;$y^2$&#39;, label_only=True)
+            Y2.plot(f&#34;${_Yh2} \subseteq {_Y2}$&#34;, color = &#39;blue&#39;, point_labels=False)
+            # Y2.plot(f&#34;${_Y2}$&#34;, color = &#39;blue&#39;, point_labels=False)
+        Y.plot(f&#34;${_Y}$&#34;, color = &#39;gray&#39;)
+        if Y2 == Y2_list[-1]:
+            # N(Y)[-2].plot(l=&#39;$y^{1,2} + y^{2,3}$&#39; + &#34;$\in$&#34; + f&#34;${_Yn}$&#34;, label_only=True)
+            (y1+y2).plot(l=&#39;$y^{1} + y^{2}$&#39; + &#34;$\in$&#34; + f&#34;${_Yn}$&#34;, label_only=True)
+        y1MSY2.plot(&#34;$\{y^1\}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;x&#39;)
+
+        plot_or_save(fig, fig_name)
+        matrix_plot(Y1,Y2, fig_name = fig_name, point_labels=True, figsize = (10,7))
+        # save or plot figure
+        ######################### Figure counter_example_reduction END #########################
+
+
+def example_reduction_lower_bounds():
+    ######################## Figure reduction_lower_bounds START ########################
+    fig_name = &#34;reduction_lower_bounds&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    
+
+    
+    Y1 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-m_3.json&#39;)*0.5
+    Y1h = PointList([y1 for i,y1 in enumerate(Y1) if i in [0,3,4,8,9]])
+    Y2 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-m_10.json&#39;)
+    Y2h = PointList([y2 for i,y2 in enumerate(Y2) if i in [0,3,4,8,9]])
+    L = methods.induced_UB(Y2,line=True, assumption=&#39;nonconsecutive&#39;)
+
+    Y = Y1 + Y2
+    Yh = N(Y1h + Y2h)
+
+    Y1.plot(f&#34;${_Y1}$&#34;, marker=&#39;x&#39;)
+    Y1h.plot(f&#34;${_Yh1}$&#34;, color=Y1.plot_color)
+    Y2.plot(f&#34;${_Y2}$&#34;, marker=&#39;x&#39;)
+    Y2h.plot(f&#34;${_Yh2}$&#34;, color=Y2.plot_color)
+
+    Y.plot(f&#34;${_Y}$&#34;, marker=&#39;x&#39;, color=&#39;lightgray&#39;)
+    Yh.plot(f&#34;${_Yh}$&#34;, color=Y.plot_color)
+
+    L.plot(f&#34;${_L}$&#34;, line=True)
+
+    # fix y1 and check {y1} + LB(Y2h) is dominated by Yh
+    
+    y1 = Y1[3]
+    
+    y1.plot(l=&#39;$y^1$&#39;, label_only=True)
+    y1MSLB2 = PointList((y1)) + L
+    y1MSLB2.plot(&#34;$\{y^1\} \oplus&#34; + f&#34;{_L2}$&#34;)
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+
+def MSP_sol_example():
+
+    ######################## Figure slides_MSP_example START ########################
+    fig_name = &#34;slides_MSP_example&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=(5,3), layout=&#39;constrained&#39;)
+    
+    Y1 = PointList.from_json(&#34;./instances/subproblems/sp-2-10-m_1.json&#34;)
+    Y2 = PointList.from_json(&#34;./instances/subproblems/sp-2-10-m_2.json&#34;)
+    # Y1.plot(f&#34;${_Y1}={_Y2}$&#34;)
+    # Y2.plot(f&#34;_${_Y2}$&#34;, marker=&#39;x&#39;)
+    Y = Y1 + Y2
+
+    Y1.plot(f&#34;${_Y1}$&#34;)
+    Y2.plot(f&#34;${_Y2}$&#34;)
+    for y1 in Y1:
+        
+        Yhat = PointList((y1,)) + Y2
+        Yhat.plot()
+        # plot_or_save(fig, fig_name + &#39;_1&#39;)
+
+    Y.plot(f&#34;${_Y}$&#34;)
+    # Yn = N(Y)
+    # Yn.plot(f&#34;${_Yn}$&#34;)
+    # save or plot figure
+    plot_or_save(fig, fig_name + &#39;_1&#39;)
+    ######################### Figure slides_MSP_example END #########################
+
+
+
+def plot_ul():
+
+    ######################## Figure plot_ul START ########################
+    fig_name = &#34;plot_ul&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    
+    MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-2-100|100-ul-2_1.json&#39;)
+    Y1, Y2 = MSP.Y_list
+
+    Y1.label = f&#34;${_Yn1}$&#34;
+    Y2.label = f&#34;${_Yn2}$&#34;
+
+    for Y in MSP.Y_list:
+        Y.plot(l = Y.label)
+    
+
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure plot_ul END #########################
+
+
+def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot_mapping= True, figsize = (7,3)):
+    &#34;&#34;&#34; plots similar to matrix plots in Hespe et al. 2023 &#34;&#34;&#34;
+
+
+    fig = plt.figure(figsize=figsize, layout=&#39;constrained&#39;)
+    ax = list()
+    projection = None if Y1.dim == 2 else &#39;3d&#39;
+    ax.append(fig.add_subplot(1, 3, 1, projection= projection ))
+
+    plt.xlabel(&#39;Objective 1&#39;)
+    plt.ylabel(&#39;Objective 2&#39;)
+    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    plt.xlim(-1000,11000*2)
+    plt.ylim(-1000,11000*2)
+    ax.append(fig.add_subplot(1, 3, 2))
+
+    # plt.xlabel(&#39;f&#34;${_Yn1}$&#34;&#39;)
+    # plt.ylabel(&#39;f&#34;${_Yn2}$&#34;&#39;)
+
+    ax.append(fig.add_subplot(1, 3, 3, projection= projection ))
+    # fig, ax = plt.subplots(ncols = 3, figsize=SIZE_LARGE_FIGURE, layout=&#39;constrained&#39;)
+    
+
+    plt.xlabel(&#39;Objective 1&#39;)
+    plt.ylabel(&#39;Objective 2&#39;)
+    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    plt.xlim(-1000,11000*1.9)
+    plt.ylim(-1000,11000*1.9)
+
+    # ax[2].xlabel(&#39;Objective 1&#39;)
+    # ax[2].plt.ylabel(&#39;Objective 2&#39;)
+    # ax[2].tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+
+    Y1 = methods.lex_sort(Y1)
+    Y2 = methods.lex_sort(Y2)
+    Y1_color = Y1.plot_color   
+    Y2_color = Y2.plot_color   
+
+    Y = Y1+Y2
+    Yn = N(Y)
+    Yn_set = set(Yn.points)
+
+    # ######################## Figure ax1 START ########################
+    # fig_name = &#34;ax1&#34;
+    # # define new figure
+    
+
+    if not matrix_only:
+        Y1.plot(ax = ax[0], l = f&#34;${_Yn1}$&#34;, point_labels= point_labels)
+        Y2.plot(ax = ax[0], l = f&#34;${_Yn2}$&#34;, point_labels= point_labels)
+
+    # # save or plot figure
+    # plot_or_save(fig, fig_name)
+
+    # add marking of point contributes to Pareto Sum point:
+
+    Y1_MSP = PointList([y1 for y1 in Y1 if any((y1+y2 in Yn_set for y2 in Y2))])
+    Y2_MSP = PointList([y2 for y2 in Y2 if any((y1+y2 in Yn_set for y1 in Y1))])
+
+    if not matrix_only and plot_mapping:
+        # Y1_MSP.plot(ax = ax[0], l = f&#34;${_Yn1}\\rightarrow {_Yn}$&#34;,color = &#34;yellow&#34;, marker=&#39;1&#39;)
+        # Y2_MSP.plot(ax = ax[0], l = f&#34;${_Yn2}\\rightarrow {_Yn}$&#34;, color = &#34;yellow&#34;, marker=&#39;1&#39;)
+        Y1_MSP.plot(ax = ax[0], l = f&#34;_&#34;,color = &#34;yellow&#34;, marker=&#39;1&#39;)
+        Y2_MSP.plot(ax = ax[0], l = f&#34;_&#34;, color = &#34;yellow&#34;, marker=&#39;1&#39;)
+
+    # ######################### Figure ax1 END #########################
+
+
+    if plot_mapping:
+        M = np.array([[1 if y1+y2 in Yn_set else 0 for y1 in Y1] for y2 in Y2])
+    else:
+        M = np.array([[0 if y1+y2 in Yn_set else 0 for y1 in Y1] for y2 in Y2])
+    col_header = np.array([3 for _,y  in enumerate(Y1)])
+    row_header = np.array([5] + [4 for _,y  in enumerate(Y2)])
+
+    M = np.vstack([col_header, M])
+    M = np.vstack([row_header, M.transpose()])
+
+    ax[0].legend(loc=&#39;upper right&#39;)
+
+    ######################## Figure matrix_plot START ########################
+    
+    # Define your custom colors
+    colors = [&#39;lightgray&#39;, &#39;yellow&#39;, &#39;red&#39;, Y1.plot_color, Y2.plot_color, &#39;white&#39;]
+    if matrix_only:
+        colors = [&#39;lightgray&#39;, &#39;yellow&#39;, &#39;red&#39;, &#39;red&#39;, &#39;blue&#39;, &#39;white&#39;]
+    # Create a colormap with discrete colors
+    cmap = matplotlib.colors.ListedColormap(colors)
+
+#     ax[1].imshow(M, cmap = cmap)
+    # # ax[1].imshow(M)
+
+    if point_labels:
+        for i, y in enumerate(Y1):
+            ax[1].annotate(text = &#34;$y^{&#34; +  f&#34;{i+1}&#34; + &#34;}$&#34;, xy = (i+1.5,0.51))   
+        for i, y in enumerate(Y1):
+            ax[1].annotate(text = &#34;$y^{&#34; +  f&#34;{i+1}&#34; + &#34;}$&#34;, xy = (0.5,i+1.5))   
+
+    ax[1].axis(&#39;off&#39;)
+
+
+    ax[1].pcolormesh(M, cmap = cmap, edgecolors=&#39;white&#39;, linewidth=0.5)
+    ax[1] = plt.gca()
+    # ax[1].set_aspect(&#39;equal&#39;)
+    # ax[0].set_aspect(&#39;equal&#39;)
+    # ax[2].set_aspect(&#39;equal&#39;)
+    
+    # ax[0].set_title(&#34;Subproblem Pareto sets&#34;)
+    # ax[1].set_title(&#34;Matrix&#34;)
+    
+    print(f&#34;|Yn| = {len(Yn)}&#34;)
+    print(f&#34;|Y1| + |Y2| = {len(Y1) + len(Y2)}&#34;)
+    print(f&#34;|Y1||Y2| = {len(Y1)*len(Y2)}&#34;)
+    print(f&#34;&#34;)
+    print(f&#34;|Y1| = {len(Y1)}&#34;)
+    print(f&#34;|Y2| = {len(Y2)}&#34;)
+    print(f&#34;|Yn1 MSP | = {len(Y1_MSP)}&#34;)
+    print(f&#34;|Yn2 MSP | = {len(Y2_MSP)}&#34;)
+    
+    # save or plot figure
+    # plot_or_save(fig, fig_name)
+    ######################### Figure matrix_plot END #########################
+
+
+    ######################## Figure pareto_sum START ########################
+    # fig_name = &#34;pareto_sum&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    # fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+ 
+    if not matrix_only:
+        Y.plot(ax = ax[2], l = f&#34;${_Yn1}&#34;+&#34;\\oplus&#34; +f&#34;{_Yn2}$&#34;, color = colors[0])
+        if plot_mapping:
+            Yn.plot(ax = ax[2], l = f&#34;${_Yn}$&#34;, color = &#34;yellow&#34;)
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure pareto_sum END #########################
+        
+def make_matrix_plot():
+
+    plot_configs = [
+            {&#34;fig_name&#34;: &#39;matrix_plot&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;methods_lu&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;methods_lm&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-m_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;methods_mm&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-m_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-m_2.json&#34;},
+            {&#34;fig_name&#34;: &#39;scaling_lu_1&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;scaling_lu_2&#39;, &#39;scaling&#39; : 2,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;scaling_lu_0_5&#39;, &#39;scaling&#39; : 0.5,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;scaling_lu_0_1&#39;, &#39;scaling&#39; : 0.1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;dim_2&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;dim_3&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-3-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-3-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;dim_4&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-4-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-4-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;dim_5&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-5-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-5-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;magnitudes1&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-m_10.json&#34;},
+            {&#34;fig_name&#34;: &#39;magnitudes10&#39;, &#39;scaling&#39; : 10,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-m_10.json&#34;},
+            {&#34;fig_name&#34;: &#39;magnitudes20&#39;, &#39;scaling&#39; : 20,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-m_10.json&#34;},
+            {&#34;fig_name&#34;: &#39;magnitudes1_1&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-m_10.json&#34;},
+            {&#34;fig_name&#34;: &#39;magnitudes1_2&#39;, &#39;scaling&#39; : -2,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-m_10.json&#34;},
+            {&#34;fig_name&#34;: &#39;magnitudes1_5&#39;, &#39;scaling&#39; : -5,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-m_10.json&#34;},
+            ]
+    
+    for P in plot_configs:
+        Y1 = PointList.from_json(P[&#39;Y1&#39;])
+        Y2 = PointList.from_json(P[&#39;Y2&#39;])
+        fig_name = P[&#39;fig_name&#39;]
+        scaling = P[&#39;scaling&#39;]
+
+        # scaling = 1
+        if scaling:
+            if scaling &lt; 0:
+                Y1 = PointList([y*(-scaling) for y in Y1])
+            else:
+                Y2 = PointList([y*scaling for y in Y2])
+
+        point_labels = (len(Y1) &lt;= 10 and len(Y2) &lt;= 10)
+
+        matrix_only = Y1.dim &gt; 3
+        
+        # fig_name = &#34;matrix_plot&#34;
+        if &#39;magnitudes&#39; not in fig_name: continue
+
+        matrix_plot(Y1,Y2, fig_name = fig_name, point_labels= point_labels, matrix_only=matrix_only)
+
+
+def slides_matrix_example_MGS():
+    Y1 = PointList.from_json(&#34;instances/subproblems/sp-2-10-u_1.json&#34;)
+    Y1 = [y1 for y1 in Y1]
+    Y1 += [y1*1.1 for y1 in PointList.from_json(&#34;instances/subproblems/sp-2-10-u_2.json&#34;)]
+    Y1_remove = {i:tuple(y.val) for i,y in enumerate(N(PointList(Y1))) if i in (7, 8, 9,10, 11, 12) }
+    Y1 = [y1 for i,y1 in enumerate(Y1) if tuple(y1.val) not in Y1_remove.values()]
+    Y1 = PointList(Y1)
+
+    Y2 = PointList.from_json(&#34;instances/subproblems/sp-2-10-m_10.json&#34;)
+    Y2 = [y2 for y2 in Y2]
+    Y2 += [y1*1.1 for y1 in PointList.from_json(&#34;instances/subproblems/sp-2-10-m_2.json&#34;)]
+    Y2 = PointList(Y2)
+    fig_name = &#34;test_plot&#34; 
+
+
+    MSP = MinkowskiSumProblem([Y1,Y2])
+    MGS = MinkowskiSumProblem(algorithm2(MSP))
+
+    ######################## Figure test_plot START ########################
+    fig_name = &#34;test_plot&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    
+    
+    MSP.plot()
+    MGS.plot(marker=&#39;x&#39;)
+    
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure test_plot END #########################
+
+
+
+def slides_matrix_plot():
+    Y1 = PointList.from_json(&#34;instances/subproblems/sp-2-10-u_1.json&#34;)
+    Y1 = [y1 for y1 in Y1]
+    Y1 += [y1*1.1 for y1 in PointList.from_json(&#34;instances/subproblems/sp-2-10-u_2.json&#34;)]
+    Y1_remove = {i:tuple(y.val) for i,y in enumerate(N(PointList(Y1))) if i in (7, 8, 9,10, 11, 12) }
+    Y1 = [y1 for i,y1 in enumerate(Y1) if tuple(y1.val) not in Y1_remove.values()]
+    Y1 = PointList(Y1)
+
+    Y2 = PointList.from_json(&#34;instances/subproblems/sp-2-10-m_10.json&#34;)
+    Y2 = [y2 for y2 in Y2]
+    Y2 += [y1*1.1 for y1 in PointList.from_json(&#34;instances/subproblems/sp-2-10-m_2.json&#34;)]
+    Y2 = PointList(Y2)
+    fig_name = &#34;test_plot&#34; 
+    scaling = 1
+
+    # scaling = 1
+    if scaling:
+        Y2 = PointList([y*scaling for y in Y2])
+
+    point_labels = len(Y1) &lt;= 20 and len(Y2) &lt;= 20
+    print(f&#34;{point_labels=}&#34;)
+
+    matrix_only = Y1.dim &gt; 3
+    
+
+    ######################## Figure initial_filter START ########################
+    fig_name = &#34;initial_filter_&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=(6,3), layout=&#39;constrained&#39;)
+    
+
+
+
+    plt.xlabel(&#39;Objective 1&#39;)
+    plt.ylabel(&#39;Objective 2&#39;)
+
+    ax.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    
+
+    plt.xlim(-1000,11000)
+    plt.ylim(-1000,11000)
+    Y1.plot(f&#34;${_Y1}$&#34;)
+    Y2.plot(f&#34;${_Y2}$&#34;)
+    Yn1 = N(Y1)
+    Yn2 = N(Y2)
+
+    plot_or_save(fig, fig_name + str(1))
+
+
+    plt.xlabel(&#39;Objective 1&#39;)
+    plt.ylabel(&#39;Objective 2&#39;)
+
+    Y1_dom = PointList([y1 for y1 in Y1 if y1 not in Yn1])
+    Y2_dom = PointList((y2 for y2 in Y2 if y2 not in Yn2))
+    Y1_dom.plot(marker = &#39;x&#39;, color = &#39;black&#39;)
+    Y2_dom.plot(marker = &#39;x&#39;, color = &#39;black&#39;)
+    
+    plot_or_save(fig, fig_name + str(2))
+    plt.cla()
+
+
+    plt.xlabel(&#39;Objective 1&#39;)
+    plt.ylabel(&#39;Objective 2&#39;)
+
+    plt.xlim(-1000,11000)
+    plt.ylim(-1000,11000)
+    Yn1 = N(Y1)
+    Yn2 = N(Y2)
+    Yn1.plot(f&#34;${_Yn1}$&#34;)
+    Yn2.plot(f&#34;${_Yn2}$&#34;)
+
+    plt.xlim(-1000,11000)
+    plt.ylim(-1000,11000)
+    # save or plot figure
+    plot_or_save(fig, fig_name + str(3))
+    ######################### Figure initial_filter END #########################
+
+    Y1, Y2 = Yn1, Yn2
+    matrix_plot(Y1,Y2, fig_name = fig_name + str(4), point_labels= point_labels, matrix_only=matrix_only, plot_mapping=False)
+    matrix_plot(Y1,Y2, fig_name = fig_name + str(5), point_labels= point_labels, matrix_only=matrix_only)
+
+
+
+def minimum_not_minimal():
+
+    ######################## Figure minimum_not_minimal START ########################
+    fig_name = &#34;minimum_not_minimal&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(ncols=3,figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    print(f&#34;{ax=}&#34;)
+    
+
+
+    Y1 = PointList(((1+i,13-i) for i in range(0,14,2)))
+    Y2 = PointList(((0,4),(2,2),(4,0)))
+
+    Y = Y1 + Y2
+
+    for axis in ax:
+        Y1.plot(ax = axis,l=f&#34;${_Y1}$&#34;)
+        Y2.plot(ax = axis, l=f&#34;${_Y2}$&#34;)
+        Y.plot(ax = axis, l=f&#34;${_Y}={_Yn}$&#34;, color = &#39;lightgray&#39;)
+        
+
+    # plot 2
+    G1 = PointList([y for i,y in enumerate(Y1) if i in (0,2,4,6)])
+    G1.plot(ax=ax[1],l=f&#34;$|{_G1}|=4$&#34;, color = &#39;purple&#39;)
+    (G1+Y2).plot(ax=ax[1], l=f&#34;${_G1}\oplus {_Y2}$&#34;, marker =&#39;1&#39;, color = &#39;purple&#39;)
+    for g in G1:
+        for y2 in Y2:
+            line = PointList((g,y2+g))
+            line.plot(ax=ax[1],line=True, color=&#39;lightgray&#39;, linestyle=&#39;dashed&#39;)
+
+    G1 = PointList([y for i,y in enumerate(Y1) if i in (0,3,6)])
+    G1.plot(ax=ax[2],l=&#34;$|\\bar&#34; +f&#34;{_G1}|=3$&#34;, color=&#39;purple&#39;)
+    (G1+Y2).plot(ax=ax[2], l=&#34;$\\bar&#34; + f&#34;{_G1}\oplus {_Y2}$&#34;, marker =&#39;1&#39;, color = &#39;purple&#39;)
+    for g in G1:
+        for y2 in Y2:
+            line = PointList((g,y2+g))
+            line.plot(ax=ax[2],line=True, color=&#39;lightgray&#39;, linestyle=&#39;dashed&#39;)
+   
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure minimum_not_minimal END #########################
+
+    # matrix_plot(Y1,Y2,&#39;minimum_not_minimal_matrix&#39;, point_labels=True)
+
+def klamroth2023_lemma2():
+    l = 6
+    m = 6
+    A = PointList([(-1,-1,-0)] + [(-0, -i/l, -(l-i)/l) for i in range(1,l)])
+    B = PointList([(-0,-1,-1)] + [(-i/m, -(m-i)/m, -0 ) for i in range(1,m)])
+
+    # print(f&#34;{A=}&#34;)
+    # print(f&#34;{B=}&#34;)
+
+
+    fig = plt.figure()
+    fig.tight_layout(h_pad=20)
+    ax= plt.axes(projection = &#39;3d&#39;)
+    
+
+    A.plot(ax= ax, l=f&#34;${_A}$&#34;)
+    B.plot(ax= ax, l=f&#34;${_B}$&#34;)
+
+    # S = PointList(A.points + B.points)
+    S = A + B
+
+    S.plot(ax= ax, l = f&#34;${_A} + {_B}$&#34;)
+    Sn = N(S)
+    # print(f&#34;$A+B = \{S}$&#34;)
+    # print(f&#34;(A+B)_N = {Sn}&#34;)
+    Sn.plot(ax= ax, l= f&#34;(${_A} + {_B} )_{_mcN}$&#34; , color=&#34;blue&#34;)
+
+    # print(f&#34;{len(Sn.removed_duplicates())=}&#34;)
+
+    # print(f&#34;|A|={len(A)}&#34;)
+    # print(f&#34;|B|={len(B)}&#34;)
+    # print(f&#34;|A+B|={len(S)}&#34;)
+    # print(f&#34;|(A+B)_N|={len(Sn)}&#34;)
+
+    plt.show()
+
+
+def induced_UB_plot(level, Y1,Y2, prefix=&#39;&#39;, plot=True):
+    print(f&#34;{prefix}&#34;)
+    # print(f&#34;{level=}&#34;)
+    def get_partial(Y, level=&#39;all&#39;):   
+        Y = N(Y)
+        Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
+        Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
+        # random.shuffle(Y2other_points)
+        match level:
+            case &#39;all&#39;:
+                return Y
+            case &#39;lexmin&#39;: 
+                return PointList((Y[0], Y[-1]))
+            case &#39;extreme&#39;:
+                return PointList(Y2e_points)
+            # case float():
+            case _:
+                to_index = math.floor(float(level)*len(Y2other_points))
+                return PointList(Y2e_points + Y2other_points[:to_index])
+                # print(f&#34;case not implemented {level}&#34;)
+    ######################## Figure Induced_UB START ########################
+    # fig_name = f&#34;Induced_UB_{level}&#34;.replace(&#39;lexmin&#39;,&#39;0.00lexmin&#39;)
+ 
+    def reset_graph():
+        plt.xlabel(&#39;Objective 1&#39;)
+        plt.ylabel(&#39;Objective 2&#39;)
+        plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False)
+
+    fig_name = f&#34;/RGS_example/RGS_sup&#34;
+
+
+    only_supported = True 
+
+    LB_assumption = &#39;consecutive&#39;
+    if only_supported:
+        LB_assumption = &#39;supported&#39;
+
+
+    # print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    if plot:
+        fig, ax = plt.subplots(figsize=(7,3.5), layout=&#39;constrained&#39;)
+
+        reset_graph()
+
+        plot_count = 1
+    
+
+    Y2_partial = get_partial(Y2, level)
+    Y = Y1 + Y2
+    Y2.plot_color= &#39;lightcoral&#39;
+    # Y1_supported = N(PointList([y1_s for y1_s in Y1 if y1_s.cls ==&#39;s&#39;]))
+    Y1_supported = Y1
+    if only_supported:
+        # Y1_supported = N(PointList([y1_s for y1_s in Y1 if y1_s.cls ==&#39;s&#39;]))
+        Y1_supported = N(PointList([y1_s for y_id, y1_s in enumerate(N(Y1)) if y_id in {0,1,2,6,9}]))
+    # Y1_supported = Y1
+    # L1_line = methods.induced_UB(N(Y1), line=True, assumption=LB_assumption)
+    L1_line = methods.induced_UB(Y1_supported, line=True, assumption=LB_assumption)
+    L1 = N(methods.induced_UB(Y1_supported,line=True, assumption=LB_assumption))
+
+    label_hatY2 = &#34;$\hat{&#34;+f&#34;{_Y1}&#34; + &#34;} \subseteq &#34; + f&#34;{_Y1}&#34; + &#34;$&#34;
+
+    for y2 in [y2_choice for y2_choice_id, y2_choice in enumerate(Y2) if y2_choice_id in {2,3,4}]:
+        print(f&#34;{y2=}&#34;)
+        # y2 = Y2[2]
+        if plot:
+            Y_partial = Y2_partial + Y1
+            Y2.plot(f&#34;${_Y1}$&#34;)
+            Y2_partial.plot(label_hatY2, marker=&#39;o&#39;, color=&#39;red&#39;)
+
+            Y1.plot(f&#34;${_Y2}$&#34;, color =&#39;blue&#39;)
+            # L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+            Y.plot(f&#34;${_Y}= {_Y1}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;lightgray&#39;)
+            # Y_partial.plot(&#34;$\hat{&#34;f&#34;{_Y}&#34; + &#34;}=&#34; + &#34;\hat{&#34;f&#34;{_Y1}&#34; + &#34;}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;1&#39;)
+            Y_partial.plot(&#34;$\hat{&#34;+f&#34;{_Y}&#34; + &#34;}=&#34; + &#34;\hat{&#34;f&#34;{_Y1}&#34; + &#34;}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;1&#39;, color = &#39;gray&#39;)
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+            plt.cla()
+            ax = reset_graph()
+
+            # Y_partial = Y2_partial + Y1
+            Y2.plot(f&#34;${_Y1}$&#34;)
+            Y2_partial.plot(label_hatY2, marker=&#39;o&#39;, color=&#39;red&#39;)
+            Y1.plot(f&#34;${_Y2}$&#34;)
+            # L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+            Y.plot(f&#34;${_Y}= {_Y1}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;lightgray&#39;)
+            Y_partial.plot(&#34;$\hat{&#34;+f&#34;{_Y}&#34; + &#34;}=&#34; + &#34;\hat{&#34;f&#34;{_Y1}&#34; + &#34;}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;1&#39;, color = &#39;gray&#39;)
+
+            U_partial = methods.induced_UB(Y_partial, line=True)
+            U_partial.plot(line=True, color=&#39;lightgray&#39;)
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+
+
+            plt.cla()
+            reset_graph()
+            # Y_partial = Y2_partial + Y1
+            Y2.plot(f&#34;${_Y1}$&#34;)
+            Y2_partial.plot(label_hatY2, marker=&#39;o&#39;, color=&#39;red&#39;)
+            Y1.plot(f&#34;${_Y2}$&#34;)
+            # L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+
+
+            Y.plot(f&#34;${_Y}= {_Y1}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;lightgray&#39;)
+            Y_partial.plot(&#34;$\hat{&#34;+f&#34;{_Y}&#34; + &#34;}=&#34; + &#34;\hat{&#34;f&#34;{_Y1}&#34; + &#34;}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;1&#39;)
+            y2.plot(l=&#39;$y^1$&#39;,marker=&#39;x&#39;, label_only=True)
+            y2MSY1 = Y1_supported + PointList((y2,))
+            L1MSY1 = L1 + PointList((y2,))
+        
+            y2MSY1.plot(&#34;$\{y^1\}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;black&#39;)
+
+            # nonconsecutive
+            # L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+            # L1.plot(f&#34;${_L2}$&#34;, color = Y1.plot_color, marker=&#39;x&#39;)
+            # L1MSY1.plot(&#34;$\{y^1\}&#34;  + &#34;\oplus&#34; + f&#34;{_L2}$&#34;, color=&#39;blue&#39;, marker=&#39;x&#39;)
+
+            # supported
+            # L1_line = methods.induced_UB(Y1, line=True, assumption=LB_assumption)
+            # L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+            # U_partial = methods.induced_UB(Y_partial, line=True)
+            U_partial.plot(line=True, color=&#39;lightgray&#39;)
+            
+
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+            plt.cla()
+            reset_graph()
+
+
+
+
+
+
+        ub_time = time.time()
+        U = methods.find_generator_U(Y2_partial, Y1)
+        ub_time = time.time() - ub_time
+
+        Uline = methods.induced_UB(U,line=True, assumption=LB_assumption)
+        Uline.plot_color = Y2.plot_color
+        
+        Y2_dominated = [y for y in Y2 if y.cls != &#39;se&#39; and U.dominates_point(y)]
+        # if Y2_dominated and plot:
+            # PointList(Y2_dominated).plot(&#34;dominated&#34;, marker=&#39;x&#39;)
+        print(f&#34;{len(Y2_dominated)=}&#34;)
+        dominated_relative = len(Y2_dominated)/len(Y2)
+        print(f&#34;dominated: {len(Y2_dominated)} \nrelative: {dominated_relative*100}\%&#34;)
+        if plot:
+
+
+            Y2.plot(f&#34;${_Y1}$&#34;)
+            Y2_partial.plot(label_hatY2, marker=&#39;o&#39;, color=&#39;red&#39;)
+            Y1.plot(f&#34;${_Y2}$&#34;)
+            L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+            Y.plot(f&#34;${_Y}= {_Y1}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;lightgray&#39;)
+            Y_partial.plot(&#34;$\hat{&#34; + f&#34;{_Y}&#34; + &#34;}=&#34; + &#34;\hat{&#34;f&#34;{_Y1}&#34; + &#34;}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;1&#39;)
+            y2.plot(l=&#39;$y^1$&#39;,marker=&#39;x&#39;, label_only=True)
+            y2MSY1.plot(&#34;$\{y^1\}&#34;  + &#34;\oplus&#34; + f&#34;{_L2}$&#34;)
+            y2L = methods.induced_UB(y2MSY1, line=True, assumption=LB_assumption)
+            y2L.plot(line=True, color=&#39;black&#39;)
+            U_partial.plot(line=True, color=&#39;lightgray&#39;)
+            # L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+
+
+            plt.cla()
+            reset_graph()
+
+            # new plot
+            Y2.plot(f&#34;${_Y1}$&#34;)
+            Y2_partial.plot(label_hatY2, marker=&#39;o&#39;, color=&#39;red&#39;)
+            Y1.plot(f&#34;${_Y2}$&#34;)
+            Y.plot(f&#34;${_Y}= {_Y1}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;lightgray&#39;)
+            Y_partial.plot(&#34;$\hat{&#34;f&#34;{_Y}&#34; + &#34;}=&#34; + &#34;\hat{&#34;f&#34;{_Y1}&#34; + &#34;}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;1&#39;)
+            y2.plot(l=&#39;$y^1$&#39;,marker=&#39;x&#39;, label_only=False, color =&#34;black&#34;)
+            # Uline.plot(f&#34;${_U}$&#34;, line=True)
+            # y2 = Y2[4]
+            # y2.plot(l=&#39;$y^1$&#39;,marker=&#39;x&#39;, label_only=True)
+            # y2MSY1 = Y1 + PointList((y2,))
+            # y2MSY1.plot(&#34;$\{y^1\}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;)
+            # plot_or_save(fig, &#34;slides_&#34; + fig_name + &#39;_1&#39; )
+            # plt.cla()
+            # Uline.plot(f&#34;${_U}$&#34;, line=True)
+            # Y2.plot(f&#34;${_Y1}$&#34;)
+            # Y1.plot(f&#34;${_Y2}$&#34;)
+            # Y2_partial.plot(&#34;$\hat{&#34;f&#34;{_Y1}&#34; + &#34;}$&#34;, marker=&#39;1&#39;)
+
+
+
+        # if plot: plt.text(0.1,0.1,f&#34;dominated: {len(Y2_dominated)} \n relative: {dominated_relative*100}\%&#34;)
+        
+        # save or plot figure
+        if plot:
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+        ######################### Figure Induced_UB END #########################
+
+        run_data = {&#39;prefix&#39; : prefix,
+                    &#39;Y1_size&#39; : len(Y1),
+                    &#39;Y2_size&#39; : len(Y2),
+                    &#39;U&#39; : len(U),
+                    &#39;U_time&#39; : ub_time,
+                    &#39;dominated_points&#39; : len(Y2_dominated),
+                    &#39;dominated_relative_Y2&#39; : dominated_relative,
+                    }
+
+        # return run_data
+def multiple_induced_UB():
+
+
+    set_options = [&#39;l&#39;,&#39;m&#39;,&#39;u&#39;]
+    size_options = [10, 50, 100, 150, 200, 300, 600]
+    seed_options = [1,2,3,4,5]
+    UB_options = [&#39;lexmin&#39;,&#39;extreme&#39;,&#39;0.25&#39;,&#39;0.5&#39;,&#39;0.75&#39;,&#39;all&#39;]
+
+    csv_file_path = &#39;./instances/results/algorithm3/result.csv&#39;
+    # get last row
+    with open(csv_file_path, &#39;r&#39;) as csv_file:
+        reader = csv.reader(csv_file)
+        rows = [row for row in reader]
+
+    lastrow = rows[-1]
+    del rows
+
+    start_runs = False
+    for s1 in size_options:
+        s2 = s1
+        for ub_level in UB_options:
+        # s1 = 100 
+        # s2 = 100
+            # for s2 in size_options:
+            for t1 in set_options:
+                for t2 in set_options:
+                    for seed in seed_options:
+                        
+                        prefix = f&#39;{t1}-{t2}_{s1}_{s2}_{ub_level}_{seed}_&#39;
+                        
+                        if start_runs == False:
+                            if prefix == lastrow[0]:
+                                start_runs = True
+                                print(f&#34;Starting run after {prefix}&#34;)
+
+                            continue
+
+                        Y1 = PointList.from_json(f&#34;./instances/subproblems/sp-2-{s1}-{t1}_{seed}.json&#34;)
+                        Y2 = PointList.from_json(f&#34;./instances/subproblems/sp-2-{s2}-{t2}_{max(seed_options)+1-seed}.json&#34;)
+                        data = induced_UB_plot(ub_level, Y1,Y2, prefix, plot=False) 
+                        data.update({&#39;t1&#39;:t1, &#39;t2&#39;:t2, &#39;s1&#39;:s1, &#39;s2&#39;:s2,&#39;seed&#39;:seed,&#39;ub_level&#39;:ub_level})
+                        with open(csv_file_path, &#39;a&#39;) as csv_file:
+                            # add header if file empty
+                            writer = csv.writer(csv_file)
+                            if os.path.getsize(csv_file_path) == 0:
+                                writer.writerow(data.keys())
+                            writer.writerow(data.values())
+
+
+def empirical_matrix():
+
+
+
+    size_options = [10, 50, 100, 150, 200, 300, 600]
+    seed_options = [1,2,3,4,5]
+
+    size = size_options[1]
+    s1, s2 = size, size
+    seed = seed_options[0]
+    set_options = [&#39;l&#39;,&#39;m&#39;,&#39;u&#39;]
+
+
+    t1, t2 = set_options[0], set_options[1]
+    for t1, t2 in ((t1, t2) for t1 in set_options for t2 in set_options):
+
+        Y1 = PointList.from_json(f&#34;./instances/subproblems/sp-2-{s1}-{t1}_{seed}.json&#34;)*1.5
+        Y2 = PointList.from_json(f&#34;./instances/subproblems/sp-2-{s2}-{t2}_{max(seed_options)+1-seed}.json&#34;)
+        Y = Y1 + Y2
+
+        Yn = N(Y)
+
+        ######################## Figure simple_plot START ########################
+        prefix = f&#39;{t1}-{t2}_{s1}_{s2}_{seed}_&#39;
+        fig_name = prefix
+
+        print(f&#34;Plotting figure: {fig_name}&#34;)
+        # define new figure
+        fig, ax = plt.subplots(figsize=SIZE_SMALL_SQUARE, layout=&#39;constrained&#39;)
+     
+        # ax.axis(&#39;off&#39;)
+        ax.tick_params(left = False, right = False , labelleft = False , 
+                    labelbottom = False, bottom = False) 
+        Y1.plot(f&#34;${_Y1}$&#34;)
+        Y2.plot(f&#34;${_Y2}$&#34;)
+        Y.plot(f&#34;${_Y}$&#34;)
+        Yn.plot(f&#34;${_Yn}$&#34;)
+
+
+        text_label1 = f&#34;$$|{_Y}| = {len(Y)}$$&#34;
+        text_label2 = f&#34;$$|{_Yn}|= {len(Yn)}$$&#34;
+        text_label3 = f&#34;$$|{_Yn}| / |{_Y}|= {100 * len(Yn) / len(Y) :0.0f}\%$$&#34;
+        # ax.legend(title=text_label1 + &#39;\n&#39; + text_label2 + &#39;\n&#39; + text_label3)
+        plt.plot([], [], &#39; &#39;, label=text_label1)
+        plt.plot([], [], &#39; &#39;, label=text_label2)
+
+        # save or plot figure
+        plot_or_save(fig, f&#34;{t1}-{t2}&#34; ) 
+        ######################### Figure simple_plot END #########################
+    
+
+
+def RGS_slides():
+
+    Y1 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-m_1.json&#39;)*2
+    Y2 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-u_4.json&#39;)
+    # Y1.points = [y2 for y2 in list(Y1)[::2]]
+    point_labels = [&#39;plane1&#39;,&#39;Plane 2&#39;, &#39;Train&#39;,&#39;Bus&#39;]
+
+    induced_UB_plot(&#39;extreme&#39;, Y1, Y2, plot= True)
+
+def phase_1_slides():
+    
+
+    ######################## Figure phase1_slides START ########################
+    fig_name = &#34;phase1_slides&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=(6,2), layout=&#39;constrained&#39;)
+    
+
+    plt.xlabel(&#39;Objective 1&#39;)
+    plt.ylabel(&#39;Objective 2&#39;)
+    ax.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+
+    Y = PointList([(1,900),(1, 700),(1.5, 1000),(2.5,660),(3, 500),(3.5, 366 + 2/3),(4, 300)])
+    Y[0].cls = &#39;d&#39;
+    Y[1].cls = &#39;se&#39;
+    Y[2].cls = &#39;d&#39;
+    Y[3].cls = &#39;us&#39;
+    Y[4].cls = &#39;us&#39;
+    Y[5].cls = &#39;s&#39;
+    Y[6].cls = &#39;se&#39;
+    Ys = PointList([y for y in Y if y.cls ==&#39;s&#39;])
+    Yse = PointList([y for y in Y if y.cls ==&#39;se&#39;])
+    Yd = PointList([y for y in Y if y.cls ==&#39;d&#39;])
+    Yus = PointList([y for y in Y if y.cls ==&#39;us&#39;])
+
+    Y.plot_color = &#39;lightgray&#39;
+    line_color = &#39;black&#39;
+    line_width = 0.5
+    line = PointList((Point((0,10000)), Y[1], Y[1] - Point((-1,10000))))
+    line3 = PointList((Y[1], Y[-1]))
+    line2 = PointList((Point((10,0)), Y[-1], Y[-1] + Point((-4,4*300/6))))
+
+    Ys.plot()
+    Yse.plot()
+    Yus.plot()
+    plt.cla()
+ 
+
+    def draw_triangle(y1,y2,y3):
+        X = np.array([y1.val, y2.val, y3.val])
+        Y = [&#39;red&#39;, &#39;red&#39;, &#39;red&#39;]
+
+        # plt.figure()
+        # plt.scatter(X[:, 0], X[:, 1], s=170, color=Y[:])
+
+        # Create the triangle based on the points
+        # triangle = plt.Polygon(X, color=Y[0])
+        # triangle = plt.Polygon(X, color=&#39;lightgray&#39;, fill=True, linestyle=&#39;--&#39;, edgecolor=&#39;gray&#39;)
+        triangle = plt.Polygon(X, color=&#39;lightgray&#39;, hatch=&#39;//&#39;, edgecolor=&#39;gray&#39;)
+
+        plt.gca().add_patch(triangle)
+
+
+    # draw_triangle(Y[1],Y[2],Y[3])
+
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+    Y.plot(f&#34;${_Y}$&#34;)
+    plot_count = 1
+    plot_or_save(fig, fig_name + str(plot_count))
+    plt.cla()
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+    plot_count += 1
+
+
+
+    Y.plot(f&#34;${_Y}$&#34;)
+    line.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=0.5)
+    plot_or_save(fig, fig_name + str(plot_count))
+    plt.cla()
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+    plot_count += 1
+
+    Y.plot(f&#34;${_Y}$&#34;)
+    line2.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    line.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    plot_or_save(fig, fig_name + str(plot_count))
+    plt.cla()
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+    plot_count += 1
+
+    Y.plot(f&#34;${_Y}$&#34;)
+    Yse.plot(f&#34;${_Y}_&#34; + &#39;{se}$&#39;)
+    line3.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    line2.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    line.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    plot_or_save(fig, fig_name + str(plot_count))
+    plt.cla()
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+    plot_count += 1
+
+
+
+
+    line3.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    line2.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    line.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    Y.plot(f&#34;${_Y}$&#34;)
+    Yse.plot(f&#34;${_Y}_&#34; + &#39;{se}$&#39;)
+    Ys.plot(f&#34;${_Y}_&#34; + &#39;{sne}$&#39;)
+    # Yus.plot(f&#34;${_Y}_&#34; + &#39;{u}$&#39;)
+
+    plot_or_save(fig, fig_name + str(plot_count))
+    plot_count += 1
+    plt.cla()
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+
+    Y.plot(f&#34;${_Y}$&#34;)
+    Yse.plot(f&#34;${_Y}_&#34; + &#39;{se}$&#39;)
+    Ys.plot(f&#34;${_Y}_&#34; + &#39;{sne}$&#39;)
+    Yus.plot(f&#34;${_Y}_&#34; + &#39;{u}$&#39;)
+    plot_or_save(fig, fig_name + str(plot_count))
+    plot_count += 1
+    plt.cla()
+    
+    draw_triangle(Yse[0], Point((3.5,700)),Ys[0] )
+    draw_triangle(Yse[-1], Point((4,366+2/3)),Ys[0] )
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+    Y.plot(f&#34;${_Y}$&#34;)
+    Yse.plot(f&#34;${_Y}_&#34; + &#39;{se}$&#39;)
+    Ys.plot(f&#34;${_Y}_&#34; + &#39;{sne}$&#39;)
+    Yus.plot(f&#34;${_Y}_&#34; + &#39;{u}$&#39;)
+    # save or plot figure
+    plot_or_save(fig, fig_name + str(plot_count))
+    ######################### Figure phase1_slides END #########################
+
+
+def all_slides():
+    &#39;&#39;&#39; Figures for PhD Seminar April 2024 &#39;&#39;&#39;
+    global FIGURES_LOCATION
+    FIGURES_LOCATION = &#34;../../../phd/projects/papers/slidesCORAL/figures/&#34;
+    FIGURES_LOCATION = &#34;../../../phd/projects/papers/slidesEURO24/figures/&#34;
+#     phase_1_slides()
+    # slides_MO_example()
+    # # # slides_MS_example()
+    # slides_MSP_example()
+    slides_matrix_plot()
+    RGS_slides()
+
+
+
+
+
+def main():
+
+    slides_matrix_example_MGS()
+    # slides_matrix_plot()
+
+    # RGS_slides()
+    # phase_1_slides()
+    # all_slides()
+
+    # Week 22, 2024
+    # counter_example_reduction()
+    # minimum_not_minimal()
+    # example_reduction_lower_bounds()
+
+
+    # all_slides()
+
+    # example()
+
+    # empirical_matrix()
+    # plot_ul()
+    # klamroth2023_lemma2()
+    # example()
+
+    # with plt.style.context(&#39;bmh&#39;):
+
+    # with plt.rcParams({&#34;lines.linewidth&#34;: 2, &#34;lines.color&#34;: &#34;r&#34;}):
+    # with matplotlib.rc_context[&#39;xtick.bottom&#39;]:
+
+    # test_matrix_plot()
+    # make_matrix_plot()
+
+    # multiple_induced_UB()
+
+
+
+    # induced_UB_plot(0.25)
+    # induced_UB_plot(0.50)
+    # induced_UB_plot(0.75)
+    # induced_UB_plot(1.0)
+
+if __name__ == &#39;__main__&#39;:
+
+
+    SAVE_PLOTS = False 
+    if &#39;save&#39; in sys.argv:
+        SAVE_PLOTS = True 
+    if &#39;show&#39; in sys.argv or &#39;plot&#39; in sys.argv:
+        SAVE_PLOTS = False 
+    FIGURES_LOCATION = &#34;../../papers/paper1/figures/UB_instances/&#34;
+    FIGURES_LOCATION = &#34;../../../phd/projects/papers/paper1/figures/UB_instances/multiple/&#34;
+    FIGURES_LOCATION = &#34;../../../phd/projects/papers/paper1/figures/empirical_example/&#34;
+
+    NO_AXIS = False 
+
+    # used figure sizes
+    SIZE_STANDARD_FIGURE = (5,2)
+    SIZE_SMALL_FIGURE = (2.5,2)
+    SIZE_LARGE_FIGURE = (5,3)
+    SIZE_SMALL_SQUARE = (3,3)
+    SIZE_LARGE_SQUARE = (5,5)
+    SIZE_VERY_LARGE_FIGURE = (7,3)
+
+    # Style options for plots
+    all_styles = [&#39;Solarize_Light2&#39;, &#39;_mpl-gallery&#39;, &#39;_mpl-gallery-nogrid&#39;, &#39;bmh&#39;, &#39;classic&#39;, &#39;dark_background&#39;, &#39;fast&#39;, &#39;fivethirtyeight&#39;, &#39;ggplot&#39;, &#39;grayscale&#39;,  &#39;tableau-colorblind10&#39;]
+    # STYLE = &#34;ggplot&#34; 
+    STYLE = all_styles[8] # 1 6 8 9 10
+    plt.style.use(STYLE)
+
+
+    if NO_AXIS:
+        plt.rcParams[&#39;xtick.bottom&#39;] = False
+        plt.rcParams[&#39;xtick.labelbottom&#39;] = False
+        plt.rcParams[&#39;ytick.left&#39;] = False
+        plt.rcParams[&#39;ytick.labelleft&#39;] = False
+
+    # if SAVE_PLOTS:
+        # matplotlib.rcParams.update({&#34;pgf.texsystem&#34;: &#34;pdflatex&#34;,})
+
+    matplotlib.rcParams.update({
+            &#39;font.family&#39;: &#39;serif&#39;,
+            &#39;text.usetex&#39;: True,
+            &#39;font.size&#39; : 11,
+            &#39;pgf.rcfonts&#39;: True,
+            # &#39;grid.alpha&#39;: 0.0,
+            # &#39;figure.figsize&#39;: (8.77, 4.2),
+        })
+
+    # latex commands
+    _Y = &#34;\mathcal{Y}&#34; # % objective space
+    _G = &#34;\mathcal{G}&#34; # % generator set
+    _A = &#34;\mathcal{A}&#34; # % a set
+    _B = &#34;\mathcal{B}&#34; # % a set
+    _U = &#34;\mathcal{U}&#34; # % upper bound set _Yn = &#34;\mathcal{Y}_\mathcal{N}&#34; # % non-dominated objective space
+    _L = &#34;\mathcal{L}&#34; # % lower bound set
+    _Y1 = &#34;\mathcal{Y}^1&#34; # % objective space 1
+    _Y2 = &#34;\mathcal{Y}^2&#34; # % objective space 1
+    _L1 = &#34;\mathcal{L}^1&#34; # % lower bound set 1
+    _L2 = &#34;\mathcal{L}^2&#34; # % lower bound set 2
+    _Yn = &#34;\mathcal{Y}_\mathcal{N}&#34; # % non-dominated objective space
+    _Yn1 = &#34;\mathcal{Y}_\mathcal{N}^1&#34; # % non-dominated objective space
+    _G1 = &#34;\mathcal{G}^1&#34; # % generator set 1
+    _G2 = &#34;\mathcal{G}^2&#34; # % generator set 2
+    _Yn2 = &#34;\mathcal{Y}_\mathcal{N}^2&#34; # % non-dominated objective space
+    _mcN = &#34;\mathcal{N}&#34; # % Non-dominated set
+    _YsS = &#34;\mathcal{Y}^{s|S}&#34; # % Conditioned non-dominated set
+    _Gc = &#34;\mathcal{G}^{1|2}&#34; # % set of generators
+    _Yc = &#34;\\bar{\mathcal{Y}}^{1}&#34; # % a minimal generator
+    _hYc = &#34;\hat{\mathcal{Y}}^{1}&#34; # % (another) minimal generator
+    _Yh = &#34;\hat{&#34;+ f&#34;{_Y}&#34; + &#34;}&#34;
+    _Yh1 = &#34;\hat{&#34;+ f&#34;{_Y}&#34; + &#34;}^1&#34;
+    _Yh2 = &#34;\hat{&#34;+ f&#34;{_Y}&#34; + &#34;}^2&#34;
+    _hYn = &#34;\hat{\mathcal{Y}}_\mathcal{N}&#34; # % subset of _Yn
+    _Uc = &#34;\\bar{\mathcal{U}}^{1}&#34; # % a conditional upper bound set
+    _bY = &#34;\\bar{\mathcal{Y}}&#34; # % bar over objective space
+    _bYn = &#34;\\bar{\mathcal{Y}}_\mathcal{N}&#34; # % bar over non-dominated points
+
+    main()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="plots.MSP_sol_example"><code class="name flex">
+<span>def <span class="ident">MSP_sol_example</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def MSP_sol_example():
+
+    ######################## Figure slides_MSP_example START ########################
+    fig_name = &#34;slides_MSP_example&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=(5,3), layout=&#39;constrained&#39;)
+    
+    Y1 = PointList.from_json(&#34;./instances/subproblems/sp-2-10-m_1.json&#34;)
+    Y2 = PointList.from_json(&#34;./instances/subproblems/sp-2-10-m_2.json&#34;)
+    # Y1.plot(f&#34;${_Y1}={_Y2}$&#34;)
+    # Y2.plot(f&#34;_${_Y2}$&#34;, marker=&#39;x&#39;)
+    Y = Y1 + Y2
+
+    Y1.plot(f&#34;${_Y1}$&#34;)
+    Y2.plot(f&#34;${_Y2}$&#34;)
+    for y1 in Y1:
+        
+        Yhat = PointList((y1,)) + Y2
+        Yhat.plot()
+        # plot_or_save(fig, fig_name + &#39;_1&#39;)
+
+    Y.plot(f&#34;${_Y}$&#34;)
+    # Yn = N(Y)
+    # Yn.plot(f&#34;${_Yn}$&#34;)
+    # save or plot figure
+    plot_or_save(fig, fig_name + &#39;_1&#39;)
+    ######################### Figure slides_MSP_example END #########################</code></pre>
+</details>
+</dd>
+<dt id="plots.RGS_slides"><code class="name flex">
+<span>def <span class="ident">RGS_slides</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def RGS_slides():
+
+    Y1 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-m_1.json&#39;)*2
+    Y2 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-u_4.json&#39;)
+    # Y1.points = [y2 for y2 in list(Y1)[::2]]
+    point_labels = [&#39;plane1&#39;,&#39;Plane 2&#39;, &#39;Train&#39;,&#39;Bus&#39;]
+
+    induced_UB_plot(&#39;extreme&#39;, Y1, Y2, plot= True)</code></pre>
+</details>
+</dd>
+<dt id="plots.all_slides"><code class="name flex">
+<span>def <span class="ident">all_slides</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Figures for PhD Seminar April 2024</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def all_slides():
+    &#39;&#39;&#39; Figures for PhD Seminar April 2024 &#39;&#39;&#39;
+    global FIGURES_LOCATION
+    FIGURES_LOCATION = &#34;../../../phd/projects/papers/slidesCORAL/figures/&#34;
+    FIGURES_LOCATION = &#34;../../../phd/projects/papers/slidesEURO24/figures/&#34;
+#     phase_1_slides()
+    # slides_MO_example()
+    # # # slides_MS_example()
+    # slides_MSP_example()
+    slides_matrix_plot()
+    RGS_slides()</code></pre>
+</details>
+</dd>
+<dt id="plots.counter_example_reduction"><code class="name flex">
+<span>def <span class="ident">counter_example_reduction</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def counter_example_reduction():
+
+    ######################## Figure counter_example_reduction START ########################
+    fig_name = &#34;&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(layout=&#39;constrained&#39;)
+    
+    Y1 = PointList([(1,10),(9,9),(10,1)])*0.2
+    Y2_list = [PointList([(3,6),(6,3)]), PointList([(3,6),(6,3),(10,-10)])]
+    Y2_list = [PointList([(3,6),(6,3),(10,-10),(13,-13)]), PointList([(3,6),(6,3),(8,3-6.5),(10,-10),(13,-13)])]
+    Y2_list = [
+            PointList([(1,10),(2,9),(9,2),(10,1)]), 
+            PointList([(1,10),(2,9),(5,4),(9,2),(10,1)]), 
+               # PointList([(3,6),(6,3),(8,3-6.5),(10,-10),(13,-13)])
+               ]
+
+    for Y2 in Y2_list:
+        Y = Y1 + Y2
+        y1 = Y1[1]
+        y2 = Y2[2]
+        y1MSY2 = PointList((Y1[1],))+ Y2
+        print(f&#34;{Y.dominates(y1MSY2)=}&#34;)
+
+        Y1.plot(f&#34;${_Y1}$&#34;, color=&#39;red&#39;, point_labels=False)
+        y1.plot(l=&#39;$y^1$&#39;, label_only=True)
+        if Y2 == Y2_list[0]:
+            Y2.plot(f&#34;${_Yh2} \subseteq {_Y2}$&#34;, color = &#39;blue&#39;, point_labels=False)
+        else:
+            y2.plot(l=&#39;$y^2$&#39;, label_only=True)
+            Y2.plot(f&#34;${_Yh2} \subseteq {_Y2}$&#34;, color = &#39;blue&#39;, point_labels=False)
+            # Y2.plot(f&#34;${_Y2}$&#34;, color = &#39;blue&#39;, point_labels=False)
+        Y.plot(f&#34;${_Y}$&#34;, color = &#39;gray&#39;)
+        if Y2 == Y2_list[-1]:
+            # N(Y)[-2].plot(l=&#39;$y^{1,2} + y^{2,3}$&#39; + &#34;$\in$&#34; + f&#34;${_Yn}$&#34;, label_only=True)
+            (y1+y2).plot(l=&#39;$y^{1} + y^{2}$&#39; + &#34;$\in$&#34; + f&#34;${_Yn}$&#34;, label_only=True)
+        y1MSY2.plot(&#34;$\{y^1\}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;x&#39;)
+
+        plot_or_save(fig, fig_name)
+        matrix_plot(Y1,Y2, fig_name = fig_name, point_labels=True, figsize = (10,7))
+        # save or plot figure
+        ######################### Figure counter_example_reduction END #########################</code></pre>
+</details>
+</dd>
+<dt id="plots.empirical_matrix"><code class="name flex">
+<span>def <span class="ident">empirical_matrix</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def empirical_matrix():
+
+
+
+    size_options = [10, 50, 100, 150, 200, 300, 600]
+    seed_options = [1,2,3,4,5]
+
+    size = size_options[1]
+    s1, s2 = size, size
+    seed = seed_options[0]
+    set_options = [&#39;l&#39;,&#39;m&#39;,&#39;u&#39;]
+
+
+    t1, t2 = set_options[0], set_options[1]
+    for t1, t2 in ((t1, t2) for t1 in set_options for t2 in set_options):
+
+        Y1 = PointList.from_json(f&#34;./instances/subproblems/sp-2-{s1}-{t1}_{seed}.json&#34;)*1.5
+        Y2 = PointList.from_json(f&#34;./instances/subproblems/sp-2-{s2}-{t2}_{max(seed_options)+1-seed}.json&#34;)
+        Y = Y1 + Y2
+
+        Yn = N(Y)
+
+        ######################## Figure simple_plot START ########################
+        prefix = f&#39;{t1}-{t2}_{s1}_{s2}_{seed}_&#39;
+        fig_name = prefix
+
+        print(f&#34;Plotting figure: {fig_name}&#34;)
+        # define new figure
+        fig, ax = plt.subplots(figsize=SIZE_SMALL_SQUARE, layout=&#39;constrained&#39;)
+     
+        # ax.axis(&#39;off&#39;)
+        ax.tick_params(left = False, right = False , labelleft = False , 
+                    labelbottom = False, bottom = False) 
+        Y1.plot(f&#34;${_Y1}$&#34;)
+        Y2.plot(f&#34;${_Y2}$&#34;)
+        Y.plot(f&#34;${_Y}$&#34;)
+        Yn.plot(f&#34;${_Yn}$&#34;)
+
+
+        text_label1 = f&#34;$$|{_Y}| = {len(Y)}$$&#34;
+        text_label2 = f&#34;$$|{_Yn}|= {len(Yn)}$$&#34;
+        text_label3 = f&#34;$$|{_Yn}| / |{_Y}|= {100 * len(Yn) / len(Y) :0.0f}\%$$&#34;
+        # ax.legend(title=text_label1 + &#39;\n&#39; + text_label2 + &#39;\n&#39; + text_label3)
+        plt.plot([], [], &#39; &#39;, label=text_label1)
+        plt.plot([], [], &#39; &#39;, label=text_label2)
+
+        # save or plot figure
+        plot_or_save(fig, f&#34;{t1}-{t2}&#34; ) 
+        ######################### Figure simple_plot END #########################</code></pre>
+</details>
+</dd>
+<dt id="plots.example"><code class="name flex">
+<span>def <span class="ident">example</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def example():
+
+
+        
+
+    ######################## Figure example START ########################
+    fig_name = &#34;example&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    
+    
+    Y1 = PointList([(1,10),(9,9),(10,1)])
+
+    U = methods.induced_UB(Y1, line=True)
+
+
+    y = Point((3,3))
+    y.plot(l=&#39;y&#39;)
+
+    Y1.plot(f&#34;${_Y1}$&#34;)
+    # y.plot_cone(ax=ax)
+
+    for u in U:
+        u.plot_cone(ax=ax, quadrant=1)
+    
+    for y in Y1:
+        y.plot_cone(ax=ax, quadrant=3, color=&#39;blue&#39;)
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure example END #########################</code></pre>
+</details>
+</dd>
+<dt id="plots.example_reduction_lower_bounds"><code class="name flex">
+<span>def <span class="ident">example_reduction_lower_bounds</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def example_reduction_lower_bounds():
+    ######################## Figure reduction_lower_bounds START ########################
+    fig_name = &#34;reduction_lower_bounds&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    
+
+    
+    Y1 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-m_3.json&#39;)*0.5
+    Y1h = PointList([y1 for i,y1 in enumerate(Y1) if i in [0,3,4,8,9]])
+    Y2 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-m_10.json&#39;)
+    Y2h = PointList([y2 for i,y2 in enumerate(Y2) if i in [0,3,4,8,9]])
+    L = methods.induced_UB(Y2,line=True, assumption=&#39;nonconsecutive&#39;)
+
+    Y = Y1 + Y2
+    Yh = N(Y1h + Y2h)
+
+    Y1.plot(f&#34;${_Y1}$&#34;, marker=&#39;x&#39;)
+    Y1h.plot(f&#34;${_Yh1}$&#34;, color=Y1.plot_color)
+    Y2.plot(f&#34;${_Y2}$&#34;, marker=&#39;x&#39;)
+    Y2h.plot(f&#34;${_Yh2}$&#34;, color=Y2.plot_color)
+
+    Y.plot(f&#34;${_Y}$&#34;, marker=&#39;x&#39;, color=&#39;lightgray&#39;)
+    Yh.plot(f&#34;${_Yh}$&#34;, color=Y.plot_color)
+
+    L.plot(f&#34;${_L}$&#34;, line=True)
+
+    # fix y1 and check {y1} + LB(Y2h) is dominated by Yh
+    
+    y1 = Y1[3]
+    
+    y1.plot(l=&#39;$y^1$&#39;, label_only=True)
+    y1MSLB2 = PointList((y1)) + L
+    y1MSLB2.plot(&#34;$\{y^1\} \oplus&#34; + f&#34;{_L2}$&#34;)
+    # save or plot figure
+    plot_or_save(fig, fig_name)</code></pre>
+</details>
+</dd>
+<dt id="plots.induced_UB_plot"><code class="name flex">
+<span>def <span class="ident">induced_UB_plot</span></span>(<span>level, Y1, Y2, prefix='', plot=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def induced_UB_plot(level, Y1,Y2, prefix=&#39;&#39;, plot=True):
+    print(f&#34;{prefix}&#34;)
+    # print(f&#34;{level=}&#34;)
+    def get_partial(Y, level=&#39;all&#39;):   
+        Y = N(Y)
+        Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
+        Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
+        # random.shuffle(Y2other_points)
+        match level:
+            case &#39;all&#39;:
+                return Y
+            case &#39;lexmin&#39;: 
+                return PointList((Y[0], Y[-1]))
+            case &#39;extreme&#39;:
+                return PointList(Y2e_points)
+            # case float():
+            case _:
+                to_index = math.floor(float(level)*len(Y2other_points))
+                return PointList(Y2e_points + Y2other_points[:to_index])
+                # print(f&#34;case not implemented {level}&#34;)
+    ######################## Figure Induced_UB START ########################
+    # fig_name = f&#34;Induced_UB_{level}&#34;.replace(&#39;lexmin&#39;,&#39;0.00lexmin&#39;)
+ 
+    def reset_graph():
+        plt.xlabel(&#39;Objective 1&#39;)
+        plt.ylabel(&#39;Objective 2&#39;)
+        plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False)
+
+    fig_name = f&#34;/RGS_example/RGS_sup&#34;
+
+
+    only_supported = True 
+
+    LB_assumption = &#39;consecutive&#39;
+    if only_supported:
+        LB_assumption = &#39;supported&#39;
+
+
+    # print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    if plot:
+        fig, ax = plt.subplots(figsize=(7,3.5), layout=&#39;constrained&#39;)
+
+        reset_graph()
+
+        plot_count = 1
+    
+
+    Y2_partial = get_partial(Y2, level)
+    Y = Y1 + Y2
+    Y2.plot_color= &#39;lightcoral&#39;
+    # Y1_supported = N(PointList([y1_s for y1_s in Y1 if y1_s.cls ==&#39;s&#39;]))
+    Y1_supported = Y1
+    if only_supported:
+        # Y1_supported = N(PointList([y1_s for y1_s in Y1 if y1_s.cls ==&#39;s&#39;]))
+        Y1_supported = N(PointList([y1_s for y_id, y1_s in enumerate(N(Y1)) if y_id in {0,1,2,6,9}]))
+    # Y1_supported = Y1
+    # L1_line = methods.induced_UB(N(Y1), line=True, assumption=LB_assumption)
+    L1_line = methods.induced_UB(Y1_supported, line=True, assumption=LB_assumption)
+    L1 = N(methods.induced_UB(Y1_supported,line=True, assumption=LB_assumption))
+
+    label_hatY2 = &#34;$\hat{&#34;+f&#34;{_Y1}&#34; + &#34;} \subseteq &#34; + f&#34;{_Y1}&#34; + &#34;$&#34;
+
+    for y2 in [y2_choice for y2_choice_id, y2_choice in enumerate(Y2) if y2_choice_id in {2,3,4}]:
+        print(f&#34;{y2=}&#34;)
+        # y2 = Y2[2]
+        if plot:
+            Y_partial = Y2_partial + Y1
+            Y2.plot(f&#34;${_Y1}$&#34;)
+            Y2_partial.plot(label_hatY2, marker=&#39;o&#39;, color=&#39;red&#39;)
+
+            Y1.plot(f&#34;${_Y2}$&#34;, color =&#39;blue&#39;)
+            # L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+            Y.plot(f&#34;${_Y}= {_Y1}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;lightgray&#39;)
+            # Y_partial.plot(&#34;$\hat{&#34;f&#34;{_Y}&#34; + &#34;}=&#34; + &#34;\hat{&#34;f&#34;{_Y1}&#34; + &#34;}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;1&#39;)
+            Y_partial.plot(&#34;$\hat{&#34;+f&#34;{_Y}&#34; + &#34;}=&#34; + &#34;\hat{&#34;f&#34;{_Y1}&#34; + &#34;}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;1&#39;, color = &#39;gray&#39;)
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+            plt.cla()
+            ax = reset_graph()
+
+            # Y_partial = Y2_partial + Y1
+            Y2.plot(f&#34;${_Y1}$&#34;)
+            Y2_partial.plot(label_hatY2, marker=&#39;o&#39;, color=&#39;red&#39;)
+            Y1.plot(f&#34;${_Y2}$&#34;)
+            # L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+            Y.plot(f&#34;${_Y}= {_Y1}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;lightgray&#39;)
+            Y_partial.plot(&#34;$\hat{&#34;+f&#34;{_Y}&#34; + &#34;}=&#34; + &#34;\hat{&#34;f&#34;{_Y1}&#34; + &#34;}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;1&#39;, color = &#39;gray&#39;)
+
+            U_partial = methods.induced_UB(Y_partial, line=True)
+            U_partial.plot(line=True, color=&#39;lightgray&#39;)
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+
+
+            plt.cla()
+            reset_graph()
+            # Y_partial = Y2_partial + Y1
+            Y2.plot(f&#34;${_Y1}$&#34;)
+            Y2_partial.plot(label_hatY2, marker=&#39;o&#39;, color=&#39;red&#39;)
+            Y1.plot(f&#34;${_Y2}$&#34;)
+            # L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+
+
+            Y.plot(f&#34;${_Y}= {_Y1}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;lightgray&#39;)
+            Y_partial.plot(&#34;$\hat{&#34;+f&#34;{_Y}&#34; + &#34;}=&#34; + &#34;\hat{&#34;f&#34;{_Y1}&#34; + &#34;}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;1&#39;)
+            y2.plot(l=&#39;$y^1$&#39;,marker=&#39;x&#39;, label_only=True)
+            y2MSY1 = Y1_supported + PointList((y2,))
+            L1MSY1 = L1 + PointList((y2,))
+        
+            y2MSY1.plot(&#34;$\{y^1\}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;black&#39;)
+
+            # nonconsecutive
+            # L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+            # L1.plot(f&#34;${_L2}$&#34;, color = Y1.plot_color, marker=&#39;x&#39;)
+            # L1MSY1.plot(&#34;$\{y^1\}&#34;  + &#34;\oplus&#34; + f&#34;{_L2}$&#34;, color=&#39;blue&#39;, marker=&#39;x&#39;)
+
+            # supported
+            # L1_line = methods.induced_UB(Y1, line=True, assumption=LB_assumption)
+            # L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+            # U_partial = methods.induced_UB(Y_partial, line=True)
+            U_partial.plot(line=True, color=&#39;lightgray&#39;)
+            
+
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+            plt.cla()
+            reset_graph()
+
+
+
+
+
+
+        ub_time = time.time()
+        U = methods.find_generator_U(Y2_partial, Y1)
+        ub_time = time.time() - ub_time
+
+        Uline = methods.induced_UB(U,line=True, assumption=LB_assumption)
+        Uline.plot_color = Y2.plot_color
+        
+        Y2_dominated = [y for y in Y2 if y.cls != &#39;se&#39; and U.dominates_point(y)]
+        # if Y2_dominated and plot:
+            # PointList(Y2_dominated).plot(&#34;dominated&#34;, marker=&#39;x&#39;)
+        print(f&#34;{len(Y2_dominated)=}&#34;)
+        dominated_relative = len(Y2_dominated)/len(Y2)
+        print(f&#34;dominated: {len(Y2_dominated)} \nrelative: {dominated_relative*100}\%&#34;)
+        if plot:
+
+
+            Y2.plot(f&#34;${_Y1}$&#34;)
+            Y2_partial.plot(label_hatY2, marker=&#39;o&#39;, color=&#39;red&#39;)
+            Y1.plot(f&#34;${_Y2}$&#34;)
+            L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+            Y.plot(f&#34;${_Y}= {_Y1}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;lightgray&#39;)
+            Y_partial.plot(&#34;$\hat{&#34; + f&#34;{_Y}&#34; + &#34;}=&#34; + &#34;\hat{&#34;f&#34;{_Y1}&#34; + &#34;}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;1&#39;)
+            y2.plot(l=&#39;$y^1$&#39;,marker=&#39;x&#39;, label_only=True)
+            y2MSY1.plot(&#34;$\{y^1\}&#34;  + &#34;\oplus&#34; + f&#34;{_L2}$&#34;)
+            y2L = methods.induced_UB(y2MSY1, line=True, assumption=LB_assumption)
+            y2L.plot(line=True, color=&#39;black&#39;)
+            U_partial.plot(line=True, color=&#39;lightgray&#39;)
+            # L1_line.plot(f&#34;${_L2}$&#34;, line=True, color=Y1.plot_color)
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+
+
+            plt.cla()
+            reset_graph()
+
+            # new plot
+            Y2.plot(f&#34;${_Y1}$&#34;)
+            Y2_partial.plot(label_hatY2, marker=&#39;o&#39;, color=&#39;red&#39;)
+            Y1.plot(f&#34;${_Y2}$&#34;)
+            Y.plot(f&#34;${_Y}= {_Y1}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;lightgray&#39;)
+            Y_partial.plot(&#34;$\hat{&#34;f&#34;{_Y}&#34; + &#34;}=&#34; + &#34;\hat{&#34;f&#34;{_Y1}&#34; + &#34;}&#34; + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, marker=&#39;1&#39;)
+            y2.plot(l=&#39;$y^1$&#39;,marker=&#39;x&#39;, label_only=False, color =&#34;black&#34;)
+            # Uline.plot(f&#34;${_U}$&#34;, line=True)
+            # y2 = Y2[4]
+            # y2.plot(l=&#39;$y^1$&#39;,marker=&#39;x&#39;, label_only=True)
+            # y2MSY1 = Y1 + PointList((y2,))
+            # y2MSY1.plot(&#34;$\{y^1\}&#34;  + &#34;\oplus&#34; + f&#34;{_Y2}$&#34;)
+            # plot_or_save(fig, &#34;slides_&#34; + fig_name + &#39;_1&#39; )
+            # plt.cla()
+            # Uline.plot(f&#34;${_U}$&#34;, line=True)
+            # Y2.plot(f&#34;${_Y1}$&#34;)
+            # Y1.plot(f&#34;${_Y2}$&#34;)
+            # Y2_partial.plot(&#34;$\hat{&#34;f&#34;{_Y1}&#34; + &#34;}$&#34;, marker=&#39;1&#39;)
+
+
+
+        # if plot: plt.text(0.1,0.1,f&#34;dominated: {len(Y2_dominated)} \n relative: {dominated_relative*100}\%&#34;)
+        
+        # save or plot figure
+        if plot:
+            plot_or_save(fig, fig_name + str(plot_count))
+            plot_count +=1
+        ######################### Figure Induced_UB END #########################
+
+        run_data = {&#39;prefix&#39; : prefix,
+                    &#39;Y1_size&#39; : len(Y1),
+                    &#39;Y2_size&#39; : len(Y2),
+                    &#39;U&#39; : len(U),
+                    &#39;U_time&#39; : ub_time,
+                    &#39;dominated_points&#39; : len(Y2_dominated),
+                    &#39;dominated_relative_Y2&#39; : dominated_relative,
+                    }
+
+        # return run_data</code></pre>
+</details>
+</dd>
+<dt id="plots.klamroth2023_lemma2"><code class="name flex">
+<span>def <span class="ident">klamroth2023_lemma2</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def klamroth2023_lemma2():
+    l = 6
+    m = 6
+    A = PointList([(-1,-1,-0)] + [(-0, -i/l, -(l-i)/l) for i in range(1,l)])
+    B = PointList([(-0,-1,-1)] + [(-i/m, -(m-i)/m, -0 ) for i in range(1,m)])
+
+    # print(f&#34;{A=}&#34;)
+    # print(f&#34;{B=}&#34;)
+
+
+    fig = plt.figure()
+    fig.tight_layout(h_pad=20)
+    ax= plt.axes(projection = &#39;3d&#39;)
+    
+
+    A.plot(ax= ax, l=f&#34;${_A}$&#34;)
+    B.plot(ax= ax, l=f&#34;${_B}$&#34;)
+
+    # S = PointList(A.points + B.points)
+    S = A + B
+
+    S.plot(ax= ax, l = f&#34;${_A} + {_B}$&#34;)
+    Sn = N(S)
+    # print(f&#34;$A+B = \{S}$&#34;)
+    # print(f&#34;(A+B)_N = {Sn}&#34;)
+    Sn.plot(ax= ax, l= f&#34;(${_A} + {_B} )_{_mcN}$&#34; , color=&#34;blue&#34;)
+
+    # print(f&#34;{len(Sn.removed_duplicates())=}&#34;)
+
+    # print(f&#34;|A|={len(A)}&#34;)
+    # print(f&#34;|B|={len(B)}&#34;)
+    # print(f&#34;|A+B|={len(S)}&#34;)
+    # print(f&#34;|(A+B)_N|={len(Sn)}&#34;)
+
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="plots.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main():
+
+    slides_matrix_example_MGS()
+    # slides_matrix_plot()
+
+    # RGS_slides()
+    # phase_1_slides()
+    # all_slides()
+
+    # Week 22, 2024
+    # counter_example_reduction()
+    # minimum_not_minimal()
+    # example_reduction_lower_bounds()
+
+
+    # all_slides()
+
+    # example()
+
+    # empirical_matrix()
+    # plot_ul()
+    # klamroth2023_lemma2()
+    # example()
+
+    # with plt.style.context(&#39;bmh&#39;):
+
+    # with plt.rcParams({&#34;lines.linewidth&#34;: 2, &#34;lines.color&#34;: &#34;r&#34;}):
+    # with matplotlib.rc_context[&#39;xtick.bottom&#39;]:
+
+    # test_matrix_plot()
+    # make_matrix_plot()
+
+    # multiple_induced_UB()
+
+
+
+    # induced_UB_plot(0.25)
+    # induced_UB_plot(0.50)
+    # induced_UB_plot(0.75)
+    # induced_UB_plot(1.0)</code></pre>
+</details>
+</dd>
+<dt id="plots.make_matrix_plot"><code class="name flex">
+<span>def <span class="ident">make_matrix_plot</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_matrix_plot():
+
+    plot_configs = [
+            {&#34;fig_name&#34;: &#39;matrix_plot&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;methods_lu&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;methods_lm&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-m_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;methods_mm&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-m_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-m_2.json&#34;},
+            {&#34;fig_name&#34;: &#39;scaling_lu_1&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;scaling_lu_2&#39;, &#39;scaling&#39; : 2,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;scaling_lu_0_5&#39;, &#39;scaling&#39; : 0.5,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;scaling_lu_0_1&#39;, &#39;scaling&#39; : 0.1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;dim_2&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;dim_3&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-3-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-3-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;dim_4&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-4-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-4-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;dim_5&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-5-100-l_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-5-100-u_1.json&#34;},
+            {&#34;fig_name&#34;: &#39;magnitudes1&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-m_10.json&#34;},
+            {&#34;fig_name&#34;: &#39;magnitudes10&#39;, &#39;scaling&#39; : 10,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-m_10.json&#34;},
+            {&#34;fig_name&#34;: &#39;magnitudes20&#39;, &#39;scaling&#39; : 20,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-m_10.json&#34;},
+            {&#34;fig_name&#34;: &#39;magnitudes1_1&#39;, &#39;scaling&#39; : 1,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-m_10.json&#34;},
+            {&#34;fig_name&#34;: &#39;magnitudes1_2&#39;, &#39;scaling&#39; : -2,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-m_10.json&#34;},
+            {&#34;fig_name&#34;: &#39;magnitudes1_5&#39;, &#39;scaling&#39; : -5,
+             &#39;Y1&#39; : &#34;instances/subproblems/sp-2-10-u_1.json&#34;,
+             &#39;Y2&#39; : &#34;instances/subproblems/sp-2-10-m_10.json&#34;},
+            ]
+    
+    for P in plot_configs:
+        Y1 = PointList.from_json(P[&#39;Y1&#39;])
+        Y2 = PointList.from_json(P[&#39;Y2&#39;])
+        fig_name = P[&#39;fig_name&#39;]
+        scaling = P[&#39;scaling&#39;]
+
+        # scaling = 1
+        if scaling:
+            if scaling &lt; 0:
+                Y1 = PointList([y*(-scaling) for y in Y1])
+            else:
+                Y2 = PointList([y*scaling for y in Y2])
+
+        point_labels = (len(Y1) &lt;= 10 and len(Y2) &lt;= 10)
+
+        matrix_only = Y1.dim &gt; 3
+        
+        # fig_name = &#34;matrix_plot&#34;
+        if &#39;magnitudes&#39; not in fig_name: continue
+
+        matrix_plot(Y1,Y2, fig_name = fig_name, point_labels= point_labels, matrix_only=matrix_only)</code></pre>
+</details>
+</dd>
+<dt id="plots.matrix_plot"><code class="name flex">
+<span>def <span class="ident">matrix_plot</span></span>(<span>Y1, Y2, fig_name, point_labels=False, matrix_only=False, plot_mapping=True, figsize=(7, 3))</span>
+</code></dt>
+<dd>
+<div class="desc"><p>plots similar to matrix plots in Hespe et al. 2023</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot_mapping= True, figsize = (7,3)):
+    &#34;&#34;&#34; plots similar to matrix plots in Hespe et al. 2023 &#34;&#34;&#34;
+
+
+    fig = plt.figure(figsize=figsize, layout=&#39;constrained&#39;)
+    ax = list()
+    projection = None if Y1.dim == 2 else &#39;3d&#39;
+    ax.append(fig.add_subplot(1, 3, 1, projection= projection ))
+
+    plt.xlabel(&#39;Objective 1&#39;)
+    plt.ylabel(&#39;Objective 2&#39;)
+    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    plt.xlim(-1000,11000*2)
+    plt.ylim(-1000,11000*2)
+    ax.append(fig.add_subplot(1, 3, 2))
+
+    # plt.xlabel(&#39;f&#34;${_Yn1}$&#34;&#39;)
+    # plt.ylabel(&#39;f&#34;${_Yn2}$&#34;&#39;)
+
+    ax.append(fig.add_subplot(1, 3, 3, projection= projection ))
+    # fig, ax = plt.subplots(ncols = 3, figsize=SIZE_LARGE_FIGURE, layout=&#39;constrained&#39;)
+    
+
+    plt.xlabel(&#39;Objective 1&#39;)
+    plt.ylabel(&#39;Objective 2&#39;)
+    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    plt.xlim(-1000,11000*1.9)
+    plt.ylim(-1000,11000*1.9)
+
+    # ax[2].xlabel(&#39;Objective 1&#39;)
+    # ax[2].plt.ylabel(&#39;Objective 2&#39;)
+    # ax[2].tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+
+    Y1 = methods.lex_sort(Y1)
+    Y2 = methods.lex_sort(Y2)
+    Y1_color = Y1.plot_color   
+    Y2_color = Y2.plot_color   
+
+    Y = Y1+Y2
+    Yn = N(Y)
+    Yn_set = set(Yn.points)
+
+    # ######################## Figure ax1 START ########################
+    # fig_name = &#34;ax1&#34;
+    # # define new figure
+    
+
+    if not matrix_only:
+        Y1.plot(ax = ax[0], l = f&#34;${_Yn1}$&#34;, point_labels= point_labels)
+        Y2.plot(ax = ax[0], l = f&#34;${_Yn2}$&#34;, point_labels= point_labels)
+
+    # # save or plot figure
+    # plot_or_save(fig, fig_name)
+
+    # add marking of point contributes to Pareto Sum point:
+
+    Y1_MSP = PointList([y1 for y1 in Y1 if any((y1+y2 in Yn_set for y2 in Y2))])
+    Y2_MSP = PointList([y2 for y2 in Y2 if any((y1+y2 in Yn_set for y1 in Y1))])
+
+    if not matrix_only and plot_mapping:
+        # Y1_MSP.plot(ax = ax[0], l = f&#34;${_Yn1}\\rightarrow {_Yn}$&#34;,color = &#34;yellow&#34;, marker=&#39;1&#39;)
+        # Y2_MSP.plot(ax = ax[0], l = f&#34;${_Yn2}\\rightarrow {_Yn}$&#34;, color = &#34;yellow&#34;, marker=&#39;1&#39;)
+        Y1_MSP.plot(ax = ax[0], l = f&#34;_&#34;,color = &#34;yellow&#34;, marker=&#39;1&#39;)
+        Y2_MSP.plot(ax = ax[0], l = f&#34;_&#34;, color = &#34;yellow&#34;, marker=&#39;1&#39;)
+
+    # ######################### Figure ax1 END #########################
+
+
+    if plot_mapping:
+        M = np.array([[1 if y1+y2 in Yn_set else 0 for y1 in Y1] for y2 in Y2])
+    else:
+        M = np.array([[0 if y1+y2 in Yn_set else 0 for y1 in Y1] for y2 in Y2])
+    col_header = np.array([3 for _,y  in enumerate(Y1)])
+    row_header = np.array([5] + [4 for _,y  in enumerate(Y2)])
+
+    M = np.vstack([col_header, M])
+    M = np.vstack([row_header, M.transpose()])
+
+    ax[0].legend(loc=&#39;upper right&#39;)
+
+    ######################## Figure matrix_plot START ########################
+    
+    # Define your custom colors
+    colors = [&#39;lightgray&#39;, &#39;yellow&#39;, &#39;red&#39;, Y1.plot_color, Y2.plot_color, &#39;white&#39;]
+    if matrix_only:
+        colors = [&#39;lightgray&#39;, &#39;yellow&#39;, &#39;red&#39;, &#39;red&#39;, &#39;blue&#39;, &#39;white&#39;]
+    # Create a colormap with discrete colors
+    cmap = matplotlib.colors.ListedColormap(colors)
+
+#     ax[1].imshow(M, cmap = cmap)
+    # # ax[1].imshow(M)
+
+    if point_labels:
+        for i, y in enumerate(Y1):
+            ax[1].annotate(text = &#34;$y^{&#34; +  f&#34;{i+1}&#34; + &#34;}$&#34;, xy = (i+1.5,0.51))   
+        for i, y in enumerate(Y1):
+            ax[1].annotate(text = &#34;$y^{&#34; +  f&#34;{i+1}&#34; + &#34;}$&#34;, xy = (0.5,i+1.5))   
+
+    ax[1].axis(&#39;off&#39;)
+
+
+    ax[1].pcolormesh(M, cmap = cmap, edgecolors=&#39;white&#39;, linewidth=0.5)
+    ax[1] = plt.gca()
+    # ax[1].set_aspect(&#39;equal&#39;)
+    # ax[0].set_aspect(&#39;equal&#39;)
+    # ax[2].set_aspect(&#39;equal&#39;)
+    
+    # ax[0].set_title(&#34;Subproblem Pareto sets&#34;)
+    # ax[1].set_title(&#34;Matrix&#34;)
+    
+    print(f&#34;|Yn| = {len(Yn)}&#34;)
+    print(f&#34;|Y1| + |Y2| = {len(Y1) + len(Y2)}&#34;)
+    print(f&#34;|Y1||Y2| = {len(Y1)*len(Y2)}&#34;)
+    print(f&#34;&#34;)
+    print(f&#34;|Y1| = {len(Y1)}&#34;)
+    print(f&#34;|Y2| = {len(Y2)}&#34;)
+    print(f&#34;|Yn1 MSP | = {len(Y1_MSP)}&#34;)
+    print(f&#34;|Yn2 MSP | = {len(Y2_MSP)}&#34;)
+    
+    # save or plot figure
+    # plot_or_save(fig, fig_name)
+    ######################### Figure matrix_plot END #########################
+
+
+    ######################## Figure pareto_sum START ########################
+    # fig_name = &#34;pareto_sum&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    # fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+ 
+    if not matrix_only:
+        Y.plot(ax = ax[2], l = f&#34;${_Yn1}&#34;+&#34;\\oplus&#34; +f&#34;{_Yn2}$&#34;, color = colors[0])
+        if plot_mapping:
+            Yn.plot(ax = ax[2], l = f&#34;${_Yn}$&#34;, color = &#34;yellow&#34;)
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure pareto_sum END #########################</code></pre>
+</details>
+</dd>
+<dt id="plots.minimum_not_minimal"><code class="name flex">
+<span>def <span class="ident">minimum_not_minimal</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def minimum_not_minimal():
+
+    ######################## Figure minimum_not_minimal START ########################
+    fig_name = &#34;minimum_not_minimal&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(ncols=3,figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    print(f&#34;{ax=}&#34;)
+    
+
+
+    Y1 = PointList(((1+i,13-i) for i in range(0,14,2)))
+    Y2 = PointList(((0,4),(2,2),(4,0)))
+
+    Y = Y1 + Y2
+
+    for axis in ax:
+        Y1.plot(ax = axis,l=f&#34;${_Y1}$&#34;)
+        Y2.plot(ax = axis, l=f&#34;${_Y2}$&#34;)
+        Y.plot(ax = axis, l=f&#34;${_Y}={_Yn}$&#34;, color = &#39;lightgray&#39;)
+        
+
+    # plot 2
+    G1 = PointList([y for i,y in enumerate(Y1) if i in (0,2,4,6)])
+    G1.plot(ax=ax[1],l=f&#34;$|{_G1}|=4$&#34;, color = &#39;purple&#39;)
+    (G1+Y2).plot(ax=ax[1], l=f&#34;${_G1}\oplus {_Y2}$&#34;, marker =&#39;1&#39;, color = &#39;purple&#39;)
+    for g in G1:
+        for y2 in Y2:
+            line = PointList((g,y2+g))
+            line.plot(ax=ax[1],line=True, color=&#39;lightgray&#39;, linestyle=&#39;dashed&#39;)
+
+    G1 = PointList([y for i,y in enumerate(Y1) if i in (0,3,6)])
+    G1.plot(ax=ax[2],l=&#34;$|\\bar&#34; +f&#34;{_G1}|=3$&#34;, color=&#39;purple&#39;)
+    (G1+Y2).plot(ax=ax[2], l=&#34;$\\bar&#34; + f&#34;{_G1}\oplus {_Y2}$&#34;, marker =&#39;1&#39;, color = &#39;purple&#39;)
+    for g in G1:
+        for y2 in Y2:
+            line = PointList((g,y2+g))
+            line.plot(ax=ax[2],line=True, color=&#39;lightgray&#39;, linestyle=&#39;dashed&#39;)
+   
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure minimum_not_minimal END #########################
+
+    # matrix_plot(Y1,Y2,&#39;minimum_not_minimal_matrix&#39;, point_labels=True)</code></pre>
+</details>
+</dd>
+<dt id="plots.multiple_induced_UB"><code class="name flex">
+<span>def <span class="ident">multiple_induced_UB</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def multiple_induced_UB():
+
+
+    set_options = [&#39;l&#39;,&#39;m&#39;,&#39;u&#39;]
+    size_options = [10, 50, 100, 150, 200, 300, 600]
+    seed_options = [1,2,3,4,5]
+    UB_options = [&#39;lexmin&#39;,&#39;extreme&#39;,&#39;0.25&#39;,&#39;0.5&#39;,&#39;0.75&#39;,&#39;all&#39;]
+
+    csv_file_path = &#39;./instances/results/algorithm3/result.csv&#39;
+    # get last row
+    with open(csv_file_path, &#39;r&#39;) as csv_file:
+        reader = csv.reader(csv_file)
+        rows = [row for row in reader]
+
+    lastrow = rows[-1]
+    del rows
+
+    start_runs = False
+    for s1 in size_options:
+        s2 = s1
+        for ub_level in UB_options:
+        # s1 = 100 
+        # s2 = 100
+            # for s2 in size_options:
+            for t1 in set_options:
+                for t2 in set_options:
+                    for seed in seed_options:
+                        
+                        prefix = f&#39;{t1}-{t2}_{s1}_{s2}_{ub_level}_{seed}_&#39;
+                        
+                        if start_runs == False:
+                            if prefix == lastrow[0]:
+                                start_runs = True
+                                print(f&#34;Starting run after {prefix}&#34;)
+
+                            continue
+
+                        Y1 = PointList.from_json(f&#34;./instances/subproblems/sp-2-{s1}-{t1}_{seed}.json&#34;)
+                        Y2 = PointList.from_json(f&#34;./instances/subproblems/sp-2-{s2}-{t2}_{max(seed_options)+1-seed}.json&#34;)
+                        data = induced_UB_plot(ub_level, Y1,Y2, prefix, plot=False) 
+                        data.update({&#39;t1&#39;:t1, &#39;t2&#39;:t2, &#39;s1&#39;:s1, &#39;s2&#39;:s2,&#39;seed&#39;:seed,&#39;ub_level&#39;:ub_level})
+                        with open(csv_file_path, &#39;a&#39;) as csv_file:
+                            # add header if file empty
+                            writer = csv.writer(csv_file)
+                            if os.path.getsize(csv_file_path) == 0:
+                                writer.writerow(data.keys())
+                            writer.writerow(data.values())</code></pre>
+</details>
+</dd>
+<dt id="plots.phase_1_slides"><code class="name flex">
+<span>def <span class="ident">phase_1_slides</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def phase_1_slides():
+    
+
+    ######################## Figure phase1_slides START ########################
+    fig_name = &#34;phase1_slides&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=(6,2), layout=&#39;constrained&#39;)
+    
+
+    plt.xlabel(&#39;Objective 1&#39;)
+    plt.ylabel(&#39;Objective 2&#39;)
+    ax.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+
+    Y = PointList([(1,900),(1, 700),(1.5, 1000),(2.5,660),(3, 500),(3.5, 366 + 2/3),(4, 300)])
+    Y[0].cls = &#39;d&#39;
+    Y[1].cls = &#39;se&#39;
+    Y[2].cls = &#39;d&#39;
+    Y[3].cls = &#39;us&#39;
+    Y[4].cls = &#39;us&#39;
+    Y[5].cls = &#39;s&#39;
+    Y[6].cls = &#39;se&#39;
+    Ys = PointList([y for y in Y if y.cls ==&#39;s&#39;])
+    Yse = PointList([y for y in Y if y.cls ==&#39;se&#39;])
+    Yd = PointList([y for y in Y if y.cls ==&#39;d&#39;])
+    Yus = PointList([y for y in Y if y.cls ==&#39;us&#39;])
+
+    Y.plot_color = &#39;lightgray&#39;
+    line_color = &#39;black&#39;
+    line_width = 0.5
+    line = PointList((Point((0,10000)), Y[1], Y[1] - Point((-1,10000))))
+    line3 = PointList((Y[1], Y[-1]))
+    line2 = PointList((Point((10,0)), Y[-1], Y[-1] + Point((-4,4*300/6))))
+
+    Ys.plot()
+    Yse.plot()
+    Yus.plot()
+    plt.cla()
+ 
+
+    def draw_triangle(y1,y2,y3):
+        X = np.array([y1.val, y2.val, y3.val])
+        Y = [&#39;red&#39;, &#39;red&#39;, &#39;red&#39;]
+
+        # plt.figure()
+        # plt.scatter(X[:, 0], X[:, 1], s=170, color=Y[:])
+
+        # Create the triangle based on the points
+        # triangle = plt.Polygon(X, color=Y[0])
+        # triangle = plt.Polygon(X, color=&#39;lightgray&#39;, fill=True, linestyle=&#39;--&#39;, edgecolor=&#39;gray&#39;)
+        triangle = plt.Polygon(X, color=&#39;lightgray&#39;, hatch=&#39;//&#39;, edgecolor=&#39;gray&#39;)
+
+        plt.gca().add_patch(triangle)
+
+
+    # draw_triangle(Y[1],Y[2],Y[3])
+
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+    Y.plot(f&#34;${_Y}$&#34;)
+    plot_count = 1
+    plot_or_save(fig, fig_name + str(plot_count))
+    plt.cla()
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+    plot_count += 1
+
+
+
+    Y.plot(f&#34;${_Y}$&#34;)
+    line.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=0.5)
+    plot_or_save(fig, fig_name + str(plot_count))
+    plt.cla()
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+    plot_count += 1
+
+    Y.plot(f&#34;${_Y}$&#34;)
+    line2.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    line.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    plot_or_save(fig, fig_name + str(plot_count))
+    plt.cla()
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+    plot_count += 1
+
+    Y.plot(f&#34;${_Y}$&#34;)
+    Yse.plot(f&#34;${_Y}_&#34; + &#39;{se}$&#39;)
+    line3.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    line2.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    line.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    plot_or_save(fig, fig_name + str(plot_count))
+    plt.cla()
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+    plot_count += 1
+
+
+
+
+    line3.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    line2.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    line.plot(line=True,color = line_color, linestyle=&#39;dashed&#39;,linewidth=line_width)
+    Y.plot(f&#34;${_Y}$&#34;)
+    Yse.plot(f&#34;${_Y}_&#34; + &#39;{se}$&#39;)
+    Ys.plot(f&#34;${_Y}_&#34; + &#39;{sne}$&#39;)
+    # Yus.plot(f&#34;${_Y}_&#34; + &#39;{u}$&#39;)
+
+    plot_or_save(fig, fig_name + str(plot_count))
+    plot_count += 1
+    plt.cla()
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+
+    Y.plot(f&#34;${_Y}$&#34;)
+    Yse.plot(f&#34;${_Y}_&#34; + &#39;{se}$&#39;)
+    Ys.plot(f&#34;${_Y}_&#34; + &#39;{sne}$&#39;)
+    Yus.plot(f&#34;${_Y}_&#34; + &#39;{u}$&#39;)
+    plot_or_save(fig, fig_name + str(plot_count))
+    plot_count += 1
+    plt.cla()
+    
+    draw_triangle(Yse[0], Point((3.5,700)),Ys[0] )
+    draw_triangle(Yse[-1], Point((4,366+2/3)),Ys[0] )
+    plt.xlim(0,5)
+    plt.ylim(-100,1100)
+    Y.plot(f&#34;${_Y}$&#34;)
+    Yse.plot(f&#34;${_Y}_&#34; + &#39;{se}$&#39;)
+    Ys.plot(f&#34;${_Y}_&#34; + &#39;{sne}$&#39;)
+    Yus.plot(f&#34;${_Y}_&#34; + &#39;{u}$&#39;)
+    # save or plot figure
+    plot_or_save(fig, fig_name + str(plot_count))
+    ######################### Figure phase1_slides END #########################</code></pre>
+</details>
+</dd>
+<dt id="plots.plot_or_save"><code class="name flex">
+<span>def <span class="ident">plot_or_save</span></span>(<span>fig, fname: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>call to plot or save fig</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_or_save(fig, fname: str):
+    &#34;&#34;&#34; call to plot or save fig &#34;&#34;&#34;
+    if SAVE_PLOTS:
+        print(f&#34;{FIGURES_LOCATION=}&#34;)
+        fig.savefig(fname = FIGURES_LOCATION + f&#34;{fname}.pgf&#34;)
+        fig.savefig(fname = FIGURES_LOCATION + f&#34;{fname}.pdf&#34;)
+    else:
+        plt.title(fname)
+        plt.show()</code></pre>
+</details>
+</dd>
+<dt id="plots.plot_ul"><code class="name flex">
+<span>def <span class="ident">plot_ul</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_ul():
+
+    ######################## Figure plot_ul START ########################
+    fig_name = &#34;plot_ul&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    
+    MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-2-100|100-ul-2_1.json&#39;)
+    Y1, Y2 = MSP.Y_list
+
+    Y1.label = f&#34;${_Yn1}$&#34;
+    Y2.label = f&#34;${_Yn2}$&#34;
+
+    for Y in MSP.Y_list:
+        Y.plot(l = Y.label)
+    
+
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure plot_ul END #########################</code></pre>
+</details>
+</dd>
+<dt id="plots.slides_MO_example"><code class="name flex">
+<span>def <span class="ident">slides_MO_example</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def slides_MO_example():
+
+    ######################## Figure slides_MSP_example START ########################
+    fig_name = &#34;slides_MO_example&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=(2.7,2.7), layout=&#39;constrained&#39;)
+    
+    Y1_list = []
+    Y1_list.append(PointList(((1, 700),)))
+    Y1_list.append(PointList([(1, 700),(1.5, 1000)]))
+    Y1_list.append(PointList([(1, 700),(1.5, 1000), (3,500)]))
+    Y1_list.append(PointList([(1, 700),(1.5, 1000), (3,500), (4,300)]))
+    point_labels = [&#39;plane1&#39;,&#39;Plane 2&#39;, &#39;Train&#39;,&#39;Bus&#39;]
+    for i,Y1 in enumerate(Y1_list):
+
+        Y1.plot(f&#34;${_Y1}$&#34;, point_labels = point_labels[:i+1])
+        plt.xlabel(&#39;Time (Hours)&#39;)
+        plt.ylabel(&#39;Cost (DKK)&#39;)
+        plt.xlim(0,5)
+        plt.ylim(250,1100)
+        # save or plot figure
+        plot_or_save(fig, fig_name + f&#39;_{i}&#39;)
+        
+        plt.cla()
+        ######################### Figure slides_MSP_example END #########################
+
+    # plot last point dominated
+    Y1 = Y1_list[-1]
+    i = len(Y1)
+    Y1.plot(f&#34;${_Y1}$&#34;, point_labels = point_labels)
+    plt.xlabel(&#39;Time (Hours)&#39;)
+    plt.ylabel(&#39;Cost (DKK)&#39;)
+    plt.xlim(0,5)
+    plt.ylim(250,1100)
+    # save or plot figure
+    Y_dom = PointList([y for y in Y1 if y not in N(Y1)])
+    Y_dom.plot(marker = &#39;x&#39;, color = &#39;black&#39;)
+    plot_or_save(fig, fig_name + f&#39;_{i}&#39;)</code></pre>
+</details>
+</dd>
+<dt id="plots.slides_MSP_example"><code class="name flex">
+<span>def <span class="ident">slides_MSP_example</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def slides_MSP_example():
+
+    ######################## Figure slides_MSP_example START ########################
+    fig_name = &#34;slides_MSP_example&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=(3,4), layout=&#39;constrained&#39;)
+    
+    plt.xlabel(&#39;Time (Hours)&#39;)
+    plt.ylabel(&#39;Cost (DKK)&#39;)
+
+    Y1 = PointList([(1, 700),(1.5, 1000),(3, 500),(4, 300)])
+    Y2 = PointList([(1, 700),(1.5, 1000),(3, 500),(4, 300)])
+    # Y1.plot(f&#34;${_Y1}={_Y2}$&#34;)
+    point_labels = [&#39;plane1&#39;,&#39;Plane 2&#39;, &#39;Train&#39;,&#39;Bus&#39;]
+    Y1.plot(f&#34;${_Y1}={_Y2}$&#34;, point_labels = point_labels)
+    # Y2.plot(f&#34;_${_Y2}$&#34;, marker=&#39;x&#39;)
+    Y = Y1 + Y2
+
+    point_labels = False
+    if point_labels:
+        Y.plot(f&#34;${_Y}$&#34;, point_labels = [f&#34;{pl},{pl2}&#34; for pl in point_labels for pl2 in point_labels ])
+    else:
+        Y.plot(f&#34;${_Y}={_Y1}&#34; +  &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color=&#39;lightgray&#39;)
+
+    plt.xlabel(&#39;Time (Hours)&#39;)
+    plt.ylabel(&#39;Cost (DKK)&#39;)
+
+    # save or plot figure
+    plot_or_save(fig, fig_name + &#39;_1&#39;)
+    Yn = N(Y)
+    # Yn.plot(f&#34;${_Yn}$&#34;, marker=&#39;x&#39;)
+    Y_dom = PointList([y for y in Y if y not in N(Y)])
+    Y_dom.plot(marker = &#39;x&#39;, color = &#39;red&#39;)
+    plot_or_save(fig, fig_name + &#39;_2&#39;)
+    ######################### Figure slides_MSP_example END #########################</code></pre>
+</details>
+</dd>
+<dt id="plots.slides_MS_example"><code class="name flex">
+<span>def <span class="ident">slides_MS_example</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def slides_MS_example():
+
+    ######################## Figure MS_example START ########################
+    fig_name = &#34;/MS_example/MS_example_&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize = (6,2.5), layout=&#39;constrained&#39;)
+    
+
+    Y1 = PointList([(1, 700),(1.5, 1000), (3,500), (4,300)])
+    Y2 = PointList([(1, 700),(1.5, 1000), (3,500), (4,300)])
+    # point_labels = [&#39;plane1&#39;,&#39;Plane 2&#39;, &#39;Train&#39;,&#39;Bus&#39;]
+    point_labels = True
+
+    Yh_plot_color = &#39;gray&#39;
+
+    # plot 1 show Y1 = Y2
+    plot_count = 2
+    Y1.plot(f&#34;${_Y1}={_Y2}$&#34;, point_labels = point_labels)
+    plt.xlim(0,10)
+    plt.ylim(0,2200)
+    plot_or_save(fig, fig_name + str(plot_count))
+    plt.cla()
+    plot_count +=1
+    
+    # plot 2 show y11 + y21
+    n_points1 = 1
+
+    points_in_plot = []
+    for n_points1, y1 in enumerate(Y1, start=1):
+    # if True:
+        # y1 = Y1[0]
+        for n_points, y2 in enumerate(Y2, start=1):
+            # if n_points1 &gt;= 2:
+                # n_points = len(Y2)
+    #         Y1.plot(f&#34;${_Y1}={_Y2}$&#34;, point_labels = point_labels)
+            # Yh = PointList((Y1[0] + Y2[0],))
+            # Yh.plot(&#34;$\{y^1\} \oplus \{y^2\}$&#34;, color=Yh_plot_color)
+            # plot_or_save(fig, fig_name + str(plot_count))
+            # plot_count +=1
+        # plot 3 show {y11 + y21} + {y11 + y22}
+            # n_points = 1
+
+            plt.xlim(0,10)
+            plt.ylim(0,2200)
+            Y1h = PointList(Y1[j] for j in range(n_points1))
+            print(f&#34;{len(Y1h)=}&#34;)
+            Y2h = PointList(Y2[i] for i in range(n_points))
+            print(f&#34;{len(Y2h)=}&#34;)
+            Yh = Y1h + Y2h
+            points_in_plot += list(Yh.points)
+            # Yh = PointList((Y1[j] + Y2[i] for j in range(n_points1) for i in range(n_points)))
+            Yh = PointList((y1 + Y2[i] for i in range(n_points)))
+            # label = &#34;$\{&#34; + &#34;,&#34;.join([f&#34;y^{i+1}&#34; for i in range(n_points1)]) +&#34;\}$&#34; + &#34;$\oplus \{&#34; + &#34;,&#34;.join([f&#34;y^{i+1}&#34; for i in range(n_points)]) +&#34;\}$&#34;
+            label = &#34;$\{y^&#34;+ str(n_points1) +&#34;\}$&#34; + &#34;$\oplus \{&#34; + &#34;,&#34;.join([f&#34;y^{i+1}&#34; for i in range(n_points)]) +&#34;\}$&#34;
+            Yh_all = PointList(set(points_in_plot))
+
+
+
+            Y1.plot(f&#34;${_Y1}={_Y2}$&#34;, point_labels = point_labels)
+            Yh_all.plot(l = &#34;$\hat{&#34; + f&#34;{_Y}&#34; + &#34;}\subseteq&#34; + f&#34;{_Y}$&#34;, color = Yh_plot_color)
+            Yh.plot(l = label, color = &#39;black&#39;,marker=&#39;x&#39;)
+            # Yh.plot(label, color=Yh_plot_color)
+            y1.plot(marker=&#39;x&#39;, color=&#39;black&#39;)
+            y2.plot(marker=&#39;x&#39;, color=&#39;black&#39;)
+            line_color = &#39;lightgray&#39;
+            # for y2 in Y2h[-1]:
+            if True:
+                line = PointList((y2,y1+y2))
+                line.plot(line=True, linestyle=&#39;dashed&#39;, color=line_color)
+                line = PointList((y1,y1+y2))
+                line.plot(line=True, linestyle=&#39;dashed&#39;, color=line_color)
+                # line = PointList((y1,y1+y2))
+                line = PointList((Point((0,0)), y1))
+                line.plot(line=True, linestyle=&#39;dashed&#39;, color=line_color)
+                line = PointList((Point((0,0)), y2))
+                line.plot(line=True, linestyle=&#39;dashed&#39;, color=line_color)
+
+            plot_or_save(fig, fig_name + str(plot_count))
+            plt.cla()
+            plot_count +=1
+     
+
+    plt.xlim(0,10)
+    plt.ylim(0,2200)
+    Y1.plot(f&#34;${_Y1}={_Y2}$&#34;, point_labels = point_labels)
+    Y = Y1 + Y2
+    Y.plot(f&#34;${_Y} = &#34; +f&#34;{_Y1}&#34; +  &#34;\oplus&#34; + f&#34;{_Y2}$&#34;, color =Yh_plot_color)
+    plot_or_save(fig, fig_name + str(plot_count))</code></pre>
+</details>
+</dd>
+<dt id="plots.slides_matrix_example_MGS"><code class="name flex">
+<span>def <span class="ident">slides_matrix_example_MGS</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def slides_matrix_example_MGS():
+    Y1 = PointList.from_json(&#34;instances/subproblems/sp-2-10-u_1.json&#34;)
+    Y1 = [y1 for y1 in Y1]
+    Y1 += [y1*1.1 for y1 in PointList.from_json(&#34;instances/subproblems/sp-2-10-u_2.json&#34;)]
+    Y1_remove = {i:tuple(y.val) for i,y in enumerate(N(PointList(Y1))) if i in (7, 8, 9,10, 11, 12) }
+    Y1 = [y1 for i,y1 in enumerate(Y1) if tuple(y1.val) not in Y1_remove.values()]
+    Y1 = PointList(Y1)
+
+    Y2 = PointList.from_json(&#34;instances/subproblems/sp-2-10-m_10.json&#34;)
+    Y2 = [y2 for y2 in Y2]
+    Y2 += [y1*1.1 for y1 in PointList.from_json(&#34;instances/subproblems/sp-2-10-m_2.json&#34;)]
+    Y2 = PointList(Y2)
+    fig_name = &#34;test_plot&#34; 
+
+
+    MSP = MinkowskiSumProblem([Y1,Y2])
+    MGS = MinkowskiSumProblem(algorithm2(MSP))
+
+    ######################## Figure test_plot START ########################
+    fig_name = &#34;test_plot&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    
+    
+    MSP.plot()
+    MGS.plot(marker=&#39;x&#39;)
+    
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure test_plot END #########################</code></pre>
+</details>
+</dd>
+<dt id="plots.slides_matrix_plot"><code class="name flex">
+<span>def <span class="ident">slides_matrix_plot</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def slides_matrix_plot():
+    Y1 = PointList.from_json(&#34;instances/subproblems/sp-2-10-u_1.json&#34;)
+    Y1 = [y1 for y1 in Y1]
+    Y1 += [y1*1.1 for y1 in PointList.from_json(&#34;instances/subproblems/sp-2-10-u_2.json&#34;)]
+    Y1_remove = {i:tuple(y.val) for i,y in enumerate(N(PointList(Y1))) if i in (7, 8, 9,10, 11, 12) }
+    Y1 = [y1 for i,y1 in enumerate(Y1) if tuple(y1.val) not in Y1_remove.values()]
+    Y1 = PointList(Y1)
+
+    Y2 = PointList.from_json(&#34;instances/subproblems/sp-2-10-m_10.json&#34;)
+    Y2 = [y2 for y2 in Y2]
+    Y2 += [y1*1.1 for y1 in PointList.from_json(&#34;instances/subproblems/sp-2-10-m_2.json&#34;)]
+    Y2 = PointList(Y2)
+    fig_name = &#34;test_plot&#34; 
+    scaling = 1
+
+    # scaling = 1
+    if scaling:
+        Y2 = PointList([y*scaling for y in Y2])
+
+    point_labels = len(Y1) &lt;= 20 and len(Y2) &lt;= 20
+    print(f&#34;{point_labels=}&#34;)
+
+    matrix_only = Y1.dim &gt; 3
+    
+
+    ######################## Figure initial_filter START ########################
+    fig_name = &#34;initial_filter_&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=(6,3), layout=&#39;constrained&#39;)
+    
+
+
+
+    plt.xlabel(&#39;Objective 1&#39;)
+    plt.ylabel(&#39;Objective 2&#39;)
+
+    ax.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    
+
+    plt.xlim(-1000,11000)
+    plt.ylim(-1000,11000)
+    Y1.plot(f&#34;${_Y1}$&#34;)
+    Y2.plot(f&#34;${_Y2}$&#34;)
+    Yn1 = N(Y1)
+    Yn2 = N(Y2)
+
+    plot_or_save(fig, fig_name + str(1))
+
+
+    plt.xlabel(&#39;Objective 1&#39;)
+    plt.ylabel(&#39;Objective 2&#39;)
+
+    Y1_dom = PointList([y1 for y1 in Y1 if y1 not in Yn1])
+    Y2_dom = PointList((y2 for y2 in Y2 if y2 not in Yn2))
+    Y1_dom.plot(marker = &#39;x&#39;, color = &#39;black&#39;)
+    Y2_dom.plot(marker = &#39;x&#39;, color = &#39;black&#39;)
+    
+    plot_or_save(fig, fig_name + str(2))
+    plt.cla()
+
+
+    plt.xlabel(&#39;Objective 1&#39;)
+    plt.ylabel(&#39;Objective 2&#39;)
+
+    plt.xlim(-1000,11000)
+    plt.ylim(-1000,11000)
+    Yn1 = N(Y1)
+    Yn2 = N(Y2)
+    Yn1.plot(f&#34;${_Yn1}$&#34;)
+    Yn2.plot(f&#34;${_Yn2}$&#34;)
+
+    plt.xlim(-1000,11000)
+    plt.ylim(-1000,11000)
+    # save or plot figure
+    plot_or_save(fig, fig_name + str(3))
+    ######################### Figure initial_filter END #########################
+
+    Y1, Y2 = Yn1, Yn2
+    matrix_plot(Y1,Y2, fig_name = fig_name + str(4), point_labels= point_labels, matrix_only=matrix_only, plot_mapping=False)
+    matrix_plot(Y1,Y2, fig_name = fig_name + str(5), point_labels= point_labels, matrix_only=matrix_only)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="plots.MSP_sol_example" href="#plots.MSP_sol_example">MSP_sol_example</a></code></li>
+<li><code><a title="plots.RGS_slides" href="#plots.RGS_slides">RGS_slides</a></code></li>
+<li><code><a title="plots.all_slides" href="#plots.all_slides">all_slides</a></code></li>
+<li><code><a title="plots.counter_example_reduction" href="#plots.counter_example_reduction">counter_example_reduction</a></code></li>
+<li><code><a title="plots.empirical_matrix" href="#plots.empirical_matrix">empirical_matrix</a></code></li>
+<li><code><a title="plots.example" href="#plots.example">example</a></code></li>
+<li><code><a title="plots.example_reduction_lower_bounds" href="#plots.example_reduction_lower_bounds">example_reduction_lower_bounds</a></code></li>
+<li><code><a title="plots.induced_UB_plot" href="#plots.induced_UB_plot">induced_UB_plot</a></code></li>
+<li><code><a title="plots.klamroth2023_lemma2" href="#plots.klamroth2023_lemma2">klamroth2023_lemma2</a></code></li>
+<li><code><a title="plots.main" href="#plots.main">main</a></code></li>
+<li><code><a title="plots.make_matrix_plot" href="#plots.make_matrix_plot">make_matrix_plot</a></code></li>
+<li><code><a title="plots.matrix_plot" href="#plots.matrix_plot">matrix_plot</a></code></li>
+<li><code><a title="plots.minimum_not_minimal" href="#plots.minimum_not_minimal">minimum_not_minimal</a></code></li>
+<li><code><a title="plots.multiple_induced_UB" href="#plots.multiple_induced_UB">multiple_induced_UB</a></code></li>
+<li><code><a title="plots.phase_1_slides" href="#plots.phase_1_slides">phase_1_slides</a></code></li>
+<li><code><a title="plots.plot_or_save" href="#plots.plot_or_save">plot_or_save</a></code></li>
+<li><code><a title="plots.plot_ul" href="#plots.plot_ul">plot_ul</a></code></li>
+<li><code><a title="plots.slides_MO_example" href="#plots.slides_MO_example">slides_MO_example</a></code></li>
+<li><code><a title="plots.slides_MSP_example" href="#plots.slides_MSP_example">slides_MSP_example</a></code></li>
+<li><code><a title="plots.slides_MS_example" href="#plots.slides_MS_example">slides_MS_example</a></code></li>
+<li><code><a title="plots.slides_matrix_example_MGS" href="#plots.slides_matrix_example_MGS">slides_matrix_example_MGS</a></code></li>
+<li><code><a title="plots.slides_matrix_plot" href="#plots.slides_matrix_plot">slides_matrix_plot</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

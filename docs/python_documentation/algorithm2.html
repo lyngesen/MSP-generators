@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>algorithm2 API documentation</title>
+<meta name="description" content="script for answering research question 1:
+RQ2: Given an MSP with |Y^1|, ..., |Y^S| what is the size of the minimum generator sequence Y_MIN? …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>algorithm2</code></h1>
+</header>
+<section id="section-intro">
+<p>script for answering research question 1:
+RQ2: Given an MSP with |Y^1|, &hellip;, |Y^S| what is the size of the minimum generator sequence Y_MIN?</p>
+<p>For each problem MSP (from instances/problem)
+Find Yn and solve Minimum generator set sequence (MGSS) problem to find |Y_MIN|
+Save Yn and Y_MIN</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#39;&#39;&#39; script for answering research question 1:
+RQ2: Given an MSP with |Y^1|, ..., |Y^S| what is the size of the minimum generator sequence Y_MIN?
+
+For each problem MSP (from instances/problem)
+    Find Yn and solve Minimum generator set sequence (MGSS) problem to find |Y_MIN|
+    Save Yn and Y_MIN
+&#39;&#39;&#39;
+
+# local library imports
+from classes import Point, PointList, MinkowskiSumProblem, KD_Node, KD_tree, MSPInstances
+import methods
+from timing import timeit, print_timeit, reset_timeit, time_object
+from methods import N
+
+from minimum_generator import solve_MGS_instance, SimpleFilter, build_model_covering, solve_model, display_solution, retrieve_solution_covering
+# public library imports
+from alive_progress import alive_bar
+import matplotlib.pyplot as plt
+import os
+import csv
+import time
+import itertools
+import pprint
+
+import sys
+from multiprocessing import Pool, Process
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import logging
+
+# timing
+
+SimpleFilter = timeit(SimpleFilter)
+time_object(KD_tree)
+time_object(KD_Node)
+time_object(PointList)
+time_object(Point)
+time_object(MinkowskiSumProblem,&#39;MSP&#39;)
+time_object(methods, prefix =&#34;ALG&#34;)
+
+
+def plot_y_j(y_j, Y_list, marker = &#39;x&#39;):
+    y_j.plot(marker=&#39;x&#39;, color=&#39;black&#39;)
+    for s, Y in enumerate(Y_list):
+        Y[y_j.index_list[s]].plot(marker=marker, color=&#39;black&#39;)
+    y_ms = Point([0 for _ in range(Y_list[0].dim)])
+    Y_j = [y_ms]
+    for s,Y in enumerate(Y_list):
+        y_ms = y_ms + Y[y_j.index_list[s]]
+        Y_j.append(y_ms)
+    Y_j = PointList(Y_j)
+    Y_j.plot(l=&#39;Y_j&#39;, line=True)
+
+
+
+def main_old():
+
+
+    # MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-3-100|100|100-mmm-3_1.json&#39;)
+    MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-2-50|50-mm-2_1.json&#39;)
+    print(f&#34;{MSP}&#34;)
+    Y_list = MSP
+    Y_list = []
+    Y_list.append(PointList.from_json(&#39;instances/subproblems/sp-2-10-u_1.json&#39;))
+    Y_list.append(PointList.from_json(&#39;instances/subproblems/sp-2-10-l_2.json&#39;))
+    Y_list.append(PointList.from_json(&#39;instances/subproblems/sp-2-10-m_2.json&#39;))
+    
+
+    # Y_MIN_LIST = solve_instance(MSP.Y_list, plot= False)
+
+    MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-2-200|200-ul-2_1.json&#39;)
+    MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-2-200|200-mm-2_1.json&#39;)
+    # MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-2-50|50|50-mmm-3_1.json&#39;)
+    # MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-2-300|300|300-mmm-3_2.json&#39;)
+    Y_list = MSP.Y_list
+    if False:
+        Y_list = MSP.Y_list
+        Y_list[0] = Y_list[0]*2
+        Y_list[1] = Y_list[1]*1.5
+        # Y1 = PointList([(1,5), (2,4), (3,3), (4,2.5), (5,1)])
+        Y1 = PointList([(1,5), (2,4), (3,3),(5,1)])
+        Y2 = PointList([(8, 3),(9,2),(10,1)])
+        Y_list = [Y1,Y2]
+        MSP = MinkowskiSumProblem(Y_list)
+
+    # MSP.plot()
+    # plt.show()
+
+    print(f&#34;Running simple filter...&#34;)
+    Yn, Yn_dict = SimpleFilter(Y_list)
+
+    duplicates = {y_j : y_j_list for y_j, y_j_list in Yn_dict.items() if len(y_j_list)&gt;1}
+    duplicates = dict(sorted(duplicates.items(), key=lambda item: len(item[1]), reverse=True))
+
+#     for y_j, y_j_list in Yn_dict.items():
+        # if len(y_j_list) &gt; 0:
+            # print(f&#34;{y_j=} ,  duplicates {len(y_j_list)}&#34;)
+            # for y_j_I in y_j_list:
+                # print(f&#34;    {y_j_I}&#34;)
+
+    
+    Y_ms = methods.MS_sum(Y_list)
+    print_timeit()
+    
+
+    print(f&#34;{duplicates=}&#34;)
+
+    Y_generator_index = {s:set() for s, _ in enumerate(Y_list)}
+    for y_j, y_j_list in Yn_dict.items():
+        if y_j in duplicates.keys(): continue
+        assert len( y_j_list) == 1
+        y_j_I =  y_j_list[0]
+        for s, Ys in enumerate(Y_list):
+            Y_generator_index[s].add(y_j_I[s])
+            # if y_j_I not in Y_gen
+        
+    # print(f&#34;{Y_generator_index=}&#34;)
+    Yn_generated = {y_j for y_j in Yn_dict if y_j not in duplicates}
+    print(f&#34;Generated points of Yn {len(Yn_generated)} of {len(Yn)}&#34;)
+    for y_j, y_j_list in duplicates.items():
+        for y_j_I in y_j_list:
+            print(f&#34;{[y_j_I[s] in Y_generator_index[s] for s, _ in enumerate(Y_list)]}&#34;)
+            if all([y_j_I[s] in Y_generator_index[s] for s, _ in enumerate(Y_list)]):
+                Yn_generated.add(y_j)
+                break
+
+    print(f&#34;Generated points of Yn {len(Yn_generated)} of {len(Yn)}&#34;)
+    for s, Y in enumerate(Y_list):
+        print(f&#34;|Y{s+1}| = {len(Y)}&#34;)
+        print(f&#34;|Yg{s+1}| = {len(Y_generator_index[s])}&#34;)
+
+    # print(f&#34;{list(duplicates.items())[0]}&#34;)
+    # for y_j in list(Y_ms)[::len(Yn)//3]:
+
+
+    for y_j, y_j_list in list(duplicates.items())[:3:]:
+    # for y_j, y_j_list in Yn_dict.items():
+        # methods.MS_sum(MSP.Y_list).plot()
+        MSP.plot()
+        Yn.plot(f&#34;$Yn$&#34;)
+        for k, y_j_I in enumerate(y_j_list):
+            y_j.index_list = y_j_I
+            plot_y_j(y_j, Y_list, marker=k)
+
+        plt.show()
+    # save solution
+ 
+
+
+
+def alg2(MSP):
+    &#39;&#39;&#39; Algorithm 2 - Large IP model (SLOW) - For PhDSeminar CORAL May 2024 &#39;&#39;&#39;
+
+    Y_MGS = solve_MGS_instance(MSP.Y_list, verbose = False, plot = False )
+
+    return Y_MGS
+
+@timeit
+def get_fixed_and_reduced(C_dict, Y_list):
+
+    # pprint.pprint(C_dict)
+    # TODO: Use the fact that extreme supported points are known to be in MGS &lt;06-08-24&gt; #
+    Y_fixed = [set() for s, _ in enumerate(Y_list)]
+    Y_reduced = [set() for s, _ in enumerate(Y_list)]
+
+    for y, C in C_dict.items():
+        for s,_ in enumerate(Y_list):
+            is_fixed =True 
+            ys = None
+
+            for c in C:
+                if ys == None:
+                    ys = c[s]
+                Y_reduced[s].add(c[s])
+                if c[s] != ys:
+                    is_fixed =False 
+                    # break
+            if is_fixed: # FINALLY
+                Y_fixed[s].add(ys)
+                
+
+    if False:
+        print(f&#34;{[len(Y) for Y in Y_reduced]=}&#34;)
+        print(f&#34;{[len(Y) for Y in Y_fixed]=}&#34;)
+        
+        print(f&#34;{Y_reduced=}&#34;)
+        print(f&#34;{Y_fixed=}&#34;)
+        assert 1 == 0
+
+    return Y_fixed, Y_reduced
+
+
+
+
+def algorithm2(MSP):
+
+
+    # print(f&#34;Running simple filter...&#34;)
+    Yn, C_dict = SimpleFilter(MSP.Y_list)
+
+    # derive sets
+    #   Y_fixed = nessesary points
+    #   Y_reduced = subproblem points which contribute to at least one nondom solution
+    Y_fixed, Y_reduced = get_fixed_and_reduced(C_dict, MSP.Y_list)
+
+    # print(f&#34;{[len(Y) for Y in Y_fixed]=}&#34;)
+    # print(f&#34;{[len(Y) for Y in Y_reduced]=}&#34;)
+    # if the two sets are equal no further computation needed
+    # print(f&#34;{len(Yn)=}&#34;)
+    # Y_fixed_pointlist = [[MSP.Y_list[s][i] for i,_ in enumerate(MSP.Y_list[s]) if i in Y_s_fixed] for s, Y_s_fixed in enumerate(MSP.Y_list)]
+    
+    @timeit
+    def check_fixed_sufficient():
+        Y_fixed_pointlist = [PointList([MSP.Y_list[s][i] for i in Y_fixed[s]]) for s in range(MSP.S)]
+        Yn_fixed = methods.MS_sequential_filter(Y_fixed_pointlist)
+        if Y_fixed == Y_reduced:
+            return True, Yn_fixed
+        if set(Yn_fixed.points).issubset(set(Yn.points)):
+            return True, Yn_fixed
+        else:
+            return False, Yn_fixed
+
+    check_val, Yn_fixed = check_fixed_sufficient()
+    if check_val:
+        Y_solution = Y_fixed
+    else:
+            # if the two sets are not equal a set partition problem must be solved
+        if MSP.filename: # log that a covering problem as to be solved
+            # with open(&#39;./instances/results/algorithm2_log&#39;, &#39;a&#39;) as logfile:
+                # logfile.write(&#39;MSP.filename&#39; + &#39;\n&#39;)
+            logger.info(&#39;covering problem solved: &#39; + MSP.filename)
+        Yn_fixed_set = set(Yn_fixed.points)
+        Yn_nongenerated = [y for y in Yn if y not in Yn_fixed_set]
+        model = build_model_covering(MSP.Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
+        solve_model(model)
+        Y_chosen_dict = retrieve_solution_covering(model, MSP.Y_list)
+        Y_solution = {s: Y_chosen_dict[s].union(set(Y_fixed[s])) for s in range(len(MSP.Y_list))}
+        # print(f&#34;{Y_chosen_dict=}&#34;)
+        # print(f&#34;{Y_solution=}&#34;)
+    
+    Y_MGS = [PointList([MSP.Y_list[s][i] for i in Y_solution[s]]) for s in range(MSP.S)]
+    # print(f&#34;{[len(Y) for Y in Y_MGS]=}&#34;)
+    if True: # check of generating property
+        Y_solution_pointlist = [PointList([MSP.Y_list[s][i] for i in Y_solution[s]]) for s in range(MSP.S)]
+        Yn_solution = methods.MS_sequential_filter(Y_solution_pointlist)
+        
+        assert set(Yn_solution.points).issubset(set(Yn.points))
+
+
+    return Y_MGS, len(Yn_solution)
+
+
+# for logging
+logname = &#39;algorithm2_log&#39;
+logging.basicConfig(level=logging.INFO, filename=logname)
+logger = logging.getLogger(logname)
+
+
+def algorithm2_run(MSP):
+
+
+    time_start = time.time()
+    # print(f&#34;{MSP}&#34;)
+    logger.info(MSP)
+    Y_MGS, Yn_size = algorithm2(MSP)
+    MGS_sizes = tuple([len(Y) for Y in Y_MGS])
+    MGS_size = sum(MGS_sizes)
+    str_out = f&#34;{MSP.filename}, {MGS_size=},  rel_size={MGS_size/sum([len(Y) for Y in MSP.Y_list])*100:.0f}%,  {MGS_sizes=} \n \n&#34;
+    # print(str_out)
+    logger.info(str_out)
+    MGS = MinkowskiSumProblem(Y_MGS)
+
+    MGS.filename = save_solution_dir + save_prefix + MSP.filename.split(&#39;/&#39;)[-1]
+
+
+    # update run statistics
+    statistics = {&#39;filename&#39;:MSP.filename.split(&#39;/&#39;)[-1], 
+                  &#39;running_time&#39;: time.time() - time_start, 
+                  &#39;max_size&#39;: sum([len(Y) for Y in MSP.Y_list]),
+                  &#39;MGS_size&#39;: MGS_size, 
+                  &#39;MGS_sizes&#39;:MGS_sizes, 
+                  &#39;Yn_size&#39;:Yn_size, 
+                  }
+
+    MGS.statistics = statistics
+    if &#39;timing&#39; in sys.argv:
+        print_timeit()
+        reset_timeit()
+
+    # print(f&#34;{MGS.statistics=}&#34;)
+    # print(f&#34;{MGS.filename=}&#34;)
+
+
+    MGS.save_json(MGS.filename)
+
+    return statistics
+
+
+
+
+save_prefix = &#39;alg2-&#39;
+save_solution_dir = &#39;./instances/results/algorithm2/&#39;
+
+def main():
+    TestBank = MSPInstances(&#39;algorithm2&#39;, ignore_ifonly_l=True)
+    # TestBank = MSPInstances(max_instances = 10, m_options = (4,), p_options = (4,))
+    TestBank.filter_out_solved(save_prefix, save_solution_dir)
+
+    print(f&#34;{TestBank=}&#34;)
+
+    time_start = time.time()    
+    if &#39;multi&#39; in sys.argv:
+        with alive_bar(len(TestBank.filename_list), enrich_print=True) as bar, Pool() as pool:
+            results = pool.imap_unordered(algorithm2_run, TestBank)
+            for statistics in results:
+                print(f&#34;MSP:{statistics[&#39;filename&#39;]}, time: {statistics[&#39;running_time&#39;]}&#34;)
+                bar()
+    else:
+        with alive_bar(len(TestBank.filename_list), enrich_print=False) as bar:
+            for MSP in TestBank:
+                statistics = algorithm2_run(MSP)
+                bar()
+                print(f&#34;MSP:{statistics[&#39;filename&#39;]}, time: {statistics[&#39;running_time&#39;]}&#34;)
+
+    print(f&#34;total time: {time.time() - time_start}&#34;)
+
+if __name__ == &#34;__main__&#34;:
+    main()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="algorithm2.alg2"><code class="name flex">
+<span>def <span class="ident">alg2</span></span>(<span>MSP)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Algorithm 2 - Large IP model (SLOW) - For PhDSeminar CORAL May 2024</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def alg2(MSP):
+    &#39;&#39;&#39; Algorithm 2 - Large IP model (SLOW) - For PhDSeminar CORAL May 2024 &#39;&#39;&#39;
+
+    Y_MGS = solve_MGS_instance(MSP.Y_list, verbose = False, plot = False )
+
+    return Y_MGS</code></pre>
+</details>
+</dd>
+<dt id="algorithm2.algorithm2"><code class="name flex">
+<span>def <span class="ident">algorithm2</span></span>(<span>MSP)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def algorithm2(MSP):
+
+
+    # print(f&#34;Running simple filter...&#34;)
+    Yn, C_dict = SimpleFilter(MSP.Y_list)
+
+    # derive sets
+    #   Y_fixed = nessesary points
+    #   Y_reduced = subproblem points which contribute to at least one nondom solution
+    Y_fixed, Y_reduced = get_fixed_and_reduced(C_dict, MSP.Y_list)
+
+    # print(f&#34;{[len(Y) for Y in Y_fixed]=}&#34;)
+    # print(f&#34;{[len(Y) for Y in Y_reduced]=}&#34;)
+    # if the two sets are equal no further computation needed
+    # print(f&#34;{len(Yn)=}&#34;)
+    # Y_fixed_pointlist = [[MSP.Y_list[s][i] for i,_ in enumerate(MSP.Y_list[s]) if i in Y_s_fixed] for s, Y_s_fixed in enumerate(MSP.Y_list)]
+    
+    @timeit
+    def check_fixed_sufficient():
+        Y_fixed_pointlist = [PointList([MSP.Y_list[s][i] for i in Y_fixed[s]]) for s in range(MSP.S)]
+        Yn_fixed = methods.MS_sequential_filter(Y_fixed_pointlist)
+        if Y_fixed == Y_reduced:
+            return True, Yn_fixed
+        if set(Yn_fixed.points).issubset(set(Yn.points)):
+            return True, Yn_fixed
+        else:
+            return False, Yn_fixed
+
+    check_val, Yn_fixed = check_fixed_sufficient()
+    if check_val:
+        Y_solution = Y_fixed
+    else:
+            # if the two sets are not equal a set partition problem must be solved
+        if MSP.filename: # log that a covering problem as to be solved
+            # with open(&#39;./instances/results/algorithm2_log&#39;, &#39;a&#39;) as logfile:
+                # logfile.write(&#39;MSP.filename&#39; + &#39;\n&#39;)
+            logger.info(&#39;covering problem solved: &#39; + MSP.filename)
+        Yn_fixed_set = set(Yn_fixed.points)
+        Yn_nongenerated = [y for y in Yn if y not in Yn_fixed_set]
+        model = build_model_covering(MSP.Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
+        solve_model(model)
+        Y_chosen_dict = retrieve_solution_covering(model, MSP.Y_list)
+        Y_solution = {s: Y_chosen_dict[s].union(set(Y_fixed[s])) for s in range(len(MSP.Y_list))}
+        # print(f&#34;{Y_chosen_dict=}&#34;)
+        # print(f&#34;{Y_solution=}&#34;)
+    
+    Y_MGS = [PointList([MSP.Y_list[s][i] for i in Y_solution[s]]) for s in range(MSP.S)]
+    # print(f&#34;{[len(Y) for Y in Y_MGS]=}&#34;)
+    if True: # check of generating property
+        Y_solution_pointlist = [PointList([MSP.Y_list[s][i] for i in Y_solution[s]]) for s in range(MSP.S)]
+        Yn_solution = methods.MS_sequential_filter(Y_solution_pointlist)
+        
+        assert set(Yn_solution.points).issubset(set(Yn.points))
+
+
+    return Y_MGS, len(Yn_solution)</code></pre>
+</details>
+</dd>
+<dt id="algorithm2.algorithm2_run"><code class="name flex">
+<span>def <span class="ident">algorithm2_run</span></span>(<span>MSP)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def algorithm2_run(MSP):
+
+
+    time_start = time.time()
+    # print(f&#34;{MSP}&#34;)
+    logger.info(MSP)
+    Y_MGS, Yn_size = algorithm2(MSP)
+    MGS_sizes = tuple([len(Y) for Y in Y_MGS])
+    MGS_size = sum(MGS_sizes)
+    str_out = f&#34;{MSP.filename}, {MGS_size=},  rel_size={MGS_size/sum([len(Y) for Y in MSP.Y_list])*100:.0f}%,  {MGS_sizes=} \n \n&#34;
+    # print(str_out)
+    logger.info(str_out)
+    MGS = MinkowskiSumProblem(Y_MGS)
+
+    MGS.filename = save_solution_dir + save_prefix + MSP.filename.split(&#39;/&#39;)[-1]
+
+
+    # update run statistics
+    statistics = {&#39;filename&#39;:MSP.filename.split(&#39;/&#39;)[-1], 
+                  &#39;running_time&#39;: time.time() - time_start, 
+                  &#39;max_size&#39;: sum([len(Y) for Y in MSP.Y_list]),
+                  &#39;MGS_size&#39;: MGS_size, 
+                  &#39;MGS_sizes&#39;:MGS_sizes, 
+                  &#39;Yn_size&#39;:Yn_size, 
+                  }
+
+    MGS.statistics = statistics
+    if &#39;timing&#39; in sys.argv:
+        print_timeit()
+        reset_timeit()
+
+    # print(f&#34;{MGS.statistics=}&#34;)
+    # print(f&#34;{MGS.filename=}&#34;)
+
+
+    MGS.save_json(MGS.filename)
+
+    return statistics</code></pre>
+</details>
+</dd>
+<dt id="algorithm2.get_fixed_and_reduced"><code class="name flex">
+<span>def <span class="ident">get_fixed_and_reduced</span></span>(<span>C_dict, Y_list)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@timeit
+def get_fixed_and_reduced(C_dict, Y_list):
+
+    # pprint.pprint(C_dict)
+    # TODO: Use the fact that extreme supported points are known to be in MGS &lt;06-08-24&gt; #
+    Y_fixed = [set() for s, _ in enumerate(Y_list)]
+    Y_reduced = [set() for s, _ in enumerate(Y_list)]
+
+    for y, C in C_dict.items():
+        for s,_ in enumerate(Y_list):
+            is_fixed =True 
+            ys = None
+
+            for c in C:
+                if ys == None:
+                    ys = c[s]
+                Y_reduced[s].add(c[s])
+                if c[s] != ys:
+                    is_fixed =False 
+                    # break
+            if is_fixed: # FINALLY
+                Y_fixed[s].add(ys)
+                
+
+    if False:
+        print(f&#34;{[len(Y) for Y in Y_reduced]=}&#34;)
+        print(f&#34;{[len(Y) for Y in Y_fixed]=}&#34;)
+        
+        print(f&#34;{Y_reduced=}&#34;)
+        print(f&#34;{Y_fixed=}&#34;)
+        assert 1 == 0
+
+    return Y_fixed, Y_reduced</code></pre>
+</details>
+</dd>
+<dt id="algorithm2.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main():
+    TestBank = MSPInstances(&#39;algorithm2&#39;, ignore_ifonly_l=True)
+    # TestBank = MSPInstances(max_instances = 10, m_options = (4,), p_options = (4,))
+    TestBank.filter_out_solved(save_prefix, save_solution_dir)
+
+    print(f&#34;{TestBank=}&#34;)
+
+    time_start = time.time()    
+    if &#39;multi&#39; in sys.argv:
+        with alive_bar(len(TestBank.filename_list), enrich_print=True) as bar, Pool() as pool:
+            results = pool.imap_unordered(algorithm2_run, TestBank)
+            for statistics in results:
+                print(f&#34;MSP:{statistics[&#39;filename&#39;]}, time: {statistics[&#39;running_time&#39;]}&#34;)
+                bar()
+    else:
+        with alive_bar(len(TestBank.filename_list), enrich_print=False) as bar:
+            for MSP in TestBank:
+                statistics = algorithm2_run(MSP)
+                bar()
+                print(f&#34;MSP:{statistics[&#39;filename&#39;]}, time: {statistics[&#39;running_time&#39;]}&#34;)
+
+    print(f&#34;total time: {time.time() - time_start}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="algorithm2.main_old"><code class="name flex">
+<span>def <span class="ident">main_old</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main_old():
+
+
+    # MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-3-100|100|100-mmm-3_1.json&#39;)
+    MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-2-50|50-mm-2_1.json&#39;)
+    print(f&#34;{MSP}&#34;)
+    Y_list = MSP
+    Y_list = []
+    Y_list.append(PointList.from_json(&#39;instances/subproblems/sp-2-10-u_1.json&#39;))
+    Y_list.append(PointList.from_json(&#39;instances/subproblems/sp-2-10-l_2.json&#39;))
+    Y_list.append(PointList.from_json(&#39;instances/subproblems/sp-2-10-m_2.json&#39;))
+    
+
+    # Y_MIN_LIST = solve_instance(MSP.Y_list, plot= False)
+
+    MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-2-200|200-ul-2_1.json&#39;)
+    MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-2-200|200-mm-2_1.json&#39;)
+    # MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-2-50|50|50-mmm-3_1.json&#39;)
+    # MSP = MinkowskiSumProblem.from_json(&#39;instances/problems/prob-2-300|300|300-mmm-3_2.json&#39;)
+    Y_list = MSP.Y_list
+    if False:
+        Y_list = MSP.Y_list
+        Y_list[0] = Y_list[0]*2
+        Y_list[1] = Y_list[1]*1.5
+        # Y1 = PointList([(1,5), (2,4), (3,3), (4,2.5), (5,1)])
+        Y1 = PointList([(1,5), (2,4), (3,3),(5,1)])
+        Y2 = PointList([(8, 3),(9,2),(10,1)])
+        Y_list = [Y1,Y2]
+        MSP = MinkowskiSumProblem(Y_list)
+
+    # MSP.plot()
+    # plt.show()
+
+    print(f&#34;Running simple filter...&#34;)
+    Yn, Yn_dict = SimpleFilter(Y_list)
+
+    duplicates = {y_j : y_j_list for y_j, y_j_list in Yn_dict.items() if len(y_j_list)&gt;1}
+    duplicates = dict(sorted(duplicates.items(), key=lambda item: len(item[1]), reverse=True))
+
+#     for y_j, y_j_list in Yn_dict.items():
+        # if len(y_j_list) &gt; 0:
+            # print(f&#34;{y_j=} ,  duplicates {len(y_j_list)}&#34;)
+            # for y_j_I in y_j_list:
+                # print(f&#34;    {y_j_I}&#34;)
+
+    
+    Y_ms = methods.MS_sum(Y_list)
+    print_timeit()
+    
+
+    print(f&#34;{duplicates=}&#34;)
+
+    Y_generator_index = {s:set() for s, _ in enumerate(Y_list)}
+    for y_j, y_j_list in Yn_dict.items():
+        if y_j in duplicates.keys(): continue
+        assert len( y_j_list) == 1
+        y_j_I =  y_j_list[0]
+        for s, Ys in enumerate(Y_list):
+            Y_generator_index[s].add(y_j_I[s])
+            # if y_j_I not in Y_gen
+        
+    # print(f&#34;{Y_generator_index=}&#34;)
+    Yn_generated = {y_j for y_j in Yn_dict if y_j not in duplicates}
+    print(f&#34;Generated points of Yn {len(Yn_generated)} of {len(Yn)}&#34;)
+    for y_j, y_j_list in duplicates.items():
+        for y_j_I in y_j_list:
+            print(f&#34;{[y_j_I[s] in Y_generator_index[s] for s, _ in enumerate(Y_list)]}&#34;)
+            if all([y_j_I[s] in Y_generator_index[s] for s, _ in enumerate(Y_list)]):
+                Yn_generated.add(y_j)
+                break
+
+    print(f&#34;Generated points of Yn {len(Yn_generated)} of {len(Yn)}&#34;)
+    for s, Y in enumerate(Y_list):
+        print(f&#34;|Y{s+1}| = {len(Y)}&#34;)
+        print(f&#34;|Yg{s+1}| = {len(Y_generator_index[s])}&#34;)
+
+    # print(f&#34;{list(duplicates.items())[0]}&#34;)
+    # for y_j in list(Y_ms)[::len(Yn)//3]:
+
+
+    for y_j, y_j_list in list(duplicates.items())[:3:]:
+    # for y_j, y_j_list in Yn_dict.items():
+        # methods.MS_sum(MSP.Y_list).plot()
+        MSP.plot()
+        Yn.plot(f&#34;$Yn$&#34;)
+        for k, y_j_I in enumerate(y_j_list):
+            y_j.index_list = y_j_I
+            plot_y_j(y_j, Y_list, marker=k)
+
+        plt.show()
+    # save solution</code></pre>
+</details>
+</dd>
+<dt id="algorithm2.plot_y_j"><code class="name flex">
+<span>def <span class="ident">plot_y_j</span></span>(<span>y_j, Y_list, marker='x')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_y_j(y_j, Y_list, marker = &#39;x&#39;):
+    y_j.plot(marker=&#39;x&#39;, color=&#39;black&#39;)
+    for s, Y in enumerate(Y_list):
+        Y[y_j.index_list[s]].plot(marker=marker, color=&#39;black&#39;)
+    y_ms = Point([0 for _ in range(Y_list[0].dim)])
+    Y_j = [y_ms]
+    for s,Y in enumerate(Y_list):
+        y_ms = y_ms + Y[y_j.index_list[s]]
+        Y_j.append(y_ms)
+    Y_j = PointList(Y_j)
+    Y_j.plot(l=&#39;Y_j&#39;, line=True)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="algorithm2.alg2" href="#algorithm2.alg2">alg2</a></code></li>
+<li><code><a title="algorithm2.algorithm2" href="#algorithm2.algorithm2">algorithm2</a></code></li>
+<li><code><a title="algorithm2.algorithm2_run" href="#algorithm2.algorithm2_run">algorithm2_run</a></code></li>
+<li><code><a title="algorithm2.get_fixed_and_reduced" href="#algorithm2.get_fixed_and_reduced">get_fixed_and_reduced</a></code></li>
+<li><code><a title="algorithm2.main" href="#algorithm2.main">main</a></code></li>
+<li><code><a title="algorithm2.main_old" href="#algorithm2.main_old">main_old</a></code></li>
+<li><code><a title="algorithm2.plot_y_j" href="#algorithm2.plot_y_j">plot_y_j</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

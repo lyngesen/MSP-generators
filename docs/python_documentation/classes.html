@@ -30,10 +30,17 @@
 from dataclasses import dataclass
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import csv
 import json
+import os
+
+import pprint
+import traceback
+import sys
 # from itertools.collections import Counter
 import collections
+
 
 &#34;&#34;&#34;
 Class
@@ -78,8 +85,10 @@ class Point:
     cls = None
 
     def __post_init__(self):
-        self.val = np.array(self.val)
-        self.dim = len(self.val)
+        if not isinstance(self.val, np.ndarray):
+            self.val = np.array(self.val)
+        if self.dim == None:
+            self.dim = len(self.val)
     def __lt__(self, other):
         if all(self.val == other.val):
             return False
@@ -87,7 +96,15 @@ class Point:
 
     def __le__(self, other):
         return all(self.val &lt;= other.val)
+
+    def le_d(self, other, d : int):
+        return all((self.val[p] &lt;= other.val[p] for p in range(d)))
     
+    def lt_d(self, other, d : int):
+        if all((self.val[p] == other.val[p] for p in range(d))):
+            return False
+        return all((self.val[p] &lt;= other.val[p] for p in range(d)))
+
     def strictly_dominates(self, other):
         return all(self.val &lt; other.val)
 
@@ -109,7 +126,6 @@ class Point:
                     return False
             return True
 
-
     def __gt__(self, other):
         if all(self.val == other.val):
             return False
@@ -127,8 +143,9 @@ class Point:
     def __add__(self, other):
         if isinstance(other, PointList):
             return PointList((self,)) + other
-
         return Point(self.val + other.val)
+
+  
     def __sub__(self, other):
         return Point(self.val - other.val)
     def __mul__(self, other):
@@ -168,6 +185,18 @@ class Point:
             ax.show()
         return ax 
 
+    def plot_cone(self, ax= None, quadrant = 1,color=&#39;darkgray&#39;, **kwargs):
+        assert self.dim&lt;=2, &#39;plot_cone Not implemented for p &gt; 2&#39;
+        ax = ax if ax else plt
+        color = color if (color is not None) else self.plot_color
+        kwargs[&#39;color&#39;] = color
+        ymin, ymax = ax.get_ylim()
+        xmin, xmax = ax.get_xlim()
+        if quadrant == 1:
+            ax.add_patch(Rectangle((self[0],self[1]), xmax-self[0], ymax-self[1], fill=False, hatch=&#39;xx&#39;, **kwargs))
+        if quadrant == 3:
+            ax.add_patch(Rectangle((xmin,ymin), self[0]- xmin, self[1] - ymin, fill=False, hatch=&#39;xx&#39;, **kwargs))
+        return ax
 
 @dataclass
 class PointList:
@@ -176,6 +205,7 @@ class PointList:
     plot_color = None
     statistics : dict = None
     filename = None
+    np_array : np_array = None
     def __post_init__(self):
         # Check if SINGLETON: allows for PointList((y)) where y is of class Point 
         if isinstance(self.points, Point):
@@ -184,6 +214,18 @@ class PointList:
             self.points = tuple([y if isinstance(y, Point) else Point(y) for y in self.points])
         if self.points:
             self.dim = self.points[0].dim
+
+        self.statistics = {
+            &#34;p&#34;: [self.dim],
+            &#34;card&#34;: [len(self.points)],
+            &#34;supported&#34;: [None],
+            &#34;extreme&#34;: [None],
+            &#34;unsupported&#34;: [None],
+            &#34;min&#34;: [None],
+            &#34;max&#34;: [None, None],
+            &#34;width&#34;: [None, None],
+            &#34;method&#34;: [None],
+          }
 
     def __iter__(self) -&gt; tuple[Point]:
         return tuple(self.points).__iter__()
@@ -214,9 +256,12 @@ class PointList:
             plt.savefig(fname, dpi= 200)
             plt.cla()
         if point_labels:
+            if point_labels == True:
+                point_labels = [&#34;$y^{&#34; +  f&#34;{i}&#34; + &#34;}$&#34; for i, _ in enumerate(self, start = 1)]
             # add labels to points
-            for i,y in enumerate(self, start = 1):
-                y.plot(ax = ax, l=f&#34;$y^{i}$&#34;, label_only=True)
+            for i,y in enumerate(self):
+                # y.plot(ax = ax, l= &#34;$y^{&#34; +  f&#34;{i}&#34; + &#34;}$&#34;, label_only=True)
+                y.plot(ax = ax, l= point_labels[i], label_only=True)
            
 
                 
@@ -228,13 +273,15 @@ class PointList:
     def dominates_point(self, point:Point):
         for y in self.points:
             if y &lt; point:
-                return True
+                # return True
+                return y
         return False
 
     def weakly_dominates_point(self, point:Point):
         for y in self.points:
             if y &lt;= point:
-                return True
+                return y
+                # return True
         return False
 
 
@@ -245,7 +292,7 @@ class PointList:
         output: Minkowski sum of sets
         &#34;&#34;&#34;
         return PointList([y1 + y2 for y1 in self for y2 in other])
-
+    
     def __sub__(self,other):
         &#34;&#34;&#34;
         input: list of two PointList
@@ -253,8 +300,36 @@ class PointList:
         &#34;&#34;&#34;
         return PointList([y1 - y2 for y1 in self for y2 in other])
 
+    def __mul__(self,other):
+        &#34;&#34;&#34;
+        input: list of two PointList
+        output: Minkowski subtration of sets
+        &#34;&#34;&#34;
+        match other:
+            case ( float() | int() ):
+                return PointList([y*other for y in self])
+            case _:
+                print(f&#34;{other=}&#34;)
+                print(f&#34;{type(other)=}&#34;)
+                raise NotImplementedError
 
 
+
+
+    def get_nadir(self):
+        nadir_vals = list(tuple(self.points[0].val))
+        for point in self.points:
+            for p in range(self.dim):
+                if nadir_vals[p] &lt; point.val[p]:
+                    nadir_vals[p] = point.val[p]
+        return Point(nadir_vals)
+    def get_ideal(self):
+        ideal_vals = list(tuple(self.points[0].val))
+        for point in self.points:
+            for p in range(self.dim):
+                if ideal_vals[p] &gt; point.val[p]:
+                    ideal_vals[p] = point.val[p]
+        return Point(ideal_vals)
 
 
 
@@ -285,13 +360,32 @@ class PointList:
             for y in self.__iter__():
                 csv_out.writerow(y)   
 
+
+    def save_raw(self, filename : str):
+        # raw format used in c-interface
+        with open(filename, &#39;w&#39;) as out:
+            out.write(f&#34;{self.statistics[&#39;p&#39;][0]}&#34; + &#34;\n&#34;)
+            out.write(f&#34;{self.statistics[&#39;card&#39;][0]}&#34; + &#34;\n&#34;)
+            for y in self.__iter__():
+                out.write(&#34; &#34;.join([f&#34;{yp:.6f}&#34; for yp in y]) + &#34;\n&#34;)
+
+    def from_raw(filename : str):
+        # raw format used in c-interface
+        with open(filename, &#34;r&#34;) as rawfile:
+            dim = int(rawfile.readline())
+            n = int(rawfile.readline())
+            lines = rawfile.read().splitlines()
+        y_list = []
+        for line in lines:
+            y = Point([float(yp) for yp in line.split(&#39; &#39;) if yp != &#39;&#39;])
+            y_list.append(y)
+        return PointList(y_list)
+
     def from_csv(filename = &#34;disk.csv&#34;):
         with open(f&#34;{filename}&#34;, &#34;r&#34;) as csvfile:
             points = []
             for y in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
-                #points.append(Point(tuple(map(float,y))))
                 points.append(Point(y))
-            # self.points = points
             return PointList(points)
 
     def as_dict(self):
@@ -299,27 +393,40 @@ class PointList:
         PointList_dict = {
             &#34;points&#34;:
                           [dict({f&#34;z{p+1}&#34;: point[p] for p in range(point.dim)},**({&#39;cls&#39;:None})) for point in self.points],
-            &#34;statistics&#34;: {
-                &#34;p&#34;: [self.dim],
-                &#34;card&#34;: [len(self.points)],
-                &#34;supported&#34;: [None],
-                &#34;extreme&#34;: [None],
-                &#34;unsupported&#34;: [None],
-                &#34;min&#34;: [None],
-                &#34;max&#34;: [None, None],
-                &#34;width&#34;: [None, None],
-                &#34;method&#34;: [None],
-              }
+            &#39;statistics&#39;: self.statistics
           }
         return PointList_dict 
+    
+    def as_np_array(self):
+        # if self.np_array is not None:
+        # if isinstance(self.np_array, NoneType):
+            # print(f&#34;bla bla&#34;)
+            # self.np_array = np.array([y.val for y in self.points])
+        return np.array([y.val for y in self.points])
+        # return self.np_array
 
-    def save_json(self, filename):
+    def save_json(self, filename, max_file_size = 100):
+        json_str = json.dumps(self.as_dict(), indent=None, separators=(&#39;,&#39;, &#39;:&#39;))
+        # Calculate size (approx) in bytes
+        size_mb = len(json_str.encode(&#39;utf-8&#39;)) / 1_000_000
+        if size_mb &gt;= max_file_size:
+            if True:
+                print(f&#34;*** {filename}, pointlist with {len(self)} points too large for json. Saving raw format. ESTIMATED MB {size_mb} &gt; {max_file_size}=MAX&#34;)
+                self.save_raw(filename.replace(&#39;.json&#39;,&#39;.raw&#39;))
+                # return
+            if True:
+                # print(f&#34;*** {filename}, pointlist with {len(self)} points too large for json. Saving json without points. ESTIMATED MB {size_mb} &gt; {max_file_size}=MAX&#34;)
+                json_str = self.as_dict()
+                json_str[&#39;points&#39;] = []
+                json_str = json.dumps(json_str, indent=None, separators=(&#39;,&#39;, &#39;:&#39;))
         with open(filename, &#39;w&#39;) as json_file:
-            json.dump(self.as_dict(), json_file, indent=1)
+            json_file.write(json_str)
+            # json.dump(self.as_dict(), json_file)
 
-    def from_json(filename: str):
-        with open(filename, &#39;r&#39;) as json_file:
-            json_dict = json.load(json_file)
+
+
+
+    def from_json_str(json_dict):
         statistics = json_dict[&#39;statistics&#39;]
         points = []
         for json_point in json_dict[&#39;points&#39;]:
@@ -333,6 +440,16 @@ class PointList:
         Y.statistics = statistics
 
         return Y
+
+    def from_json(filename: str):
+
+        with open(filename, &#39;r&#39;) as json_file:
+            json_dict = json.load(json_file)
+
+        return PointList.from_json_str(json_dict)
+        
+        
+
 
     def print_data(self):
         N_POINTS = len(self.points)
@@ -354,16 +471,49 @@ class MinkowskiSumProblem:
     Y_list: tuple[PointList]
     filename : str = None
     dim : int = None
+    S : int = None
     
+    def __post_init__(self):
+        self.S = len(self.Y_list)
+
     def from_json(filename: str):
         with open(filename, &#39;r&#39;) as json_file:
             json_dict = json.load(json_file)[0]
 
         Y_list = []
         for V, Y_filename in sorted(json_dict.items()):
-            Y = PointList.from_json(&#34;instances/&#34; + Y_filename)
+            if isinstance(Y_filename, str):
+                Y = PointList.from_json(&#34;instances/&#34; + Y_filename)
+            else:
+                Y = PointList.from_json_str(Y_filename)
             Y_list.append(Y)
 
+        MSP = MinkowskiSumProblem(Y_list)
+        MSP.filename = filename
+        MSP.dim = Y_list[0].dim
+        return  MSP
+
+    def save_json(self, filename):
+        out_dict = [
+                {f&#34;V{s}&#34;:Y.as_dict() for s,Y in enumerate(self.Y_list, start=1)},
+                self.statistics
+                ]
+        json_str = json.dumps(out_dict, indent=1, separators=(&#39;,&#39;, &#39;:&#39;))
+        with open(filename, &#39;w&#39;) as json_file:
+            json_file.write(json_str)
+
+
+
+    def from_subsets(filenames : iter[str]):
+        Y_list = []
+        sizes =  &#39;|&#39;
+        method = &#39;&#39;
+        for Y_filename in filenames:
+            Y = PointList.from_json(&#34;./instances/subproblems/&#34; + Y_filename)
+            Y_list.append(Y)
+            sizes += Y_filename.split(&#39;-&#39;)[2] + &#39;|&#39;
+            method += Y_filename.split(&#39;-&#39;)[3].split(&#39;.&#39;)[0]
+        filename = f&#39;MSP-special-{sizes}-{method}&#39;
         MSP = MinkowskiSumProblem(Y_list)
         MSP.filename = filename
         MSP.dim = Y_list[0].dim
@@ -378,11 +528,111 @@ class MinkowskiSumProblem:
         return string
 
 
-    def plot(self,  hidelabel = False, ax = None, *kwargs):
+    def plot(self,  hidelabel = False, ax = None, **kwargs):
         ax = ax if ax else plt
         for s, Y in enumerate(self.Y_list):
-            Y.plot(l= &#34;_&#34;*hidelabel + &#34;$\mathcal{Y}_{\mathcal{N}}^{&#34; + str(s+1) + &#34;}$&#34;, ax = ax, *kwargs)
+            Y.plot(l= &#34;_&#34;*hidelabel + &#34;$\mathcal{Y}_{\mathcal{N}}^{&#34; + str(s+1) + &#34;}$&#34;, ax = ax, **kwargs)
 
+
+@dataclass
+class MSPInstances:
+    preset : str = &#39;all&#39; 
+    options : dict = None
+    filename_list : list[str] = None
+    max_instances : int = 0 
+    m_options : tuple[int]= (2,3,4,5) # subproblems
+    p_options : tuple[int]= (2,3,4,5) # dimension
+    generation_options : tuple[str]= (&#39;l&#39;,&#39;m&#39;,&#39;u&#39;, &#39;ul&#39;) # generation method
+    ignore_ifonly_l : bool = False # if true ignore MSP where method i only l
+    size_options : tuple[int]= (50, 100, 150, 200, 300,600) # subproblems size
+    seed_options : tuple[int]=  (1,2,3,4,5)
+
+
+    def instance_name_dict(problem_file):
+        filename = problem_file
+        problem_file = problem_file.split(&#34;.json&#34;)[0]
+        problem_file, seed = problem_file.split(&#34;_&#34;)
+        _, p, size, method, M = problem_file.split(&#34;-&#34;)
+        size = size.split(&#34;|&#34;)[0]
+        p, M, size, seed = int(p), int(M), int(size), int(seed)
+        D = {&#39;filename&#39;: filename, &#39;p&#39;: p, &#39;method&#39;:method, &#39;M&#39;: M, &#39;size&#39;: size, &#39;seed&#39;:seed}
+        return D
+        
+    def instance_name_dict_keys(problem_file):
+        D = MSPInstances.instance_name_dict(problem_file)
+        return ( D[&#39;M&#39;],D[&#39;size&#39;], D[&#39;p&#39;], D[&#39;seed&#39;])
+
+    def __post_init__(self):
+        all_problems = os.listdir(&#34;instances/problems/&#34;)
+        # print(f&#34;{all_problems=}&#34;)
+        all_problems = sorted(all_problems, key = MSPInstances.instance_name_dict_keys )
+        
+        self.filename_list = []
+
+        match self.preset:
+            case &#39;all&#39;:
+                pass
+            case &#39;2d&#39;:
+                self.p_options = (2,)
+            case &#39;algorithm1&#39;:
+                self.generation_options = [&#39;m&#39;,&#39;u&#39;,&#39;l&#39;] # generation method
+                self.size_options = (50, 100, 150, 200, 300) # subproblems size
+            case &#39;algorithm2&#39;:
+                self.generation_options = [&#39;m&#39;,&#39;u&#39;, &#39;l&#39;] # generation method
+                # self.p_options = (4,)
+                # self.m_options = (4,)
+                self.size_options = (50, 100, 150, 200, 300) # subproblems size
+            case &#39;algorithm2_test&#39;:
+                self.seed_options = (0,) # ignora alle other test problems
+                subsets_list = []
+                subsets_list.append((&#39;sp-2-10-u_1.json&#39;, &#39;sp-2-10-u_1.json&#39;, &#39;sp-2-10-u_2.json&#39;))
+                subsets_list.append((&#39;sp-2-50-u_1.json&#39;, &#39;sp-2-50-u_1.json&#39;, &#39;sp-2-10-u_1.json&#39;))
+                subsets_list.append((&#39;sp-2-100-u_1.json&#39;, &#39;sp-2-100-l_1.json&#39;, &#39;sp-2-100-u_1.json&#39;))
+                subsets_list.append((&#39;sp-4-100-u_1.json&#39;, &#39;sp-4-100-l_1.json&#39;, &#39;sp-4-100-u_1.json&#39;))
+                subsets_list.append((&#39;sp-4-100-u_2.json&#39;, &#39;sp-4-100-l_1.json&#39;, &#39;sp-4-100-u_2.json&#39;))
+                for subsets in subsets_list:
+                    self.filename_list.append(MinkowskiSumProblem.from_subsets(subsets))
+            case _:
+                print(f&#34;preset &#39;{self.preset}&#39; not recognised&#34;)
+                raise NotImplementedError
+    
+        for filename in all_problems:
+            instance_dict = MSPInstances.instance_name_dict(filename)
+
+            if self.ignore_ifonly_l and set(instance_dict[&#39;method&#39;]).issubset(set((&#39;l&#39;,))):
+                continue
+            if all((instance_dict[&#39;p&#39;] in self.p_options,
+                   instance_dict[&#39;M&#39;] in self.m_options,
+                   set(instance_dict[&#39;method&#39;]).issubset(set(self.generation_options)),
+                   instance_dict[&#39;size&#39;] in self.size_options,
+                   instance_dict[&#39;seed&#39;] in self.seed_options,
+                    (self.preset != &#39;algorithm1&#39; or (not (instance_dict[&#39;p&#39;] == 5 and instance_dict[&#39;M&#39;] == 5 ))) # if algorithm 1 then not p=m=5
+                   )):
+                self.filename_list.append(filename)
+            
+        # limit number of files
+        if self.max_instances:
+            self.filename_list = self.filename_list[:self.max_instances]
+
+    def filter_out_solved(self, save_prefix : str, solved_folder : str):
+        self.not_solved = []
+        self.solved = []
+        for p in self.filename_list:
+            if save_prefix + p in os.listdir(solved_folder):
+                self.solved.append(p)
+            else:
+                self.not_solved.append(p)
+
+        print(f&#34;|solved| = {len(self.solved)}    |not solved| = {len(self.not_solved)}&#34;)
+
+        self.filename_list = self.not_solved
+
+
+    def __repr__(self):
+        return f&#34;TestInstances(size=&#39;{len(self.filename_list)}&#39;, preset=&#39;{self.preset}&#39;)&#34;
+
+    def __iter__(self) -&gt; iter[MinkowskiSumProblem]:
+        return (filename if isinstance(filename, MinkowskiSumProblem) else MinkowskiSumProblem.from_json(&#39;./instances/problems/&#39; + filename) for filename in self.filename_list)
 
 class Node:
     def __init__(self, data):
@@ -500,6 +750,16 @@ class KD_Node:
 
 @dataclass
 class KD_tree:
+    def dominates_point_recursion(r : KD_Node, p : Point):
+        # seperated for timing purposes
+
+        if r.y &lt;= p: return True
+        if r.LEFT != None and p &gt; r.LEFT.LB:
+            return KD_tree.dominates_point_recursion(r.LEFT, p)
+        if r.RIGHT != None and p &gt; r.RIGHT.LB:
+            return KD_tree.dominates_point_recursion(r.RIGHT, p)
+        return False
+     
     def dominates_point(r : KD_Node, p : Point):
         &#34;&#34;&#34; checks if point is dominated by the KD-tree rooted at r 
 
@@ -511,37 +771,39 @@ class KD_tree:
             0, otherwise
 
         &#34;&#34;&#34;
-        if r.y &lt;= p: return True
-        if r.LEFT != None and p &gt;= r.LEFT.LB:
-            return KD_tree.dominates_point(r.LEFT, p)
-        if r.RIGHT != None and p &gt;= r.RIGHT.LB:
-            return KD_tree.dominates_point(r.RIGHT, p)
-        return False
-    
-    def insert(r : KD_Node, l : int, p: Point):
+        return KD_tree.dominates_point_recursion(r,p)
+
+    def get_UB(r : KD_Node,  p: Point):
+        return Point(np.maximum(r.UB.val, p.val))
+        # old
+        # return Point([max(r.UB[i], p[i]) for i in range(p.dim)])
+
+    def get_LB(r: KD_node, l : int,  p: Point):
+        return Point(np.minimum(r.LB.val, p.val))
+        # return Point([min(r.LB[i], p[i]) for i in range(p.dim)])
+
+    def insert_recursion(r : KD_Node, l : int, p: Point):
+        # seperated for timing purposes
         # update r.UB, r.LB
-        r.UB = Point([max(r.UB[i], p[i]) for i in range(p.dim)])
-        r.LB = Point([min(r.LB[i], p[i]) for i in range(p.dim)])
+        r.UB = KD_tree.get_UB(r,p)
+        r.LB = KD_tree.get_LB(r,l,p) 
         
         # compare l-th component of p and r
         # print(f&#34;{r,l,p =}&#34;)
-        if p[l] &lt;= r.y[l]:
+        if p[l] &lt; r.y[l]:
             if r.LEFT == None:
                 r.LEFT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
             elif r.LEFT != None:
-                KD_tree.insert(r.LEFT, (l + 1) % p.dim, p)
-        elif p[l] &gt;= r.y[l]:
+                KD_tree.insert_recursion(r.LEFT, (l + 1) % p.dim, p)
+        elif p[l] &gt; r.y[l]:
             if r.RIGHT == None:
                 r.RIGHT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
             elif r.RIGHT != None:
-                KD_tree.insert(r.RIGHT, (l + 1) % p.dim, p)
+                KD_tree.insert_recursion(r.RIGHT, (l + 1) % p.dim, p)
 
-
-
-            
-            
-
-        </code></pre>
+    def insert(r : KD_Node, l : int, p: Point):
+        return KD_tree.insert_recursion(r,l,p)
+            </code></pre>
 </details>
 </section>
 <section>
@@ -637,6 +899,16 @@ class KD_Node:
 </summary>
 <pre><code class="python">@dataclass
 class KD_tree:
+    def dominates_point_recursion(r : KD_Node, p : Point):
+        # seperated for timing purposes
+
+        if r.y &lt;= p: return True
+        if r.LEFT != None and p &gt; r.LEFT.LB:
+            return KD_tree.dominates_point_recursion(r.LEFT, p)
+        if r.RIGHT != None and p &gt; r.RIGHT.LB:
+            return KD_tree.dominates_point_recursion(r.RIGHT, p)
+        return False
+     
     def dominates_point(r : KD_Node, p : Point):
         &#34;&#34;&#34; checks if point is dominated by the KD-tree rooted at r 
 
@@ -648,30 +920,38 @@ class KD_tree:
             0, otherwise
 
         &#34;&#34;&#34;
-        if r.y &lt;= p: return True
-        if r.LEFT != None and p &gt;= r.LEFT.LB:
-            return KD_tree.dominates_point(r.LEFT, p)
-        if r.RIGHT != None and p &gt;= r.RIGHT.LB:
-            return KD_tree.dominates_point(r.RIGHT, p)
-        return False
-    
-    def insert(r : KD_Node, l : int, p: Point):
+        return KD_tree.dominates_point_recursion(r,p)
+
+    def get_UB(r : KD_Node,  p: Point):
+        return Point(np.maximum(r.UB.val, p.val))
+        # old
+        # return Point([max(r.UB[i], p[i]) for i in range(p.dim)])
+
+    def get_LB(r: KD_node, l : int,  p: Point):
+        return Point(np.minimum(r.LB.val, p.val))
+        # return Point([min(r.LB[i], p[i]) for i in range(p.dim)])
+
+    def insert_recursion(r : KD_Node, l : int, p: Point):
+        # seperated for timing purposes
         # update r.UB, r.LB
-        r.UB = Point([max(r.UB[i], p[i]) for i in range(p.dim)])
-        r.LB = Point([min(r.LB[i], p[i]) for i in range(p.dim)])
+        r.UB = KD_tree.get_UB(r,p)
+        r.LB = KD_tree.get_LB(r,l,p) 
         
         # compare l-th component of p and r
         # print(f&#34;{r,l,p =}&#34;)
-        if p[l] &lt;= r.y[l]:
+        if p[l] &lt; r.y[l]:
             if r.LEFT == None:
                 r.LEFT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
             elif r.LEFT != None:
-                KD_tree.insert(r.LEFT, (l + 1) % p.dim, p)
-        elif p[l] &gt;= r.y[l]:
+                KD_tree.insert_recursion(r.LEFT, (l + 1) % p.dim, p)
+        elif p[l] &gt; r.y[l]:
             if r.RIGHT == None:
                 r.RIGHT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
             elif r.RIGHT != None:
-                KD_tree.insert(r.RIGHT, (l + 1) % p.dim, p)</code></pre>
+                KD_tree.insert_recursion(r.RIGHT, (l + 1) % p.dim, p)
+
+    def insert(r : KD_Node, l : int, p: Point):
+        return KD_tree.insert_recursion(r,l,p)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -703,12 +983,56 @@ class KD_tree:
         0, otherwise
 
     &#34;&#34;&#34;
+    return KD_tree.dominates_point_recursion(r,p)</code></pre>
+</details>
+</dd>
+<dt id="classes.KD_tree.dominates_point_recursion"><code class="name flex">
+<span>def <span class="ident">dominates_point_recursion</span></span>(<span>r: <a title="classes.KD_Node" href="#classes.KD_Node">KD_Node</a>, p: <a title="classes.Point" href="#classes.Point">Point</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dominates_point_recursion(r : KD_Node, p : Point):
+    # seperated for timing purposes
+
     if r.y &lt;= p: return True
-    if r.LEFT != None and p &gt;= r.LEFT.LB:
-        return KD_tree.dominates_point(r.LEFT, p)
-    if r.RIGHT != None and p &gt;= r.RIGHT.LB:
-        return KD_tree.dominates_point(r.RIGHT, p)
+    if r.LEFT != None and p &gt; r.LEFT.LB:
+        return KD_tree.dominates_point_recursion(r.LEFT, p)
+    if r.RIGHT != None and p &gt; r.RIGHT.LB:
+        return KD_tree.dominates_point_recursion(r.RIGHT, p)
     return False</code></pre>
+</details>
+</dd>
+<dt id="classes.KD_tree.get_LB"><code class="name flex">
+<span>def <span class="ident">get_LB</span></span>(<span>r: KD_node, l: int, p: <a title="classes.Point" href="#classes.Point">Point</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_LB(r: KD_node, l : int,  p: Point):
+    return Point(np.minimum(r.LB.val, p.val))
+    # return Point([min(r.LB[i], p[i]) for i in range(p.dim)])</code></pre>
+</details>
+</dd>
+<dt id="classes.KD_tree.get_UB"><code class="name flex">
+<span>def <span class="ident">get_UB</span></span>(<span>r: <a title="classes.KD_Node" href="#classes.KD_Node">KD_Node</a>, p: <a title="classes.Point" href="#classes.Point">Point</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_UB(r : KD_Node,  p: Point):
+    return Point(np.maximum(r.UB.val, p.val))
+    # old
+    # return Point([max(r.UB[i], p[i]) for i in range(p.dim)])</code></pre>
 </details>
 </dd>
 <dt id="classes.KD_tree.insert"><code class="name flex">
@@ -721,22 +1045,36 @@ class KD_tree:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def insert(r : KD_Node, l : int, p: Point):
+    return KD_tree.insert_recursion(r,l,p)</code></pre>
+</details>
+</dd>
+<dt id="classes.KD_tree.insert_recursion"><code class="name flex">
+<span>def <span class="ident">insert_recursion</span></span>(<span>r: <a title="classes.KD_Node" href="#classes.KD_Node">KD_Node</a>, l: int, p: <a title="classes.Point" href="#classes.Point">Point</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def insert_recursion(r : KD_Node, l : int, p: Point):
+    # seperated for timing purposes
     # update r.UB, r.LB
-    r.UB = Point([max(r.UB[i], p[i]) for i in range(p.dim)])
-    r.LB = Point([min(r.LB[i], p[i]) for i in range(p.dim)])
+    r.UB = KD_tree.get_UB(r,p)
+    r.LB = KD_tree.get_LB(r,l,p) 
     
     # compare l-th component of p and r
     # print(f&#34;{r,l,p =}&#34;)
-    if p[l] &lt;= r.y[l]:
+    if p[l] &lt; r.y[l]:
         if r.LEFT == None:
             r.LEFT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
         elif r.LEFT != None:
-            KD_tree.insert(r.LEFT, (l + 1) % p.dim, p)
-    elif p[l] &gt;= r.y[l]:
+            KD_tree.insert_recursion(r.LEFT, (l + 1) % p.dim, p)
+    elif p[l] &gt; r.y[l]:
         if r.RIGHT == None:
             r.RIGHT = KD_Node(p, (l + 1) % p.dim, r, UB = p, LB = p)
         elif r.RIGHT != None:
-            KD_tree.insert(r.RIGHT, (l + 1) % p.dim, p)</code></pre>
+            KD_tree.insert_recursion(r.RIGHT, (l + 1) % p.dim, p)</code></pre>
 </details>
 </dd>
 </dl>
@@ -918,12 +1256,226 @@ class KD_tree:
 </dd>
 </dl>
 </dd>
-<dt id="classes.MinkowskiSumProblem"><code class="flex name class">
-<span>class <span class="ident">MinkowskiSumProblem</span></span>
-<span>(</span><span>Y_list: tuple[<a title="classes.PointList" href="#classes.PointList">PointList</a>], filename: str = None, dim: int = None)</span>
+<dt id="classes.MSPInstances"><code class="flex name class">
+<span>class <span class="ident">MSPInstances</span></span>
+<span>(</span><span>preset: str = 'all', options: dict = None, filename_list: list[str] = None, max_instances: int = 0, m_options: tuple[int] = (2, 3, 4, 5), p_options: tuple[int] = (2, 3, 4, 5), generation_options: tuple[str] = ('l', 'm', 'u', 'ul'), ignore_ifonly_l: bool = False, size_options: tuple[int] = (50, 100, 150, 200, 300, 600), seed_options: tuple[int] = (1, 2, 3, 4, 5))</span>
 </code></dt>
 <dd>
-<div class="desc"><p>MinkowskiSumProblem(Y_list: 'tuple[PointList]', filename: 'str' = None, dim: 'int' = None)</p></div>
+<div class="desc"><p>MSPInstances(preset: 'str' = 'all', options: 'dict' = None, filename_list: 'list[str]' = None, max_instances: 'int' = 0, m_options: 'tuple[int]' = (2, 3, 4, 5), p_options: 'tuple[int]' = (2, 3, 4, 5), generation_options: 'tuple[str]' = ('l', 'm', 'u', 'ul'), ignore_ifonly_l: 'bool' = False, size_options: 'tuple[int]' = (50, 100, 150, 200, 300, 600), seed_options: 'tuple[int]' = (1, 2, 3, 4, 5))</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class MSPInstances:
+    preset : str = &#39;all&#39; 
+    options : dict = None
+    filename_list : list[str] = None
+    max_instances : int = 0 
+    m_options : tuple[int]= (2,3,4,5) # subproblems
+    p_options : tuple[int]= (2,3,4,5) # dimension
+    generation_options : tuple[str]= (&#39;l&#39;,&#39;m&#39;,&#39;u&#39;, &#39;ul&#39;) # generation method
+    ignore_ifonly_l : bool = False # if true ignore MSP where method i only l
+    size_options : tuple[int]= (50, 100, 150, 200, 300,600) # subproblems size
+    seed_options : tuple[int]=  (1,2,3,4,5)
+
+
+    def instance_name_dict(problem_file):
+        filename = problem_file
+        problem_file = problem_file.split(&#34;.json&#34;)[0]
+        problem_file, seed = problem_file.split(&#34;_&#34;)
+        _, p, size, method, M = problem_file.split(&#34;-&#34;)
+        size = size.split(&#34;|&#34;)[0]
+        p, M, size, seed = int(p), int(M), int(size), int(seed)
+        D = {&#39;filename&#39;: filename, &#39;p&#39;: p, &#39;method&#39;:method, &#39;M&#39;: M, &#39;size&#39;: size, &#39;seed&#39;:seed}
+        return D
+        
+    def instance_name_dict_keys(problem_file):
+        D = MSPInstances.instance_name_dict(problem_file)
+        return ( D[&#39;M&#39;],D[&#39;size&#39;], D[&#39;p&#39;], D[&#39;seed&#39;])
+
+    def __post_init__(self):
+        all_problems = os.listdir(&#34;instances/problems/&#34;)
+        # print(f&#34;{all_problems=}&#34;)
+        all_problems = sorted(all_problems, key = MSPInstances.instance_name_dict_keys )
+        
+        self.filename_list = []
+
+        match self.preset:
+            case &#39;all&#39;:
+                pass
+            case &#39;2d&#39;:
+                self.p_options = (2,)
+            case &#39;algorithm1&#39;:
+                self.generation_options = [&#39;m&#39;,&#39;u&#39;,&#39;l&#39;] # generation method
+                self.size_options = (50, 100, 150, 200, 300) # subproblems size
+            case &#39;algorithm2&#39;:
+                self.generation_options = [&#39;m&#39;,&#39;u&#39;, &#39;l&#39;] # generation method
+                # self.p_options = (4,)
+                # self.m_options = (4,)
+                self.size_options = (50, 100, 150, 200, 300) # subproblems size
+            case &#39;algorithm2_test&#39;:
+                self.seed_options = (0,) # ignora alle other test problems
+                subsets_list = []
+                subsets_list.append((&#39;sp-2-10-u_1.json&#39;, &#39;sp-2-10-u_1.json&#39;, &#39;sp-2-10-u_2.json&#39;))
+                subsets_list.append((&#39;sp-2-50-u_1.json&#39;, &#39;sp-2-50-u_1.json&#39;, &#39;sp-2-10-u_1.json&#39;))
+                subsets_list.append((&#39;sp-2-100-u_1.json&#39;, &#39;sp-2-100-l_1.json&#39;, &#39;sp-2-100-u_1.json&#39;))
+                subsets_list.append((&#39;sp-4-100-u_1.json&#39;, &#39;sp-4-100-l_1.json&#39;, &#39;sp-4-100-u_1.json&#39;))
+                subsets_list.append((&#39;sp-4-100-u_2.json&#39;, &#39;sp-4-100-l_1.json&#39;, &#39;sp-4-100-u_2.json&#39;))
+                for subsets in subsets_list:
+                    self.filename_list.append(MinkowskiSumProblem.from_subsets(subsets))
+            case _:
+                print(f&#34;preset &#39;{self.preset}&#39; not recognised&#34;)
+                raise NotImplementedError
+    
+        for filename in all_problems:
+            instance_dict = MSPInstances.instance_name_dict(filename)
+
+            if self.ignore_ifonly_l and set(instance_dict[&#39;method&#39;]).issubset(set((&#39;l&#39;,))):
+                continue
+            if all((instance_dict[&#39;p&#39;] in self.p_options,
+                   instance_dict[&#39;M&#39;] in self.m_options,
+                   set(instance_dict[&#39;method&#39;]).issubset(set(self.generation_options)),
+                   instance_dict[&#39;size&#39;] in self.size_options,
+                   instance_dict[&#39;seed&#39;] in self.seed_options,
+                    (self.preset != &#39;algorithm1&#39; or (not (instance_dict[&#39;p&#39;] == 5 and instance_dict[&#39;M&#39;] == 5 ))) # if algorithm 1 then not p=m=5
+                   )):
+                self.filename_list.append(filename)
+            
+        # limit number of files
+        if self.max_instances:
+            self.filename_list = self.filename_list[:self.max_instances]
+
+    def filter_out_solved(self, save_prefix : str, solved_folder : str):
+        self.not_solved = []
+        self.solved = []
+        for p in self.filename_list:
+            if save_prefix + p in os.listdir(solved_folder):
+                self.solved.append(p)
+            else:
+                self.not_solved.append(p)
+
+        print(f&#34;|solved| = {len(self.solved)}    |not solved| = {len(self.not_solved)}&#34;)
+
+        self.filename_list = self.not_solved
+
+
+    def __repr__(self):
+        return f&#34;TestInstances(size=&#39;{len(self.filename_list)}&#39;, preset=&#39;{self.preset}&#39;)&#34;
+
+    def __iter__(self) -&gt; iter[MinkowskiSumProblem]:
+        return (filename if isinstance(filename, MinkowskiSumProblem) else MinkowskiSumProblem.from_json(&#39;./instances/problems/&#39; + filename) for filename in self.filename_list)</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="classes.MSPInstances.filename_list"><code class="name">var <span class="ident">filename_list</span> : list[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.MSPInstances.generation_options"><code class="name">var <span class="ident">generation_options</span> : tuple[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.MSPInstances.ignore_ifonly_l"><code class="name">var <span class="ident">ignore_ifonly_l</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.MSPInstances.m_options"><code class="name">var <span class="ident">m_options</span> : tuple[int]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.MSPInstances.max_instances"><code class="name">var <span class="ident">max_instances</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.MSPInstances.options"><code class="name">var <span class="ident">options</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.MSPInstances.p_options"><code class="name">var <span class="ident">p_options</span> : tuple[int]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.MSPInstances.preset"><code class="name">var <span class="ident">preset</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.MSPInstances.seed_options"><code class="name">var <span class="ident">seed_options</span> : tuple[int]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.MSPInstances.size_options"><code class="name">var <span class="ident">size_options</span> : tuple[int]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="classes.MSPInstances.filter_out_solved"><code class="name flex">
+<span>def <span class="ident">filter_out_solved</span></span>(<span>self, save_prefix: str, solved_folder: str)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def filter_out_solved(self, save_prefix : str, solved_folder : str):
+    self.not_solved = []
+    self.solved = []
+    for p in self.filename_list:
+        if save_prefix + p in os.listdir(solved_folder):
+            self.solved.append(p)
+        else:
+            self.not_solved.append(p)
+
+    print(f&#34;|solved| = {len(self.solved)}    |not solved| = {len(self.not_solved)}&#34;)
+
+    self.filename_list = self.not_solved</code></pre>
+</details>
+</dd>
+<dt id="classes.MSPInstances.instance_name_dict"><code class="name flex">
+<span>def <span class="ident">instance_name_dict</span></span>(<span>problem_file)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def instance_name_dict(problem_file):
+    filename = problem_file
+    problem_file = problem_file.split(&#34;.json&#34;)[0]
+    problem_file, seed = problem_file.split(&#34;_&#34;)
+    _, p, size, method, M = problem_file.split(&#34;-&#34;)
+    size = size.split(&#34;|&#34;)[0]
+    p, M, size, seed = int(p), int(M), int(size), int(seed)
+    D = {&#39;filename&#39;: filename, &#39;p&#39;: p, &#39;method&#39;:method, &#39;M&#39;: M, &#39;size&#39;: size, &#39;seed&#39;:seed}
+    return D</code></pre>
+</details>
+</dd>
+<dt id="classes.MSPInstances.instance_name_dict_keys"><code class="name flex">
+<span>def <span class="ident">instance_name_dict_keys</span></span>(<span>problem_file)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def instance_name_dict_keys(problem_file):
+    D = MSPInstances.instance_name_dict(problem_file)
+    return ( D[&#39;M&#39;],D[&#39;size&#39;], D[&#39;p&#39;], D[&#39;seed&#39;])</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="classes.MinkowskiSumProblem"><code class="flex name class">
+<span>class <span class="ident">MinkowskiSumProblem</span></span>
+<span>(</span><span>Y_list: tuple[<a title="classes.PointList" href="#classes.PointList">PointList</a>], filename: str = None, dim: int = None, S: int = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>MinkowskiSumProblem(Y_list: 'tuple[PointList]', filename: 'str' = None, dim: 'int' = None, S: 'int' = None)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -933,16 +1485,49 @@ class MinkowskiSumProblem:
     Y_list: tuple[PointList]
     filename : str = None
     dim : int = None
+    S : int = None
     
+    def __post_init__(self):
+        self.S = len(self.Y_list)
+
     def from_json(filename: str):
         with open(filename, &#39;r&#39;) as json_file:
             json_dict = json.load(json_file)[0]
 
         Y_list = []
         for V, Y_filename in sorted(json_dict.items()):
-            Y = PointList.from_json(&#34;instances/&#34; + Y_filename)
+            if isinstance(Y_filename, str):
+                Y = PointList.from_json(&#34;instances/&#34; + Y_filename)
+            else:
+                Y = PointList.from_json_str(Y_filename)
             Y_list.append(Y)
 
+        MSP = MinkowskiSumProblem(Y_list)
+        MSP.filename = filename
+        MSP.dim = Y_list[0].dim
+        return  MSP
+
+    def save_json(self, filename):
+        out_dict = [
+                {f&#34;V{s}&#34;:Y.as_dict() for s,Y in enumerate(self.Y_list, start=1)},
+                self.statistics
+                ]
+        json_str = json.dumps(out_dict, indent=1, separators=(&#39;,&#39;, &#39;:&#39;))
+        with open(filename, &#39;w&#39;) as json_file:
+            json_file.write(json_str)
+
+
+
+    def from_subsets(filenames : iter[str]):
+        Y_list = []
+        sizes =  &#39;|&#39;
+        method = &#39;&#39;
+        for Y_filename in filenames:
+            Y = PointList.from_json(&#34;./instances/subproblems/&#34; + Y_filename)
+            Y_list.append(Y)
+            sizes += Y_filename.split(&#39;-&#39;)[2] + &#39;|&#39;
+            method += Y_filename.split(&#39;-&#39;)[3].split(&#39;.&#39;)[0]
+        filename = f&#39;MSP-special-{sizes}-{method}&#39;
         MSP = MinkowskiSumProblem(Y_list)
         MSP.filename = filename
         MSP.dim = Y_list[0].dim
@@ -957,13 +1542,17 @@ class MinkowskiSumProblem:
         return string
 
 
-    def plot(self,  hidelabel = False, ax = None, *kwargs):
+    def plot(self,  hidelabel = False, ax = None, **kwargs):
         ax = ax if ax else plt
         for s, Y in enumerate(self.Y_list):
-            Y.plot(l= &#34;_&#34;*hidelabel + &#34;$\mathcal{Y}_{\mathcal{N}}^{&#34; + str(s+1) + &#34;}$&#34;, ax = ax, *kwargs)</code></pre>
+            Y.plot(l= &#34;_&#34;*hidelabel + &#34;$\mathcal{Y}_{\mathcal{N}}^{&#34; + str(s+1) + &#34;}$&#34;, ax = ax, **kwargs)</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
+<dt id="classes.MinkowskiSumProblem.S"><code class="name">var <span class="ident">S</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="classes.MinkowskiSumProblem.Y_list"><code class="name">var <span class="ident">Y_list</span> : tuple[<a title="classes.PointList" href="#classes.PointList">PointList</a>]</code></dt>
 <dd>
 <div class="desc"></div>
@@ -994,7 +1583,10 @@ class MinkowskiSumProblem:
 
     Y_list = []
     for V, Y_filename in sorted(json_dict.items()):
-        Y = PointList.from_json(&#34;instances/&#34; + Y_filename)
+        if isinstance(Y_filename, str):
+            Y = PointList.from_json(&#34;instances/&#34; + Y_filename)
+        else:
+            Y = PointList.from_json_str(Y_filename)
         Y_list.append(Y)
 
     MSP = MinkowskiSumProblem(Y_list)
@@ -1003,8 +1595,8 @@ class MinkowskiSumProblem:
     return  MSP</code></pre>
 </details>
 </dd>
-<dt id="classes.MinkowskiSumProblem.plot"><code class="name flex">
-<span>def <span class="ident">plot</span></span>(<span>self, hidelabel=False, ax=None, *kwargs)</span>
+<dt id="classes.MinkowskiSumProblem.from_subsets"><code class="name flex">
+<span>def <span class="ident">from_subsets</span></span>(<span>filenames: iter[str])</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1012,10 +1604,54 @@ class MinkowskiSumProblem:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def plot(self,  hidelabel = False, ax = None, *kwargs):
+<pre><code class="python">def from_subsets(filenames : iter[str]):
+    Y_list = []
+    sizes =  &#39;|&#39;
+    method = &#39;&#39;
+    for Y_filename in filenames:
+        Y = PointList.from_json(&#34;./instances/subproblems/&#34; + Y_filename)
+        Y_list.append(Y)
+        sizes += Y_filename.split(&#39;-&#39;)[2] + &#39;|&#39;
+        method += Y_filename.split(&#39;-&#39;)[3].split(&#39;.&#39;)[0]
+    filename = f&#39;MSP-special-{sizes}-{method}&#39;
+    MSP = MinkowskiSumProblem(Y_list)
+    MSP.filename = filename
+    MSP.dim = Y_list[0].dim
+    return  MSP</code></pre>
+</details>
+</dd>
+<dt id="classes.MinkowskiSumProblem.plot"><code class="name flex">
+<span>def <span class="ident">plot</span></span>(<span>self, hidelabel=False, ax=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot(self,  hidelabel = False, ax = None, **kwargs):
     ax = ax if ax else plt
     for s, Y in enumerate(self.Y_list):
-        Y.plot(l= &#34;_&#34;*hidelabel + &#34;$\mathcal{Y}_{\mathcal{N}}^{&#34; + str(s+1) + &#34;}$&#34;, ax = ax, *kwargs)</code></pre>
+        Y.plot(l= &#34;_&#34;*hidelabel + &#34;$\mathcal{Y}_{\mathcal{N}}^{&#34; + str(s+1) + &#34;}$&#34;, ax = ax, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="classes.MinkowskiSumProblem.save_json"><code class="name flex">
+<span>def <span class="ident">save_json</span></span>(<span>self, filename)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_json(self, filename):
+    out_dict = [
+            {f&#34;V{s}&#34;:Y.as_dict() for s,Y in enumerate(self.Y_list, start=1)},
+            self.statistics
+            ]
+    json_str = json.dumps(out_dict, indent=1, separators=(&#39;,&#39;, &#39;:&#39;))
+    with open(filename, &#39;w&#39;) as json_file:
+        json_file.write(json_str)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1058,8 +1694,10 @@ class Point:
     cls = None
 
     def __post_init__(self):
-        self.val = np.array(self.val)
-        self.dim = len(self.val)
+        if not isinstance(self.val, np.ndarray):
+            self.val = np.array(self.val)
+        if self.dim == None:
+            self.dim = len(self.val)
     def __lt__(self, other):
         if all(self.val == other.val):
             return False
@@ -1067,7 +1705,15 @@ class Point:
 
     def __le__(self, other):
         return all(self.val &lt;= other.val)
+
+    def le_d(self, other, d : int):
+        return all((self.val[p] &lt;= other.val[p] for p in range(d)))
     
+    def lt_d(self, other, d : int):
+        if all((self.val[p] == other.val[p] for p in range(d))):
+            return False
+        return all((self.val[p] &lt;= other.val[p] for p in range(d)))
+
     def strictly_dominates(self, other):
         return all(self.val &lt; other.val)
 
@@ -1089,7 +1735,6 @@ class Point:
                     return False
             return True
 
-
     def __gt__(self, other):
         if all(self.val == other.val):
             return False
@@ -1107,8 +1752,9 @@ class Point:
     def __add__(self, other):
         if isinstance(other, PointList):
             return PointList((self,)) + other
-
         return Point(self.val + other.val)
+
+  
     def __sub__(self, other):
         return Point(self.val - other.val)
     def __mul__(self, other):
@@ -1146,7 +1792,20 @@ class Point:
             ax.cla()
         if SHOW:
             ax.show()
-        return ax </code></pre>
+        return ax 
+
+    def plot_cone(self, ax= None, quadrant = 1,color=&#39;darkgray&#39;, **kwargs):
+        assert self.dim&lt;=2, &#39;plot_cone Not implemented for p &gt; 2&#39;
+        ax = ax if ax else plt
+        color = color if (color is not None) else self.plot_color
+        kwargs[&#39;color&#39;] = color
+        ymin, ymax = ax.get_ylim()
+        xmin, xmax = ax.get_xlim()
+        if quadrant == 1:
+            ax.add_patch(Rectangle((self[0],self[1]), xmax-self[0], ymax-self[1], fill=False, hatch=&#39;xx&#39;, **kwargs))
+        if quadrant == 3:
+            ax.add_patch(Rectangle((xmin,ymin), self[0]- xmin, self[1] - ymin, fill=False, hatch=&#39;xx&#39;, **kwargs))
+        return ax</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -1169,6 +1828,19 @@ class Point:
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="classes.Point.le_d"><code class="name flex">
+<span>def <span class="ident">le_d</span></span>(<span>self, other, d: int)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def le_d(self, other, d : int):
+    return all((self.val[p] &lt;= other.val[p] for p in range(d)))</code></pre>
+</details>
+</dd>
 <dt id="classes.Point.lex_le"><code class="name flex">
 <span>def <span class="ident">lex_le</span></span>(<span>self, other)</span>
 </code></dt>
@@ -1195,6 +1867,21 @@ class Point:
             elif self[p] &gt; other[p]:
                 return False
         return True</code></pre>
+</details>
+</dd>
+<dt id="classes.Point.lt_d"><code class="name flex">
+<span>def <span class="ident">lt_d</span></span>(<span>self, other, d: int)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def lt_d(self, other, d : int):
+    if all((self.val[p] == other.val[p] for p in range(d))):
+        return False
+    return all((self.val[p] &lt;= other.val[p] for p in range(d)))</code></pre>
 </details>
 </dd>
 <dt id="classes.Point.plot"><code class="name flex">
@@ -1233,6 +1920,29 @@ class Point:
     return ax </code></pre>
 </details>
 </dd>
+<dt id="classes.Point.plot_cone"><code class="name flex">
+<span>def <span class="ident">plot_cone</span></span>(<span>self, ax=None, quadrant=1, color='darkgray', **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_cone(self, ax= None, quadrant = 1,color=&#39;darkgray&#39;, **kwargs):
+    assert self.dim&lt;=2, &#39;plot_cone Not implemented for p &gt; 2&#39;
+    ax = ax if ax else plt
+    color = color if (color is not None) else self.plot_color
+    kwargs[&#39;color&#39;] = color
+    ymin, ymax = ax.get_ylim()
+    xmin, xmax = ax.get_xlim()
+    if quadrant == 1:
+        ax.add_patch(Rectangle((self[0],self[1]), xmax-self[0], ymax-self[1], fill=False, hatch=&#39;xx&#39;, **kwargs))
+    if quadrant == 3:
+        ax.add_patch(Rectangle((xmin,ymin), self[0]- xmin, self[1] - ymin, fill=False, hatch=&#39;xx&#39;, **kwargs))
+    return ax</code></pre>
+</details>
+</dd>
 <dt id="classes.Point.strictly_dominates"><code class="name flex">
 <span>def <span class="ident">strictly_dominates</span></span>(<span>self, other)</span>
 </code></dt>
@@ -1250,10 +1960,10 @@ class Point:
 </dd>
 <dt id="classes.PointList"><code class="flex name class">
 <span>class <span class="ident">PointList</span></span>
-<span>(</span><span>points: tuple[<a title="classes.Point" href="#classes.Point">Point</a>] = (), statistics: dict = None)</span>
+<span>(</span><span>points: tuple[<a title="classes.Point" href="#classes.Point">Point</a>] = (), statistics: dict = None, np_array: np_array = None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>PointList(points: 'tuple[Point]' = (), statistics: 'dict' = None)</p></div>
+<div class="desc"><p>PointList(points: 'tuple[Point]' = (), statistics: 'dict' = None, np_array: 'np_array' = None)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1265,6 +1975,7 @@ class PointList:
     plot_color = None
     statistics : dict = None
     filename = None
+    np_array : np_array = None
     def __post_init__(self):
         # Check if SINGLETON: allows for PointList((y)) where y is of class Point 
         if isinstance(self.points, Point):
@@ -1273,6 +1984,18 @@ class PointList:
             self.points = tuple([y if isinstance(y, Point) else Point(y) for y in self.points])
         if self.points:
             self.dim = self.points[0].dim
+
+        self.statistics = {
+            &#34;p&#34;: [self.dim],
+            &#34;card&#34;: [len(self.points)],
+            &#34;supported&#34;: [None],
+            &#34;extreme&#34;: [None],
+            &#34;unsupported&#34;: [None],
+            &#34;min&#34;: [None],
+            &#34;max&#34;: [None, None],
+            &#34;width&#34;: [None, None],
+            &#34;method&#34;: [None],
+          }
 
     def __iter__(self) -&gt; tuple[Point]:
         return tuple(self.points).__iter__()
@@ -1303,9 +2026,12 @@ class PointList:
             plt.savefig(fname, dpi= 200)
             plt.cla()
         if point_labels:
+            if point_labels == True:
+                point_labels = [&#34;$y^{&#34; +  f&#34;{i}&#34; + &#34;}$&#34; for i, _ in enumerate(self, start = 1)]
             # add labels to points
-            for i,y in enumerate(self, start = 1):
-                y.plot(ax = ax, l=f&#34;$y^{i}$&#34;, label_only=True)
+            for i,y in enumerate(self):
+                # y.plot(ax = ax, l= &#34;$y^{&#34; +  f&#34;{i}&#34; + &#34;}$&#34;, label_only=True)
+                y.plot(ax = ax, l= point_labels[i], label_only=True)
            
 
                 
@@ -1317,13 +2043,15 @@ class PointList:
     def dominates_point(self, point:Point):
         for y in self.points:
             if y &lt; point:
-                return True
+                # return True
+                return y
         return False
 
     def weakly_dominates_point(self, point:Point):
         for y in self.points:
             if y &lt;= point:
-                return True
+                return y
+                # return True
         return False
 
 
@@ -1334,7 +2062,7 @@ class PointList:
         output: Minkowski sum of sets
         &#34;&#34;&#34;
         return PointList([y1 + y2 for y1 in self for y2 in other])
-
+    
     def __sub__(self,other):
         &#34;&#34;&#34;
         input: list of two PointList
@@ -1342,8 +2070,36 @@ class PointList:
         &#34;&#34;&#34;
         return PointList([y1 - y2 for y1 in self for y2 in other])
 
+    def __mul__(self,other):
+        &#34;&#34;&#34;
+        input: list of two PointList
+        output: Minkowski subtration of sets
+        &#34;&#34;&#34;
+        match other:
+            case ( float() | int() ):
+                return PointList([y*other for y in self])
+            case _:
+                print(f&#34;{other=}&#34;)
+                print(f&#34;{type(other)=}&#34;)
+                raise NotImplementedError
 
 
+
+
+    def get_nadir(self):
+        nadir_vals = list(tuple(self.points[0].val))
+        for point in self.points:
+            for p in range(self.dim):
+                if nadir_vals[p] &lt; point.val[p]:
+                    nadir_vals[p] = point.val[p]
+        return Point(nadir_vals)
+    def get_ideal(self):
+        ideal_vals = list(tuple(self.points[0].val))
+        for point in self.points:
+            for p in range(self.dim):
+                if ideal_vals[p] &gt; point.val[p]:
+                    ideal_vals[p] = point.val[p]
+        return Point(ideal_vals)
 
 
 
@@ -1374,13 +2130,32 @@ class PointList:
             for y in self.__iter__():
                 csv_out.writerow(y)   
 
+
+    def save_raw(self, filename : str):
+        # raw format used in c-interface
+        with open(filename, &#39;w&#39;) as out:
+            out.write(f&#34;{self.statistics[&#39;p&#39;][0]}&#34; + &#34;\n&#34;)
+            out.write(f&#34;{self.statistics[&#39;card&#39;][0]}&#34; + &#34;\n&#34;)
+            for y in self.__iter__():
+                out.write(&#34; &#34;.join([f&#34;{yp:.6f}&#34; for yp in y]) + &#34;\n&#34;)
+
+    def from_raw(filename : str):
+        # raw format used in c-interface
+        with open(filename, &#34;r&#34;) as rawfile:
+            dim = int(rawfile.readline())
+            n = int(rawfile.readline())
+            lines = rawfile.read().splitlines()
+        y_list = []
+        for line in lines:
+            y = Point([float(yp) for yp in line.split(&#39; &#39;) if yp != &#39;&#39;])
+            y_list.append(y)
+        return PointList(y_list)
+
     def from_csv(filename = &#34;disk.csv&#34;):
         with open(f&#34;{filename}&#34;, &#34;r&#34;) as csvfile:
             points = []
             for y in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
-                #points.append(Point(tuple(map(float,y))))
                 points.append(Point(y))
-            # self.points = points
             return PointList(points)
 
     def as_dict(self):
@@ -1388,27 +2163,40 @@ class PointList:
         PointList_dict = {
             &#34;points&#34;:
                           [dict({f&#34;z{p+1}&#34;: point[p] for p in range(point.dim)},**({&#39;cls&#39;:None})) for point in self.points],
-            &#34;statistics&#34;: {
-                &#34;p&#34;: [self.dim],
-                &#34;card&#34;: [len(self.points)],
-                &#34;supported&#34;: [None],
-                &#34;extreme&#34;: [None],
-                &#34;unsupported&#34;: [None],
-                &#34;min&#34;: [None],
-                &#34;max&#34;: [None, None],
-                &#34;width&#34;: [None, None],
-                &#34;method&#34;: [None],
-              }
+            &#39;statistics&#39;: self.statistics
           }
         return PointList_dict 
+    
+    def as_np_array(self):
+        # if self.np_array is not None:
+        # if isinstance(self.np_array, NoneType):
+            # print(f&#34;bla bla&#34;)
+            # self.np_array = np.array([y.val for y in self.points])
+        return np.array([y.val for y in self.points])
+        # return self.np_array
 
-    def save_json(self, filename):
+    def save_json(self, filename, max_file_size = 100):
+        json_str = json.dumps(self.as_dict(), indent=None, separators=(&#39;,&#39;, &#39;:&#39;))
+        # Calculate size (approx) in bytes
+        size_mb = len(json_str.encode(&#39;utf-8&#39;)) / 1_000_000
+        if size_mb &gt;= max_file_size:
+            if True:
+                print(f&#34;*** {filename}, pointlist with {len(self)} points too large for json. Saving raw format. ESTIMATED MB {size_mb} &gt; {max_file_size}=MAX&#34;)
+                self.save_raw(filename.replace(&#39;.json&#39;,&#39;.raw&#39;))
+                # return
+            if True:
+                # print(f&#34;*** {filename}, pointlist with {len(self)} points too large for json. Saving json without points. ESTIMATED MB {size_mb} &gt; {max_file_size}=MAX&#34;)
+                json_str = self.as_dict()
+                json_str[&#39;points&#39;] = []
+                json_str = json.dumps(json_str, indent=None, separators=(&#39;,&#39;, &#39;:&#39;))
         with open(filename, &#39;w&#39;) as json_file:
-            json.dump(self.as_dict(), json_file, indent=1)
+            json_file.write(json_str)
+            # json.dump(self.as_dict(), json_file)
 
-    def from_json(filename: str):
-        with open(filename, &#39;r&#39;) as json_file:
-            json_dict = json.load(json_file)
+
+
+
+    def from_json_str(json_dict):
         statistics = json_dict[&#39;statistics&#39;]
         points = []
         for json_point in json_dict[&#39;points&#39;]:
@@ -1422,6 +2210,16 @@ class PointList:
         Y.statistics = statistics
 
         return Y
+
+    def from_json(filename: str):
+
+        with open(filename, &#39;r&#39;) as json_file:
+            json_dict = json.load(json_file)
+
+        return PointList.from_json_str(json_dict)
+        
+        
+
 
     def print_data(self):
         N_POINTS = len(self.points)
@@ -1443,6 +2241,10 @@ class PointList:
 <div class="desc"></div>
 </dd>
 <dt id="classes.PointList.filename"><code class="name">var <span class="ident">filename</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="classes.PointList.np_array"><code class="name">var <span class="ident">np_array</span> : None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -1475,19 +2277,27 @@ class PointList:
     PointList_dict = {
         &#34;points&#34;:
                       [dict({f&#34;z{p+1}&#34;: point[p] for p in range(point.dim)},**({&#39;cls&#39;:None})) for point in self.points],
-        &#34;statistics&#34;: {
-            &#34;p&#34;: [self.dim],
-            &#34;card&#34;: [len(self.points)],
-            &#34;supported&#34;: [None],
-            &#34;extreme&#34;: [None],
-            &#34;unsupported&#34;: [None],
-            &#34;min&#34;: [None],
-            &#34;max&#34;: [None, None],
-            &#34;width&#34;: [None, None],
-            &#34;method&#34;: [None],
-          }
+        &#39;statistics&#39;: self.statistics
       }
     return PointList_dict </code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.as_np_array"><code class="name flex">
+<span>def <span class="ident">as_np_array</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def as_np_array(self):
+    # if self.np_array is not None:
+    # if isinstance(self.np_array, NoneType):
+        # print(f&#34;bla bla&#34;)
+        # self.np_array = np.array([y.val for y in self.points])
+    return np.array([y.val for y in self.points])
+    # return self.np_array</code></pre>
 </details>
 </dd>
 <dt id="classes.PointList.dominates"><code class="name flex">
@@ -1532,7 +2342,8 @@ class PointList:
 <pre><code class="python">def dominates_point(self, point:Point):
     for y in self.points:
         if y &lt; point:
-            return True
+            # return True
+            return y
     return False</code></pre>
 </details>
 </dd>
@@ -1549,9 +2360,7 @@ class PointList:
     with open(f&#34;{filename}&#34;, &#34;r&#34;) as csvfile:
         points = []
         for y in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
-            #points.append(Point(tuple(map(float,y))))
             points.append(Point(y))
-        # self.points = points
         return PointList(points)</code></pre>
 </details>
 </dd>
@@ -1565,8 +2374,23 @@ class PointList:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def from_json(filename: str):
+
     with open(filename, &#39;r&#39;) as json_file:
         json_dict = json.load(json_file)
+
+    return PointList.from_json_str(json_dict)</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.from_json_str"><code class="name flex">
+<span>def <span class="ident">from_json_str</span></span>(<span>json_dict)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_json_str(json_dict):
     statistics = json_dict[&#39;statistics&#39;]
     points = []
     for json_point in json_dict[&#39;points&#39;]:
@@ -1580,6 +2404,64 @@ class PointList:
     Y.statistics = statistics
 
     return Y</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.from_raw"><code class="name flex">
+<span>def <span class="ident">from_raw</span></span>(<span>filename: str)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def from_raw(filename : str):
+    # raw format used in c-interface
+    with open(filename, &#34;r&#34;) as rawfile:
+        dim = int(rawfile.readline())
+        n = int(rawfile.readline())
+        lines = rawfile.read().splitlines()
+    y_list = []
+    for line in lines:
+        y = Point([float(yp) for yp in line.split(&#39; &#39;) if yp != &#39;&#39;])
+        y_list.append(y)
+    return PointList(y_list)</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.get_ideal"><code class="name flex">
+<span>def <span class="ident">get_ideal</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_ideal(self):
+    ideal_vals = list(tuple(self.points[0].val))
+    for point in self.points:
+        for p in range(self.dim):
+            if ideal_vals[p] &gt; point.val[p]:
+                ideal_vals[p] = point.val[p]
+    return Point(ideal_vals)</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.get_nadir"><code class="name flex">
+<span>def <span class="ident">get_nadir</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_nadir(self):
+    nadir_vals = list(tuple(self.points[0].val))
+    for point in self.points:
+        for p in range(self.dim):
+            if nadir_vals[p] &lt; point.val[p]:
+                nadir_vals[p] = point.val[p]
+    return Point(nadir_vals)</code></pre>
 </details>
 </dd>
 <dt id="classes.PointList.plot"><code class="name flex">
@@ -1615,9 +2497,12 @@ class PointList:
         plt.savefig(fname, dpi= 200)
         plt.cla()
     if point_labels:
+        if point_labels == True:
+            point_labels = [&#34;$y^{&#34; +  f&#34;{i}&#34; + &#34;}$&#34; for i, _ in enumerate(self, start = 1)]
         # add labels to points
-        for i,y in enumerate(self, start = 1):
-            y.plot(ax = ax, l=f&#34;$y^{i}$&#34;, label_only=True)
+        for i,y in enumerate(self):
+            # y.plot(ax = ax, l= &#34;$y^{&#34; +  f&#34;{i}&#34; + &#34;}$&#34;, label_only=True)
+            y.plot(ax = ax, l= point_labels[i], label_only=True)
        
 
             
@@ -1671,7 +2556,7 @@ class PointList:
 </details>
 </dd>
 <dt id="classes.PointList.save_json"><code class="name flex">
-<span>def <span class="ident">save_json</span></span>(<span>self, filename)</span>
+<span>def <span class="ident">save_json</span></span>(<span>self, filename, max_file_size=100)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1679,9 +2564,41 @@ class PointList:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def save_json(self, filename):
+<pre><code class="python">def save_json(self, filename, max_file_size = 100):
+    json_str = json.dumps(self.as_dict(), indent=None, separators=(&#39;,&#39;, &#39;:&#39;))
+    # Calculate size (approx) in bytes
+    size_mb = len(json_str.encode(&#39;utf-8&#39;)) / 1_000_000
+    if size_mb &gt;= max_file_size:
+        if True:
+            print(f&#34;*** {filename}, pointlist with {len(self)} points too large for json. Saving raw format. ESTIMATED MB {size_mb} &gt; {max_file_size}=MAX&#34;)
+            self.save_raw(filename.replace(&#39;.json&#39;,&#39;.raw&#39;))
+            # return
+        if True:
+            # print(f&#34;*** {filename}, pointlist with {len(self)} points too large for json. Saving json without points. ESTIMATED MB {size_mb} &gt; {max_file_size}=MAX&#34;)
+            json_str = self.as_dict()
+            json_str[&#39;points&#39;] = []
+            json_str = json.dumps(json_str, indent=None, separators=(&#39;,&#39;, &#39;:&#39;))
     with open(filename, &#39;w&#39;) as json_file:
-        json.dump(self.as_dict(), json_file, indent=1)</code></pre>
+        json_file.write(json_str)
+        # json.dump(self.as_dict(), json_file)</code></pre>
+</details>
+</dd>
+<dt id="classes.PointList.save_raw"><code class="name flex">
+<span>def <span class="ident">save_raw</span></span>(<span>self, filename: str)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_raw(self, filename : str):
+    # raw format used in c-interface
+    with open(filename, &#39;w&#39;) as out:
+        out.write(f&#34;{self.statistics[&#39;p&#39;][0]}&#34; + &#34;\n&#34;)
+        out.write(f&#34;{self.statistics[&#39;card&#39;][0]}&#34; + &#34;\n&#34;)
+        for y in self.__iter__():
+            out.write(&#34; &#34;.join([f&#34;{yp:.6f}&#34; for yp in y]) + &#34;\n&#34;)</code></pre>
 </details>
 </dd>
 <dt id="classes.PointList.weakly_dominates_point"><code class="name flex">
@@ -1696,7 +2613,8 @@ class PointList:
 <pre><code class="python">def weakly_dominates_point(self, point:Point):
     for y in self.points:
         if y &lt;= point:
-            return True
+            return y
+            # return True
     return False</code></pre>
 </details>
 </dd>
@@ -1729,7 +2647,11 @@ class PointList:
 <h4><code><a title="classes.KD_tree" href="#classes.KD_tree">KD_tree</a></code></h4>
 <ul class="">
 <li><code><a title="classes.KD_tree.dominates_point" href="#classes.KD_tree.dominates_point">dominates_point</a></code></li>
+<li><code><a title="classes.KD_tree.dominates_point_recursion" href="#classes.KD_tree.dominates_point_recursion">dominates_point_recursion</a></code></li>
+<li><code><a title="classes.KD_tree.get_LB" href="#classes.KD_tree.get_LB">get_LB</a></code></li>
+<li><code><a title="classes.KD_tree.get_UB" href="#classes.KD_tree.get_UB">get_UB</a></code></li>
 <li><code><a title="classes.KD_tree.insert" href="#classes.KD_tree.insert">insert</a></code></li>
+<li><code><a title="classes.KD_tree.insert_recursion" href="#classes.KD_tree.insert_recursion">insert_recursion</a></code></li>
 </ul>
 </li>
 <li>
@@ -1742,13 +2664,34 @@ class PointList:
 </ul>
 </li>
 <li>
-<h4><code><a title="classes.MinkowskiSumProblem" href="#classes.MinkowskiSumProblem">MinkowskiSumProblem</a></code></h4>
+<h4><code><a title="classes.MSPInstances" href="#classes.MSPInstances">MSPInstances</a></code></h4>
 <ul class="">
+<li><code><a title="classes.MSPInstances.filename_list" href="#classes.MSPInstances.filename_list">filename_list</a></code></li>
+<li><code><a title="classes.MSPInstances.filter_out_solved" href="#classes.MSPInstances.filter_out_solved">filter_out_solved</a></code></li>
+<li><code><a title="classes.MSPInstances.generation_options" href="#classes.MSPInstances.generation_options">generation_options</a></code></li>
+<li><code><a title="classes.MSPInstances.ignore_ifonly_l" href="#classes.MSPInstances.ignore_ifonly_l">ignore_ifonly_l</a></code></li>
+<li><code><a title="classes.MSPInstances.instance_name_dict" href="#classes.MSPInstances.instance_name_dict">instance_name_dict</a></code></li>
+<li><code><a title="classes.MSPInstances.instance_name_dict_keys" href="#classes.MSPInstances.instance_name_dict_keys">instance_name_dict_keys</a></code></li>
+<li><code><a title="classes.MSPInstances.m_options" href="#classes.MSPInstances.m_options">m_options</a></code></li>
+<li><code><a title="classes.MSPInstances.max_instances" href="#classes.MSPInstances.max_instances">max_instances</a></code></li>
+<li><code><a title="classes.MSPInstances.options" href="#classes.MSPInstances.options">options</a></code></li>
+<li><code><a title="classes.MSPInstances.p_options" href="#classes.MSPInstances.p_options">p_options</a></code></li>
+<li><code><a title="classes.MSPInstances.preset" href="#classes.MSPInstances.preset">preset</a></code></li>
+<li><code><a title="classes.MSPInstances.seed_options" href="#classes.MSPInstances.seed_options">seed_options</a></code></li>
+<li><code><a title="classes.MSPInstances.size_options" href="#classes.MSPInstances.size_options">size_options</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="classes.MinkowskiSumProblem" href="#classes.MinkowskiSumProblem">MinkowskiSumProblem</a></code></h4>
+<ul class="two-column">
+<li><code><a title="classes.MinkowskiSumProblem.S" href="#classes.MinkowskiSumProblem.S">S</a></code></li>
 <li><code><a title="classes.MinkowskiSumProblem.Y_list" href="#classes.MinkowskiSumProblem.Y_list">Y_list</a></code></li>
 <li><code><a title="classes.MinkowskiSumProblem.dim" href="#classes.MinkowskiSumProblem.dim">dim</a></code></li>
 <li><code><a title="classes.MinkowskiSumProblem.filename" href="#classes.MinkowskiSumProblem.filename">filename</a></code></li>
 <li><code><a title="classes.MinkowskiSumProblem.from_json" href="#classes.MinkowskiSumProblem.from_json">from_json</a></code></li>
+<li><code><a title="classes.MinkowskiSumProblem.from_subsets" href="#classes.MinkowskiSumProblem.from_subsets">from_subsets</a></code></li>
 <li><code><a title="classes.MinkowskiSumProblem.plot" href="#classes.MinkowskiSumProblem.plot">plot</a></code></li>
+<li><code><a title="classes.MinkowskiSumProblem.save_json" href="#classes.MinkowskiSumProblem.save_json">save_json</a></code></li>
 </ul>
 </li>
 <li>
@@ -1759,9 +2702,12 @@ class PointList:
 <ul class="two-column">
 <li><code><a title="classes.Point.cls" href="#classes.Point.cls">cls</a></code></li>
 <li><code><a title="classes.Point.dim" href="#classes.Point.dim">dim</a></code></li>
+<li><code><a title="classes.Point.le_d" href="#classes.Point.le_d">le_d</a></code></li>
 <li><code><a title="classes.Point.lex_le" href="#classes.Point.lex_le">lex_le</a></code></li>
+<li><code><a title="classes.Point.lt_d" href="#classes.Point.lt_d">lt_d</a></code></li>
 <li><code><a title="classes.Point.plot" href="#classes.Point.plot">plot</a></code></li>
 <li><code><a title="classes.Point.plot_color" href="#classes.Point.plot_color">plot_color</a></code></li>
+<li><code><a title="classes.Point.plot_cone" href="#classes.Point.plot_cone">plot_cone</a></code></li>
 <li><code><a title="classes.Point.strictly_dominates" href="#classes.Point.strictly_dominates">strictly_dominates</a></code></li>
 <li><code><a title="classes.Point.val" href="#classes.Point.val">val</a></code></li>
 </ul>
@@ -1770,12 +2716,18 @@ class PointList:
 <h4><code><a title="classes.PointList" href="#classes.PointList">PointList</a></code></h4>
 <ul class="">
 <li><code><a title="classes.PointList.as_dict" href="#classes.PointList.as_dict">as_dict</a></code></li>
+<li><code><a title="classes.PointList.as_np_array" href="#classes.PointList.as_np_array">as_np_array</a></code></li>
 <li><code><a title="classes.PointList.dim" href="#classes.PointList.dim">dim</a></code></li>
 <li><code><a title="classes.PointList.dominates" href="#classes.PointList.dominates">dominates</a></code></li>
 <li><code><a title="classes.PointList.dominates_point" href="#classes.PointList.dominates_point">dominates_point</a></code></li>
 <li><code><a title="classes.PointList.filename" href="#classes.PointList.filename">filename</a></code></li>
 <li><code><a title="classes.PointList.from_csv" href="#classes.PointList.from_csv">from_csv</a></code></li>
 <li><code><a title="classes.PointList.from_json" href="#classes.PointList.from_json">from_json</a></code></li>
+<li><code><a title="classes.PointList.from_json_str" href="#classes.PointList.from_json_str">from_json_str</a></code></li>
+<li><code><a title="classes.PointList.from_raw" href="#classes.PointList.from_raw">from_raw</a></code></li>
+<li><code><a title="classes.PointList.get_ideal" href="#classes.PointList.get_ideal">get_ideal</a></code></li>
+<li><code><a title="classes.PointList.get_nadir" href="#classes.PointList.get_nadir">get_nadir</a></code></li>
+<li><code><a title="classes.PointList.np_array" href="#classes.PointList.np_array">np_array</a></code></li>
 <li><code><a title="classes.PointList.plot" href="#classes.PointList.plot">plot</a></code></li>
 <li><code><a title="classes.PointList.plot_color" href="#classes.PointList.plot_color">plot_color</a></code></li>
 <li><code><a title="classes.PointList.points" href="#classes.PointList.points">points</a></code></li>
@@ -1783,6 +2735,7 @@ class PointList:
 <li><code><a title="classes.PointList.removed_duplicates" href="#classes.PointList.removed_duplicates">removed_duplicates</a></code></li>
 <li><code><a title="classes.PointList.save_csv" href="#classes.PointList.save_csv">save_csv</a></code></li>
 <li><code><a title="classes.PointList.save_json" href="#classes.PointList.save_json">save_json</a></code></li>
+<li><code><a title="classes.PointList.save_raw" href="#classes.PointList.save_raw">save_raw</a></code></li>
 <li><code><a title="classes.PointList.statistics" href="#classes.PointList.statistics">statistics</a></code></li>
 <li><code><a title="classes.PointList.weakly_dominates_point" href="#classes.PointList.weakly_dominates_point">weakly_dominates_point</a></code></li>
 </ul>

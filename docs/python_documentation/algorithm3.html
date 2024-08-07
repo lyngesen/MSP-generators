@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>algorithm3 API documentation</title>
+<meta name="description" content="File containing code for algorithm3 answering empirical research question 3 …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>algorithm3</code></h1>
+</header>
+<section id="section-intro">
+<p>File containing code for algorithm3 answering empirical research question 3</p>
+<h2 id="usage">Usage</h2>
+<p>Run to add computational results
+output saved in: ./instances/results/algorithm3/result.csv</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+File containing code for algorithm3 answering empirical research question 3
+
+Usage:
+    Run to add computational results
+    output saved in: ./instances/results/algorithm3/result.csv
+&#34;&#34;&#34;
+
+from classes import Point, PointList, LinkedList, MinkowskiSumProblem
+import methods
+from methods import N
+import time
+import csv
+import math
+import os
+from minimum_generator import solve_MGS_instance
+
+import numpy as np
+# from numoy import linalg
+from matplotlib import pyplot as plt
+from scipy.spatial import ConvexHull
+from functools import reduce
+import itertools
+from scipy.optimize import linprog
+
+def induced_UB_plot(level, Y1,Y2, prefix=&#39;&#39;, plot=True):
+    print(f&#34;{prefix}&#34;)
+    # print(f&#34;{level=}&#34;)
+    def get_partial(Y, level=&#39;all&#39;):   
+        Y = N(Y)
+        Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
+        Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
+        # random.shuffle(Y2other_points)
+        match level:
+            case &#39;all&#39;:
+                return Y
+            case &#39;lexmin&#39;: 
+                return PointList((Y[0], Y[-1]))
+            case &#39;extreme&#39;:
+                return PointList(Y2e_points)
+            # case float():
+            case _:
+                to_index = math.floor(float(level)*len(Y2other_points))
+                return PointList(Y2e_points + Y2other_points[:to_index])
+                # print(f&#34;case not implemented {level}&#34;)
+    
+    
+    Y2_partial = get_partial(Y2, level)
+
+
+    ub_time = time.time()
+    U = methods.find_generator_U(Y2_partial, Y1)
+    ub_time = time.time() - ub_time
+
+    Uline = methods.induced_UB(U,line=True)
+   
+    Y2_dominated = [y for y in Y2 if y.cls != &#39;se&#39; and U.dominates_point(y)]
+    dominated_relative = len(Y2_dominated)/len(Y2)
+    print(f&#34;dominated: {len(Y2_dominated)} \nrelative: {dominated_relative*100}\%&#34;)
+    
+    run_data = {&#39;prefix&#39; : prefix,
+                &#39;Y1_size&#39; : len(Y1),
+                &#39;Y2_size&#39; : len(Y2),
+                &#39;U&#39; : len(U),
+                &#39;U_time&#39; : ub_time,
+                &#39;dominated_points&#39; : len(Y2_dominated),
+                &#39;dominated_relative_Y2&#39; : dominated_relative,
+                }
+
+    return run_data
+def multiple_induced_UB():
+
+
+    set_options = [&#39;l&#39;,&#39;m&#39;,&#39;u&#39;]
+    size_options = [10, 50, 100, 150, 200, 300, 600]
+    seed_options = [1,2,3,4,5]
+    # UB_options = [&#39;lexmin&#39;,&#39;extreme&#39;,&#39;0.25&#39;,&#39;0.5&#39;,&#39;0.75&#39;,&#39;all&#39;]
+    UB_options = [&#39;extreme&#39;]
+
+    csv_file_path = &#39;./instances/results/algorithm3/result_slides_alg1_2.csv&#39;
+    # get last row
+    with open(csv_file_path, &#39;r&#39;) as csv_file:
+        reader = csv.reader(csv_file)
+        for row in reader:
+            lastrow = row
+    start_runs = False
+
+    for s1 in size_options:
+        s2 = s1
+        for ub_level in UB_options:
+        # s1 = 100 
+        # s2 = 100
+            # for s2 in size_options:
+            for t1 in set_options:
+                for t2 in set_options:
+                    for seed in seed_options:
+                        prefix = f&#39;{t1}-{t2}_{s1}_{s2}_{ub_level}_{seed}_&#39;
+#                         if start_runs == False:
+                            # if prefix == lastrow[0]:
+                                # start_runs = True
+                                # print(f&#34;Starting run after {prefix}&#34;)
+                            # continue
+                        Y1 = PointList.from_json(f&#34;./instances/subproblems/sp-2-{s1}-{t1}_{seed}.json&#34;)
+                        Y2 = PointList.from_json(f&#34;./instances/subproblems/sp-2-{s2}-{t2}_{max(seed_options)+1-seed}.json&#34;)
+                        data = induced_UB_plot(ub_level, Y1,Y2, prefix, plot=False) 
+                        data.update({&#39;t1&#39;:t1, &#39;t2&#39;:t2, &#39;s1&#39;:s1, &#39;s2&#39;:s2,&#39;seed&#39;:seed,&#39;ub_level&#39;:ub_level})
+                        print(f&#34;ALG1 solving Yn&#34;)
+                        Y = Y1+Y2
+                        Yn = N(Y)
+                        data.update({&#39;Y_size&#39;:len(Y), &#39;Yn_size&#39;:len(Yn)})
+                        print(f&#34;Solving MSG&#34;)
+                        G = solve_MGS_instance([Y1,Y2])
+                        data.update({&#39;G1_size&#39;:len(G[0]), &#39;G2_size&#39;:len(G[1])})
+                        with open(csv_file_path, &#39;a&#39;) as csv_file:
+                            # add header if file empty
+                            writer = csv.writer(csv_file)
+                            if os.path.getsize(csv_file_path) == 0:
+                                writer.writerow(data.keys())
+                            writer.writerow(data.values())
+
+def induced_LB_3d():
+
+    from mpl_toolkits.mplot3d import Axes3D
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+
+    cnames = {
+    # &#39;aliceblue&#39;:            &#39;#F0F8FF&#39;,
+    # &#39;antiquewhite&#39;:         &#39;#FAEBD7&#39;,
+    &#39;aqua&#39;:                 &#39;#00FFFF&#39;,
+    &#39;aquamarine&#39;:           &#39;#7FFFD4&#39;,
+    &#39;azure&#39;:                &#39;#F0FFFF&#39;,
+    &#39;beige&#39;:                &#39;#F5F5DC&#39;,
+    &#39;bisque&#39;:               &#39;#FFE4C4&#39;,
+    &#39;black&#39;:                &#39;#000000&#39;,
+    &#39;blanchedalmond&#39;:       &#39;#FFEBCD&#39;,
+    &#39;blue&#39;:                 &#39;#0000FF&#39;,
+    &#39;blueviolet&#39;:           &#39;#8A2BE2&#39;,
+    &#39;brown&#39;:                &#39;#A52A2A&#39;,
+    &#39;burlywood&#39;:            &#39;#DEB887&#39;,
+    &#39;cadetblue&#39;:            &#39;#5F9EA0&#39;,
+    &#39;chartreuse&#39;:           &#39;#7FFF00&#39;,
+    &#39;chocolate&#39;:            &#39;#D2691E&#39;,
+    &#39;coral&#39;:                &#39;#FF7F50&#39;,
+    &#39;cornflowerblue&#39;:       &#39;#6495ED&#39;,
+    &#39;cornsilk&#39;:             &#39;#FFF8DC&#39;,
+    &#39;crimson&#39;:              &#39;#DC143C&#39;,
+    &#39;cyan&#39;:                 &#39;#00FFFF&#39;,
+    &#39;darkblue&#39;:             &#39;#00008B&#39;,
+    &#39;darkcyan&#39;:             &#39;#008B8B&#39;,
+    &#39;darkgoldenrod&#39;:        &#39;#B8860B&#39;,
+    &#39;darkgray&#39;:             &#39;#A9A9A9&#39;,
+    &#39;darkgreen&#39;:            &#39;#006400&#39;,
+    &#39;darkkhaki&#39;:            &#39;#BDB76B&#39;,
+    }
+
+    cnames_list = list(cnames.values())
+    
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+
+
+    def in_hull(Y : PointList, y:Point):
+        &#39;&#39;&#39; from https://stackoverflow.com/questions/16750618/whats-an-efficient-way-to-find-if-a-point-lies-in-the-convex-hull-of-a-point-cl &#39;&#39;&#39;
+        points = Y.as_np_array()
+        x = y.val
+        n_points = len(points)
+        n_dim = len(x)
+        c = np.zeros(n_points)
+        A = np.r_[points.T,np.ones((1,n_points))]
+        b = np.r_[x, np.ones(1)]
+        lp = linprog(c, A_eq=A, b_eq=b)
+        # print(lp.values())
+        if not lp.success:
+            return False
+        else:
+            return sum(1 for x in lp.x if x != 0)
+        # return lp.success
+    def strict_in_hull(Y : PointList, y:Point):
+
+        if Y.dim ==2:
+            return False 
+        points = Y.as_np_array()
+        epsilon = 1
+        x = y.val
+
+        centroid = np.mean(points, axis=0)
+        # move all extreme points epsilon distance towards centroid
+        for y in points:
+            d = centroid - y
+            # print(f&#34;{d=}&#34;)
+            # d = d / np.linalg.norm(d)
+            y += d*epsilon
+
+        n_points = len(points)
+        n_dim = len(x)
+        c = np.zeros(n_points)
+        A = np.r_[points.T,np.ones((1,n_points))]
+        b = np.r_[x, np.ones(1)]
+        lp = linprog(c, A_eq=A, b_eq=b)
+        # print(lp.values())
+        if not lp.success:
+            return False
+        else:
+            return sum(1 for x in lp.x if x != 0)
+        # return lp.success
+
+
+
+
+
+    def plot_surface(Y,ax,color = &#39;blue&#39;):
+
+        vertices = [tuple(y.val) for y in Y]
+        if Y.dim == 2:
+            PointList(vertices).plot(ax=ax, line=True, color=color, alpha = 0.2)
+        else:
+            ax.add_collection3d(Poly3DCollection([vertices], color=color, alpha = 0.2))
+
+    def hull_sort(F: PointList):
+        print(f&#34;{len(F)=}&#34;)
+        hull = ConvexHull(np.array([y.val for y in all_points]))
+        FACES = tuple(PointList([y for i,y in enumerate(F) if i in sim]) for sim in hull.simplices)
+        print(f&#34;sdsad {len(FACES)=}&#34;)
+        # assert len(FACES) == 1
+        return FACES[0]
+
+    def sort_polygon_vertices(Y:PointList):
+        # Calculate the centroid of the polygon
+        # centroid = y_bar.val
+
+        vertices = np.array([y.val for y in Y])
+        # print(f&#34;{vertices=}&#34;)
+        centroid = np.mean(vertices, axis=0)
+        # centroid = reduce(Point.__add__, Y) * (1/len(Y))
+        # Calculate the angles between each vertex and the centroid
+        angles = np.arctan2(vertices[:, 1] - centroid[1], vertices[:, 0] - centroid[0])
+        
+        # Sort the vertices based on the angles
+        sorted_indices = np.argsort(angles)
+        sorted_vertices = vertices[sorted_indices]
+        return PointList(sorted_vertices)
+
+    def plot_dominated_cone(point):
+        pass
+
+    # fig = plt.figure()
+    # ax= plt.axes(projection = &#39;3d&#39;)
+    Y = PointList.from_json(&#39;./instances/subproblems/sp-3-50-l_1.json&#39;)
+    all_points = PointList(list(Y.points) + [Y.get_nadir()])
+    hull = ConvexHull(np.array([y.val for y in all_points]))
+    # hull = ConvexHull(all_points.as_np_array())
+    # Y = [PointList([y for i,y in enumerate(Y) if i in F]) for F in hull.simplices][4]
+    # plot_surface(Y,ax)
+
+
+
+
+    ZERO = Point([0 for _ in range(Y.dim)])
+    nadir_point = Y.get_nadir()
+    # nadir_point.plot(ax=ax,l=f&#34;$y^N$&#34;)
+    # ZERO.plot(ax=ax,l=f&#34;$0$&#34;)
+    if False: # plot axis lines
+        for p in range(nadir_point.dim):
+            unit_point = Point([nadir_point[q] if q ==p else 0 for q in range(nadir_point.dim)])
+            unit_point.plot(ax=ax,l=f&#34;$obj^{p}$&#34;, color=&#39;black&#39;)
+            PointList([ZERO, unit_point]).plot(ax=ax, line=True, color=&#39;black&#39;)
+
+
+    def split_faces(FACES) -&gt; list[PointList]:
+
+        F_splits = []
+        for f, F in enumerate(FACES):
+            y_bar = reduce(Point.__add__, F) * (1/len(F))
+            for i1,y1 in enumerate(F):
+                    # F_noy1 = PointList([y for y in F if y != 0])
+                    F_noy1 = PointList([y for y in F ])
+                    # edge_points = [ye := (y1+y2)*(1/2) for i2,y2 in enumerate(F) if (y1 != y2 and not strict_in_hull(F_noy1,ye))]
+                    edge_points = [(y1+y2)*(1/2) for i2,y2 in enumerate(F) if (y1 != y2)]
+                    edge_points_outer = []
+                    for ye in edge_points:
+                        if not strict_in_hull(F, ye):
+                            edge_points_outer.append(ye)
+                    edge_points = edge_points_outer
+
+                    for ye in edge_points:
+                        # print(f&#34;{F}&#34;)
+                        assert in_hull(F, ye)
+                    # new_face = PointList([y1]  + [y_bar]+ [y for y in edge_points])
+                    new_face = PointList([y1]  + [y_bar]+ [y for y in edge_points])
+                    new_face = sort_polygon_vertices(new_face)
+                    # new_face.plot(ax=ax, l=&#39;{p}&#39;)
+                    # plot_surface(new_face, ax, color = cnames_list[i1])
+                    if len(new_face)&gt;Y.dim-1:
+                    # if True:
+                        F_splits.append(new_face)
+
+        return F_splits
+
+    all_points = PointList(list(Y.points) + [nadir_point])
+    hull = ConvexHull(np.array([y.val for y in all_points]))
+    # hull = ConvexHull(np.array([y.val for y in Y]))
+    # print(f&#34;{hull.simplices=}&#34;)
+
+
+
+    # FACES = tuple(hull.simplices)
+    FACES = [PointList([y for i,y in enumerate(Y) if i in F]) for F in hull.simplices]
+
+    if False:
+        F_splits = []
+        for f, F in enumerate(FACES):
+            # if len(Y) in sim: #skip faces with nadir_point
+                # print(f&#34;skipping {sim}&#34;)
+                # continue
+            # y_bar = Point(sum([y for y in surfacePoints])/len(surfacePoints))
+
+            # if f == 14:
+            if True:
+                # plot_surface(F, ax, color = cnames_list[f])
+                y_bar = reduce(Point.__add__, F) * (1/len(F))
+                y_bar.plot(ax=ax, l=r&#34;$\bar{y}^{&#34; + str(f) + &#34;}$&#34;, color = &#39;black&#39;)
+                l = F.get_ideal()
+                u = F.get_nadir()
+                l.plot(ax=ax, color = cnames_list[f])
+
+                # F.plot(ax=ax,point_labels=True)
+                # project y_bar onto each axis
+                if True:
+                    for i1,y1 in enumerate(F):
+                        edge_points = [(y1+y2)*(1/2) for i2,y2 in enumerate(F) if y1 != y2]
+                        new_face = PointList([y1]  + [y_bar]+ [y for y in edge_points])
+                        new_face = sort_polygon_vertices(new_face)
+                        new_face.plot(ax=ax, l=&#39;{p}&#39;)
+                        plot_surface(new_face, ax, color = cnames_list[i1])
+                        F_splits.append(new_face)
+                        
+                if False: # plot axis lines
+                    edge_points = [(y1+y2)*(1/2) for (i1,y1) in enumerate(F) for i2,y2 in enumerate(F) if i1 &lt; i2]
+                    PointList(edge_points).plot(ax=ax,l=f&#34;e&#34;, color = &#39;yellow&#39;)
+                    for p in range(nadir_point.dim):
+                        if p != 1:
+                            pass
+                            # continue
+                        unit_point = Point([nadir_point[q] if q ==p else 0 for q in range(nadir_point.dim)])
+                        projection = Point([y_bar[q] if q ==p else l[q] for q in range(nadir_point.dim)])
+                        unit_point.plot(ax=ax,l=f&#34;$obj^{p}$&#34;, color=&#39;black&#39;)
+                        # projection = l + avg_direction
+                        projection.plot(ax=ax,l=f&#39;{p}&#39;)
+                        PointList([l, unit_point + l]).plot(ax=ax, line=True, color=&#39;black&#39;)
+                
+                        # new_face = PointList([y for y in F if l[p] != y[p]] + [y_bar])
+                        new_face = PointList([y for y in F if projection &lt; y]  + [y_bar]+ [y for y in edge_points if projection &lt; y])
+                        # new_face = methods.lex_sort(new_face)
+                        new_face = sort_polygon_vertices(new_face)
+                        new_face.plot(ax=ax, l=&#39;{p}&#39;)
+                        print(f&#34;{len(new_face)=}&#34;)
+                        print(f&#34;{new_face.points}&#34;)
+                        plot_surface(new_face, ax, color = cnames_list[f+p])
+                        F_splits.append(new_face)
+
+    # plt.show()
+
+    PLOT = True
+
+    for _ in range(3):
+        print(f&#34;{len(FACES)=}&#34;)
+
+
+        if True:
+
+            fig = plt.figure()
+            if Y.dim == 3:
+                ax= plt.axes(projection = &#39;3d&#39; if Y.dim ==3 else &#39;2d&#39;)
+                # ax.view_init(elev=-10., azim=200)
+                # ax.dist = 5
+            else:
+                ax= plt.axes()
+            Y.plot(ax = ax, l=r&#34;$\mathcal{Y}$&#34;, color=&#39;red&#39;)
+            # print(f&#34;{F_splits=}&#34;)
+            for f, F in enumerate(FACES):
+                l = F.get_ideal()
+                assert all((l &lt;= y for y in F))
+                if PLOT and len(F)&gt;2:
+                    F.plot(ax=ax,point_labels=False)
+                    l.plot(ax=ax, color = cnames_list[f])
+                    plot_surface(F, ax, color = cnames_list[f])
+
+
+        FACES = split_faces(FACES)
+
+        # if _ == 0:
+            # FACES = [FACES[1]]
+
+    if PLOT: plt.show()
+
+def main():
+
+    induced_LB_3d()
+    # multiple_induced_UB()
+
+if __name__ == &#39;__main__&#39;:
+    
+    main()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="algorithm3.induced_LB_3d"><code class="name flex">
+<span>def <span class="ident">induced_LB_3d</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def induced_LB_3d():
+
+    from mpl_toolkits.mplot3d import Axes3D
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+
+    cnames = {
+    # &#39;aliceblue&#39;:            &#39;#F0F8FF&#39;,
+    # &#39;antiquewhite&#39;:         &#39;#FAEBD7&#39;,
+    &#39;aqua&#39;:                 &#39;#00FFFF&#39;,
+    &#39;aquamarine&#39;:           &#39;#7FFFD4&#39;,
+    &#39;azure&#39;:                &#39;#F0FFFF&#39;,
+    &#39;beige&#39;:                &#39;#F5F5DC&#39;,
+    &#39;bisque&#39;:               &#39;#FFE4C4&#39;,
+    &#39;black&#39;:                &#39;#000000&#39;,
+    &#39;blanchedalmond&#39;:       &#39;#FFEBCD&#39;,
+    &#39;blue&#39;:                 &#39;#0000FF&#39;,
+    &#39;blueviolet&#39;:           &#39;#8A2BE2&#39;,
+    &#39;brown&#39;:                &#39;#A52A2A&#39;,
+    &#39;burlywood&#39;:            &#39;#DEB887&#39;,
+    &#39;cadetblue&#39;:            &#39;#5F9EA0&#39;,
+    &#39;chartreuse&#39;:           &#39;#7FFF00&#39;,
+    &#39;chocolate&#39;:            &#39;#D2691E&#39;,
+    &#39;coral&#39;:                &#39;#FF7F50&#39;,
+    &#39;cornflowerblue&#39;:       &#39;#6495ED&#39;,
+    &#39;cornsilk&#39;:             &#39;#FFF8DC&#39;,
+    &#39;crimson&#39;:              &#39;#DC143C&#39;,
+    &#39;cyan&#39;:                 &#39;#00FFFF&#39;,
+    &#39;darkblue&#39;:             &#39;#00008B&#39;,
+    &#39;darkcyan&#39;:             &#39;#008B8B&#39;,
+    &#39;darkgoldenrod&#39;:        &#39;#B8860B&#39;,
+    &#39;darkgray&#39;:             &#39;#A9A9A9&#39;,
+    &#39;darkgreen&#39;:            &#39;#006400&#39;,
+    &#39;darkkhaki&#39;:            &#39;#BDB76B&#39;,
+    }
+
+    cnames_list = list(cnames.values())
+    
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+    cnames_list += cnames_list
+
+
+    def in_hull(Y : PointList, y:Point):
+        &#39;&#39;&#39; from https://stackoverflow.com/questions/16750618/whats-an-efficient-way-to-find-if-a-point-lies-in-the-convex-hull-of-a-point-cl &#39;&#39;&#39;
+        points = Y.as_np_array()
+        x = y.val
+        n_points = len(points)
+        n_dim = len(x)
+        c = np.zeros(n_points)
+        A = np.r_[points.T,np.ones((1,n_points))]
+        b = np.r_[x, np.ones(1)]
+        lp = linprog(c, A_eq=A, b_eq=b)
+        # print(lp.values())
+        if not lp.success:
+            return False
+        else:
+            return sum(1 for x in lp.x if x != 0)
+        # return lp.success
+    def strict_in_hull(Y : PointList, y:Point):
+
+        if Y.dim ==2:
+            return False 
+        points = Y.as_np_array()
+        epsilon = 1
+        x = y.val
+
+        centroid = np.mean(points, axis=0)
+        # move all extreme points epsilon distance towards centroid
+        for y in points:
+            d = centroid - y
+            # print(f&#34;{d=}&#34;)
+            # d = d / np.linalg.norm(d)
+            y += d*epsilon
+
+        n_points = len(points)
+        n_dim = len(x)
+        c = np.zeros(n_points)
+        A = np.r_[points.T,np.ones((1,n_points))]
+        b = np.r_[x, np.ones(1)]
+        lp = linprog(c, A_eq=A, b_eq=b)
+        # print(lp.values())
+        if not lp.success:
+            return False
+        else:
+            return sum(1 for x in lp.x if x != 0)
+        # return lp.success
+
+
+
+
+
+    def plot_surface(Y,ax,color = &#39;blue&#39;):
+
+        vertices = [tuple(y.val) for y in Y]
+        if Y.dim == 2:
+            PointList(vertices).plot(ax=ax, line=True, color=color, alpha = 0.2)
+        else:
+            ax.add_collection3d(Poly3DCollection([vertices], color=color, alpha = 0.2))
+
+    def hull_sort(F: PointList):
+        print(f&#34;{len(F)=}&#34;)
+        hull = ConvexHull(np.array([y.val for y in all_points]))
+        FACES = tuple(PointList([y for i,y in enumerate(F) if i in sim]) for sim in hull.simplices)
+        print(f&#34;sdsad {len(FACES)=}&#34;)
+        # assert len(FACES) == 1
+        return FACES[0]
+
+    def sort_polygon_vertices(Y:PointList):
+        # Calculate the centroid of the polygon
+        # centroid = y_bar.val
+
+        vertices = np.array([y.val for y in Y])
+        # print(f&#34;{vertices=}&#34;)
+        centroid = np.mean(vertices, axis=0)
+        # centroid = reduce(Point.__add__, Y) * (1/len(Y))
+        # Calculate the angles between each vertex and the centroid
+        angles = np.arctan2(vertices[:, 1] - centroid[1], vertices[:, 0] - centroid[0])
+        
+        # Sort the vertices based on the angles
+        sorted_indices = np.argsort(angles)
+        sorted_vertices = vertices[sorted_indices]
+        return PointList(sorted_vertices)
+
+    def plot_dominated_cone(point):
+        pass
+
+    # fig = plt.figure()
+    # ax= plt.axes(projection = &#39;3d&#39;)
+    Y = PointList.from_json(&#39;./instances/subproblems/sp-3-50-l_1.json&#39;)
+    all_points = PointList(list(Y.points) + [Y.get_nadir()])
+    hull = ConvexHull(np.array([y.val for y in all_points]))
+    # hull = ConvexHull(all_points.as_np_array())
+    # Y = [PointList([y for i,y in enumerate(Y) if i in F]) for F in hull.simplices][4]
+    # plot_surface(Y,ax)
+
+
+
+
+    ZERO = Point([0 for _ in range(Y.dim)])
+    nadir_point = Y.get_nadir()
+    # nadir_point.plot(ax=ax,l=f&#34;$y^N$&#34;)
+    # ZERO.plot(ax=ax,l=f&#34;$0$&#34;)
+    if False: # plot axis lines
+        for p in range(nadir_point.dim):
+            unit_point = Point([nadir_point[q] if q ==p else 0 for q in range(nadir_point.dim)])
+            unit_point.plot(ax=ax,l=f&#34;$obj^{p}$&#34;, color=&#39;black&#39;)
+            PointList([ZERO, unit_point]).plot(ax=ax, line=True, color=&#39;black&#39;)
+
+
+    def split_faces(FACES) -&gt; list[PointList]:
+
+        F_splits = []
+        for f, F in enumerate(FACES):
+            y_bar = reduce(Point.__add__, F) * (1/len(F))
+            for i1,y1 in enumerate(F):
+                    # F_noy1 = PointList([y for y in F if y != 0])
+                    F_noy1 = PointList([y for y in F ])
+                    # edge_points = [ye := (y1+y2)*(1/2) for i2,y2 in enumerate(F) if (y1 != y2 and not strict_in_hull(F_noy1,ye))]
+                    edge_points = [(y1+y2)*(1/2) for i2,y2 in enumerate(F) if (y1 != y2)]
+                    edge_points_outer = []
+                    for ye in edge_points:
+                        if not strict_in_hull(F, ye):
+                            edge_points_outer.append(ye)
+                    edge_points = edge_points_outer
+
+                    for ye in edge_points:
+                        # print(f&#34;{F}&#34;)
+                        assert in_hull(F, ye)
+                    # new_face = PointList([y1]  + [y_bar]+ [y for y in edge_points])
+                    new_face = PointList([y1]  + [y_bar]+ [y for y in edge_points])
+                    new_face = sort_polygon_vertices(new_face)
+                    # new_face.plot(ax=ax, l=&#39;{p}&#39;)
+                    # plot_surface(new_face, ax, color = cnames_list[i1])
+                    if len(new_face)&gt;Y.dim-1:
+                    # if True:
+                        F_splits.append(new_face)
+
+        return F_splits
+
+    all_points = PointList(list(Y.points) + [nadir_point])
+    hull = ConvexHull(np.array([y.val for y in all_points]))
+    # hull = ConvexHull(np.array([y.val for y in Y]))
+    # print(f&#34;{hull.simplices=}&#34;)
+
+
+
+    # FACES = tuple(hull.simplices)
+    FACES = [PointList([y for i,y in enumerate(Y) if i in F]) for F in hull.simplices]
+
+    if False:
+        F_splits = []
+        for f, F in enumerate(FACES):
+            # if len(Y) in sim: #skip faces with nadir_point
+                # print(f&#34;skipping {sim}&#34;)
+                # continue
+            # y_bar = Point(sum([y for y in surfacePoints])/len(surfacePoints))
+
+            # if f == 14:
+            if True:
+                # plot_surface(F, ax, color = cnames_list[f])
+                y_bar = reduce(Point.__add__, F) * (1/len(F))
+                y_bar.plot(ax=ax, l=r&#34;$\bar{y}^{&#34; + str(f) + &#34;}$&#34;, color = &#39;black&#39;)
+                l = F.get_ideal()
+                u = F.get_nadir()
+                l.plot(ax=ax, color = cnames_list[f])
+
+                # F.plot(ax=ax,point_labels=True)
+                # project y_bar onto each axis
+                if True:
+                    for i1,y1 in enumerate(F):
+                        edge_points = [(y1+y2)*(1/2) for i2,y2 in enumerate(F) if y1 != y2]
+                        new_face = PointList([y1]  + [y_bar]+ [y for y in edge_points])
+                        new_face = sort_polygon_vertices(new_face)
+                        new_face.plot(ax=ax, l=&#39;{p}&#39;)
+                        plot_surface(new_face, ax, color = cnames_list[i1])
+                        F_splits.append(new_face)
+                        
+                if False: # plot axis lines
+                    edge_points = [(y1+y2)*(1/2) for (i1,y1) in enumerate(F) for i2,y2 in enumerate(F) if i1 &lt; i2]
+                    PointList(edge_points).plot(ax=ax,l=f&#34;e&#34;, color = &#39;yellow&#39;)
+                    for p in range(nadir_point.dim):
+                        if p != 1:
+                            pass
+                            # continue
+                        unit_point = Point([nadir_point[q] if q ==p else 0 for q in range(nadir_point.dim)])
+                        projection = Point([y_bar[q] if q ==p else l[q] for q in range(nadir_point.dim)])
+                        unit_point.plot(ax=ax,l=f&#34;$obj^{p}$&#34;, color=&#39;black&#39;)
+                        # projection = l + avg_direction
+                        projection.plot(ax=ax,l=f&#39;{p}&#39;)
+                        PointList([l, unit_point + l]).plot(ax=ax, line=True, color=&#39;black&#39;)
+                
+                        # new_face = PointList([y for y in F if l[p] != y[p]] + [y_bar])
+                        new_face = PointList([y for y in F if projection &lt; y]  + [y_bar]+ [y for y in edge_points if projection &lt; y])
+                        # new_face = methods.lex_sort(new_face)
+                        new_face = sort_polygon_vertices(new_face)
+                        new_face.plot(ax=ax, l=&#39;{p}&#39;)
+                        print(f&#34;{len(new_face)=}&#34;)
+                        print(f&#34;{new_face.points}&#34;)
+                        plot_surface(new_face, ax, color = cnames_list[f+p])
+                        F_splits.append(new_face)
+
+    # plt.show()
+
+    PLOT = True
+
+    for _ in range(3):
+        print(f&#34;{len(FACES)=}&#34;)
+
+
+        if True:
+
+            fig = plt.figure()
+            if Y.dim == 3:
+                ax= plt.axes(projection = &#39;3d&#39; if Y.dim ==3 else &#39;2d&#39;)
+                # ax.view_init(elev=-10., azim=200)
+                # ax.dist = 5
+            else:
+                ax= plt.axes()
+            Y.plot(ax = ax, l=r&#34;$\mathcal{Y}$&#34;, color=&#39;red&#39;)
+            # print(f&#34;{F_splits=}&#34;)
+            for f, F in enumerate(FACES):
+                l = F.get_ideal()
+                assert all((l &lt;= y for y in F))
+                if PLOT and len(F)&gt;2:
+                    F.plot(ax=ax,point_labels=False)
+                    l.plot(ax=ax, color = cnames_list[f])
+                    plot_surface(F, ax, color = cnames_list[f])
+
+
+        FACES = split_faces(FACES)
+
+        # if _ == 0:
+            # FACES = [FACES[1]]
+
+    if PLOT: plt.show()</code></pre>
+</details>
+</dd>
+<dt id="algorithm3.induced_UB_plot"><code class="name flex">
+<span>def <span class="ident">induced_UB_plot</span></span>(<span>level, Y1, Y2, prefix='', plot=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def induced_UB_plot(level, Y1,Y2, prefix=&#39;&#39;, plot=True):
+    print(f&#34;{prefix}&#34;)
+    # print(f&#34;{level=}&#34;)
+    def get_partial(Y, level=&#39;all&#39;):   
+        Y = N(Y)
+        Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
+        Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
+        # random.shuffle(Y2other_points)
+        match level:
+            case &#39;all&#39;:
+                return Y
+            case &#39;lexmin&#39;: 
+                return PointList((Y[0], Y[-1]))
+            case &#39;extreme&#39;:
+                return PointList(Y2e_points)
+            # case float():
+            case _:
+                to_index = math.floor(float(level)*len(Y2other_points))
+                return PointList(Y2e_points + Y2other_points[:to_index])
+                # print(f&#34;case not implemented {level}&#34;)
+    
+    
+    Y2_partial = get_partial(Y2, level)
+
+
+    ub_time = time.time()
+    U = methods.find_generator_U(Y2_partial, Y1)
+    ub_time = time.time() - ub_time
+
+    Uline = methods.induced_UB(U,line=True)
+   
+    Y2_dominated = [y for y in Y2 if y.cls != &#39;se&#39; and U.dominates_point(y)]
+    dominated_relative = len(Y2_dominated)/len(Y2)
+    print(f&#34;dominated: {len(Y2_dominated)} \nrelative: {dominated_relative*100}\%&#34;)
+    
+    run_data = {&#39;prefix&#39; : prefix,
+                &#39;Y1_size&#39; : len(Y1),
+                &#39;Y2_size&#39; : len(Y2),
+                &#39;U&#39; : len(U),
+                &#39;U_time&#39; : ub_time,
+                &#39;dominated_points&#39; : len(Y2_dominated),
+                &#39;dominated_relative_Y2&#39; : dominated_relative,
+                }
+
+    return run_data</code></pre>
+</details>
+</dd>
+<dt id="algorithm3.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def main():
+
+    induced_LB_3d()
+    # multiple_induced_UB()</code></pre>
+</details>
+</dd>
+<dt id="algorithm3.multiple_induced_UB"><code class="name flex">
+<span>def <span class="ident">multiple_induced_UB</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def multiple_induced_UB():
+
+
+    set_options = [&#39;l&#39;,&#39;m&#39;,&#39;u&#39;]
+    size_options = [10, 50, 100, 150, 200, 300, 600]
+    seed_options = [1,2,3,4,5]
+    # UB_options = [&#39;lexmin&#39;,&#39;extreme&#39;,&#39;0.25&#39;,&#39;0.5&#39;,&#39;0.75&#39;,&#39;all&#39;]
+    UB_options = [&#39;extreme&#39;]
+
+    csv_file_path = &#39;./instances/results/algorithm3/result_slides_alg1_2.csv&#39;
+    # get last row
+    with open(csv_file_path, &#39;r&#39;) as csv_file:
+        reader = csv.reader(csv_file)
+        for row in reader:
+            lastrow = row
+    start_runs = False
+
+    for s1 in size_options:
+        s2 = s1
+        for ub_level in UB_options:
+        # s1 = 100 
+        # s2 = 100
+            # for s2 in size_options:
+            for t1 in set_options:
+                for t2 in set_options:
+                    for seed in seed_options:
+                        prefix = f&#39;{t1}-{t2}_{s1}_{s2}_{ub_level}_{seed}_&#39;
+#                         if start_runs == False:
+                            # if prefix == lastrow[0]:
+                                # start_runs = True
+                                # print(f&#34;Starting run after {prefix}&#34;)
+                            # continue
+                        Y1 = PointList.from_json(f&#34;./instances/subproblems/sp-2-{s1}-{t1}_{seed}.json&#34;)
+                        Y2 = PointList.from_json(f&#34;./instances/subproblems/sp-2-{s2}-{t2}_{max(seed_options)+1-seed}.json&#34;)
+                        data = induced_UB_plot(ub_level, Y1,Y2, prefix, plot=False) 
+                        data.update({&#39;t1&#39;:t1, &#39;t2&#39;:t2, &#39;s1&#39;:s1, &#39;s2&#39;:s2,&#39;seed&#39;:seed,&#39;ub_level&#39;:ub_level})
+                        print(f&#34;ALG1 solving Yn&#34;)
+                        Y = Y1+Y2
+                        Yn = N(Y)
+                        data.update({&#39;Y_size&#39;:len(Y), &#39;Yn_size&#39;:len(Yn)})
+                        print(f&#34;Solving MSG&#34;)
+                        G = solve_MGS_instance([Y1,Y2])
+                        data.update({&#39;G1_size&#39;:len(G[0]), &#39;G2_size&#39;:len(G[1])})
+                        with open(csv_file_path, &#39;a&#39;) as csv_file:
+                            # add header if file empty
+                            writer = csv.writer(csv_file)
+                            if os.path.getsize(csv_file_path) == 0:
+                                writer.writerow(data.keys())
+                            writer.writerow(data.values())</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="algorithm3.induced_LB_3d" href="#algorithm3.induced_LB_3d">induced_LB_3d</a></code></li>
+<li><code><a title="algorithm3.induced_UB_plot" href="#algorithm3.induced_UB_plot">induced_UB_plot</a></code></li>
+<li><code><a title="algorithm3.main" href="#algorithm3.main">main</a></code></li>
+<li><code><a title="algorithm3.multiple_induced_UB" href="#algorithm3.multiple_induced_UB">multiple_induced_UB</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

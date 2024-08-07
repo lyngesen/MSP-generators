@@ -1,5 +1,5 @@
 ---
-title: "Results: Plots - Generator upper bound sets"
+title: "Results: Algorithm 3"
 output: html_document
 date: "`r Sys.Date()`"
 editor_options: 
