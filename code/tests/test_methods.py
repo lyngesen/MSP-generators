@@ -113,7 +113,7 @@ def test_python_c_wrapper():
     MSP_list = [
                 './instances/problems/prob-2-50|50-mm-2_3.json',
                 './instances/problems/prob-3-50|50-mm-2_3.json',
-                './instances/problems/prob-4-100|100-ll-2_3.json',
+                './instances/problems/prob-4-50|50-ll-2_3.json',
             ]
     for i, MSP_name in enumerate(MSP_list):
         print(f"{MSP_name=}")

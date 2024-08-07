@@ -2,7 +2,7 @@ import timing
 
 
 
-from timing import timeit, print_timeit
+from timing import timeit, print_timeit, reset_timeit
 
 def test_timing():
     @timeit
@@ -26,5 +26,7 @@ def test_timing():
     blibli()
     
     print_timeit()
-    
+    reset_timeit()
+    print_timeit()
+       
      
