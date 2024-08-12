@@ -66,10 +66,11 @@ raw <- full_join(tibble(path = files), raw)
 dat <- raw %>% 
   mutate(method = str_extract(path, "^.*-(.*)-.*$", group = 1)) %>% 
   mutate(method = map_chr(method, function (x) {
-  x <- str_split_1(x, "")
-  x <- unique(x)
-  str_c(x, collapse = "")
+    x <- str_split_1(x, "")
+    x <- unique(x)
+    str_c(x, collapse = "")
   })) %>% 
+  mutate(spSize = as.numeric(str_extract(path, "^.*-(.*?)\\|.*$", group = 1))) |> 
   rowwise() %>% 
   mutate(aveWidth = mean(c_across(starts_with("width")), na.rm = T),
          points_hypercube = if_else(is.nan(aveWidth), NA, prod(1 + c_across(starts_with("width")), na.rm = T)),
@@ -95,9 +96,9 @@ dat <- dat %>%
     ubCard = prod(c_across(starts_with("spCard")), na.rm = T)
   ) %>% 
   ungroup()
-datFull <- dat
+datFull <- dat |> filter(spSize <= 300)
 # remove results where have not solved all instances
-dat <- dat %>% 
+dat <- datFull %>% 
   group_by(p, m, method, spAveCard) %>% 
   mutate(instances = n()) %>% 
   filter(instances == 5, spAveCard <= 600) %>% 

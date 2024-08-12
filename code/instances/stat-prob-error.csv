@@ -88,3 +88,4 @@ path,type,alg
 /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-600|600-uu-2_5.json,classify,alg1
 /home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-4-100|100|100|100-uuuu-4_1.json,classify,alg1
 alg1-prob-5-100|100|100-lll-3_3.json,classifyExt,alg1
+alg1-prob-4-100|100|100|100-llll-4_1.json,classifyExt,alg1
