@@ -13,7 +13,7 @@ knit: (function(inputFile, encoding) {
 
 ```{r setup, include=FALSE}
 remotes::install_github("relund/gMOIP")
-library(gMOIP)
+#library(gMOIP)
 library(tidyverse)
 library(knitr)
 library(rgl)

@@ -154,7 +154,7 @@ dat %>%
   #geom_boxplot() + 
   stat_summary(fun="mean", geom="line") +
   facet_grid(p ~ m, labeller =  "label_both")  + 
-  labs(title = "Size of MGS given subproblem cardinality",
+  labs(title = "Relative size of MGS given subproblem cardinality",
        y = "Relative cardinality MGS/Max MGS",
        x = "Average subproblem cardinality",
        color = "Methods used to generate subproblems") +
