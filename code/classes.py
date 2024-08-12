@@ -272,6 +272,7 @@ class PointList:
         """
         return PointList([y1 - y2 for y1 in self for y2 in other])
 
+
     def __mul__(self,other):
         """
         input: list of two PointList
@@ -294,14 +295,16 @@ class PointList:
             for p in range(self.dim):
                 if nadir_vals[p] < point.val[p]:
                     nadir_vals[p] = point.val[p]
-        return Point(nadir_vals)
+        self.nadir = Point(nadir_vals)
+        return self.nadir
     def get_ideal(self):
         ideal_vals = list(tuple(self.points[0].val))
         for point in self.points:
             for p in range(self.dim):
                 if ideal_vals[p] > point.val[p]:
                     ideal_vals[p] = point.val[p]
-        return Point(ideal_vals)
+        self.ideal = Point(ideal_vals)
+        return self.ideal
 
 
 
@@ -406,7 +409,10 @@ class PointList:
             # TODO: Error if values not casted to float65  - does not work for int64? <08-02-24> #
             values = np.float64(values)
             point = Point(values)
-            point.cls = json_point['cls']
+            if 'cls' in json_point:
+                point.cls = json_point['cls']
+            else:
+                point.cls = None
             points.append(point)
         Y = PointList(points)
         Y.statistics = statistics
@@ -429,7 +435,22 @@ class PointList:
 
     def __eq__(self, other):
         return collections.Counter(self.points) == collections.Counter(other.points)
+
+    def __lt__(self, other):
+        """
+        input: two PointLists
+        output: return True if each point of other is dominated by at least one point in self
+        """
+        for y2 in other:
+            for y1 in self:
+                if y1 < y2:
+                    break
+            else: # finally, if for loop finishes normaly
+                return False
+        return True
     
+    
+
     def __getitem__(self, item):
         return self.points[item]
 
@@ -514,7 +535,7 @@ class MSPInstances:
     max_instances : int = 0 
     m_options : tuple[int]= (2,3,4,5) # subproblems
     p_options : tuple[int]= (2,3,4,5) # dimension
-    generation_options : tuple[str]= ('l','m','u') # generation method
+    generation_options : tuple[str]= ('l','m','u', 'ul') # generation method
     ignore_ifonly_l : bool = False # if true ignore MSP where method i only l
     size_options : tuple[int]= (50, 100, 150, 200, 300,600) # subproblems size
     seed_options : tuple[int]=  (1,2,3,4,5)
@@ -547,7 +568,7 @@ class MSPInstances:
             case '2d':
                 self.p_options = (2,)
             case 'algorithm1':
-                self.generation_options = ['m','u','ul'] # generation method
+                self.generation_options = ['m','u','l'] # generation method
                 self.size_options = (50, 100, 150, 200, 300) # subproblems size
             case 'algorithm2':
                 self.generation_options = ['m','u', 'l'] # generation method
@@ -577,7 +598,8 @@ class MSPInstances:
                    instance_dict['M'] in self.m_options,
                    set(instance_dict['method']).issubset(set(self.generation_options)),
                    instance_dict['size'] in self.size_options,
-                   instance_dict['seed'] in self.seed_options
+                   instance_dict['seed'] in self.seed_options,
+                    (self.preset != 'algorithm1' or (not (instance_dict['p'] == 5 and instance_dict['M'] == 5 ))) # if algorithm 1 then not p=m=5
                    )):
                 self.filename_list.append(filename)
             
