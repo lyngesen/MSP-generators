@@ -158,7 +158,7 @@ def alg2(MSP):
 def get_fixed_and_reduced(C_dict, Y_list):
 
     # pprint.pprint(C_dict)
-
+    # TODO: Use the fact that extreme supported points are known to be in MGS <06-08-24> #
     Y_fixed = [set() for s, _ in enumerate(Y_list)]
     Y_reduced = [set() for s, _ in enumerate(Y_list)]
 

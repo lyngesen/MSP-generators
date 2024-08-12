@@ -1,6 +1,7 @@
 from classes import Point, PointList, MinkowskiSumProblem
 from classes import Node, LinkedList 
 import methods
+import os
 
 import pytest
 
@@ -91,6 +92,7 @@ def test_pointlist():
     Y2 = PointList((y1, y1, y2))
     assert Y1 == Y2
 
+
     assert isinstance(PointList(y1)[0], Point) 
     assert isinstance(PointList(((1,1),))[0], Point) 
 
@@ -98,7 +100,12 @@ def test_pointlist():
     testset = "instances/testsets/BINOM-p2-n100-s1"
     Y = PointList.from_csv(testset)
 
+    Y1 = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')
+    Y2 = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')*2
 
+    assert Y1 < Y2
+    assert Y1 == Y1
+    assert not (Y2 < Y1)
  
 def test_pointlist_operators():
     y1 = Point((1,2))
@@ -140,7 +147,9 @@ def test_PointList_json():
     jsonfilename = "instances/results/algorithm1/alg1-prob-4-50|50|50|50-uuuu-4_2.json"
     print(f"{jsonfilename=}")
     Y = PointList.from_json(jsonfilename)
+    save_filename = "tests/temp/PointList_large_save_json.json"
     Y.save_json("tests/temp/PointList_large_save_json.json")
+    os.remove(save_filename)
 
 
 
@@ -148,3 +157,6 @@ def test_MSP_json():
     jsonfilename = "instances/problems/prob-2-200|200-ll-2_1.json"
     MSP = MinkowskiSumProblem.from_json(jsonfilename)
     print(f"{MSP=}")
+
+
+

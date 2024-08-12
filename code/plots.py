@@ -20,7 +20,7 @@ import random
 import time
 import csv
 import math
-
+from algorithm2 import algorithm2
 
 def plot_or_save(fig, fname: str):
     """ call to plot or save fig """
@@ -615,6 +615,41 @@ def make_matrix_plot():
         if 'magnitudes' not in fig_name: continue
 
         matrix_plot(Y1,Y2, fig_name = fig_name, point_labels= point_labels, matrix_only=matrix_only)
+
+
+def slides_matrix_example_MGS():
+    Y1 = PointList.from_json("instances/subproblems/sp-2-10-u_1.json")
+    Y1 = [y1 for y1 in Y1]
+    Y1 += [y1*1.1 for y1 in PointList.from_json("instances/subproblems/sp-2-10-u_2.json")]
+    Y1_remove = {i:tuple(y.val) for i,y in enumerate(N(PointList(Y1))) if i in (7, 8, 9,10, 11, 12) }
+    Y1 = [y1 for i,y1 in enumerate(Y1) if tuple(y1.val) not in Y1_remove.values()]
+    Y1 = PointList(Y1)
+
+    Y2 = PointList.from_json("instances/subproblems/sp-2-10-m_10.json")
+    Y2 = [y2 for y2 in Y2]
+    Y2 += [y1*1.1 for y1 in PointList.from_json("instances/subproblems/sp-2-10-m_2.json")]
+    Y2 = PointList(Y2)
+    fig_name = "test_plot" 
+
+
+    MSP = MinkowskiSumProblem([Y1,Y2])
+    MGS = MinkowskiSumProblem(algorithm2(MSP))
+
+    ######################## Figure test_plot START ########################
+    fig_name = "test_plot"
+    print(f"Plotting figure: {fig_name}")
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout='constrained')
+    
+    
+    MSP.plot()
+    MGS.plot(marker='x')
+    
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure test_plot END #########################
+
 
 
 def slides_matrix_plot():
@@ -1256,9 +1291,12 @@ def all_slides():
 
 def main():
 
+    slides_matrix_example_MGS()
+    # slides_matrix_plot()
+
     # RGS_slides()
     # phase_1_slides()
-    all_slides()
+    # all_slides()
 
     # Week 22, 2024
     # counter_example_reduction()

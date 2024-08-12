@@ -293,9 +293,11 @@ def main():
 
     save_prefix = 'alg1-'
     save_solution_dir = './instances/results/algorithm1/'
-    TI = MSPInstances('algorithm1')
+    TI = MSPInstances('algorithm1', ignore_ifonly_l=True)
     TI.filter_out_solved(save_prefix, save_solution_dir)
     print(f"{TI=}")
+    logger.info(f"{TI=}")
+    logger.info(f"{TI.filename_list=}")
 
     logger.info(f'Running algorithm1 on test instance set {TI}')
 

@@ -52,10 +52,12 @@ def build_model(Y_list) -> pyomo.ConcreteModel():
 
     for s, i in model.IS: 
         for j in model.J:
+            # ys_i covers j only if ys_i is chosen
             model.cons.add(model.w[s, i, j] <= model.x[s, i])
     
     for j in model.J:
         for p in range(P):
+
             model.cons.add(sum(model.w[s, i, j]*Y_list[s][i][p] for s in S for i in I_dict[s]) - Yn[j][p]  == 0)
     
     # Define objective
