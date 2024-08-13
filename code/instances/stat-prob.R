@@ -50,7 +50,7 @@ classifyStat <- function(path, classifyExt = FALSE) {
    tictoc::tic()
    lst <- jsonlite::read_json(path, simplifyVector = T)
    cat(path, ": Classify", lst$statistics$card, "points ...")
-   if (is.null(lst$points)) {
+   if (is.null(lst$points) | length(lst$points) == 0) {
       calc <- FALSE
       datError <<- bind_rows(datError, c(path = path, type = "no points", alg = "alg1"))
       write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
