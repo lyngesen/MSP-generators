@@ -571,6 +571,43 @@ dat %>%
 
 ```{r}
 dat %>% 
+  ggplot(aes(x = p, y = pctExt, color = method)) +
+  geom_point() + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(spAveCard ~ m, margins = T, labeller = label_both)  + 
+  labs(title = "Relativ number of extreme points given subproblem cardinality",
+       y = "%",
+       x = "Subproblem cardinality",
+       color = "Methods used to generate subproblems") +
+  theme(legend.position = "bottom") 
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(x = m, y = pctExt, color = method)) +
+  geom_point() + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ spAveCard, margins = T, labeller = label_both)  + 
+  labs(title = "Relativ number of extreme points given subproblem cardinality",
+       y = "%",
+       x = "Subproblem cardinality",
+       color = "Methods used to generate subproblems") +
+  theme(legend.position = "bottom") 
+```
+
+```{r}
+dat |> 
+  summarise(minPctEx = min(pctExt, na.rm = T), avePctExt = mean(pctExt, na.rm = T), maxPctEx = max(pctExt, na.rm = T)) 
+
+dat |> 
+  group_by(method) |> 
+  summarise(minPctEx = min(pctExt, na.rm = T), avePctExt = mean(pctExt, na.rm = T), maxPctEx = max(pctExt, na.rm = T)) |> 
+  arrange(desc(avePctExt))
+```
+
+
+```{r}
+dat %>% 
   ggplot(aes(x = spAveCard, y = pctSup, color = method)) +
   geom_point() + 
   stat_summary(fun="mean", geom="line") +
