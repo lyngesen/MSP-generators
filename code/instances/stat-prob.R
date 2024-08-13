@@ -191,8 +191,7 @@ updateProbStatFile <- function() {
 paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
 datOkay <-  read_csv(here::here("code/instances/stat-prob-okay.csv")) |> # info about what stat already done
    mutate(path = fs::path_file(path)) |> 
-   distinct(path, type, alg) |> 
-   arrange(path)
+   distinct(path, type, alg) 
 timeLimit <- 120 * 60  # max run time in sec
 tictoc::tic.clear()
 start <- Sys.time()
@@ -220,8 +219,7 @@ cat("\n\nDone.\n\n")
 cat("\n\nClassify extreme points\n\n")
 datError <- read_csv(here::here("code/instances/stat-prob-error.csv")) |> 
    mutate(path = fs::path_file(path)) |> 
-   distinct(path, type, alg) |> 
-   arrange(path)
+   distinct(path, type, alg) 
 datErrorExt <- datError %>% 
    filter(type %in% c("classifyExt", "no points"))
 idx <- which(fs::path_file(paths) %in% fs::path_file(datErrorExt$path))
@@ -255,37 +253,45 @@ cat("\n\nDone.\n\n")
 
 
 
-cat("\n\nClassify fully\n\n")
-datErrorCls <- datError %>% 
-   filter(type %in% c("classify", "classifyExt", "no points"))
-idx <- which(fs::path_file(paths) %in% fs::path_file(datErrorCls$path))
-paths1 <- paths[-idx]  # paths that we try to classify (may already have been)
-datCalc <- datOkay |> filter(type == "classify")
-idx <- which(fs::path_file(paths1) %in% fs::path_file(datCalc$path))
-if (length(idx) > 0) paths1 <- paths1[-idx] 
-calc <- FALSE
-cpu <- difftime(Sys.time(), start, units = "secs")
-if (cpu < timeLimit) {
-   for (path in paths1) {
-      res <- tryCatchLog(classifyStat(path), 
-         error = function(c) {
-            datError <- bind_rows(datError, c(path = path, type = "classify", alg = "alg1"))
-            write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
-            return(NA)
-         })
-      if (is.na(res)) break   # stop so can commit
-      calc <- any(calc, res)
-      cpu <- difftime(Sys.time(), start, units = "secs")
-      cat("Cpu total", cpu, "\n")
-      if (cpu > timeLimit) {
-         cat("Time limit reached! Stop R script.")
-         break
-      }
-   }
-   if (calc) updateProbStatFile()
-}
-cat("\n\nDone.\n\n")
+# cat("\n\nClassify fully\n\n")
+# datErrorCls <- datError %>% 
+#    filter(type %in% c("classify", "classifyExt", "no points"))
+# idx <- which(fs::path_file(paths) %in% fs::path_file(datErrorCls$path))
+# paths1 <- paths[-idx]  # paths that we try to classify (may already have been)
+# datCalc <- datOkay |> filter(type == "classify")
+# idx <- which(fs::path_file(paths1) %in% fs::path_file(datCalc$path))
+# if (length(idx) > 0) paths1 <- paths1[-idx] 
+# calc <- FALSE
+# cpu <- difftime(Sys.time(), start, units = "secs")
+# if (cpu < timeLimit) {
+#    for (path in paths1) {
+#       res <- tryCatchLog(classifyStat(path), 
+#          error = function(c) {
+#             datError <- bind_rows(datError, c(path = path, type = "classify", alg = "alg1"))
+#             write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
+#             return(NA)
+#          })
+#       if (is.na(res)) break   # stop so can commit
+#       calc <- any(calc, res)
+#       cpu <- difftime(Sys.time(), start, units = "secs")
+#       cat("Cpu total", cpu, "\n")
+#       if (cpu > timeLimit) {
+#          cat("Time limit reached! Stop R script.")
+#          break
+#       }
+#    }
+#    if (calc) updateProbStatFile()
+# }
+# cat("\n\nDone.\n\n")
 
+datError <- datError |> 
+   mutate(path = fs::path_file(path)) |> 
+   distinct(path, type, alg) |> 
+   arrange(path, alg, type)
+datOkay <- datOkay |> 
+   mutate(path = fs::path_file(path)) |> 
+   distinct(path, type, alg) |> 
+   arrange(path, alg, type)
 write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
 write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
 cat("\n\nFinish running R script.\n\n")
