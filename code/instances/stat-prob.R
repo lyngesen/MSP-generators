@@ -5,19 +5,20 @@ library(tidyverse)
 library(gMOIP)
 library(tryCatchLog)
 here::i_am("code/instances/stat-prob.R")  # specify relative path given project
+options(readr.show_progress = FALSE)
 
 #### Functions ####
 
-#' Classify and update statistics
+#' Update simple statistics
 #'
 #' @param path Path to result file.
 #' @return True if calculated statistics.
 calcStat <- function(path) {
+   tictoc::tic()
+   cat("Update simple statistics:", path, "...")
    lst <- jsonlite::read_json(path, simplifyVector = T)
    calc <- any(is.na(lst$statistics$min)) & length(lst$points) > 0
    if (calc) {
-      tictoc::tic()
-      cat("Update simple statistics:", path, "...")
       p <- lst$statistics$p
       pts <- lst$points
       lst$statistics$min <- Rfast::colMins(as.matrix(pts[, 1:p]), value = T)
@@ -26,10 +27,14 @@ calcStat <- function(path) {
       # lst$statistics$method <- NULL
       jsonlite::write_json(lst, path, pretty = FALSE)
       cat(" done.\n")
-      tictoc::toc()
+      datOkay <- bind_rows(datOkay, c(path = path, type = "simple", alg = "alg1"))
+      write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
    } else {
-      # cat(" already calc.\n")
+      datOkay <<- bind_rows(datOkay, c(path = path, type = "simple", alg = "alg1"))
+      write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
+      cat(" already calc.\n")
    }
+   tictoc::toc()
    return(calc)
 }
 
@@ -42,6 +47,7 @@ calcStat <- function(path) {
 #'
 #' @return True if classified any points
 classifyStat <- function(path, classifyExt = FALSE) {
+   cat(path, ": Classify", lst$statistics$card, "points ...")
    tictoc::tic()
    lst <- jsonlite::read_json(path, simplifyVector = T)
    if (is.null(lst$points)) {
@@ -49,8 +55,15 @@ classifyStat <- function(path, classifyExt = FALSE) {
    } else {
       calc <- is.null(lst$points$cls) #| any(is.na(lst$points$cls))
    }
+   if (!calc & !is.null(lst$points$cls) & any(is.na(lst$points$cls))) {
+      datOkay <<- bind_rows(datOkay, c(path = path, type = "classifyExt", alg = "alg1"))
+      write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
+   } 
+   if (!calc & !is.null(lst$points$cls) & !any(is.na(lst$points$cls)))  {
+      datOkay <<- bind_rows(datOkay, c(path = path, type = "classify", alg = "alg1"))
+      write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
+   }
    if (calc & !classifyExt) {
-      cat(path, ": Classify", lst$statistics$card, "points ...")
       p <- lst$statistics$p
       pts <- classifyNDSet(lst$points[, 1:p]);
       if (nrow(pts) > 0) pts <- pts %>% distinct();
@@ -61,6 +74,8 @@ classifyStat <- function(path, classifyExt = FALSE) {
       lst$statistics$unsupported <- sum(pts$us);
       jsonlite::write_json(lst, path, pretty = FALSE)
       cat(" done.\n")
+      datOkay <<- bind_rows(datOkay, c(path = path, type = "classify", alg = "alg1"))
+      write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
    } else if (calc & classifyExt) {
       cat(path, ": Classify", lst$statistics$card, " points (find extreme) ...")
       p <- lst$statistics$p
@@ -71,14 +86,16 @@ classifyStat <- function(path, classifyExt = FALSE) {
       lst$statistics$extreme <- sum(pts$se);
       jsonlite::write_json(lst, path, pretty = FALSE)
       cat(" done (ext).\n")
+      datOkay <<- bind_rows(datOkay, c(path = path, type = "classifyExt", alg = "alg1"))
+      write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
    } else {
-      # cat(" already calc.\n")
+      cat(" already calc.\n")
    }
    if (fs::file_size(path) > "20MB" & !any(is.na(lst$statistics$extreme))) { # reduce file sizes
       lst$points <- NULL
       jsonlite::write_json(lst, path, pretty = FALSE)
    }
-   # tictoc::toc()
+   tictoc::toc()
    return(calc)
 }
 
@@ -133,6 +150,7 @@ classifyExt <- function(pts) {
 #' @return Algorithms updated results for.
 updateProbStatFile <- function() {
    cat("Update statistics for results.")
+   tictoc::tic()
    paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
    prefix <- str_extract(paths, ".*/")
    filename <- str_extract(paths, "^.*/(.*)$", group = 1)
@@ -155,6 +173,7 @@ updateProbStatFile <- function() {
          write_csv(datRes, here::here("code/instances/stat-prob.csv"))
       }
    }
+   tictoc::toc()
    return(alg)
 }
 
@@ -166,14 +185,20 @@ updateProbStatFile <- function() {
 # sink(zz, type = "message")  # open the same file for messages, errors and warnings
 
 paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
+datOkay <-  read_csv(here::here("code/instances/stat-prob-okay.csv")) |> # info about what stat already done
+   mutate(path = fs::path_file(path)) |> 
+   distinct(path, type, alg)
 timeLimit <- 120 * 60  # max run time in sec
 tictoc::tic.clear()
 start <- Sys.time()
 cat("\n\nStarting running R script.\n\n")
 
-## first update simple stat
+datCalc <- datOkay |> filter(type == "simple")
+idx <- which(fs::path_file(paths) %in% fs::path_file(datCalc$path))
+paths1 <- paths[-idx] 
+cat("\n\nUpdate simple stat\n\n")
 calc <- FALSE
-for (path in paths) {
+for (path in paths1) {
    calc <- any(calc, calcStat(path))
    cpu <- difftime(Sys.time(), start, units = "secs")
    if (calc) cat("Cpu total", cpu, "\n")
@@ -183,24 +208,20 @@ for (path in paths) {
    }
 }
 if (calc) updateProbStatFile()
+cat("\n\nDone.\n\n")
 
-## next try to classify
+
+
+cat("\n\nClassify extreme points\n\n")
 datErrorExt <- read_csv(here::here("code/instances/stat-prob-error.csv")) %>% 
    filter(type == "classifyExt")
 idx <- which(fs::path_file(paths) %in% fs::path_file(datErrorExt$path))
 paths1 <- paths[-idx]  # paths that we try to classify only extreme in (may already have been)
-# idx <- which(fs::path_file(datError$path) %in% fs::path_file(datErrorExt$path))
-# paths2 <- datError$path
-# if (length(idx) > 0) paths2 <- datError$path[-idx]
-
-datErrorCls <- read_csv(here::here("code/instances/stat-prob-error.csv")) %>% 
-   filter(type %in% c("classify", "classifyExt"))
-idx <- which(fs::path_file(paths) %in% fs::path_file(datErrorCls$path))
-paths2 <- paths[-idx]  # paths that we try to classify (may already have been)
-
+datCalc <- datOkay |> filter(type == "classifyExt")
+idx <- which(fs::path_file(paths1) %in% fs::path_file(datCalc$path))
+if (length(idx) > 0) paths1 <- paths1[-idx] 
 calc <- FALSE
 if (cpu < timeLimit) {
-   # try to calc just extreme
    for (path in fs::path_file(paths1)) {
       res <- tryCatchLog(classifyStat(here::here(str_c("code/instances/results/algorithm1/", path)), classifyExt = T), 
                          error = function(c) {
@@ -211,16 +232,29 @@ if (cpu < timeLimit) {
       if (is.na(res)) break   # stop so can commit
       calc <- any(calc, res)
       cpu <- difftime(Sys.time(), start, units = "secs")
-      if (calc) cat("Cpu total", cpu, "\n")
+      cat("Cpu total", cpu, "\n")
       if (cpu > timeLimit) {
          cat("Time limit reached! Stop R script.")
          break
       }
    }
    if (calc) updateProbStatFile()
-   
-   # try to classify fully
-   for (path in paths2) {
+}
+cat("\n\nDone.\n\n")
+
+
+
+cat("\n\nClassify fully\n\n")
+datErrorCls <- read_csv(here::here("code/instances/stat-prob-error.csv")) %>% 
+   filter(type %in% c("classify", "classifyExt"))
+idx <- which(fs::path_file(paths) %in% fs::path_file(datErrorCls$path))
+paths1 <- paths[-idx]  # paths that we try to classify (may already have been)
+datCalc <- datOkay |> filter(type == "classify")
+idx <- which(fs::path_file(paths1) %in% fs::path_file(datCalc$path))
+if (length(idx) > 0) paths1 <- paths1[-idx] 
+calc <- FALSE
+if (cpu < timeLimit) {
+   for (path in paths1) {
       res <- tryCatchLog(classifyStat(path), 
          error = function(c) {
             datError <- bind_rows(datError, c(path = path, type = "classify", alg = "alg1"))
@@ -230,7 +264,7 @@ if (cpu < timeLimit) {
       if (is.na(res)) break   # stop so can commit
       calc <- any(calc, res)
       cpu <- difftime(Sys.time(), start, units = "secs")
-      if (calc) cat("Cpu total", cpu, "\n")
+      cat("Cpu total", cpu, "\n")
       if (cpu > timeLimit) {
          cat("Time limit reached! Stop R script.")
          break
@@ -238,6 +272,7 @@ if (cpu < timeLimit) {
    }
    if (calc) updateProbStatFile()
 }
+cat("\n\nDone.\n\n")
 
 cat("\n\nFinish running R script.\n\n")
 
