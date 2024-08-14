@@ -36,7 +36,7 @@ example use:
 """
 from functools import wraps
 import time
-
+import threading 
 
 # Define global dictionaries
 TIME_dict = {}
@@ -104,3 +104,49 @@ def time_object(object_name, prefix = None):
             fct = timeit(fct, f'{prefix}.{fct_str}')
             setattr(object_name, fct_str, fct)
     return object_name
+
+
+
+
+
+
+def log_every_x_minutes(x, logger):
+    """
+    A decorator for creating a log every x minutes. Threading is required as the process has to run paralell to calling the function func
+    
+
+    Usage:
+        import logging
+        logging.basicConfig(level=logging.INFO, filename=logname)
+        logger = logging.getLogger(logname)
+
+        @log_every_x_minutes(30, logger)
+        def example_function_which_takes_a_long_time_to_run():
+            time.sleep(a long time)
+    (or)
+        example_fct = log_every_x_minutes(30, logger)(example_fct)
+
+
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start_time = time.time()
+            def log_time():
+                while True:
+                    elapsed_time = time.time() - start_time
+                    logger.info(f"The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes")
+                    time.sleep(x * 60)
+            
+            # Start the logging thread
+            log_thread = threading.Thread(target=log_time)
+            log_thread.daemon = True
+            log_thread.start()
+            
+            # Call the original function
+            return func(*args, **kwargs)
+        
+        return wrapper
+    return decorator
+
+
