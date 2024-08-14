@@ -202,7 +202,8 @@ def call_c_nondomDC(call_id:str):
     # subprocess.call(['./nondom',call_id])
     # return to initial directory
     # os.chdir(current_d)
-    subprocess.call(['/Users/au618299/Desktop/cythonTest/nondom/./nondom',call_id])
+    # subprocess.call(['/Users/au618299/Desktop/cythonTest/nondom/./nondom',call_id])
+    subprocess.call(['./nondom',call_id])
 
 
 def nondomDC_wrapper(Y : PointList):
@@ -381,7 +382,7 @@ def lex_filter(Y: PointList):
 def induced_UB(Y: PointList, line=False, assumption = "consecutive"):
     """ Induced upper bound set from pointlist Y, points are assumed to be consecutive in Yn"""
     # arg assumption in [consecutive, supported, nonconsecutive]
-    assert assumption in ["consecutive", "supported", "nonconsecutive"]
+    assert assumption in ["consecutive", "supported", "nonconsecutive","localNadir"]
 
     Y = N(Y)
     U = []
@@ -391,7 +392,7 @@ def induced_UB(Y: PointList, line=False, assumption = "consecutive"):
         for i in range(len(Y)-1):
                 if assumption == "consecutive":
                     u = Point((Y[i+1][0], Y[i][1]))
-                elif assumption == "nonconsecutive":
+                elif assumption in {"nonconsecutive", "localNadir"}:
                     u = Point((Y[i][0], Y[i+1][1]))
                 if assumption != "supported":
                     U.append(u)
@@ -402,7 +403,11 @@ def induced_UB(Y: PointList, line=False, assumption = "consecutive"):
                 seen.add(Y[i+1])
                 u = Point((Y[i+1][0], Y[i][1]))
                 U.append(u)
-    U = PointList(U)
+    if assumption == 'localNadir':
+        U = PointList([Y[0]] + U + [Y[-1]])
+        assert U.dim == 2
+    else:
+        U = PointList(U)
     return U
  
 
@@ -460,6 +465,33 @@ def find_generator_U(Y1:PointList, Y2:PointList) -> PointList:
 
     return PointList(Uc)
 
+
+def U_dominates_L(U: PointList, L:PointList):
+    '''
+    Checks if the lower bound L is dominated by the upper bound U
+    input :
+        U : list of non-dominated points as tuples
+        L : list of supported points which make up the lower bound set
+    '''
+    assert all((L.dim == U.dim, L.dim == 2))
+    # y = sorted(set(L)) # sort non-dominated points
+    L = lex_sort(N(L))
+    local_nadir_points = induced_UB(U, assumption='localNadir')
+
+    if len(L) == 1:
+        return U.dominates_point(L[0])
+    for i in range(len(set(L)) - 1):
+        # define linear function (line between l[i] and l[i+1])
+        lin_fct = lambda x : L[i][1] + (L[i+1][1]-L[i][1])/(L[i+1][0]-L[i][0])*(x-L[i][0])
+        for n in local_nadir_points:
+            if L[i][0] <= n[0] and n[0] <= L[i+1][0]:
+                if n[1] > lin_fct(n[0]):
+                    print(f"line between {L[i],L[i+1]} is not dominated by nadir-point {n}")
+                    return False
+                if math.isclose(n[1], lin_fct(n[0])):
+                    return False
+    # if loop ends, the node is not dominated by the upper bound set
+    return True
 
 
 
