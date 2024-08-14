@@ -6,6 +6,7 @@ library(gMOIP)
 library(tryCatchLog)
 here::i_am("code/instances/stat-prob.R")  # specify relative path given project
 options(readr.show_progress = FALSE)
+options(keep.source = TRUE)
 
 #### Functions ####
 
@@ -190,8 +191,9 @@ updateProbStatFile <- function() {
 
 paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
 datOkay <-  read_csv(here::here("code/instances/stat-prob-okay.csv")) |> # info about what stat already done
-   mutate(path = fs::path_file(path)) |> 
-   distinct(path, type, alg) 
+   mutate(path = fs::path_file(path)) |>
+   distinct(path, type, alg) |>
+   arrange(path, alg, type)
 timeLimit <- 120 * 60  # max run time in sec
 tictoc::tic.clear()
 start <- Sys.time()
@@ -218,8 +220,9 @@ cat("\n\nDone.\n\n")
 
 cat("\n\nClassify extreme points\n\n")
 datError <- read_csv(here::here("code/instances/stat-prob-error.csv")) |> 
-   mutate(path = fs::path_file(path)) |> 
-   distinct(path, type, alg) 
+   mutate(path = fs::path_file(path)) |>
+   distinct(path, type, alg) |>
+   arrange(path, alg, type)
 datErrorExt <- datError %>% 
    filter(type %in% c("classifyExt", "no points"))
 idx <- which(fs::path_file(paths) %in% fs::path_file(datErrorExt$path))
@@ -284,16 +287,6 @@ cat("\n\nDone.\n\n")
 # }
 # cat("\n\nDone.\n\n")
 
-datError <- datError |> 
-   mutate(path = fs::path_file(path)) |> 
-   distinct(path, type, alg) |> 
-   arrange(path, alg, type)
-datOkay <- datOkay |> 
-   mutate(path = fs::path_file(path)) |> 
-   distinct(path, type, alg) |> 
-   arrange(path, alg, type)
-write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
-write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
 cat("\n\nFinish running R script.\n\n")
 
 ## Close log file
