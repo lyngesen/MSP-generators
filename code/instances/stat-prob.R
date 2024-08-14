@@ -47,11 +47,13 @@ calcStat <- function(path) {
 #'
 #' @return True if classified any points
 classifyStat <- function(path, classifyExt = FALSE) {
-   cat(path, ": Classify", lst$statistics$card, "points ...")
    tictoc::tic()
    lst <- jsonlite::read_json(path, simplifyVector = T)
-   if (is.null(lst$points)) {
+   cat(path, ": Classify", lst$statistics$card, "points ...")
+   if (is.null(lst$points) | length(lst$points) == 0) {
       calc <- FALSE
+      datError <<- bind_rows(datError, c(path = path, type = "no points", alg = "alg1"))
+      write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
    } else {
       calc <- is.null(lst$points$cls) #| any(is.na(lst$points$cls))
    }
@@ -77,9 +79,8 @@ classifyStat <- function(path, classifyExt = FALSE) {
       datOkay <<- bind_rows(datOkay, c(path = path, type = "classify", alg = "alg1"))
       write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
    } else if (calc & classifyExt) {
-      cat(path, ": Classify", lst$statistics$card, " points (find extreme) ...")
       p <- lst$statistics$p
-      pts <- classifyExt(lst$points[, 1:p]);
+      pts <- classifyNDSetExt(lst$points[, 1:p]);
       if (nrow(pts) > 0) pts <- pts %>% distinct();
       lst$points <- pts %>% select(-se);
       lst$statistics$card <- nrow(pts);
@@ -100,12 +101,15 @@ classifyStat <- function(path, classifyExt = FALSE) {
 }
 
 
+
+
+
 #' Classify points into exteme and non-extreme
 #'
 #' @param pts Nondominted set
 #'
 #' @return The nondominted set with extra columns cls (chr) and se (0 or 1).
-classifyExt <- function(pts) {
+classifyNDSetExt <- function(pts) {
    p <- ncol(pts)
    colnames(pts)[1:p] <- paste0("z", 1:p)
    direction <- rep(1,p)
@@ -187,7 +191,7 @@ updateProbStatFile <- function() {
 paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
 datOkay <-  read_csv(here::here("code/instances/stat-prob-okay.csv")) |> # info about what stat already done
    mutate(path = fs::path_file(path)) |> 
-   distinct(path, type, alg)
+   distinct(path, type, alg) 
 timeLimit <- 120 * 60  # max run time in sec
 tictoc::tic.clear()
 start <- Sys.time()
@@ -213,14 +217,19 @@ cat("\n\nDone.\n\n")
 
 
 cat("\n\nClassify extreme points\n\n")
-datErrorExt <- read_csv(here::here("code/instances/stat-prob-error.csv")) %>% 
-   filter(type == "classifyExt")
+datError <- read_csv(here::here("code/instances/stat-prob-error.csv")) |> 
+   mutate(path = fs::path_file(path)) |> 
+   distinct(path, type, alg) 
+datErrorExt <- datError %>% 
+   filter(type %in% c("classifyExt", "no points"))
 idx <- which(fs::path_file(paths) %in% fs::path_file(datErrorExt$path))
-paths1 <- paths[-idx]  # paths that we try to classify only extreme in (may already have been)
-datCalc <- datOkay |> filter(type == "classifyExt")
+paths1 <- paths
+if (length(idx) > 0) paths1 <- paths1[-idx]  # paths that we try to classify only extreme in (may already have been)
+datCalc <- datOkay |> filter(type %in% c("classifyExt", "classify"))
 idx <- which(fs::path_file(paths1) %in% fs::path_file(datCalc$path))
 if (length(idx) > 0) paths1 <- paths1[-idx] 
 calc <- FALSE
+cpu <- difftime(Sys.time(), start, units = "secs")
 if (cpu < timeLimit) {
    for (path in fs::path_file(paths1)) {
       res <- tryCatchLog(classifyStat(here::here(str_c("code/instances/results/algorithm1/", path)), classifyExt = T), 
@@ -244,36 +253,47 @@ cat("\n\nDone.\n\n")
 
 
 
-cat("\n\nClassify fully\n\n")
-datErrorCls <- read_csv(here::here("code/instances/stat-prob-error.csv")) %>% 
-   filter(type %in% c("classify", "classifyExt"))
-idx <- which(fs::path_file(paths) %in% fs::path_file(datErrorCls$path))
-paths1 <- paths[-idx]  # paths that we try to classify (may already have been)
-datCalc <- datOkay |> filter(type == "classify")
-idx <- which(fs::path_file(paths1) %in% fs::path_file(datCalc$path))
-if (length(idx) > 0) paths1 <- paths1[-idx] 
-calc <- FALSE
-if (cpu < timeLimit) {
-   for (path in paths1) {
-      res <- tryCatchLog(classifyStat(path), 
-         error = function(c) {
-            datError <- bind_rows(datError, c(path = path, type = "classify", alg = "alg1"))
-            write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
-            return(NA)
-         })
-      if (is.na(res)) break   # stop so can commit
-      calc <- any(calc, res)
-      cpu <- difftime(Sys.time(), start, units = "secs")
-      cat("Cpu total", cpu, "\n")
-      if (cpu > timeLimit) {
-         cat("Time limit reached! Stop R script.")
-         break
-      }
-   }
-   if (calc) updateProbStatFile()
-}
-cat("\n\nDone.\n\n")
+# cat("\n\nClassify fully\n\n")
+# datErrorCls <- datError %>% 
+#    filter(type %in% c("classify", "classifyExt", "no points"))
+# idx <- which(fs::path_file(paths) %in% fs::path_file(datErrorCls$path))
+# paths1 <- paths[-idx]  # paths that we try to classify (may already have been)
+# datCalc <- datOkay |> filter(type == "classify")
+# idx <- which(fs::path_file(paths1) %in% fs::path_file(datCalc$path))
+# if (length(idx) > 0) paths1 <- paths1[-idx] 
+# calc <- FALSE
+# cpu <- difftime(Sys.time(), start, units = "secs")
+# if (cpu < timeLimit) {
+#    for (path in paths1) {
+#       res <- tryCatchLog(classifyStat(path), 
+#          error = function(c) {
+#             datError <- bind_rows(datError, c(path = path, type = "classify", alg = "alg1"))
+#             write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
+#             return(NA)
+#          })
+#       if (is.na(res)) break   # stop so can commit
+#       calc <- any(calc, res)
+#       cpu <- difftime(Sys.time(), start, units = "secs")
+#       cat("Cpu total", cpu, "\n")
+#       if (cpu > timeLimit) {
+#          cat("Time limit reached! Stop R script.")
+#          break
+#       }
+#    }
+#    if (calc) updateProbStatFile()
+# }
+# cat("\n\nDone.\n\n")
 
+datError <- datError |> 
+   mutate(path = fs::path_file(path)) |> 
+   distinct(path, type, alg) |> 
+   arrange(path, alg, type)
+datOkay <- datOkay |> 
+   mutate(path = fs::path_file(path)) |> 
+   distinct(path, type, alg) |> 
+   arrange(path, alg, type)
+write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
+write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
 cat("\n\nFinish running R script.\n\n")
 
 ## Close log file
