@@ -8,7 +8,7 @@ For each problem MSP (from instances/problem)
 from classes import Point, PointList, MinkowskiSumProblem, KD_Node, KD_tree, MSPInstances
 import methods
 import timing
-from timing import timeit, print_timeit, reset_timeit, time_object
+from timing import timeit, print_timeit, reset_timeit, time_object, log_every_x_minutes
 from methods import N
 # public library imports
 import matplotlib.pyplot as plt
@@ -24,6 +24,8 @@ logname = 'algorithm1.log'
 logging.basicConfig(level=logging.INFO, filename=logname)
 logger = logging.getLogger(logname)
 
+
+methods.MS_sequential_filter = log_every_x_minutes(30, logger)(methods.MS_sequential_filter)
 
 time_object(KD_tree)
 time_object(KD_Node)
@@ -289,11 +291,46 @@ def algorithm1():
 
 
 
+def convert_all_raw_files():
+    ''' ad hoc script for converting all pointLists saved as .raw files into .json files'''
+
+
+    solution_dir = './instances/results/algorithm1/'
+    out_dir = '/Users/au618299/Desktop/large-result-files-alg1/'
+    raw_files = [file for file in os.listdir(solution_dir) if file.split(".")[-1]=='raw']
+
+    with alive_bar(len(raw_files), enrich_print=True) as bar:
+        for raw_file in raw_files:
+
+            if raw_file.replace('.raw','.json') in os.listdir(out_dir):
+                # print(f"{raw_file=} already in {out_dir=}")
+                bar()
+                continue
+
+            print(f"{raw_file=}")
+            dir_size_gb = sum(os.path.getsize(out_dir + f) for f in os.listdir(out_dir) if os.path.isfile(out_dir + f))/(1024**3)
+            print(f"Current size of dir is {dir_size_gb:.2f} GB")
+            Y = PointList.from_raw(solution_dir + raw_file)
+            # print(f"{Y.statistics=}")
+            Y.statistics = PointList.from_json(solution_dir + raw_file.replace('.raw','.json')).statistics
+            # print(f"{Y.statistics=}")
+            # Y = PointList.from_json('./instances/results/algorithm1/alg1-prob-2-100|100-ll-2_1.json') # for testing
+            Y.save_json(out_dir + raw_file.replace('.raw','.json'), max_file_size = 1000)
+
+            bar()
+
+
+            
+
+
+
+
 def main():
 
     save_prefix = 'alg1-'
-    save_solution_dir = './instances/results/algorithm1/'
-    TI = MSPInstances('algorithm1', ignore_ifonly_l=True)
+    # save_solution_dir = './instances/results/algorithm1/'
+    save_solution_dir = './instances/results/testdir/'
+    TI = MSPInstances('grendel_test', ignore_ifonly_l=True)
     TI.filter_out_solved(save_prefix, save_solution_dir)
     print(f"{TI=}")
     logger.info(f"{TI=}")
@@ -310,7 +347,7 @@ def main():
             Yn = methods.MS_sequential_filter(MSP.Y_list)
             Yn.statistics['filter_time'] = time.time() - filter_time
             Yn.save_json(save_solution_dir  +  save_prefix + MSP.filename.split('/')[-1])
-            logger.info(f"{MSP.filename=}, {len(Yn)=}")
+            logger.info(f"{MSP.filename=}, {len(Yn)=}, filter_time = {Yn.statistics['filter_time']}")
             
             if True:
                 print_timeit()
@@ -322,9 +359,12 @@ def main():
 
 
 if __name__ == "__main__":
+    # main()
+
+    convert_all_raw_files()
+
     # remaining_instances()
     # algorithm1()
-    main()
     # test_times()
     # example_Yn()
     # main()
