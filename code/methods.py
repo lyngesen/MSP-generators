@@ -476,16 +476,30 @@ def U_dominates_L(U: PointList, L:PointList):
     assert all((L.dim == U.dim, L.dim == 2))
     # y = sorted(set(L)) # sort non-dominated points
     L = lex_sort(N(L))
-    local_nadir_points = induced_UB(U, assumption='localNadir')
+    local_nadir_points = induced_UB(U)
 
     if len(L) == 1:
         return U.dominates_point(L[0])
+    
+    # Check that all extreme points of L are dominated
+    for l in L:
+        for u in U:
+            if u < l:
+                break
+        else: # finally, if loop terminates normally
+            print(f"The LB point {l=} is not dominated by any point of U")
+            return False
+
+    # Check that all line segments of L are dominated
     for i in range(len(set(L)) - 1):
         # define linear function (line between l[i] and l[i+1])
         lin_fct = lambda x : L[i][1] + (L[i+1][1]-L[i][1])/(L[i+1][0]-L[i][0])*(x-L[i][0])
         for n in local_nadir_points:
             if L[i][0] <= n[0] and n[0] <= L[i+1][0]:
                 if n[1] > lin_fct(n[0]):
+                    # print(f"{lin_fct(n[0])=}")
+                    # print(f"{n[1]=}")
+                    # n.plot(l='   !!!')
                     print(f"line between {L[i],L[i+1]} is not dominated by nadir-point {n}")
                     return False
                 if math.isclose(n[1], lin_fct(n[0])):
