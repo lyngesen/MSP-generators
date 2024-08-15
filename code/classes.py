@@ -450,9 +450,12 @@ class PointList:
         return True
     
     
-
-    def __getitem__(self, item):
-        return self.points[item]
+    def __getitem__(self, subscript):
+        result = self.points.__getitem__(subscript)
+        if isinstance(subscript, slice):
+            return PointList(result)
+        else:
+            return result
 
     def removed_duplicates(self):
         return PointList(set(self.points))
