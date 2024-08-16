@@ -78,6 +78,8 @@ alg1-prob-5-100|100|100|100|100-mmmmm-5_3.json,no points,alg1
 alg1-prob-5-100|100|100|100|100-mmmmm-5_4.json,no points,alg1
 alg1-prob-5-100|100|100|100|100-mmmmm-5_5.json,no points,alg1
 alg1-prob-5-100|100|100|100|100-uuuuu-5_1.json,no points,alg1
+alg1-prob-5-100|100|100|100|100-uuuuu-5_4.json,no points,alg1
+alg1-prob-5-100|100|100|100|100-uuuuu-5_5.json,no points,alg1
 alg1-prob-5-200|200-ll-2_1.json,classify,alg1
 alg1-prob-5-200|200-ll-2_2.json,classify,alg1
 alg1-prob-5-200|200-ll-2_3.json,classify,alg1
@@ -116,7 +118,7 @@ alg1-prob-5-50|50|50-ull-3_2.json,classify,alg1
 alg1-prob-5-50|50|50-ull-3_3.json,classify,alg1
 alg1-prob-5-50|50|50-ull-3_4.json,classify,alg1
 alg1-prob-5-50|50|50-ull-3_5.json,classify,alg1
-alg1-prob-5-50|50|50-uuu-3_1.json,classify,alg1
+alg1-prob-5-50|50|50-uuu-3_1.json,classify,al   g1
 alg1-prob-5-50|50|50-uuu-3_2.json,classify,alg1
 alg1-prob-5-50|50|50-uuu-3_3.json,classify,alg1
 alg1-prob-5-50|50|50-uuu-3_4.json,classify,alg1
@@ -140,5 +142,18 @@ alg1-prob-5-600|600-uu-2_2.json,classify,alg1
 alg1-prob-5-600|600-uu-2_3.json,classify,alg1
 alg1-prob-5-600|600-uu-2_4.json,classify,alg1
 alg1-prob-5-600|600-uu-2_5.json,classify,alg1
-/home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-100|100|100|100|100-uuuuu-5_4.json,no points,alg1
-/home/runner/work/minkowski_theory/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-100|100|100|100|100-uuuuu-5_5.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-llll-4_1.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-llll-4_2.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-llll-4_3.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-llll-4_4.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-llll-4_5.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-mmmm-4_1.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-mmmm-4_2.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-mmmm-4_3.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-mmmm-4_4.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-mmmm-4_5.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-uull-4_1.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-uull-4_2.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-uull-4_3.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-uull-4_4.json,no points,alg1
+/Users/au15463/github/minkowski_theory/code/instances/results/algorithm1/alg1-prob-5-200|200|200|200-uull-4_5.json,no points,alg1

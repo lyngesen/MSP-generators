@@ -194,7 +194,7 @@ datOkay <-  read_csv(here::here("code/instances/stat-prob-okay.csv")) |> # info 
    mutate(path = fs::path_file(path)) |>
    distinct(path, type, alg) |>
    arrange(path, alg, type)
-timeLimit <- 120 * 60  # max run time in sec
+timeLimit <- 5 * 60 * 60  # max run time in sec
 tictoc::tic.clear()
 start <- Sys.time()
 cat("\n\nStarting running R script.\n\n")
