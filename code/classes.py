@@ -450,9 +450,12 @@ class PointList:
         return True
     
     
-
-    def __getitem__(self, item):
-        return self.points[item]
+    def __getitem__(self, subscript):
+        result = self.points.__getitem__(subscript)
+        if isinstance(subscript, slice):
+            return PointList(result)
+        else:
+            return result
 
     def removed_duplicates(self):
         return PointList(set(self.points))
@@ -576,7 +579,8 @@ class MSPInstances:
                         'prob-2-100|100-ll-2_1.json',
                         'prob-4-100|100-ll-2_1.json',
                         'prob-4-100|100|100-lll-3_1.json',
-                        'prob-4-200|200|200|200|200-lllll-5_5.json'
+                        'prob-4-100|100|100-mmm-3_1.json',
+                        # 'prob-4-200|200|200|200|200-lllll-5_5.json'
                         ]
             case 'algorithm2':
                 self.generation_options = ['m','u', 'l'] # generation method

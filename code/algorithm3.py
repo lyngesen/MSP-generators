@@ -8,12 +8,14 @@ Usage:
 
 from classes import Point, PointList, LinkedList, MinkowskiSumProblem
 import methods
-from methods import N
+from methods import N, U_dominates_L
 import time
 import csv
 import math
 import os
 from minimum_generator import solve_MGS_instance
+
+
 
 import numpy as np
 # from numoy import linalg
@@ -473,6 +475,78 @@ def test_alg_3():
         # U.plot(SHOW=True)
         algorithm3_pair(L_Y_U)
     plt.show()
+
+
+
+
+
+def setup_instances():
+
+    L_Y_U_list = list()
+
+    Y = PointList.from_json('instances/subproblems/sp-2-100-u_1.json')
+    Yse = PointList([l for l in Y if l.cls =='se'])
+    L_Y_U_list.append((L,Y,U))
+
+
+    Y = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')
+    Yse = PointList([l for l in Y if l.cls =='se'])
+    L_Y_U_list.append((L,Y,U))
+
+
+    Y = PointList.from_json('instances/subproblems/sp-2-10-m_1.json')
+    Yse = PointList([l for l in Y if l.cls =='se'])
+    L_Y_U_list.append((L,Y,U))
+
+    return L_Y_U_list
+
+
+
+def pairwise_alg3(L1, Y1, U1, L2, Y2, U2):
+    """Implementation of the pairwise algorithm3
+    Returns: Subset Y_hat of Y1
+    """
+#     Y1 = PointList.from_json('instances/subproblems/sp-2-100-u_1.json')
+    # Y1se = PointList([l for l in Y1 if l.cls =='se'])
+    # Y2 = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')
+    # Y2se = PointList([l for l in Y2 if l.cls =='se'])
+
+    # Y1.plot(SHOW=False)
+    # Y2.plot(SHOW=False)
+    # Y1se.plot(SHOW=False, marker='x')
+    # Y2se.plot(SHOW=True, marker='x')
+
+    U = N(U1 + U2)
+    G1_not = []
+    for y1 in methods.lex_sort(Y1):
+        L = L2 + PointList(y1)
+
+        if U_dominates_L(U,L):
+            G1_not.append(y1)
+
+    G1 = PointList([y1 for y1 in Y1 if y1 not in G1_not])
+    G2_not = []
+    for y2 in methods.lex_sort(Y2):
+        L = L1 + PointList(y2)
+
+        if U_dominates_L(U,L):
+            G1_not.append(y2)
+
+    G2 = PointList([y2 for y2 in Y2 if y2 not in G2_not])
+    
+    return (G1_not,G2_not)
+def all_pairs_alg3():
+    
+    Y1 = PointList.from_json('instances/subproblems/sp-2-100-u_1.json')
+    Y1se = PointList([l for l in Y1 if l.cls =='se'])
+    Y2 = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')
+    Y2se = PointList([l for l in Y2 if l.cls =='se'])
+
+    G1_not, G2_not = pairwise_alg3(Y1se, Y1, Y1se, Y2se, Y2, Y2se)
+    
+    print(f"{len(G1_not),len(Y1)=}")
+    print(f"{len(G2_not),len(Y2)=}")
+
 def main():
     
     if False:
@@ -488,5 +562,7 @@ def main():
     # multiple_induced_UB()
 
 if __name__ == '__main__':
-    test_alg_3()   
+    # test_alg_3() 
+    # pairwise_alg3()
+    all_pairs_alg3()
     # main()
