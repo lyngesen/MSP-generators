@@ -22,7 +22,10 @@ import argparse
 # for logging
 import logging
 logname = 'algorithm1.log'
-logging.basicConfig(level=logging.INFO, filename=logname)
+logging.basicConfig(level=logging.INFO, 
+                    filename=logname,
+                    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+                    )
 logger = logging.getLogger(logname)
 
 
@@ -338,14 +341,17 @@ def main():
 
     print(f"{os.path.exists(outdir)=}")
 
-    return
+    assert outdir[-1] =='/'
 
     save_prefix = 'alg1-'
     # save_solution_dir = './instances/results/algorithm1/'
-    save_solution_dir = './instances/results/testdir'
+    save_solution_dir = './instances/results/testdir/'
 
     TI = MSPInstances('grendel_test', ignore_ifonly_l=True)
     TI.filter_out_solved(save_prefix, save_solution_dir)
+
+        save_solution_dir = outdir
+
     print(f"{TI=}")
     logger.info(f"{TI=}")
     logger.info(f"{TI.filename_list=}")
@@ -360,7 +366,7 @@ def main():
             filter_time = time.time()
             Yn = methods.MS_sequential_filter(MSP.Y_list)
             Yn.statistics['filter_time'] = time.time() - filter_time
-            Yn.save_json(save_solution_dir +"/"  +  save_prefix + MSP.filename.split('/')[-1])
+            Yn.save_json(save_solution_dir +  save_prefix + MSP.filename.split('/')[-1])
             logger.info(f"{MSP.filename=}, {len(Yn)=}, filter_time = {Yn.statistics['filter_time']}")
             
             if True:
