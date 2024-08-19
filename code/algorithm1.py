@@ -359,9 +359,9 @@ def main():
 
 
 if __name__ == "__main__":
-    # main()
+    main()
 
-    convert_all_raw_files()
+    # convert_all_raw_files()
 
     # remaining_instances()
     # algorithm1()
