@@ -580,6 +580,7 @@ class MSPInstances:
                         'prob-4-100|100-ll-2_1.json',
                         'prob-4-100|100|100-lll-3_1.json',
                         'prob-4-100|100|100-mmm-3_1.json',
+                        'prob-5-100|100|100-mmm-3_1.json',
                         # 'prob-4-200|200|200|200|200-lllll-5_5.json'
                         ]
             case 'algorithm2':
