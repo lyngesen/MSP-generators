@@ -135,9 +135,9 @@ def log_every_x_minutes(x, logger):
             start_time = time.time()
             def log_time():
                 while True:
+                    time.sleep(x * 60)
                     elapsed_time = time.time() - start_time
                     logger.info(f"The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes")
-                    time.sleep(x * 60)
             
             # Start the logging thread
             log_thread = threading.Thread(target=log_time)
@@ -151,7 +151,7 @@ def log_every_x_minutes(x, logger):
     return decorator
 
 
-def terminate_after_x_minutes(x, logger=None):
+def terminate_after_x_minutes_old(x, logger=None):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -176,3 +176,47 @@ def terminate_after_x_minutes(x, logger=None):
                 p.join()
         return wrapper
     return decorator
+
+
+
+def target(queue, func, *args, **kwargs):
+    result = func(*args, **kwargs)
+    queue.put(result)
+
+def terminate_after_x_minutes(x, logger=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # Create a queue to capture the return value
+            queue = multiprocessing.Queue()
+
+            # Start the function as a process
+            p = multiprocessing.Process(target=target, args=(queue, func, *args), kwargs=kwargs)
+            p.start()
+
+            # Wait for the specified time or until the process finishes
+            p.join(timeout=x*60)
+
+            # If the process is still active after the wait time
+            if p.is_alive():
+                message = f"{func.__name__} is running... killing process after {x:.2f} minutes {args=}"
+                print(message)
+                if logger:
+                    logger.info(message)
+                    logger.warning(message)
+
+                # Terminate the process
+                p.terminate()
+
+                # Ensure the process has terminated
+                p.join()
+                return None
+            else:
+                # Get the result from the queue
+                if not queue.empty():
+                    return queue.get()
+                return None
+
+        return wrapper
+    return decorator
+
