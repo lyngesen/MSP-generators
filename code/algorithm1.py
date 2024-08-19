@@ -325,8 +325,10 @@ def convert_all_raw_files():
 
 def main():
 
-    LOG_EVERY_X_MINUTES = 2
-    TERMINATE_AFTER_X_MINUTES = 5
+    LOG_EVERY_X_MINUTES = 5
+    TERMINATE_AFTER_X_MINUTES = 60
+    print(f"{LOG_EVERY_X_MINUTES=}")
+    print(f"{TERMINATE_AFTER_X_MINUTES=}")
     save_prefix = 'alg1-'
     MSP_preset = 'algorithm1'
 
@@ -355,6 +357,7 @@ def main():
     # add logger
     logname = 'algorithm1.log'
     if logpath:
+        print(f"logpath provided: {logpath}")
         assert logpath.split('.')[-1] == 'log'
         logpath = logpath
         print(f"Directory path provided: {logpath}")
