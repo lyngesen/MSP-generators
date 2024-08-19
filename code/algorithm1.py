@@ -21,15 +21,9 @@ import argparse
 
 # for logging
 import logging
-logname = 'algorithm1.log'
-logging.basicConfig(level=logging.INFO, 
-                    filename=logname,
-                    format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
-                    )
-logger = logging.getLogger(logname)
 
 
-methods.MS_sequential_filter = log_every_x_minutes(30, logger)(methods.MS_sequential_filter)
+
 
 time_object(KD_tree)
 time_object(KD_Node)
@@ -331,28 +325,58 @@ def convert_all_raw_files():
 
 def main():
 
-    parser = argparse.ArgumentParser(description="Save instance results PointList in dir.")
-    parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
-    
-    args = parser.parse_args()
-    outdir = args.outdir
-    logger.info(f"Directory path provided: {outdir}")
-    print(f"Directory path provided: {outdir}")
-
-    print(f"{os.path.exists(outdir)=}")
-
-    assert outdir[-1] =='/'
-
+    LOG_EVERY_X_MINUTES = 2 * (1/60)
+    TERMINATE_AFTER_X_MINUTES = 10 * (1/60)
     save_prefix = 'alg1-'
+    MSP_preset = 'grendel_test'
     # save_solution_dir = './instances/results/algorithm1/'
     save_solution_dir = './instances/results/testdir/'
 
-    TI = MSPInstances('grendel_test', ignore_ifonly_l=True)
+
+    # parse arguments
+    parser = argparse.ArgumentParser(description="Save instance results PointList in dir.")
+    parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
+    parser.add_argument('-logdir', type=str, required=False, help='Dir where log files are to be saved')
+    args = parser.parse_args()
+    outdir = args.outdir
+    logdir = args.logdir
+
+
+    TI = MSPInstances(MSP_preset, ignore_ifonly_l=True)
     TI.filter_out_solved(save_prefix, save_solution_dir)
 
-
     if outdir:
+        assert outdir[-1] =='/'
         save_solution_dir = outdir
+        print(f"Directory path provided: {outdir}")
+        print(f"{os.path.exists(outdir)=}")
+
+    # add logger
+    logname = 'algorithm1.log'
+    logpath = logname
+    if logdir:
+        assert logdir[-1] =='/'
+        logpath = logdir + logname
+        print(f"Directory path provided: {logdir}")
+        print(f"{os.path.exists(logdir)=}")
+    logging.basicConfig(level=logging.INFO, 
+                        filename=logpath,
+                        format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+                        )
+    logger = logging.getLogger(logname)
+
+
+
+    logger.info(f"Directory path provided: {outdir}")
+
+
+
+    # add decorators
+    #   terminate after specified number of minutes
+    #   add log after every specified timeunit
+    methods.MS_sequential_filter_term = timing.terminate_after_x_minutes(TERMINATE_AFTER_X_MINUTES, logger)(methods.MS_sequential_filter)
+    methods.MS_sequential_filter_log_term = timing.log_every_x_minutes(LOG_EVERY_X_MINUTES, logger)(methods.MS_sequential_filter_term)
+
 
     print(f"{TI=}")
     logger.info(f"{TI=}")
@@ -366,9 +390,16 @@ def main():
             time_start = time.time()
             logger.info(f"{MSP}")
             filter_time = time.time()
-            Yn = methods.MS_sequential_filter(MSP.Y_list)
-            Yn.statistics['filter_time'] = time.time() - filter_time
-            Yn.save_json(save_solution_dir +  save_prefix + MSP.filename.split('/')[-1])
+            Yn = methods.MS_sequential_filter_log_term(MSP.Y_list)
+            if Yn is None: # if process was stopped
+                logger.warning(f"instance {MSP=} terminated after {TERMINATE_AFTER_X_MINUTES} minutes")
+                Yn = PointList()
+                Yn.statistics['filter_time'] = TERMINATE_AFTER_X_MINUTES
+                Yn.statistics['card'] = None
+
+            else: 
+                Yn.statistics['filter_time'] = time.time() - filter_time
+            Yn.save_json(save_solution_dir + save_prefix + MSP.filename.split('/')[-1])
             logger.info(f"{MSP.filename=}, {len(Yn)=}, filter_time = {Yn.statistics['filter_time']}")
             
             if True:
