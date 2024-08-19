@@ -38,16 +38,26 @@ def a_long_process():
     for _ in range(5):
         time.sleep(1)
     
+    return True
 
 
 def test_termination():
 
+    a_long_process_terminate = terminate_after_x_minutes(100 )(a_long_process)
+    res = a_long_process_terminate()
+
+    assert res == True
+
     a_long_process_terminate = terminate_after_x_minutes(2 * (1/60))(a_long_process)
-    a_long_process_terminate()
+    res = a_long_process_terminate()
+    print(f"{res=}")
+
+    assert res is None
 
     a_long_process_terminate_and_log = terminate_after_x_minutes(1 * (1/60), logger)(a_long_process)
-    a_long_process_terminate_and_log()
+    res = a_long_process_terminate_and_log()
 
+    print(f"{res=}")
 
 def test_log_every_x():
     a_long_process_log = log_every_x_minutes(1*(1/60),logger)(a_long_process)
