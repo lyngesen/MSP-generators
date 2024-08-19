@@ -17,6 +17,7 @@ import os
 import csv
 import time
 import itertools
+import argparse
 
 # for logging
 import logging
@@ -327,9 +328,22 @@ def convert_all_raw_files():
 
 def main():
 
+    parser = argparse.ArgumentParser(description="Save instance results PointList in dir.")
+    parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
+    
+    args = parser.parse_args()
+    outdir = args.outdir
+    logger.info(f"Directory path provided: {outdir}")
+    print(f"Directory path provided: {outdir}")
+
+    print(f"{os.path.exists(outdir)=}")
+
+    return
+
     save_prefix = 'alg1-'
     # save_solution_dir = './instances/results/algorithm1/'
-    save_solution_dir = './instances/results/testdir/'
+    save_solution_dir = './instances/results/testdir'
+
     TI = MSPInstances('grendel_test', ignore_ifonly_l=True)
     TI.filter_out_solved(save_prefix, save_solution_dir)
     print(f"{TI=}")
@@ -346,7 +360,7 @@ def main():
             filter_time = time.time()
             Yn = methods.MS_sequential_filter(MSP.Y_list)
             Yn.statistics['filter_time'] = time.time() - filter_time
-            Yn.save_json(save_solution_dir  +  save_prefix + MSP.filename.split('/')[-1])
+            Yn.save_json(save_solution_dir +"/"  +  save_prefix + MSP.filename.split('/')[-1])
             logger.info(f"{MSP.filename=}, {len(Yn)=}, filter_time = {Yn.statistics['filter_time']}")
             
             if True:
