@@ -199,7 +199,7 @@ def terminate_after_x_minutes(x, logger=None):
 
             # If the process is still active after the wait time
             if p.is_alive():
-                message = f"{func.__name__} is running... killing process after {x:.2f} minutes {args=}"
+                message = f"{func.__name__} is running... killing process after {x:.2f} minutes"
                 print(message)
                 if logger:
                     logger.info(message)
