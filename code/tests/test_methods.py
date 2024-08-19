@@ -1,10 +1,12 @@
 import pytest
 from classes import Point, PointList, LinkedList, MinkowskiSumProblem
 import methods
+from methods import U_dominates_L, induced_UB, lex_sort, N
 from timing import timeit, print_timeit
 from functools import reduce
 import matplotlib.pyplot as plt
 import copy
+
 
 def test_sorting():
     testset = "instances/testsets/BINOM-p2-n100-s1"
@@ -207,4 +209,114 @@ def test_induced_UB():
     Y2 = PointList.from_csv("instances/testsets/DISK-p2-n10-s1")
     U = methods.induced_UB(Y1)
     UL = methods.induced_UB(Y1, line=True)
+
+
+
+def test_U_dominates_L():
+
+    SHOW = False 
+    def setup_instances():
+        L_Y_val = list()
+
+        # instances
+        L = lex_sort(PointList.from_json('instances/subproblems/sp-2-10-l_1.json'))*4 + PointList(Point((10000,0)))
+        Y = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')*2
+        L_Y_val.append((L,Y,True))
+
+
+        L = lex_sort(PointList.from_json('instances/subproblems/sp-2-10-l_1.json'))*3
+        L = PointList([l for l in L] + [Point((5000,15000))])
+        Y = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')*2
+        L_Y_val.append((L,Y,False))
+
+        L = lex_sort(PointList.from_json('instances/subproblems/sp-2-10-l_1.json'))*3
+        Y = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')*2
+        L_Y_val.append((L,Y,False))
+
+
+        L = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')*1
+        Y = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')*2
+        L_Y_val.append((L,Y,False))
+
+
+
+        # L_Y_val = list()
+        # L = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')[::2] + PointList(Point((1000,0)))
+        L = PointList(((5000,2000), (6000, 1000)))
+        Y = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')
+        L_Y_val.append((L,Y,False))
+
+        L = PointList(((5000,2000), (6000, 1000))) + PointList(Point((0000,2000)))
+        Y = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')
+        L_Y_val.append((L,Y,True))
+
+        L = PointList(((500,2000), (6000, 1000))) + PointList(Point((10000,-1500)))
+        Y = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')
+        L_Y_val.append((L,Y,False))
+
+        L = PointList(((500,2000), (6000, 1000))) + PointList(Point((10000,1500)))
+        Y = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')
+        L_Y_val.append((L,Y,True))
+
+
+        if False:
+            L_Y_val = list()
+            Y1 = PointList.from_json('instances/subproblems/sp-2-100-u_1.json')
+            Y1se = PointList([l for l in Y1 if l.cls =='se'])
+            Y2 = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')
+            Y2se = PointList([l for l in Y2 if l.cls =='se'])
+
+            U = N(Y1se + Y2se)
+            
+            Y1.plot(SHOW=False)
+            Y2.plot(SHOW=False)
+            Y1se.plot(SHOW=False, marker='x')
+            Y2se.plot(SHOW=SHOW, marker='x')
+
+            for y1 in lex_sort(Y1):
+                print(f"{type(y1)=}")
+                print(f"{type(Y2se)=}")
+                L = Y2se + PointList(y1)
+
+                L_Y_val.append((L,U,True))
+                
+
+
+        return L_Y_val
+
+    for L, Y, supervised_answer in setup_instances():
+        ######################## Figure 2d_lb_dominance START ########################
+        fig_name = "2d_lb_dominance"
+        print(f"")
+        print(f"Plotting figure: {fig_name}")
+        # define new figure
+        fig, ax = plt.subplots(layout='constrained')
+        Y = N(Y)
+        L = N(L)
+        L_is_dominated = U_dominates_L(Y,L)
+        
+        # sort for plot
+        L = lex_sort(L)
+
+        U = induced_UB(Y, assumption='consecutive', line=True)
+        localNadir = induced_UB(Y, assumption='nonconsecutive', line=False)
+        
+        L.plot(f"$L$")
+        L.plot(line=True, color = L.plot_color)
+        Y.plot(f"$Y$", )
+        
+        for n in U:
+            n.plot_cone(ax=ax, quadrant=1)
+
+        print(f"{L_is_dominated=}")
+        print(f"{supervised_answer=}")
+        # assert L_is_dominated == supervised_answer
+
+        U.plot(f"$U$", SHOW=False, line=True, color = 'red')
+        localNadir.plot(f"$localNadir$",SHOW=SHOW,point_labels=True, color = 'red', marker = 'x')
+        # Y.plot(f"$Y$",SHOW=SHOW, marker='x', color = 'red')
+        plt.close()
+
+        ######################### Figure 2d_lb_dominance END #########################
+
 
