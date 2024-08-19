@@ -189,7 +189,7 @@ updateProbStatFile <- function() {
 # sink(zz, type = "output", split = T)   # open the file for output
 # sink(zz, type = "message")  # open the same file for messages, errors and warnings
 
-paths <- fs::dir_ls(here::here("code/instances/results"), recurse = T, type = "file", glob = "*prob*.json")
+paths <- fs::dir_ls(here::here("code/instances/results/algorithm1/"), recurse = T, type = "file", glob = "*prob*.json")
 datOkay <-  read_csv(here::here("code/instances/stat-prob-okay.csv")) |> # info about what stat already done
    mutate(path = fs::path_file(path)) |>
    distinct(path, type, alg) |>
@@ -199,7 +199,7 @@ tictoc::tic.clear()
 start <- Sys.time()
 cat("\n\nStarting running R script.\n\n")
 
-datCalc <- datOkay |> filter(type == "simple")
+datCalc <- datOkay |> filter(type == "simple", alg == "alg1")
 idx <- which(fs::path_file(paths) %in% fs::path_file(datCalc$path))
 paths1 <- paths[-idx] 
 cat("\n\nUpdate simple stat\n\n")
