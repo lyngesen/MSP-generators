@@ -350,6 +350,8 @@ def main():
     TI = MSPInstances('grendel_test', ignore_ifonly_l=True)
     TI.filter_out_solved(save_prefix, save_solution_dir)
 
+
+    if outdir:
         save_solution_dir = outdir
 
     print(f"{TI=}")
