@@ -133,8 +133,9 @@ def log_every_x_minutes(x, logger):
         @wraps(func)
         def wrapper(*args, **kwargs):
             start_time = time.time()
+            running = True
             def log_time():
-                while True:
+                while running:
                     time.sleep(x * 60)
                     elapsed_time = time.time() - start_time
                     logger.info(f"The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes")
@@ -145,7 +146,13 @@ def log_every_x_minutes(x, logger):
             log_thread.start()
             
             # Call the original function
-            return func(*args, **kwargs)
+            result = func(*args, **kwargs)
+            
+            # Stop the logging thread
+            running = False
+            log_thread.join()  # Ensure the logging thread has finished
+
+            return result
         
         return wrapper
     return decorator
