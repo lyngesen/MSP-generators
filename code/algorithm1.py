@@ -354,12 +354,13 @@ def main():
 
     # add logger
     logname = 'algorithm1.log'
-    logpath = logname
     if logpath:
         assert logpath.split('.')[-1] == 'log'
         logpath = logpath
         print(f"Directory path provided: {logpath}")
-        print(f"{os.path.exists(logpath)=}")
+        print(f"{os.path.exists(logpath.split(['algorithm1.log'][0]))=}")
+    else: 
+        logpath = logname
     logging.basicConfig(level=logging.INFO, 
                         filename=logpath,
                         format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
