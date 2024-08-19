@@ -37,6 +37,7 @@ example use:
 from functools import wraps
 import time
 import threading 
+import multiprocessing
 
 # Define global dictionaries
 TIME_dict = {}
@@ -150,3 +151,28 @@ def log_every_x_minutes(x, logger):
     return decorator
 
 
+def terminate_after_x_minutes(x, logger=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # Start the function as a process
+            p = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
+            p.start()
+
+            # Wait for the specified time or until the process finishes
+            p.join(timeout=x*60)
+
+            # If the process is still active after the wait time
+            if p.is_alive():
+                print(f"{func.__name__} is running... killing process after {x:.2f} minutes {x/60:.2f} hours")
+                if logger:
+                    logger.info(f"{func.__name__} is running... killing process after {x/60:.2f} seconds {x:.2f} minutes {x*60:.2f} hours")
+                    logger.warning(f"{func.__name__} is running... killing process after {x*60:.2f} seconds {x:.2f} minutes {x/60:.2f} hours")
+
+                # Terminate the process
+                p.terminate()
+
+                # Ensure the process has terminated
+                p.join()
+        return wrapper
+    return decorator
