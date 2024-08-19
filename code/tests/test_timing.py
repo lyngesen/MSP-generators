@@ -62,13 +62,19 @@ def test_termination():
 def test_log_every_x():
     a_long_process_log = log_every_x_minutes(1*(1/60),logger)(a_long_process)
 
-    a_long_process_log()
+    res = a_long_process_log()
+    assert res == True
 
 
 def test_terminate_and_log_combined():
 
     a_long_process_terminate = terminate_after_x_minutes(4*(1/60), logger)(a_long_process)
     a_long_process_log_and_terminate = log_every_x_minutes(1*(1/60), logger)(a_long_process_terminate)
+    res = a_long_process_log_and_terminate()
+    assert res is None
 
-    a_long_process_log_and_terminate()
+    a_long_process_terminate = terminate_after_x_minutes(100*(1/60), logger)(a_long_process)
+    a_long_process_log_and_terminate = log_every_x_minutes(1*(1/60), logger)(a_long_process_terminate)
+    res = a_long_process_log_and_terminate()
+    assert res is True 
 
