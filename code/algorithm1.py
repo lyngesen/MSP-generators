@@ -337,10 +337,10 @@ def main():
     # parse arguments
     parser = argparse.ArgumentParser(description="Save instance results PointList in dir.")
     parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
-    parser.add_argument('-logdir', type=str, required=False, help='Dir where log files are to be saved')
+    parser.add_argument('-logpath', type=str, required=False, help='path where log (algorithm1.log) files are to be saved')
     args = parser.parse_args()
     outdir = args.outdir
-    logdir = args.logdir
+    logpath = args.logpath
 
 
     TI = MSPInstances(MSP_preset, ignore_ifonly_l=True)
@@ -355,11 +355,11 @@ def main():
     # add logger
     logname = 'algorithm1.log'
     logpath = logname
-    if logdir:
-        assert logdir[-1] =='/'
-        logpath = logdir + logname
-        print(f"Directory path provided: {logdir}")
-        print(f"{os.path.exists(logdir)=}")
+    if logpath:
+        assert logpath.split('.')[-1] == 'log'
+        logpath = logpath
+        print(f"Directory path provided: {logpath}")
+        print(f"{os.path.exists(logpath)=}")
     logging.basicConfig(level=logging.INFO, 
                         filename=logpath,
                         format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
