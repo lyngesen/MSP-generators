@@ -328,9 +328,10 @@ def main():
     LOG_EVERY_X_MINUTES = 2 * (1/60)
     TERMINATE_AFTER_X_MINUTES = 10 * (1/60)
     save_prefix = 'alg1-'
-    MSP_preset = 'grendel_test'
-    # save_solution_dir = './instances/results/algorithm1/'
-    save_solution_dir = './instances/results/testdir/'
+    MSP_preset = 'algorithm1'
+
+    save_solution_dir = './instances/results/algorithm1/'
+    # save_solution_dir = './instances/results/testdir/'
 
 
     # parse arguments
@@ -364,8 +365,6 @@ def main():
                         format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
                         )
     logger = logging.getLogger(logname)
-
-
 
     logger.info(f"Directory path provided: {outdir}")
 
