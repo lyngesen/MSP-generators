@@ -325,8 +325,8 @@ def convert_all_raw_files():
 
 def main():
 
-    LOG_EVERY_X_MINUTES = 10 * (1/60)
-    TERMINATE_AFTER_X_MINUTES = 30 * (1/60)
+    LOG_EVERY_X_MINUTES = 2
+    TERMINATE_AFTER_X_MINUTES = 5
     save_prefix = 'alg1-'
     MSP_preset = 'algorithm1'
 
