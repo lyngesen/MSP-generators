@@ -337,7 +337,7 @@ def main():
     # parse arguments
     parser = argparse.ArgumentParser(description="Save instance results PointList in dir.")
     parser.add_argument('-loginterval', type=int, required=False, help='Time interval for logs default 5 ')
-    parser.add_argument('-timelimit', type=str, required=False, help='Time limit for each instance')
+    parser.add_argument('-timelimit', type=int, required=False, help='Time limit for each instance')
     parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
     parser.add_argument('-logpath', type=str, required=False, help='path where log (algorithm1.log) files are to be saved')
     args = parser.parse_args()
