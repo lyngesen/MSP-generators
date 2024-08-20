@@ -133,27 +133,22 @@ def log_every_x_minutes(x, logger):
         @wraps(func)
         def wrapper(*args, **kwargs):
             start_time = time.time()
-            running = True
+
             def log_time():
-                while running:
-                    time.sleep(x * 60)
-                    elapsed_time = time.time() - start_time
-                    logger.info(f"The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes")
-            
-            # Start the logging thread
-            log_thread = threading.Thread(target=log_time)
-            log_thread.daemon = True
-            log_thread.start()
-            
+                elapsed_time = time.time() - start_time
+                logger.info(f"The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes")
+                # Schedule the next log after x minutes
+                threading.Timer(x * 60, log_time).start()
+
+            # Start the initial log
+            log_time()
+
             # Call the original function
             result = func(*args, **kwargs)
-            
-            # Stop the logging thread
-            running = False
-            log_thread.join()  # Ensure the logging thread has finished
 
+            # The function has completed; no need to stop the timer
             return result
-        
+
         return wrapper
     return decorator
 
