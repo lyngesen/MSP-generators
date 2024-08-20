@@ -349,7 +349,7 @@ def main():
     if args.loginterval:
         LOG_EVERY_X_MINUTES = args.loginterval
 
-    
+    print(f"{args.solveall=}")
     print(f"{LOG_EVERY_X_MINUTES=}")
     print(f"{TERMINATE_AFTER_X_MINUTES=}")
 
@@ -392,8 +392,6 @@ def main():
 
     print(f"{TI=}")
     logger.info(f"{TI=}")
-    logger.info(f"{TI.filename_list=}")
-
     logger.info(f'Running algorithm1 on test instance set {TI}')
 
     with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
