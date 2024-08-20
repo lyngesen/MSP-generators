@@ -340,6 +340,7 @@ def main():
     parser.add_argument('-timelimit', type=int, required=False, help='Time limit for each instance')
     parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
     parser.add_argument('-logpath', type=str, required=False, help='path where log (algorithm1.log) files are to be saved')
+    parser.add_argument('-solveall', action='store_true', help='if flag added, all instances are solved (already solved instances will not be filtered out)')
     args = parser.parse_args()
     outdir = args.outdir
     logpath = args.logpath
@@ -353,7 +354,9 @@ def main():
     print(f"{TERMINATE_AFTER_X_MINUTES=}")
 
     TI = MSPInstances(MSP_preset, ignore_ifonly_l=True)
-    TI.filter_out_solved(save_prefix, save_solution_dir)
+
+    if not args.solveall:
+        TI.filter_out_solved(save_prefix, save_solution_dir)
 
     if outdir:
         assert outdir[-1] =='/'
