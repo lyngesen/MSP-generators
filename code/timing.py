@@ -222,3 +222,81 @@ def terminate_after_x_minutes(x, logger=None):
         return wrapper
     return decorator
 
+import multiprocessing
+import time
+from functools import wraps
+def target(queue, func, *args, **kwargs):
+    result = func(*args, **kwargs)
+    queue.put(result)
+
+
+def terminate_and_log(max_time : int, log_interval=0, logger=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+
+            # Create a queue to capture the return value
+            queue = multiprocessing.Queue()
+
+            # Start the function as a process
+            p = multiprocessing.Process(target=target, args=(queue, func, *args), kwargs=kwargs)
+            p.start()
+
+            start_time = time.time()
+            last_log_time = start_time
+            check_interval = 1  # Check every second
+
+            
+            while time.time() - start_time < max_time * 60:
+                time.sleep(check_interval)
+                current_time = time.time()
+
+                # Log every y minutes
+                if log_interval and current_time - last_log_time >= log_interval * 60:
+                    if p.is_alive():
+                        elapsed_time = current_time - start_time
+                        message = f"The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes"
+                        print(f"{message}")
+                        if logger:
+                            logger.info(message)
+
+                        last_log_time = current_time
+                print(f"{p.is_alive()=}")
+                if not p.is_alive():
+                    break
+
+            # If the process is still active after the wait time
+            if p.is_alive():
+                message = f"{func.__name__} is running... killing process after {max_time:.2f} minutes"
+                print(message)
+                if logger:
+                    logger.info(message)
+                    logger.warning(message)
+
+                # Terminate the process
+                p.terminate()
+
+                # Ensure the process has terminated
+                p.join()
+                return None
+            else:
+                # Get the result from the queue
+                if not queue.empty():
+                    return queue.get()
+                return None
+
+        return wrapper
+    return decorator
+
+
+
+def set_defaults(**default_kwargs):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for key, value in default_kwargs.items():
+                if key not in kwargs:
+                    kwargs[key] = value
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator

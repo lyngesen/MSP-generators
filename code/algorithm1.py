@@ -8,7 +8,7 @@ For each problem MSP (from instances/problem)
 from classes import Point, PointList, MinkowskiSumProblem, KD_Node, KD_tree, MSPInstances
 import methods
 import timing
-from timing import timeit, print_timeit, reset_timeit, time_object, log_every_x_minutes
+from timing import timeit, print_timeit, reset_timeit, time_object, log_every_x_minutes, terminate_and_log, set_defaults
 from methods import N
 # public library imports
 import matplotlib.pyplot as plt
@@ -337,7 +337,7 @@ def main():
     # parse arguments
     parser = argparse.ArgumentParser(description="Save instance results PointList in dir.")
     parser.add_argument('-loginterval', type=int, required=False, help='Time interval for logs default 5 ')
-    parser.add_argument('-timelimit', type=int, required=False, help='Time limit for each instance')
+    parser.add_argument('-timelimit', type=float, required=False, help='Time limit for each instance')
     parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
     parser.add_argument('-logpath', type=str, required=False, help='path where log (algorithm1.log) files are to be saved')
     parser.add_argument('-msppreset', type=str, required=False, help='Choice of preset instances to solve default: algorithm1. other choices grendel_test, algorithm2')
@@ -391,25 +391,33 @@ def main():
     # add decorators
     #   terminate after specified number of minutes
     #   add log after every specified timeunit
-    methods.MS_sequential_filter_term = timing.terminate_after_x_minutes(TERMINATE_AFTER_X_MINUTES, logger)(methods.MS_sequential_filter)
-    methods.MS_sequential_filter_log_term = timing.log_every_x_minutes(LOG_EVERY_X_MINUTES, logger)(methods.MS_sequential_filter_term)
+    # methods.MS_sequential_filter_term = timing.terminate_after_x_minutes(TERMINATE_AFTER_X_MINUTES, logger)(methods.MS_sequential_filter)
+    # methods.MS_sequential_filter_log_term = timing.log_every_x_minutes(LOG_EVERY_X_MINUTES, logger)(methods.MS_sequential_filter_term)
+    # methods.MS_sequential_filter_log_term = terminate_and_log(max_time =  30*(1/60), log_interval = 5*(1/60))(methods.MS_sequential_filter)
+    # methods.MS_sequential_filter_log_term = methods.MS_sequential_filter
+    # methods.MS_sequential_filter_log_term = methods.MS_sequential_filter
 
+    
+    methods.call_c_nondomDC = set_defaults(max_time = TERMINATE_AFTER_X_MINUTES)(methods.call_c_nondomDC)
 
     print(f"{TI=}")
     logger.info(f"{TI=}")
+    if len(TI.filename_list) < 10:
+        print(f"{TI.filename_list=}")
     logger.info(f'Running algorithm1 on test instance set {TI}')
 
-    with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
+    # with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
+    if True:
         for MSP in TI:
             
             time_start = time.time()
             logger.info(f"{MSP}")
             filter_time = time.time()
-            Yn = methods.MS_sequential_filter_log_term(MSP.Y_list)
+            Yn = methods.MS_sequential_filter(MSP.Y_list)
             if Yn is None: # if process was stopped
                 logger.warning(f"instance {MSP=} terminated after {TERMINATE_AFTER_X_MINUTES} minutes")
                 Yn = PointList()
-                Yn.statistics['filter_time'] = TERMINATE_AFTER_X_MINUTES
+                Yn.statistics['filter_time'] = time.time() - filter_time
                 Yn.statistics['card'] = None
 
             else: 
@@ -422,7 +430,7 @@ def main():
                 reset_timeit()
 
             # print(" ")
-            bar()
+            # bar()
 
 
 
