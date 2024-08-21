@@ -353,13 +353,6 @@ def main():
         LOG_EVERY_X_MINUTES = args.loginterval
     if args.msppreset:
         MSP_preset = args.msppreset
-
-    print(f"Options:")
-    print(f"\t{args.solveall=}")
-    print(f"\t{LOG_EVERY_X_MINUTES=}")
-    print(f"\t{TERMINATE_AFTER_X_MINUTES=}")
-    print(f"\t{MSP_preset=}")
-
     TI = MSPInstances(MSP_preset, ignore_ifonly_l=True)
 
     if not args.solveall:
@@ -374,7 +367,6 @@ def main():
     # add logger
     logname = 'algorithm1.log'
     if logpath:
-        print(f"\tlogpath provided: {logpath}")
         logpath = logpath
     else: 
         logpath = logname
@@ -385,6 +377,24 @@ def main():
     logger = logging.getLogger(logname)
 
     logger.info(f"Directory path provided: {outdir}")
+
+
+
+
+    print(f"Options:")
+    logger.info(f"Options:")
+    print(f"\t{args.solveall=}")
+    logger.info(f"\t{args.solveall=}")
+    print(f"\t{LOG_EVERY_X_MINUTES=}")
+    logger.info(f"\t{LOG_EVERY_X_MINUTES=}")
+    print(f"\t{TERMINATE_AFTER_X_MINUTES=}")
+    logger.info(f"\t{TERMINATE_AFTER_X_MINUTES=}")
+    print(f"\t{MSP_preset=}")
+    logger.info(f"\t{MSP_preset=}")
+    if logpath:
+        print(f"\tlogpath provided: {logpath}")
+        logger.info(f"\tlogpath provided: {logpath}")
+
 
 
 
