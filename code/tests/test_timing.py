@@ -71,7 +71,7 @@ def test_log_every_x():
 	# make sure it termination does no have to wait for loginterval
     start_time = time.time()
     a_long_process_log = log_every_x_minutes(6*(1/60),logger)(a_long_process)
-	a_long_process_log()
+    a_long_process_log()
     total_time = time.time() - start_time
     assert total_time < 6 # Should take 5 + overhead
     
