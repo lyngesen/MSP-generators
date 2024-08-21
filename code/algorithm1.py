@@ -327,8 +327,6 @@ def main():
 
     LOG_EVERY_X_MINUTES = 5
     TERMINATE_AFTER_X_MINUTES = 60
-    print(f"{LOG_EVERY_X_MINUTES=}")
-    print(f"{TERMINATE_AFTER_X_MINUTES=}")
     save_prefix = 'alg1-'
     MSP_preset = 'algorithm1'
 
@@ -338,15 +336,27 @@ def main():
 
     # parse arguments
     parser = argparse.ArgumentParser(description="Save instance results PointList in dir.")
+    parser.add_argument('-loginterval', type=int, required=False, help='Time interval for logs default 5 ')
+    parser.add_argument('-timelimit', type=int, required=False, help='Time limit for each instance')
     parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
     parser.add_argument('-logpath', type=str, required=False, help='path where log (algorithm1.log) files are to be saved')
+    parser.add_argument('-solveall', action='store_true', help='if flag added, all instances are solved (already solved instances will not be filtered out)')
     args = parser.parse_args()
     outdir = args.outdir
     logpath = args.logpath
+    if args.timelimit:
+        TERMINATE_AFTER_X_MINUTES = args.timelimit
+    if args.loginterval:
+        LOG_EVERY_X_MINUTES = args.loginterval
 
+    print(f"{args.solveall=}")
+    print(f"{LOG_EVERY_X_MINUTES=}")
+    print(f"{TERMINATE_AFTER_X_MINUTES=}")
 
     TI = MSPInstances(MSP_preset, ignore_ifonly_l=True)
-    TI.filter_out_solved(save_prefix, save_solution_dir)
+
+    if not args.solveall:
+        TI.filter_out_solved(save_prefix, save_solution_dir)
 
     if outdir:
         assert outdir[-1] =='/'
@@ -358,7 +368,6 @@ def main():
     logname = 'algorithm1.log'
     if logpath:
         print(f"logpath provided: {logpath}")
-        assert logpath.split('.')[-1] == 'log'
         logpath = logpath
     else: 
         logpath = logname
@@ -381,8 +390,6 @@ def main():
 
     print(f"{TI=}")
     logger.info(f"{TI=}")
-    logger.info(f"{TI.filename_list=}")
-
     logger.info(f'Running algorithm1 on test instance set {TI}')
 
     with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
