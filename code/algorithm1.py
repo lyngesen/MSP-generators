@@ -340,7 +340,10 @@ def main():
     parser.add_argument('-timelimit', type=int, required=False, help='Time limit for each instance')
     parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
     parser.add_argument('-logpath', type=str, required=False, help='path where log (algorithm1.log) files are to be saved')
+    parser.add_argument('-msppreset', type=str, required=False, help='Choice of preset instances to solve default: algorithm1. other choices grendel_test, algorithm2')
     parser.add_argument('-solveall', action='store_true', help='if flag added, all instances are solved (already solved instances will not be filtered out)')
+
+
     args = parser.parse_args()
     outdir = args.outdir
     logpath = args.logpath
@@ -348,10 +351,14 @@ def main():
         TERMINATE_AFTER_X_MINUTES = args.timelimit
     if args.loginterval:
         LOG_EVERY_X_MINUTES = args.loginterval
+    if args.msppreset:
+        MSP_preset = args.msppreset
 
-    print(f"{args.solveall=}")
-    print(f"{LOG_EVERY_X_MINUTES=}")
-    print(f"{TERMINATE_AFTER_X_MINUTES=}")
+    print(f"Options:")
+    print(f"\t{args.solveall=}")
+    print(f"\t{LOG_EVERY_X_MINUTES=}")
+    print(f"\t{TERMINATE_AFTER_X_MINUTES=}")
+    print(f"\t{MSP_preset=}")
 
     TI = MSPInstances(MSP_preset, ignore_ifonly_l=True)
 
@@ -361,13 +368,13 @@ def main():
     if outdir:
         assert outdir[-1] =='/'
         save_solution_dir = outdir
-        print(f"Directory path provided: {outdir}")
-        print(f"{os.path.exists(outdir)=}")
+        print(f"\tDirectory path provided: {outdir}")
+        # print(f"\t{os.path.exists(outdir)=}")
 
     # add logger
     logname = 'algorithm1.log'
     if logpath:
-        print(f"logpath provided: {logpath}")
+        print(f"\tlogpath provided: {logpath}")
         logpath = logpath
     else: 
         logpath = logname
