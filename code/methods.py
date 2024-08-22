@@ -223,6 +223,32 @@ def call_c_nondomDC(call_id:str, max_time=None, logger=None):
 
 
 
+def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=None, logger=None):
+    assert 'ND_pointsSum2' in os.listdir()
+
+    print(f"calling subprocess ")
+    if max_gb:
+        p = subprocess.Popen(['./ND_pointsSum2',call_id,max_gb])
+    else:
+        p = subprocess.Popen(['./ND_pointsSum2',call_id])
+
+    
+    try:
+        if max_time:
+            p.wait(timeout=max_time*60)
+        else:
+            p.wait()
+    except subprocess.TimeoutExpired:
+        print(f"Process timed out after {max_time} seconds")
+        p.kill()
+        print("Process killed due to timeout")
+        if logger:
+            logger.warning("Process timed out after {max_time} seconds {call_id=}")
+
+    
+    print(f"subprocess complete ")
+
+
 def nondomDC_wrapper(Y : PointList):
     # A python wrapper for the c implementation of NonDomDC [Bruno Lang]
     call_id = str(uuid.uuid4())
@@ -232,9 +258,13 @@ def nondomDC_wrapper(Y : PointList):
     call_c_nondomDC(call_id)
     # in_file = filepath = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsOut-{call_id}" # c script directory
     in_file = filepath = fr"temp/pointsOut-{call_id}" # c script directory
+    Yn = PointList.from_raw(in_file)
+    print(f"{in_file=}")
     try:
         Yn = PointList.from_raw(in_file)
     except FileNotFoundError:
+        print(f"File not found")
+        print(f"{in_file=}")
         return None
     finally:
         os.remove(out_file)
@@ -243,6 +273,30 @@ def nondomDC_wrapper(Y : PointList):
         # os.remove(out_file)
         os.remove(in_file)
     return Yn
+
+
+def ND_pointsSum2_wrapper(A : PointList, B : PointList, max_gb=None):
+    # A python wrapper for the c implementation of ND_pointsSum2 [Bruno Lang]
+    call_id = str(uuid.uuid4())
+    # out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}" # c script directory
+    out_fileA = fr"temp/pointsInA-{call_id}" # c script directory
+    out_fileB = fr"temp/pointsInB-{call_id}" # c script directory
+    A.save_raw(out_fileA)
+    B.save_raw(out_fileB)
+    call_c_ND_pointsSum2(call_id)
+    in_file = filepath = fr"temp/pointsOut-{call_id}" # c script directory
+    try:
+        Yn = PointList.from_raw(in_file)
+    except FileNotFoundError:
+        return None
+    finally:
+        os.remove(out_fileA)
+        os.remove(out_fileB)
+
+    if True: # clear temp folder
+        os.remove(in_file)
+    return Yn
+
 
 def N(Y = PointList, **kwargs):
     """ 'best' implemented nondominance filter """
@@ -302,6 +356,7 @@ def MS_sequential_filter(Y_list = list[PointList], N = N) -> PointList:
         # print(f"{s=}")
         # print(f"{len(Y_ms)=}")
         Y_ms = N(Y_ms + N(Y_list[s]))
+        # Y_ms = ND_pointsSum2_wrapper(Y_ms, N(Y_list[s]))
         if Y_ms is None:
             return None
 
