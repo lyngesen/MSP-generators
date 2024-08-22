@@ -327,6 +327,7 @@ def main():
 
     LOG_EVERY_X_MINUTES = 5
     TERMINATE_AFTER_X_MINUTES = 60
+    MEMORY_LIMIT = 1 # GB
     save_prefix = 'alg1-'
     MSP_preset = 'algorithm1'
 
@@ -338,6 +339,7 @@ def main():
     parser = argparse.ArgumentParser(description="Save instance results PointList in dir.")
     parser.add_argument('-loginterval', type=int, required=False, help='Time interval for logs default 5 ')
     parser.add_argument('-timelimit', type=float, required=False, help='Time limit for each instance')
+    parser.add_argument('-memorylimit', type=float, required=False, help='Memory limit for each instance')
     parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
     parser.add_argument('-logpath', type=str, required=False, help='path where log (algorithm1.log) files are to be saved')
     parser.add_argument('-msppreset', type=str, required=False, help='Choice of preset instances to solve default: algorithm1. other choices grendel_test, algorithm2')
@@ -353,6 +355,10 @@ def main():
         LOG_EVERY_X_MINUTES = args.loginterval
     if args.msppreset:
         MSP_preset = args.msppreset
+    if args.memorylimit:
+        MEMORY_LIMIT = args.memorylimit
+
+
     TI = MSPInstances(MSP_preset, ignore_ifonly_l=True)
 
     if not args.solveall:
@@ -409,6 +415,7 @@ def main():
 
     
     methods.call_c_nondomDC = set_defaults(max_time = TERMINATE_AFTER_X_MINUTES)(methods.call_c_nondomDC)
+    methods.call_c_ND_pointsSum2 = set_defaults(max_gb = MEMORY_LIMIT)(methods.call_c_ND_pointsSum2)
 
     print(f"{TI=}")
     logger.info(f"{TI=}")
@@ -416,8 +423,7 @@ def main():
         print(f"{TI.filename_list=}")
     logger.info(f'Running algorithm1 on test instance set {TI}')
 
-    # with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
-    if True:
+    with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
         for MSP in TI:
             
             time_start = time.time()
@@ -440,7 +446,7 @@ def main():
                 reset_timeit()
 
             # print(" ")
-            # bar()
+            bar()
 
 
 
