@@ -223,12 +223,12 @@ def call_c_nondomDC(call_id:str, max_time=None, logger=None):
 
 
 
-def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=None, logger=None):
+def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=int, logger=None):
     assert 'ND_pointsSum2' in os.listdir()
 
-    print(f"calling subprocess ")
+    # print(f"calling subprocess ")
     if max_gb:
-        p = subprocess.Popen(['./ND_pointsSum2',call_id,max_gb])
+        p = subprocess.Popen(['./ND_pointsSum2',call_id,str(max_gb)])
     else:
         p = subprocess.Popen(['./ND_pointsSum2',call_id])
 
@@ -246,7 +246,7 @@ def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=None, logger=None):
             logger.warning("Process timed out after {max_time} seconds {call_id=}")
 
     
-    print(f"subprocess complete ")
+    # print(f"subprocess complete ")
 
 
 def nondomDC_wrapper(Y : PointList):
@@ -259,7 +259,7 @@ def nondomDC_wrapper(Y : PointList):
     # in_file = filepath = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsOut-{call_id}" # c script directory
     in_file = filepath = fr"temp/pointsOut-{call_id}" # c script directory
     Yn = PointList.from_raw(in_file)
-    print(f"{in_file=}")
+    # print(f"{in_file=}")
     try:
         Yn = PointList.from_raw(in_file)
     except FileNotFoundError:
@@ -355,8 +355,8 @@ def MS_sequential_filter(Y_list = list[PointList], N = N) -> PointList:
     for s in range(1, len(Y_list)):
         # print(f"{s=}")
         # print(f"{len(Y_ms)=}")
-        Y_ms = N(Y_ms + N(Y_list[s]))
-        # Y_ms = ND_pointsSum2_wrapper(Y_ms, N(Y_list[s]))
+        # Y_ms = N(Y_ms + N(Y_list[s]))
+        Y_ms = ND_pointsSum2_wrapper(Y_ms, N(Y_list[s]))
         if Y_ms is None:
             return None
 
