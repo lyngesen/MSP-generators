@@ -573,6 +573,12 @@ class MSPInstances:
             case 'algorithm1':
                 self.generation_options = ['m','u','l'] # generation method
                 self.size_options = (50, 100, 150, 200, 300) # subproblems size
+            case 'algorithm1_largest':
+                self.generation_options = ['m','u','l'] # generation method
+                self.size_options = (50, 100, 150, 200, 300) # subproblems size
+                self.p_options = (5,)
+                self.m_options = (5,)
+
             case 'grendel_test':
                 self.filename_list = [
                         'prob-2-100|100-ll-2_1.json',
