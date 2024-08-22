@@ -423,7 +423,8 @@ def main():
         print(f"{TI.filename_list=}")
     logger.info(f'Running algorithm1 on test instance set {TI}')
 
-    with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
+    #with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
+    if True:    
         for MSP in TI:
             
             time_start = time.time()
@@ -446,7 +447,7 @@ def main():
                 reset_timeit()
 
             # print(" ")
-            bar()
+            #bar()
 
 
 
