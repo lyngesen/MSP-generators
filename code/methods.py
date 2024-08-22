@@ -223,7 +223,7 @@ def call_c_nondomDC(call_id:str, max_time=None, logger=None):
 
 
 
-def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=int, logger=None):
+def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=None, logger=None):
     assert 'ND_pointsSum2' in os.listdir()
 
     # print(f"calling subprocess ")
@@ -244,8 +244,8 @@ def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=int, logger=None):
         print("Process killed due to timeout")
         if logger:
             logger.warning("Process timed out after {max_time} seconds {call_id=}")
-
-    
+            logger.info(f"{p.returncode=}")
+        print(f"{p.returncode=}")
     # print(f"subprocess complete ")
 
 
@@ -275,7 +275,7 @@ def nondomDC_wrapper(Y : PointList):
     return Yn
 
 
-def ND_pointsSum2_wrapper(A : PointList, B : PointList, max_gb=None):
+def ND_pointsSum2_wrapper(A : PointList, B : PointList):
     # A python wrapper for the c implementation of ND_pointsSum2 [Bruno Lang]
     call_id = str(uuid.uuid4())
     # out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}" # c script directory
