@@ -395,6 +395,8 @@ def main():
     logger.info(f"\t{LOG_EVERY_X_MINUTES=}")
     print(f"\t{TERMINATE_AFTER_X_MINUTES=}")
     logger.info(f"\t{TERMINATE_AFTER_X_MINUTES=}")
+    print(f"\t{MEMORY_LIMIT=}")
+    logger.info(f"\t{MEMORY_LIMIT=}")
     print(f"\t{MSP_preset=}")
     logger.info(f"\t{MSP_preset=}")
     if logpath:
@@ -414,8 +416,8 @@ def main():
     # methods.MS_sequential_filter_log_term = methods.MS_sequential_filter
 
     
-    methods.call_c_nondomDC = set_defaults(max_time = TERMINATE_AFTER_X_MINUTES)(methods.call_c_nondomDC)
-    methods.call_c_ND_pointsSum2 = set_defaults(max_gb = MEMORY_LIMIT)(methods.call_c_ND_pointsSum2)
+    methods.call_c_nondomDC = set_defaults(max_time = TERMINATE_AFTER_X_MINUTES, logger = logger)(methods.call_c_nondomDC)
+    methods.call_c_ND_pointsSum2 = set_defaults(max_gb = MEMORY_LIMIT, logger=logger)(methods.call_c_ND_pointsSum2)
 
     print(f"{TI=}")
     logger.info(f"{TI=}")
@@ -423,7 +425,8 @@ def main():
         print(f"{TI.filename_list=}")
     logger.info(f'Running algorithm1 on test instance set {TI}')
 
-    with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
+    # with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
+    if True:
         for MSP in TI:
             
             time_start = time.time()
@@ -446,7 +449,7 @@ def main():
                 reset_timeit()
 
             # print(" ")
-            bar()
+            # bar()
 
 
 
