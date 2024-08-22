@@ -2,7 +2,7 @@ import pytest
 from classes import Point, PointList, LinkedList, MinkowskiSumProblem
 import methods
 from methods import U_dominates_L, induced_UB, lex_sort, N
-from timing import timeit, print_timeit
+from timing import timeit, print_timeit, set_defaults
 from functools import reduce
 import matplotlib.pyplot as plt
 import copy
@@ -185,10 +185,30 @@ def test_c_wrapper_ND_pointsSum2():
 
     assert methods.N(A+B) == ABn
 
-
-    ABn = methods.ND_pointsSum2_wrapper(A,B, 1)
+    # reverse
+    ABn = methods.ND_pointsSum2_wrapper(B,A)
 
     assert methods.N(A+B) == ABn
+
+
+    methods.call_c_ND_pointsSum2 = set_defaults(max_gb = 3)(methods.call_c_ND_pointsSum2)
+    ABn = methods.ND_pointsSum2_wrapper(A,B)
+
+    assert methods.N(A+B) == ABn
+
+    
+    # test forced termination time
+    methods.call_c_ND_pointsSum2 = set_defaults(max_gb = 0.5, max_time = 0.1 * (1/60))(methods.call_c_ND_pointsSum2)
+    
+    ABn = methods.ND_pointsSum2_wrapper(A,B)
+    assert ABn is None
+
+    # test forced termination memory unsifficient
+    methods.call_c_ND_pointsSum2 = set_defaults(max_gb = 0.0001, max_time = 200)(methods.call_c_ND_pointsSum2)
+    
+    ABn = methods.ND_pointsSum2_wrapper(A,B)
+    assert ABn is None
+
 
 def test_MS(): 
     # MS test
