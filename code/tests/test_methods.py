@@ -167,6 +167,28 @@ def test_python_c_wrapper():
         # # plt.show()
         # plt.cla()
 
+def test_c_wrapper_ND_pointsSum2():
+    jsonfilename = "instances/subproblems/sp-4-300-m_1.json"
+    A = PointList.from_json(jsonfilename)
+    
+    jsonfilename = "instances/subproblems/sp-4-300-m_2.json"
+    B = PointList.from_json(jsonfilename)
+
+    save_path = "/Users/au618299/Desktop/cythonTest/nondom/temp"
+
+    ABn = methods.ND_pointsSum2_wrapper(A,B)
+    
+    if False:
+        A.plot('A')
+        B.plot('B')
+        ABn.plot('(A+B)n', SHOW=True)
+
+    assert methods.N(A+B) == ABn
+
+
+    ABn = methods.ND_pointsSum2_wrapper(A,B, 1)
+
+    assert methods.N(A+B) == ABn
 
 def test_MS(): 
     # MS test
