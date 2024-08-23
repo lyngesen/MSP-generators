@@ -61,22 +61,32 @@ def timeit(func, keyname = None):
         return result
     return timeit_wrapper
 
-def print_timeit(tolerance = 0):
+def print_timeit(tolerance = 0, logger = None):
     global TIME_dict
     # sort and show TIME_dict
+    out_str = "\n"
     hline = 70
-    print("_"*hline)
+    out_str += "\t" + "_"*hline + "\n"
     TIME_dict = {k: v for k, v in sorted(TIME_dict.items(), key=lambda item: item[1])}
     for k,v in TIME_dict.items():
         calls = COUNT_dict[k]
         # if v > 0.01:
         if calls != 0 and v > tolerance:
             calls = f"{calls:13.2e}" if calls > 1_000_000 else f"{calls:13}" 
-            print(f" {k:27} : {v:10.2f} seconds {calls} calls")
-    print("_"*hline)
-    print(f" {'Total time ':27} : {time.perf_counter() - START_TIME:10.2f} seconds")
-    print("_"*hline)
+            # print(f" {k:27} : {v:10.2f} seconds {calls} calls")
+            out_str += "\t" + f" {k:27} : {v:10.2f} seconds {calls} calls"+ "\n"
 
+    total_time = time.perf_counter() - START_TIME
+
+    if total_time > tolerance:
+        out_str += "\t" + "_"*hline+ "\n"
+        out_str  += "\t" + f" {'Total time ':27} : {total_time:10.2f} seconds"+ "\n"
+        out_str += "\t" + "_"*hline+ "\n"
+
+        print(out_str)
+        if logger:
+            logger.info(out_str)
+        
     # TIME_dict_return = {k: v for k, v in TIME_dict.items() if COUNT_dict[k]>0}
     return TIME_dict
 

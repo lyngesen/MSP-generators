@@ -325,7 +325,6 @@ def convert_all_raw_files():
 
 def main():
 
-    LOG_EVERY_X_MINUTES = 5
     TERMINATE_AFTER_X_MINUTES = 60
     MEMORY_LIMIT = 1 # GB
     save_prefix = 'alg1-'
@@ -337,7 +336,6 @@ def main():
 
     # parse arguments
     parser = argparse.ArgumentParser(description="Save instance results PointList in dir.")
-    parser.add_argument('-loginterval', type=int, required=False, help='Time interval for logs default 5 ')
     parser.add_argument('-timelimit', type=float, required=False, help='Time limit for each instance')
     parser.add_argument('-memorylimit', type=float, required=False, help='Memory limit for each instance')
     parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
@@ -352,8 +350,6 @@ def main():
     logpath = args.logpath
     if args.timelimit:
         TERMINATE_AFTER_X_MINUTES = args.timelimit
-    if args.loginterval:
-        LOG_EVERY_X_MINUTES = args.loginterval
     if args.msppreset:
         MSP_preset = args.msppreset
     if args.memorylimit:
@@ -386,19 +382,15 @@ def main():
 
     options = {
         "args.solveall": args.solveall,
-        "LOG_EVERY_X_MINUTES": LOG_EVERY_X_MINUTES,
         "TERMINATE_AFTER_X_MINUTES": TERMINATE_AFTER_X_MINUTES,
         "MEMORY_LIMIT": MEMORY_LIMIT,
         "MSP_preset": MSP_preset,
         "outdir":outdir,
-        "outpath":logpath,
+        "logpath":logpath,
         "running alg2":args.alg2,
     }
 
     options_str = "Options:\n" + "\n".join([f"\t{key}={value}" for key, value in options.items()])
-
-    if logpath:
-        options_str += f"\n\tlogpath provided: {logpath}"
 
     print(options_str)
     logger.info(options_str)
@@ -448,7 +440,10 @@ def main():
             if args.alg2: # also run alg2
                 logger.info(f'Running alg2 for {MSP=}')
                 MGS, Yn_2 = algorithm2(MSP, logger = logger)
-                logger.info(MGS.statistics)
+
+                statistics_str = "stat2:\n" + "\n".join([f"\t{key}={value}" for key, value in MGS.statistics.items()])
+                logger.info(statistics_str)
+
                 Yn_2.statistics['filter_time'] = MGS.statistics['time_simplefilter']
                 assert Yn_2 == Yn, f"{len(Yn),len(Yn_2)=}"
                 Yn_2.save_json(save_solution_dir + 'algorithm1/alg2-' + MSP.filename.split('/')[-1])
@@ -457,7 +452,7 @@ def main():
             
 
             if True:
-                print_timeit()
+                print_timeit(tolerance=5, logger=logger)
                 reset_timeit()
 
             # print(" ")
