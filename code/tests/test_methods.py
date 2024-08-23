@@ -90,6 +90,15 @@ def test_single():
     assert methods.two_phase_filter(Y) == Yn
 
 
+def test_sequential():
+
+    jsonfilename = "instances/problems/prob-2-100|100-mm-2_2.json"
+    MSP = MinkowskiSumProblem.from_json(jsonfilename)
+
+    Yn = methods.MS_sequential_filter(MSP.Y_list)
+    Yn2 = methods.MS_sequential_filter(MSP.Y_list, N=methods.naive_filter)
+    
+    assert Yn == Yn2
 
 def test_raw_write():
     MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-3-100|100|100|100|100-mmmmm-5_3.json')
