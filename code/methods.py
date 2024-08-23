@@ -255,7 +255,10 @@ def nondomDC_wrapper(Y : PointList):
     # out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}" # c script directory
     out_file = fr"temp/pointsIn-{call_id}" # c script directory
     Y.save_raw(out_file)
-    call_c_nondomDC(call_id)
+    try:
+        call_c_nondomDC(call_id)
+    finally:
+        os.remove(out_file)
     # in_file = filepath = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsOut-{call_id}" # c script directory
     in_file = filepath = fr"temp/pointsOut-{call_id}" # c script directory
     Yn = PointList.from_raw(in_file)
@@ -266,8 +269,6 @@ def nondomDC_wrapper(Y : PointList):
         print(f"File not found")
         print(f"{in_file=}")
         return None
-    finally:
-        os.remove(out_file)
 
     if True: # clear temp folder
         # os.remove(out_file)
@@ -283,15 +284,18 @@ def ND_pointsSum2_wrapper(A : PointList, B : PointList):
     out_fileB = fr"temp/pointsInB-{call_id}" # c script directory
     A.save_raw(out_fileA)
     B.save_raw(out_fileB)
-    call_c_ND_pointsSum2(call_id)
+    try:
+        call_c_ND_pointsSum2(call_id)
+    finally:
+        os.remove(out_fileA)
+        os.remove(out_fileB)
+
+
     in_file = filepath = fr"temp/pointsOut-{call_id}" # c script directory
     try:
         Yn = PointList.from_raw(in_file)
     except FileNotFoundError:
         return None
-    finally:
-        os.remove(out_fileA)
-        os.remove(out_fileB)
 
     if True: # clear temp folder
         os.remove(in_file)
@@ -357,6 +361,8 @@ def MS_sequential_filter(Y_list = list[PointList], N = N) -> PointList:
         # print(f"{len(Y_ms)=}")
         # Y_ms = N(Y_ms + N(Y_list[s]))
         Y_ms = ND_pointsSum2_wrapper(Y_ms, N(Y_list[s]))
+        Y_ms = Y_ms.removed_duplicates()
+        # assert Y_ms == N(Y_ms), f"{len(Y_ms),len(N(Y_ms)),len(Y_ms.removed_duplicates())=}"
         if Y_ms is None:
             return None
 
