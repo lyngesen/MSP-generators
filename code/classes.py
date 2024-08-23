@@ -631,7 +631,8 @@ class MSPInstances:
         self.not_solved = []
         self.solved = []
         for p in self.filename_list:
-            if save_prefix + p in os.listdir(solved_folder):
+            filename = p if type(p) == str else p.filename
+            if save_prefix + filename in os.listdir(solved_folder):
                 self.solved.append(p)
             else:
                 self.not_solved.append(p)
