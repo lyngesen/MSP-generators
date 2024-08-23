@@ -7,6 +7,7 @@ For each problem MSP (from instances/problem)
 
 from classes import Point, PointList, MinkowskiSumProblem, KD_Node, KD_tree, MSPInstances
 import methods
+from algorithm2 import algorithm2
 import timing
 from timing import timeit, print_timeit, reset_timeit, time_object, log_every_x_minutes, terminate_and_log, set_defaults
 from methods import N
@@ -22,8 +23,7 @@ import argparse
 # for logging
 import logging
 
-
-
+algorithm2 = timeit(algorithm2)
 
 time_object(KD_tree)
 time_object(KD_Node)
@@ -331,8 +331,8 @@ def main():
     save_prefix = 'alg1-'
     MSP_preset = 'algorithm1'
 
-    save_solution_dir = './instances/results/algorithm1/'
-    # save_solution_dir = './instances/results/testdir/'
+    # save_solution_dir = './instances/results/algorithm1/'
+    save_solution_dir = './instances/results/testdir/'
 
 
     # parse arguments
@@ -344,6 +344,7 @@ def main():
     parser.add_argument('-logpath', type=str, required=False, help='path where log (algorithm1.log) files are to be saved')
     parser.add_argument('-msppreset', type=str, required=False, help='Choice of preset instances to solve default: algorithm1. other choices grendel_test, algorithm2')
     parser.add_argument('-solveall', action='store_true', help='if flag added, all instances are solved (already solved instances will not be filtered out)')
+    parser.add_argument('-alg2', action='store_true', help='if flag added, MGS will be solved using algorithm2)')
 
 
     args = parser.parse_args()
@@ -367,7 +368,7 @@ def main():
     if outdir:
         assert outdir[-1] =='/'
         save_solution_dir = outdir
-        print(f"\tDirectory path provided: {outdir}")
+        # print(f"\tDirectory path provided: {outdir}")
         # print(f"\t{os.path.exists(outdir)=}")
 
     # add logger
@@ -382,39 +383,30 @@ def main():
                         )
     logger = logging.getLogger(logname)
 
-    logger.info(f"Directory path provided: {outdir}")
 
+    options = {
+        "args.solveall": args.solveall,
+        "LOG_EVERY_X_MINUTES": LOG_EVERY_X_MINUTES,
+        "TERMINATE_AFTER_X_MINUTES": TERMINATE_AFTER_X_MINUTES,
+        "MEMORY_LIMIT": MEMORY_LIMIT,
+        "MSP_preset": MSP_preset,
+        "outdir":outdir,
+        "outpath":logpath,
+        "running alg2":args.alg2,
+    }
 
+    options_str = "Options:\n" + "\n".join([f"\t{key}={value}" for key, value in options.items()])
 
-
-    print(f"Options:")
-    logger.info(f"Options:")
-    print(f"\t{args.solveall=}")
-    logger.info(f"\t{args.solveall=}")
-    print(f"\t{LOG_EVERY_X_MINUTES=}")
-    logger.info(f"\t{LOG_EVERY_X_MINUTES=}")
-    print(f"\t{TERMINATE_AFTER_X_MINUTES=}")
-    logger.info(f"\t{TERMINATE_AFTER_X_MINUTES=}")
-    print(f"\t{MEMORY_LIMIT=}")
-    logger.info(f"\t{MEMORY_LIMIT=}")
-    print(f"\t{MSP_preset=}")
-    logger.info(f"\t{MSP_preset=}")
     if logpath:
-        print(f"\tlogpath provided: {logpath}")
-        logger.info(f"\tlogpath provided: {logpath}")
+        options_str += f"\n\tlogpath provided: {logpath}"
 
-
+    print(options_str)
+    logger.info(options_str)
 
 
     # add decorators
     #   terminate after specified number of minutes
-    #   add log after every specified timeunit
-    # methods.MS_sequential_filter_term = timing.terminate_after_x_minutes(TERMINATE_AFTER_X_MINUTES, logger)(methods.MS_sequential_filter)
-    # methods.MS_sequential_filter_log_term = timing.log_every_x_minutes(LOG_EVERY_X_MINUTES, logger)(methods.MS_sequential_filter_term)
-    # methods.MS_sequential_filter_log_term = terminate_and_log(max_time =  30*(1/60), log_interval = 5*(1/60))(methods.MS_sequential_filter)
-    # methods.MS_sequential_filter_log_term = methods.MS_sequential_filter
-    # methods.MS_sequential_filter_log_term = methods.MS_sequential_filter
-
+    #   limit memory used by c script
     
     methods.call_c_nondomDC = set_defaults(max_time = TERMINATE_AFTER_X_MINUTES, logger = logger)(methods.call_c_nondomDC)
     methods.call_c_ND_pointsSum2 = set_defaults(max_gb = MEMORY_LIMIT, logger=logger)(methods.call_c_ND_pointsSum2)
@@ -427,11 +419,18 @@ def main():
 
     # with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
     if True:
-        for MSP in TI:
-            
+        for i, MSP in enumerate(TI):
             time_start = time.time()
+
+            status_msg = f"Solve status {i}/{len(TI.filename_list)} ({(i / len(TI.filename_list) * 100):.2f}%)"
             logger.info(f"{MSP}")
+            logger.info(status_msg)
+            print(f"{MSP}")
+            print(status_msg)
+
             filter_time = time.time()
+
+
             Yn = methods.MS_sequential_filter(MSP.Y_list)
             if Yn is None: # if process was stopped
                 logger.warning(f"instance {MSP=} terminated after {TERMINATE_AFTER_X_MINUTES} minutes")
@@ -441,9 +440,22 @@ def main():
 
             else: 
                 Yn.statistics['filter_time'] = time.time() - filter_time
-            Yn.save_json(save_solution_dir + save_prefix + MSP.filename.split('/')[-1])
+
+
+            Yn.save_json(save_solution_dir + 'algorithm1/alg1-' + MSP.filename.split('/')[-1])
             logger.info(f"{MSP.filename=}, {len(Yn)=}, filter_time = {Yn.statistics['filter_time']}")
             
+            if args.alg2: # also run alg2
+                logger.info(f'Running alg2 for {MSP=}')
+                MGS, Yn_2 = algorithm2(MSP, logger = logger)
+                logger.info(MGS.statistics)
+                Yn_2.statistics['filter_time'] = MGS.statistics['time_simplefilter']
+                assert Yn_2 == Yn, f"{len(Yn),len(Yn_2)=}"
+                Yn_2.save_json(save_solution_dir + 'algorithm1/alg2-' + MSP.filename.split('/')[-1])
+                MGS.filename = save_solution_dir + 'algorithm2/MGS-' + MSP.filename.split('/')[-1]
+                MGS.save_json(MGS.filename)
+            
+
             if True:
                 print_timeit()
                 reset_timeit()
