@@ -152,11 +152,36 @@ def test_PointList_json():
     os.remove(save_filename)
 
 
+def test_PointList_raw():
+
+    jsonfilename = "instances/subproblems/sp-4-300-m_1.json"
+    A = PointList.from_json(jsonfilename)
+    
+    jsonfilename = "instances/subproblems/sp-4-300-m_2.json"
+    B = PointList.from_json(jsonfilename)
+
+    save_path = "/Users/au618299/Desktop/cythonTest/nondom/temp"
+
+
+    print(f"{save_path=}")
+    A.save_raw(save_path + '/' + 'pointsInA-default')
+    B.save_raw(save_path + '/' + 'pointsInB-default')
+
+    
+    ABn = PointList.from_raw(save_path + '/' + 'pointsOut-default')
+    if False:
+        A.plot('A')
+        B.plot('B')
+        ABn.plot('(A+B)n', SHOW=True)
+
+    assert methods.N(A+B) == ABn
+
 
 def test_MSP_json():
     jsonfilename = "instances/problems/prob-2-200|200-ll-2_1.json"
     MSP = MinkowskiSumProblem.from_json(jsonfilename)
     print(f"{MSP=}")
+
 
 
 

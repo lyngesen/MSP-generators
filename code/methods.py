@@ -22,6 +22,8 @@ from collections import deque # for fast leftappend
 from operator import itemgetter # for lexsort function to define keys
 import math
 import uuid
+import time
+
 
 def basic_filter(Y:PointList):
     """
@@ -195,7 +197,7 @@ def unidirectional_filter(Y: PointList, duplicates_allowed = False) -> PointList
 
 
 
-def call_c_nondomDC(call_id:str):
+def call_c_nondomDC(call_id:str, max_time=None, logger=None):
     # current_d = os.getcwd()
     # move to c folder and execute
     # os.chdir('/Users/au618299/Desktop/cythonTest/nondom/')
@@ -203,7 +205,48 @@ def call_c_nondomDC(call_id:str):
     # return to initial directory
     # os.chdir(current_d)
     # subprocess.call(['/Users/au618299/Desktop/cythonTest/nondom/./nondom',call_id])
-    subprocess.call(['./nondom',call_id])
+    assert 'nondom' in os.listdir()
+    # subprocess.call(['./nondom',call_id])
+    p = subprocess.Popen(['./nondom',call_id])
+
+    try:
+        if max_time:
+            p.wait(timeout=max_time*60)
+        else:
+            p.wait()
+    except subprocess.TimeoutExpired:
+        print(f"Process timed out after {max_time} seconds")
+        p.kill()
+        print("Process killed due to timeout")
+        if logger:
+            logger.warning("Process timed out after {max_time} seconds {call_id=}")
+
+
+
+def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=None, logger=None):
+    assert 'ND_pointsSum2' in os.listdir()
+
+    # print(f"calling subprocess ")
+    if max_gb:
+        p = subprocess.Popen(['./ND_pointsSum2',call_id,str(max_gb)])
+    else:
+        p = subprocess.Popen(['./ND_pointsSum2',call_id])
+
+    
+    try:
+        if max_time:
+            p.wait(timeout=max_time*60)
+        else:
+            p.wait()
+    except subprocess.TimeoutExpired:
+        print(f"Process timed out after {max_time} seconds")
+        p.kill()
+        print("Process killed due to timeout")
+        if logger:
+            logger.warning("Process timed out after {max_time} seconds {call_id=}")
+            logger.info(f"{p.returncode=}")
+        print(f"{p.returncode=}")
+    # print(f"subprocess complete ")
 
 
 def nondomDC_wrapper(Y : PointList):
@@ -212,14 +255,52 @@ def nondomDC_wrapper(Y : PointList):
     # out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}" # c script directory
     out_file = fr"temp/pointsIn-{call_id}" # c script directory
     Y.save_raw(out_file)
-    call_c_nondomDC(call_id)
+    try:
+        call_c_nondomDC(call_id)
+    finally:
+        os.remove(out_file)
     # in_file = filepath = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsOut-{call_id}" # c script directory
     in_file = filepath = fr"temp/pointsOut-{call_id}" # c script directory
     Yn = PointList.from_raw(in_file)
+    # print(f"{in_file=}")
+    try:
+        Yn = PointList.from_raw(in_file)
+    except FileNotFoundError:
+        print(f"File not found")
+        print(f"{in_file=}")
+        return None
+
     if True: # clear temp folder
-        os.remove(out_file)
+        # os.remove(out_file)
         os.remove(in_file)
     return Yn
+
+
+def ND_pointsSum2_wrapper(A : PointList, B : PointList):
+    # A python wrapper for the c implementation of ND_pointsSum2 [Bruno Lang]
+    call_id = str(uuid.uuid4())
+    # out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}" # c script directory
+    out_fileA = fr"temp/pointsInA-{call_id}" # c script directory
+    out_fileB = fr"temp/pointsInB-{call_id}" # c script directory
+    A.save_raw(out_fileA)
+    B.save_raw(out_fileB)
+    try:
+        call_c_ND_pointsSum2(call_id)
+    finally:
+        os.remove(out_fileA)
+        os.remove(out_fileB)
+
+
+    in_file = filepath = fr"temp/pointsOut-{call_id}" # c script directory
+    try:
+        Yn = PointList.from_raw(in_file)
+    except FileNotFoundError:
+        return None
+
+    if True: # clear temp folder
+        os.remove(in_file)
+    return Yn
+
 
 def N(Y = PointList, **kwargs):
     """ 'best' implemented nondominance filter """
@@ -278,7 +359,12 @@ def MS_sequential_filter(Y_list = list[PointList], N = N) -> PointList:
     for s in range(1, len(Y_list)):
         # print(f"{s=}")
         # print(f"{len(Y_ms)=}")
-        Y_ms = N(Y_ms + N(Y_list[s]))
+        # Y_ms = N(Y_ms + N(Y_list[s]))
+        Y_ms = ND_pointsSum2_wrapper(Y_ms, N(Y_list[s]))
+        Y_ms = Y_ms.removed_duplicates()
+        # assert Y_ms == N(Y_ms), f"{len(Y_ms),len(N(Y_ms)),len(Y_ms.removed_duplicates())=}"
+        if Y_ms is None:
+            return None
 
     return PointList(Y_ms)
 

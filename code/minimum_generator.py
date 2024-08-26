@@ -297,16 +297,22 @@ end
 
 def SimpleFilterSub(Y, Ys):
     Y_ms = []
+
+    Yn_points = set(methods.ND_pointsSum2_wrapper(Y, Ys).points)
+
     for k, y in enumerate(Y):
         for t, ys in enumerate(Ys):
             y_new = y + ys
             y_new.i = y.i + ys.i
-            Y_ms.append(y_new)
+            if y_new in Yn_points:
+                Y_ms.append(y_new)
 
 
-    Yn_points = set(methods.N(PointList(Y_ms)).points)
+    # Yn_points = set(methods.N(PointList(Y_ms)).points)
 
-    Y_ms_N = PointList([y for y in Y_ms if y in Yn_points])
+    # Y_ms_N = PointList([y for y in Y_ms if y in Yn_points])
+
+    Y_ms_N = PointList(Y_ms)
 
     return Y_ms_N
 

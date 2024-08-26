@@ -573,15 +573,23 @@ class MSPInstances:
             case 'algorithm1':
                 self.generation_options = ['m','u','l'] # generation method
                 self.size_options = (50, 100, 150, 200, 300) # subproblems size
+            case 'algorithm1_largest':
+                self.generation_options = ['m','u','l'] # generation method
+                self.size_options = (50, 100, 150, 200, 300) # subproblems size
+                self.p_options = (5,)
+                self.m_options = (5,)
+
             case 'grendel_test':
-                self.max_instances = 4
                 self.filename_list = [
                         'prob-2-100|100-ll-2_1.json',
                         'prob-4-100|100-ll-2_1.json',
                         'prob-4-100|100|100-lll-3_1.json',
                         'prob-4-100|100|100-mmm-3_1.json',
+                        'prob-5-100|100|100-mmm-3_1.json',
+                        'prob-5-100|100|100|100|100-mmmmm-5_1.json',
                         # 'prob-4-200|200|200|200|200-lllll-5_5.json'
                         ]
+                self.max_instances = len(self.filename_list)
             case 'algorithm2':
                 self.generation_options = ['m','u', 'l'] # generation method
                 # self.p_options = (4,)
@@ -623,7 +631,8 @@ class MSPInstances:
         self.not_solved = []
         self.solved = []
         for p in self.filename_list:
-            if save_prefix + p in os.listdir(solved_folder):
+            filename = p if type(p) == str else p.filename
+            if save_prefix + filename in os.listdir(solved_folder):
                 self.solved.append(p)
             else:
                 self.not_solved.append(p)

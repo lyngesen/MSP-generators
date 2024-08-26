@@ -37,6 +37,7 @@ example use:
 from functools import wraps
 import time
 import threading 
+import multiprocessing
 
 # Define global dictionaries
 TIME_dict = {}
@@ -60,22 +61,32 @@ def timeit(func, keyname = None):
         return result
     return timeit_wrapper
 
-def print_timeit(tolerance = 0):
+def print_timeit(tolerance = 0, logger = None):
     global TIME_dict
     # sort and show TIME_dict
+    out_str = "\n"
     hline = 70
-    print("_"*hline)
+    out_str += "\t" + "_"*hline + "\n"
     TIME_dict = {k: v for k, v in sorted(TIME_dict.items(), key=lambda item: item[1])}
     for k,v in TIME_dict.items():
         calls = COUNT_dict[k]
         # if v > 0.01:
         if calls != 0 and v > tolerance:
             calls = f"{calls:13.2e}" if calls > 1_000_000 else f"{calls:13}" 
-            print(f" {k:27} : {v:10.2f} seconds {calls} calls")
-    print("_"*hline)
-    print(f" {'Total time ':27} : {time.perf_counter() - START_TIME:10.2f} seconds")
-    print("_"*hline)
+            # print(f" {k:27} : {v:10.2f} seconds {calls} calls")
+            out_str += "\t" + f" {k:27} : {v:10.2f} seconds {calls} calls"+ "\n"
 
+    total_time = time.perf_counter() - START_TIME
+
+    if total_time > tolerance:
+        out_str += "\t" + "_"*hline+ "\n"
+        out_str  += "\t" + f" {'Total time ':27} : {total_time:10.2f} seconds"+ "\n"
+        out_str += "\t" + "_"*hline+ "\n"
+
+        print(out_str)
+        if logger:
+            logger.info(out_str)
+        
     # TIME_dict_return = {k: v for k, v in TIME_dict.items() if COUNT_dict[k]>0}
     return TIME_dict
 
@@ -132,21 +143,170 @@ def log_every_x_minutes(x, logger):
         @wraps(func)
         def wrapper(*args, **kwargs):
             start_time = time.time()
+
             def log_time():
-                while True:
-                    elapsed_time = time.time() - start_time
-                    logger.info(f"The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes")
-                    time.sleep(x * 60)
-            
-            # Start the logging thread
-            log_thread = threading.Thread(target=log_time)
-            log_thread.daemon = True
-            log_thread.start()
-            
+                elapsed_time = time.time() - start_time
+                logger.info(f"The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes")
+                # Schedule the next log after x minutes
+                threading.Timer(x * 60, log_time).start()
+
+            # Start the initial log
+            log_time()
+
             # Call the original function
-            return func(*args, **kwargs)
-        
+            result = func(*args, **kwargs)
+
+            # The function has completed; no need to stop the timer
+            return result
+
         return wrapper
     return decorator
 
 
+def terminate_after_x_minutes_old(x, logger=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # Start the function as a process
+            p = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
+            p.start()
+
+            # Wait for the specified time or until the process finishes
+            p.join(timeout=x*60)
+
+            # If the process is still active after the wait time
+            if p.is_alive():
+                print(f"{func.__name__} is running... killing process after {x:.2f} minutes {x/60:.2f} hours")
+                if logger:
+                    logger.info(f"{func.__name__} is running... killing process after {x/60:.2f} seconds {x:.2f} minutes {x*60:.2f} hours")
+                    logger.warning(f"{func.__name__} is running... killing process after {x*60:.2f} seconds {x:.2f} minutes {x/60:.2f} hours")
+
+                # Terminate the process
+                p.terminate()
+
+                # Ensure the process has terminated
+                p.join()
+        return wrapper
+    return decorator
+
+
+
+def target(queue, func, *args, **kwargs):
+    result = func(*args, **kwargs)
+    queue.put(result)
+
+def terminate_after_x_minutes(x, logger=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # Create a queue to capture the return value
+            queue = multiprocessing.Queue()
+
+            # Start the function as a process
+            p = multiprocessing.Process(target=target, args=(queue, func, *args), kwargs=kwargs)
+            p.start()
+
+            # Wait for the specified time or until the process finishes
+            p.join(timeout=x*60)
+
+            # If the process is still active after the wait time
+            if p.is_alive():
+                message = f"{func.__name__} is running... killing process after {x:.2f} minutes"
+                print(message)
+                if logger:
+                    logger.info(message)
+                    logger.warning(message)
+
+                # Terminate the process
+                p.terminate()
+
+                # Ensure the process has terminated
+                p.join()
+                return None
+            else:
+                # Get the result from the queue
+                if not queue.empty():
+                    return queue.get()
+                return None
+
+        return wrapper
+    return decorator
+
+import multiprocessing
+import time
+from functools import wraps
+def target(queue, func, *args, **kwargs):
+    result = func(*args, **kwargs)
+    queue.put(result)
+
+
+def terminate_and_log(max_time : int, log_interval=0, logger=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+
+            # Create a queue to capture the return value
+            queue = multiprocessing.Queue()
+
+            # Start the function as a process
+            p = multiprocessing.Process(target=target, args=(queue, func, *args), kwargs=kwargs)
+            p.start()
+
+            start_time = time.time()
+            last_log_time = start_time
+            check_interval = 1  # Check every second
+
+            
+            while time.time() - start_time < max_time * 60:
+                time.sleep(check_interval)
+                current_time = time.time()
+
+                # Log every y minutes
+                if log_interval and current_time - last_log_time >= log_interval * 60:
+                    if p.is_alive():
+                        elapsed_time = current_time - start_time
+                        message = f"The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes"
+                        print(f"{message}")
+                        if logger:
+                            logger.info(message)
+
+                        last_log_time = current_time
+                print(f"{p.is_alive()=}")
+                if not p.is_alive():
+                    break
+
+            # If the process is still active after the wait time
+            if p.is_alive():
+                message = f"{func.__name__} is running... killing process after {max_time:.2f} minutes"
+                print(message)
+                if logger:
+                    logger.info(message)
+                    logger.warning(message)
+
+                # Terminate the process
+                p.terminate()
+
+                # Ensure the process has terminated
+                p.join()
+                return None
+            else:
+                # Get the result from the queue
+                if not queue.empty():
+                    return queue.get()
+                return None
+
+        return wrapper
+    return decorator
+
+
+
+def set_defaults(**default_kwargs):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for key, value in default_kwargs.items():
+                if key not in kwargs:
+                    kwargs[key] = value
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator

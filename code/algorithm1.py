@@ -7,8 +7,9 @@ For each problem MSP (from instances/problem)
 
 from classes import Point, PointList, MinkowskiSumProblem, KD_Node, KD_tree, MSPInstances
 import methods
+from algorithm2 import algorithm2
 import timing
-from timing import timeit, print_timeit, reset_timeit, time_object, log_every_x_minutes
+from timing import timeit, print_timeit, reset_timeit, time_object, log_every_x_minutes, terminate_and_log, set_defaults
 from methods import N
 # public library imports
 import matplotlib.pyplot as plt
@@ -17,15 +18,12 @@ import os
 import csv
 import time
 import itertools
+import argparse
 
 # for logging
 import logging
-logname = 'algorithm1.log'
-logging.basicConfig(level=logging.INFO, filename=logname)
-logger = logging.getLogger(logname)
 
-
-methods.MS_sequential_filter = log_every_x_minutes(30, logger)(methods.MS_sequential_filter)
+algorithm2 = timeit(algorithm2)
 
 time_object(KD_tree)
 time_object(KD_Node)
@@ -327,41 +325,145 @@ def convert_all_raw_files():
 
 def main():
 
+    TERMINATE_AFTER_X_MINUTES = 60
+    MEMORY_LIMIT = 1 # GB
     save_prefix = 'alg1-'
+    MSP_preset = 'algorithm1'
+
     # save_solution_dir = './instances/results/algorithm1/'
     save_solution_dir = './instances/results/testdir/'
-    TI = MSPInstances('grendel_test', ignore_ifonly_l=True)
-    TI.filter_out_solved(save_prefix, save_solution_dir)
+
+
+    # parse arguments
+    parser = argparse.ArgumentParser(description="Save instance results PointList in dir.")
+    parser.add_argument('-timelimit', type=float, required=False, help='Time limit for each instance')
+    parser.add_argument('-memorylimit', type=float, required=False, help='Memory limit for each instance')
+    parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
+    parser.add_argument('-logpath', type=str, required=False, help='path where log (algorithm1.log) files are to be saved')
+    parser.add_argument('-msppreset', type=str, required=False, help='Choice of preset instances to solve default: algorithm1. other choices grendel_test, algorithm2')
+    parser.add_argument('-solveall', action='store_true', help='if flag added, all instances are solved (already solved instances will not be filtered out)')
+    parser.add_argument('-alg2', action='store_true', help='if flag added, MGS will be solved using algorithm2)')
+
+
+    args = parser.parse_args()
+    outdir = args.outdir
+    logpath = args.logpath
+    if args.timelimit:
+        TERMINATE_AFTER_X_MINUTES = args.timelimit
+    if args.msppreset:
+        MSP_preset = args.msppreset
+    if args.memorylimit:
+        MEMORY_LIMIT = args.memorylimit
+
+
+    TI = MSPInstances(MSP_preset, ignore_ifonly_l=True)
+
+    if not args.solveall:
+        TI.filter_out_solved(save_prefix, save_solution_dir)
+
+    if outdir:
+        assert outdir[-1] =='/'
+        save_solution_dir = outdir
+        # print(f"\tDirectory path provided: {outdir}")
+        # print(f"\t{os.path.exists(outdir)=}")
+
+    # add logger
+    logname = 'algorithm1.log'
+    if logpath:
+        logpath = logpath
+    else: 
+        logpath = logname
+    logging.basicConfig(level=logging.INFO, 
+                        filename=logpath,
+                        format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+                        )
+    logger = logging.getLogger(logname)
+
+
+    options = {
+        "args.solveall": args.solveall,
+        "TERMINATE_AFTER_X_MINUTES": TERMINATE_AFTER_X_MINUTES,
+        "MEMORY_LIMIT": MEMORY_LIMIT,
+        "MSP_preset": MSP_preset,
+        "outdir":outdir,
+        "logpath":logpath,
+        "running alg2":args.alg2,
+    }
+
+    options_str = "Options:\n" + "\n".join([f"\t{key}={value}" for key, value in options.items()])
+
+    print(options_str)
+    logger.info(options_str)
+
+
+    # add decorators
+    #   terminate after specified number of minutes
+    #   limit memory used by c script
+    
+    methods.call_c_nondomDC = set_defaults(max_time = TERMINATE_AFTER_X_MINUTES, logger = logger)(methods.call_c_nondomDC)
+    methods.call_c_ND_pointsSum2 = set_defaults(max_gb = MEMORY_LIMIT, logger=logger)(methods.call_c_ND_pointsSum2)
+
     print(f"{TI=}")
     logger.info(f"{TI=}")
-    logger.info(f"{TI.filename_list=}")
-
+    if len(TI.filename_list) < 10:
+        print(f"{TI.filename_list=}")
     logger.info(f'Running algorithm1 on test instance set {TI}')
 
-    with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
-        for MSP in TI:
-            
+    # with alive_bar(len(TI.filename_list), enrich_print=True) as bar:
+    if True:
+        for i, MSP in enumerate(TI):
             time_start = time.time()
+
+            status_msg = f"Solve status {i}/{len(TI.filename_list)} ({(i / len(TI.filename_list) * 100):.2f}%)"
             logger.info(f"{MSP}")
+            logger.info(status_msg)
+            print(f"{MSP}")
+            print(status_msg)
+
             filter_time = time.time()
+
+
             Yn = methods.MS_sequential_filter(MSP.Y_list)
-            Yn.statistics['filter_time'] = time.time() - filter_time
-            Yn.save_json(save_solution_dir  +  save_prefix + MSP.filename.split('/')[-1])
+            if Yn is None: # if process was stopped
+                logger.warning(f"instance {MSP=} terminated after {TERMINATE_AFTER_X_MINUTES} minutes")
+                Yn = PointList()
+                Yn.statistics['filter_time'] = time.time() - filter_time
+                Yn.statistics['card'] = None
+
+            else: 
+                Yn.statistics['filter_time'] = time.time() - filter_time
+
+
+            Yn.save_json(save_solution_dir + 'algorithm1/alg1-' + MSP.filename.split('/')[-1])
             logger.info(f"{MSP.filename=}, {len(Yn)=}, filter_time = {Yn.statistics['filter_time']}")
             
+            if args.alg2: # also run alg2
+                logger.info(f'Running alg2 for {MSP=}')
+                MGS, Yn_2 = algorithm2(MSP, logger = logger)
+
+                statistics_str = "stat2:\n" + "\n".join([f"\t{key}={value}" for key, value in MGS.statistics.items()])
+                logger.info(statistics_str)
+
+                Yn_2.statistics['filter_time'] = MGS.statistics['time_simplefilter']
+                assert Yn_2 == Yn, f"{len(Yn),len(Yn_2)=}"
+                Yn_2.save_json(save_solution_dir + 'algorithm1/alg2-' + MSP.filename.split('/')[-1])
+                MGS.filename = save_solution_dir + 'algorithm2/MGS-' + MSP.filename.split('/')[-1]
+                MGS.save_json(MGS.filename)
+            
+
             if True:
-                print_timeit()
+                print_timeit(tolerance=5, logger=logger)
                 reset_timeit()
 
             # print(" ")
-            bar()
+            # bar()
 
 
 
 if __name__ == "__main__":
-    # main()
+    main()
 
-    convert_all_raw_files()
+    # convert_all_raw_files()
 
     # remaining_instances()
     # algorithm1()

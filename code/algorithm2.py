@@ -191,16 +191,21 @@ def get_fixed_and_reduced(C_dict, Y_list):
 
 
 
-def algorithm2(MSP):
+def algorithm2(MSP, logger = None):
 
+    timestart = time.time()
 
     # print(f"Running simple filter...")
-    Yn, C_dict = SimpleFilter(MSP.Y_list)
-
+    Yn_with_duplicates, C_dict = SimpleFilter(MSP.Y_list)
+    Yn = PointList(set(Yn_with_duplicates.points))
+    time_simplefilter = time.time() - timestart
     # derive sets
     #   Y_fixed = nessesary points
     #   Y_reduced = subproblem points which contribute to at least one nondom solution
+
+    time_getfixed = time.time()
     Y_fixed, Y_reduced = get_fixed_and_reduced(C_dict, MSP.Y_list)
+    time_getfixed = time.time() - time_getfixed
 
     # print(f"{[len(Y) for Y in Y_fixed]=}")
     # print(f"{[len(Y) for Y in Y_reduced]=}")
@@ -214,12 +219,15 @@ def algorithm2(MSP):
         Yn_fixed = methods.MS_sequential_filter(Y_fixed_pointlist)
         if Y_fixed == Y_reduced:
             return True, Yn_fixed
-        if set(Yn_fixed.points).issubset(set(Yn.points)):
+        if set(Yn_fixed.points).issubset(set(Yn_with_duplicates.points)):
             return True, Yn_fixed
         else:
             return False, Yn_fixed
 
+    time_check_fixed = time.time()
     check_val, Yn_fixed = check_fixed_sufficient()
+    time_check_fixed = time.time() - time_check_fixed
+
     if check_val:
         Y_solution = Y_fixed
     else:
@@ -227,10 +235,11 @@ def algorithm2(MSP):
         if MSP.filename: # log that a covering problem as to be solved
             # with open('./instances/results/algorithm2_log', 'a') as logfile:
                 # logfile.write('MSP.filename' + '\n')
-            logger.info('covering problem solved: ' + MSP.filename)
+            if logger:
+                logger.info('covering problem solved: ' + MSP.filename)
         Yn_fixed_set = set(Yn_fixed.points)
-        Yn_nongenerated = [y for y in Yn if y not in Yn_fixed_set]
-        model = build_model_covering(MSP.Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
+        Yn_nongenerated = [y for y in Yn_with_duplicates if y not in Yn_fixed_set]
+        model = build_model_covering(MSP.Y_list,Yn_with_duplicates, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
         solve_model(model)
         Y_chosen_dict = retrieve_solution_covering(model, MSP.Y_list)
         Y_solution = {s: Y_chosen_dict[s].union(set(Y_fixed[s])) for s in range(len(MSP.Y_list))}
@@ -239,24 +248,46 @@ def algorithm2(MSP):
     
     Y_MGS = [PointList([MSP.Y_list[s][i] for i in Y_solution[s]]) for s in range(MSP.S)]
     # print(f"{[len(Y) for Y in Y_MGS]=}")
+
+    
+    time_check_generating = time.time()
     if True: # check of generating property
         Y_solution_pointlist = [PointList([MSP.Y_list[s][i] for i in Y_solution[s]]) for s in range(MSP.S)]
         Yn_solution = methods.MS_sequential_filter(Y_solution_pointlist)
         
+
+        # print(f"{len(set(Yn_solution))=}")
+        # print(f"{len(set(Yn))=}")
         assert set(Yn_solution.points).issubset(set(Yn.points))
 
+    time_check_generating = time.time() - time_check_generating
 
-    return Y_MGS, len(Yn_solution)
+    if False:
+        return Y_MGS, Yn_solution
+    if True:
+        MGS_sizes = tuple([len(Y) for Y in Y_MGS])
+        statistics = {'filename':MSP.filename.split('/')[-1], 
+                      # 'running_time': time.time() - time_start, 
+                      'max_size': sum([len(Y) for Y in MSP.Y_list]),
+                      'MGS_sizes': MGS_sizes,
+                      'MGS_size': sum(MGS_sizes), 
+                      'MGS_size_max': max(MGS_sizes), 
+                      'MGS_size_min': min(MGS_sizes), 
+                      'Yn_size':len(Yn), 
+                      'Yn_size_duplicates':len(Yn_with_duplicates.points),
+                      'running_time': time.time() - timestart,
+                      'time_simplefilter': time_simplefilter,
+                      'time_getfixed': time_getfixed,
+                      'time_check_fixed': time_check_fixed,
+                      'time_check_generating': time_check_generating,
+                      }
+        MGS = MinkowskiSumProblem(Y_MGS)
+        MGS.statistics = statistics
+        return MGS, Yn 
 
 
-# for logging
-logname = 'algorithm2_log'
-logging.basicConfig(level=logging.INFO, filename=logname)
-logger = logging.getLogger(logname)
 
-
-def algorithm2_run(MSP):
-
+def algorithm2_args(MSP, logger = None):
 
     time_start = time.time()
     # print(f"{MSP}")
@@ -266,11 +297,11 @@ def algorithm2_run(MSP):
     MGS_size = sum(MGS_sizes)
     str_out = f"{MSP.filename}, {MGS_size=},  rel_size={MGS_size/sum([len(Y) for Y in MSP.Y_list])*100:.0f}%,  {MGS_sizes=} \n \n"
     # print(str_out)
-    logger.info(str_out)
+    if logger:
+        logger.info(str_out)
     MGS = MinkowskiSumProblem(Y_MGS)
 
-    MGS.filename = save_solution_dir + save_prefix + MSP.filename.split('/')[-1]
-
+    # MGS.filename = save_solution_dir + save_prefix + MSP.filename.split('/')[-1]
 
     # update run statistics
     statistics = {'filename':MSP.filename.split('/')[-1], 
@@ -279,29 +310,78 @@ def algorithm2_run(MSP):
                   'MGS_size': MGS_size, 
                   'MGS_sizes':MGS_sizes, 
                   'Yn_size':Yn_size, 
+                  'Yn_size_duplicates':len(set(Yn.points))
                   }
 
     MGS.statistics = statistics
-    if 'timing' in sys.argv:
-        print_timeit()
-        reset_timeit()
 
-    # print(f"{MGS.statistics=}")
-    # print(f"{MGS.filename=}")
+    return MGS, Yn
 
+
+
+def algorithm2_run(MSP):
+
+
+    # print(f"{MSP}")
+#     Yn_size = len(Yn)
+    # MGS_sizes = tuple([len(Y) for Y in Y_MGS])
+    # MGS_size = sum(MGS_sizes)
+    # str_out = f"{MSP.filename}, {MGS_size=},  rel_size={MGS_size/sum([len(Y) for Y in MSP.Y_list])*100:.0f}%,  {MGS_sizes=} \n \n"
+    # # print(str_out)
+    # logger.info(str_out)
+    # MGS = MinkowskiSumProblem(Y_MGS)
+
+    # time_start = time.time()
+    logger.info(MSP)
+    MGS, Yn = algorithm2(MSP)
+    MGS.filename = save_solution_dir + save_prefix + MSP.filename.split('/')[-1]
 
     MGS.save_json(MGS.filename)
 
-    return statistics
+    # # update run statistics
+    # statistics = {'filename':MSP.filename.split('/')[-1], 
+                  # 'running_time': time.time() - time_start, 
+                  # 'max_size': sum([len(Y) for Y in MSP.Y_list]),
+                  # 'MGS_size': MGS_size, 
+                  # 'MGS_sizes':MGS_sizes, 
+                  # 'Yn_size':Yn_size, 
+                  # }
+
+    # MGS.statistics = statistics
+    # if 'timing' in sys.argv:
+        # print_timeit()
+        # reset_timeit()
+
+    # # print(f"{MGS.statistics=}")
+    # # print(f"{MGS.filename=}")
+
+
+
+    return MGS.statistics
 
 
 
 
 save_prefix = 'alg2-'
-save_solution_dir = './instances/results/algorithm2/'
+save_solution_dir = './instances/results/testdir/'
 
 def main():
-    TestBank = MSPInstances('algorithm2', ignore_ifonly_l=True)
+    # for logging
+    logname = 'algorithm2.log'
+    logging.basicConfig(level=logging.INFO, 
+                        filename=logname,
+                        format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+                        )
+
+    logger = logging.getLogger(logname)
+
+
+
+    # args
+
+
+
+    TestBank = MSPInstances('algorithm2_test', ignore_ifonly_l=True)
     # TestBank = MSPInstances(max_instances = 10, m_options = (4,), p_options = (4,))
     TestBank.filter_out_solved(save_prefix, save_solution_dir)
 
@@ -322,6 +402,9 @@ def main():
                 print(f"MSP:{statistics['filename']}, time: {statistics['running_time']}")
 
     print(f"total time: {time.time() - time_start}")
+
+
+
 
 if __name__ == "__main__":
     main()
