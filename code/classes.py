@@ -652,6 +652,10 @@ class MSPInstances:
         self.filename_list = self.not_solved
 
 
+    def partition(self, n, k):
+        '''partitions the instance into n partitions and returns partition k'''
+        self.filename_list = [file for i, file in enumerate(self.filename_list) if i % (n) == k]
+
     def __repr__(self):
         return f"TestInstances(size='{len(self.filename_list)}', preset='{self.preset}')"
 
