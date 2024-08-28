@@ -356,7 +356,7 @@ def main():
         MEMORY_LIMIT = args.memorylimit
 
 
-    TI = MSPInstances(MSP_preset, ignore_ifonly_l=True)
+    TI = MSPInstances(MSP_preset, ignore_ifonly_l=args.alg2) # if -alg2 then 'l' instances are ignored 
 
     if not args.solveall:
         TI.filter_out_solved(save_prefix, save_solution_dir)
