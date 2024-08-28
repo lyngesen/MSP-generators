@@ -363,8 +363,8 @@ def main():
         TI.filter_out_solved(save_prefix, save_solution_dir)
 
     if args.npartition:
-        assert type(args.kpartition) == int,'if partition flag is set, the specific partition must be specified -npartition => -kpartition'
-        assert args.kpartition < args.npartition
+        assert args.kpartition is not None ,f'if partition flag is set, the specific partition must be specified -npartition => -kpartition{args.kpartition,args.npartition=}'
+        assert args.kpartition < args.npartition, f"{args.kpartition,args.npartition=}"
         TI.partition(args.npartition, args.kpartition)
     
 
