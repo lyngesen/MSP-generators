@@ -351,33 +351,3 @@ def SimpleFilter(Y_list):
 
 
 
-
-def main():
-
-    # setup test instance
-    Y1 = PointList.from_csv("instances/testsets/CONCAVE-p2-n100-s1")
-    # Y2 = PointList.from_csv("instances/testsets/CONCAVE-p2-n10-s2")
-    Y2 = PointList.from_csv("instances/testsets/BINOM-p2-n20-s1")
-    Y3 = PointList.from_csv("instances/testsets/CONCAVE-p2-n20-s2")
-    Y4 = PointList.from_csv("instances/testsets/CONCAVE-p2-n100-s2")
-    Y2 = PointList.from_csv("instances/testsets/CONCAVE-p2-n100-s2")
-    # Y1 = PointList.from_csv("instances/testsets/CONCAVE-p2-n20-s1")
-    # Y3 = PointList.from_csv("instances/testsets/CONCAVE-p2-n100-s1")
-    # Y4 = PointList.from_csv("instances/testsets/DISK-p2-n10-s1")
-    
-    Y_list = [Y1, Y2, Y3, Y4] 
-    # Y_list = [N(Y.removed_duplicates()) for Y in Y_list]
-    Y_list = [N(Y) for Y in Y_list]
- 
-    # problem_instance = "instances/problems/prob-2-50|50|50-ull-3_5.json" 
-    # print(f"Reading MSP problem {problem_instance}")
-    # MSP = MinkowskiSumProblem.from_json(problem_instance)
-    # print(f"{MSP=}")
-    # Y_list =  MSP.Y_list
-
-    solve_MGS_instance(Y_list, verbose = 'all', plot = True )
-
-    print_timeit()
-
-if __name__ == "__main__":
-    main()  
