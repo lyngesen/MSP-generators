@@ -458,7 +458,12 @@ class PointList:
             return result
 
     def removed_duplicates(self):
+        """ 
+        returns a PointList with all duplicates removed
+        OBS: all statistics are reset
+        """
         return PointList(set(self.points))
+
 
 
 
@@ -573,6 +578,11 @@ class MSPInstances:
             case 'algorithm1':
                 self.generation_options = ['m','u','l'] # generation method
                 self.size_options = (50, 100, 150, 200, 300) # subproblems size
+
+            case 'algorithm1_only_l':
+                self.generation_options = ['l'] # generation method
+                self.size_options = (50, 100, 150, 200, 300) # subproblems size
+
             case 'algorithm1_largest':
                 self.generation_options = ['m','u','l'] # generation method
                 self.size_options = (50, 100, 150, 200, 300) # subproblems size
