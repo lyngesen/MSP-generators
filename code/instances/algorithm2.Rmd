@@ -240,11 +240,12 @@ The instances *m* and *ul* both contain a larger amount of unsupported and suppo
 
 # Relative size of MGS wrt. average subproblem cardinality
 
+
 ```{r}
 
-
+# todo fix ribbon
 dat %>% filter(m_numeric == 3, p_numeric == 4) %>%
-  ggplot(aes(x = max_size, y = MGS_size/m_numeric, color = method, fill = method)) +
+  ggplot(aes(x = max_size, y = (MGS_size/m_numeric), color = method, fill = method)) +
   stat_summary(fun="mean", geom="line") +
   geom_ribbon(aes(ymin = MGS_size_min, ymax = MGS_size_max), alpha = 0.1) +
   geom_line(aes(y = MGS_size/m_numeric), linetype = "dashed") +
@@ -290,14 +291,67 @@ The *u* exibit a different pattern from the rest. Here we find that for instance
 
 ```{r}
 dat %>% 
-  ggplot(aes(x = max_size, y = rel_size, color = method)) +
+  ggplot(aes(x = avg_sp_size, y = rel_size, color = method)) +
   geom_point() + 
   #geom_boxplot() + 
   stat_summary(fun="mean", geom="line") +
   facet_grid(p ~ m, labeller =  "label_both")  + 
-  labs(title = "Size of MGS given subproblem cardinality",
-       y = "Cardinality MGS",
-       x = "Total subproblem cardinality",
+  labs(title = "Relative of MGS given subproblem cardinality",
+       y = "Cardinality MGS relative to max possible size",
        color = "Methods used to generate subproblems") +
   theme(legend.position = "bottom") 
 ```
+
+# size of Yn (like for alg1)
+
+```{r}
+dat %>% 
+  ggplot(aes(x = avg_sp_size, y = Yn_size, color = method)) +
+  geom_point() + 
+  #geom_boxplot() + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, labeller =  "label_both")  + 
+  labs(
+     title = "size of Yn",
+       y = "Size of Yn",
+       x = "Avg subproblem cardinality",) + 
+  theme(legend.position = "bottom") 
+```
+
+
+# classifications
+
+
+```{r}
+dat %>% 
+  ggplot(aes(x = avg_sp_size, y = MGS_sizes_us_avg*m_numeric/prob_sizes_us_total, color = method)) +
+  geom_point() + 
+  #geom_boxplot() + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, labeller =  "label_both")  + 
+  labs(
+     title = "Number of us points in MGS relative to total us points in subproblems",
+       color = "Methods used to generate subproblems"
+     ) +
+  theme(legend.position = "bottom") 
+```
+
+```{r}
+dat %>% 
+  ggplot(aes(x = avg_sp_size, y = MGS_sizes_se_avg*m_numeric/prob_sizes_se_total, color = method)) +
+  geom_point() + 
+  #geom_boxplot() + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, labeller =  "label_both")  + 
+  labs(
+     title = "Number of supported extreme points in MGS relative to total se points in subproblems",
+       color = "Methods used to generate subproblems"
+     ) +
+  theme(legend.position = "bottom") 
+```
+
+
+```{r}
+check_dat <- dat %>% filter(MGS_sizes_se_avg*m_numeric/prob_sizes_se_total < 0.7)
+```
+
