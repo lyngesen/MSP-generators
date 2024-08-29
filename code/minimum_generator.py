@@ -6,6 +6,10 @@ import matplotlib.pyplot as plt
 import matplotlib
 import pyomo.environ as pyomo
 from timing import timeit, print_timeit
+from pyomo.common.fileutils import Executable
+
+# Set the path to the GLPK executable
+Executable('glpsol').set_path('$HOME/solvers/glpk/bin/glpsol')
 
 # def buildModel(Y_list: list[PointList],) -> pyomo.ConcreteModel():
     # pass
