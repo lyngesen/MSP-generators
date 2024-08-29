@@ -9,12 +9,7 @@ from timing import timeit, print_timeit
 from pyomo.common.fileutils import Executable
 import os
 
-# Set the path to the GLPK executable
-if os.path.exists('$HOME/solvers/glpk/bin/glpsol'):
-    Executable('glpsol').set_path('$HOME/solvers/glpk/bin/glpsol')
-    DEFAULT_SOLVER = 'glpk'
-else:
-    DEFAULT_SOLVER = 'cplex_direct'
+DEFAULT_SOLVER = 'glpk'
 
 # def buildModel(Y_list: list[PointList],) -> pyomo.ConcreteModel():
     # pass
