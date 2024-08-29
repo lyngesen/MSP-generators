@@ -238,7 +238,7 @@ def algorithm2(MSP, logger = None):
             # with open('./instances/results/algorithm2_log', 'a') as logfile:
                 # logfile.write('MSP.filename' + '\n')
             if logger:
-                logger.info('covering problem solved: ' + MSP.filename)
+                logger.info('solving covering problem: ' + MSP.filename)
         Yn_fixed_set = set(Yn_fixed.points)
         Yn_nongenerated = [y for y in Yn_with_duplicates if y not in Yn_fixed_set]
         model = build_model_covering(MSP.Y_list,Yn_with_duplicates, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
