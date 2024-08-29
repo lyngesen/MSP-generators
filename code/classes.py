@@ -367,7 +367,7 @@ class PointList:
 
         PointList_dict = {
             "points":
-                          [dict({f"z{p+1}": point[p] for p in range(point.dim)},**({'cls':None})) for point in self.points],
+                          [dict({f"z{p+1}": point[p] for p in range(point.dim)},**({'cls':point.cls})) for point in self.points],
             'statistics': self.statistics
           }
         return PointList_dict 
@@ -458,7 +458,12 @@ class PointList:
             return result
 
     def removed_duplicates(self):
+        """ 
+        returns a PointList with all duplicates removed
+        OBS: all statistics are reset
+        """
         return PointList(set(self.points))
+
 
 
 
@@ -474,7 +479,12 @@ class MinkowskiSumProblem:
 
     def from_json(filename: str):
         with open(filename, 'r') as json_file:
-            json_dict = json.load(json_file)[0]
+            json_list = json.load(json_file)
+            json_dict = json_list[0]
+            if len(json_list) > 1:
+                statistics = json_list[1]
+            else:
+                statistics = None
 
         Y_list = []
         for V, Y_filename in sorted(json_dict.items()):
@@ -483,8 +493,8 @@ class MinkowskiSumProblem:
             else:
                 Y = PointList.from_json_str(Y_filename)
             Y_list.append(Y)
-
         MSP = MinkowskiSumProblem(Y_list)
+        MSP.statistics = statistics
         MSP.filename = filename
         MSP.dim = Y_list[0].dim
         return  MSP
@@ -573,6 +583,11 @@ class MSPInstances:
             case 'algorithm1':
                 self.generation_options = ['m','u','l'] # generation method
                 self.size_options = (50, 100, 150, 200, 300) # subproblems size
+
+            case 'algorithm1_only_l':
+                self.generation_options = ['l'] # generation method
+                self.size_options = (50, 100, 150, 200, 300) # subproblems size
+
             case 'algorithm1_largest':
                 self.generation_options = ['m','u','l'] # generation method
                 self.size_options = (50, 100, 150, 200, 300) # subproblems size
@@ -641,6 +656,10 @@ class MSPInstances:
 
         self.filename_list = self.not_solved
 
+
+    def partition(self, n, k):
+        '''partitions the instance into n partitions and returns partition k'''
+        self.filename_list = [file for i, file in enumerate(self.filename_list) if i % (n) == k]
 
     def __repr__(self):
         return f"TestInstances(size='{len(self.filename_list)}', preset='{self.preset}')"

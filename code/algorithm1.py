@@ -337,6 +337,8 @@ def main():
     # parse arguments
     parser = argparse.ArgumentParser(description="Save instance results PointList in dir.")
     parser.add_argument('-timelimit', type=float, required=False, help='Time limit for each instance')
+    parser.add_argument('-npartition', type=int, required=False, help='Total partitions (n) of test instances')
+    parser.add_argument('-kpartition', type=int, required=False, help='Number of specific test intsance partition')
     parser.add_argument('-memorylimit', type=float, required=False, help='Memory limit for each instance')
     parser.add_argument('-outdir', type=str, required=False, help='Result dir, where instances are saved')
     parser.add_argument('-logpath', type=str, required=False, help='path where log (algorithm1.log) files are to be saved')
@@ -355,11 +357,17 @@ def main():
     if args.memorylimit:
         MEMORY_LIMIT = args.memorylimit
 
-
-    TI = MSPInstances(MSP_preset, ignore_ifonly_l=True)
+    TI = MSPInstances(MSP_preset, ignore_ifonly_l=args.alg2) # if -alg2 then 'l' instances are ignored 
 
     if not args.solveall:
         TI.filter_out_solved(save_prefix, save_solution_dir)
+
+    if args.npartition:
+        assert args.kpartition is not None ,f'if partition flag is set, the specific partition must be specified -npartition => -kpartition{args.kpartition,args.npartition=}'
+        assert args.kpartition < args.npartition, f"{args.kpartition,args.npartition=}"
+        TI.partition(args.npartition, args.kpartition)
+    
+
 
     if outdir:
         assert outdir[-1] =='/'
@@ -388,6 +396,8 @@ def main():
         "outdir":outdir,
         "logpath":logpath,
         "running alg2":args.alg2,
+        "n partitions": args.npartition,
+        "k partition": args.kpartition,
     }
 
     options_str = "Options:\n" + "\n".join([f"\t{key}={value}" for key, value in options.items()])

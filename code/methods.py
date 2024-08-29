@@ -273,10 +273,10 @@ def nondomDC_wrapper(Y : PointList):
     if True: # clear temp folder
         # os.remove(out_file)
         os.remove(in_file)
-    return Yn
+    return Yn.removed_duplicates()
 
 
-def ND_pointsSum2_wrapper(A : PointList, B : PointList):
+def ND_pointsSum2_wrapper(A : PointList, B : PointList) -> PointList:
     # A python wrapper for the c implementation of ND_pointsSum2 [Bruno Lang]
     call_id = str(uuid.uuid4())
     # out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}" # c script directory
@@ -299,7 +299,7 @@ def ND_pointsSum2_wrapper(A : PointList, B : PointList):
 
     if True: # clear temp folder
         os.remove(in_file)
-    return Yn
+    return Yn.removed_duplicates()
 
 
 def N(Y = PointList, **kwargs):
