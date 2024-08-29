@@ -51,21 +51,38 @@ classifyStat <- function(path, classifyExt = FALSE) {
    tictoc::tic()
    lst <- jsonlite::read_json(path, simplifyVector = T)
    cat(path, ": Classify", lst$statistics$card, "points ...")
-   if (is.null(lst$points) | length(lst$points) == 0) {
-      calc <- FALSE
-      datError <<- bind_rows(datError, c(path = path, type = "no points", alg = "alg1"))
-      write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
-   } else {
-      calc <- is.null(lst$points$cls) #| any(is.na(lst$points$cls))
+   calc <- !is.null(lst$points$cls)
+   if (classifyExt) {
+      if (!is.null(lst$statistics$extreme) & !is.na(lst$statistics$extreme)) {
+         datOkay <<- bind_rows(datOkay, c(path = path, type = "classifyExt", alg = "alg1"))
+         write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
+         cat(" already calc pts =", lst$statistics$card, "ext =", lst$statistics$extreme, "\n")
+         calc <- FALSE
+      }
    }
-   if (!calc & !is.null(lst$points$cls) & any(is.na(lst$points$cls))) {
-      datOkay <<- bind_rows(datOkay, c(path = path, type = "classifyExt", alg = "alg1"))
-      write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
-   } 
-   if (!calc & !is.null(lst$points$cls) & !any(is.na(lst$points$cls)))  {
-      datOkay <<- bind_rows(datOkay, c(path = path, type = "classify", alg = "alg1"))
-      write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
+   if (!classifyExt) {
+      if (!is.null(lst$statistics$unsupported) & !is.na(lst$statistics$unsupported)) {
+         datOkay <<- bind_rows(datOkay, c(path = path, type = "classify", alg = "alg1"))
+         write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
+         calc <- FALSE
+      }
    }
+   # if (is.null(lst$points) | length(lst$points) == 0) {
+   #    calc <- FALSE
+   #    # datError <<- bind_rows(datError, c(path = path, type = "no points", alg = "alg1"))
+   #    # write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
+   # } else {
+   #    #| any(is.na(lst$points$cls))
+   # }
+   # if (!calc & !is.null(lst$points$cls) & any(is.na(lst$points$cls))) {
+   #    datOkay <<- bind_rows(datOkay, c(path = path, type = "classifyExt", alg = "alg1"))
+   #    write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
+   # } 
+   # if (!calc & !is.null(lst$points$cls) & !any(is.na(lst$points$cls)))  {
+   #    datOkay <<- bind_rows(datOkay, c(path = path, type = "classify", alg = "alg1"))
+   #    write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
+   # }
+
    if (calc & !classifyExt) {
       p <- lst$statistics$p
       pts <- classifyNDSet(lst$points[, 1:p]);
@@ -91,7 +108,7 @@ classifyStat <- function(path, classifyExt = FALSE) {
       datOkay <<- bind_rows(datOkay, c(path = path, type = "classifyExt", alg = "alg1"))
       write_csv(datOkay, file = here::here("code/instances/stat-prob-okay.csv"))
    } else {
-      cat(" already calc.\n")
+      cat(" already calc pts =", lst$statistics$card, "ext =", lst$statistics$extreme, "\n")
    }
    if (fs::file_size(path) > "20MB" & !any(is.na(lst$statistics$extreme))) { # reduce file sizes
       lst$points <- NULL
@@ -189,19 +206,32 @@ updateProbStatFile <- function() {
 # sink(zz, type = "output", split = T)   # open the file for output
 # sink(zz, type = "message")  # open the same file for messages, errors and warnings
 
-paths <- fs::dir_ls(here::here("code/instances/results/algorithm1/"), recurse = T, type = "file", glob = "*prob*.json")
+
+prob <- fs::dir_ls(here::here("code/instances/problems/"), recurse = T, type = "file", glob = "*prob*.json") |>
+   fs::path_file()
+prob <- prob[!grepl("600",prob)]
+solved <- fs::dir_ls(here::here("code/instances/results/algorithm1/"), recurse = T, type = "file", glob = "*prob*.json") |>
+   fs::path_file() |>
+   str_remove("alg1-") |>
+   print()
+prob[!(prob %in% solved)]    # problems not solved yet
+
+
+
+paths <- fs::dir_ls(here::here("code/instances/results/algorithm1big/"), recurse = T, type = "file", glob = "*prob*.json")
 datOkay <-  read_csv(here::here("code/instances/stat-prob-okay.csv")) |> # info about what stat already done
    mutate(path = fs::path_file(path)) |>
    distinct(path, type, alg) |>
    arrange(path, alg, type)
-timeLimit <- 9 * 60 * 60  # max run time in sec
+timeLimit <- 12 * 60 * 60  # max run time in sec
 tictoc::tic.clear()
 start <- Sys.time()
 cat("\n\nStarting running R script.\n\n")
 
 datCalc <- datOkay |> filter(type == "simple", alg == "alg1")
 idx <- which(fs::path_file(paths) %in% fs::path_file(datCalc$path))
-paths1 <- paths[-idx] 
+paths1 <- paths
+if (length(idx) > 0) paths1 <- paths[-idx] 
 cat("\n\nUpdate simple stat\n\n")
 calc <- FALSE
 for (path in paths1) {
@@ -224,18 +254,18 @@ datError <- read_csv(here::here("code/instances/stat-prob-error.csv")) |>
    distinct(path, type, alg) |>
    arrange(path, alg, type)
 datErrorExt <- datError %>% 
-   filter(type %in% c("classifyExt", "no points"))
+   filter(type %in% c("classifyExt"))
 idx <- which(fs::path_file(paths) %in% fs::path_file(datErrorExt$path))
 paths1 <- paths
 if (length(idx) > 0) paths1 <- paths1[-idx]  # paths that we try to classify only extreme in (may already have been)
-datCalc <- datOkay |> filter(type %in% c("classifyExt", "classify"))
+datCalc <- datOkay |> filter(type %in% c("classifyExt"))
 idx <- which(fs::path_file(paths1) %in% fs::path_file(datCalc$path))
 if (length(idx) > 0) paths1 <- paths1[-idx] 
 calc <- FALSE
 cpu <- difftime(Sys.time(), start, units = "secs")
 if (cpu < timeLimit) {
    for (path in fs::path_file(paths1)) {
-      res <- tryCatchLog(classifyStat(here::here(str_c("code/instances/results/algorithm1/", path)), classifyExt = T), 
+      res <- tryCatchLog(classifyStat(here::here(str_c("code/instances/results/algorithm1big/", path)), classifyExt = T), 
                          error = function(c) {
                             datError <- bind_rows(datError, c(path = path, type = "classifyExt", alg = "alg1"))
                             write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
@@ -312,3 +342,12 @@ cat("\n\nFinish running R script.\n\n")
 #    pts <- classify(lst$points[, 1:p]);
 #    cat("se:", sum(pts$se),"\n")
 # }
+
+## rename files
+# paths <- fs::dir_ls(here::here("code/instances/results/algorithm1big/"), recurse = T, type = "file", glob = "*prob*.json") |> fs::path_file()
+# pathsNew <- str_replace(as.character(paths), "_(?=[:digit:]\\.json)", "%") |> print()
+# pathsNew <- str_replace_all(pathsNew, "_", "|") |> print()
+# pathsNew <- str_replace(pathsNew, "%", "_") |> print()
+# setwd("~/github/minkowski_theory/code/instances/results/algorithm1big")
+# fs::file_move(paths, pathsNew)
+
