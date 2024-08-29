@@ -219,7 +219,8 @@ def algorithm2(MSP, logger = None):
         Yn_fixed = methods.MS_sequential_filter(Y_fixed_pointlist)
         if Y_fixed == Y_reduced:
             return True, Yn_fixed
-        if set(Yn_fixed.points).issubset(set(Yn_with_duplicates.points)):
+        elif set(Yn_fixed.points).issuperset(set(Yn_with_duplicates.points)):
+            logger.info('Y_fixed != Y_reduced')
             return True, Yn_fixed
         else:
             return False, Yn_fixed
@@ -228,6 +229,7 @@ def algorithm2(MSP, logger = None):
     check_val, Yn_fixed = check_fixed_sufficient()
     time_check_fixed = time.time() - time_check_fixed
 
+    time_covering = time.time()
     if check_val:
         Y_solution = Y_fixed
     else:
@@ -246,6 +248,8 @@ def algorithm2(MSP, logger = None):
         # print(f"{Y_chosen_dict=}")
         # print(f"{Y_solution=}")
     
+    time_covering = time.time() - time_covering
+
     Y_MGS = [PointList([MSP.Y_list[s][i] for i in Y_solution[s]]) for s in range(MSP.S)]
     # print(f"{[len(Y) for Y in Y_MGS]=}")
 
