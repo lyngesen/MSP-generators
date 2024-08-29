@@ -347,7 +347,6 @@ def main():
     parser.add_argument('-msppreset', type=str, required=False, help='Choice of preset instances to solve default: algorithm1. other choices grendel_test, algorithm2')
     parser.add_argument('-solveall', action='store_true', help='if flag added, all instances are solved (already solved instances will not be filtered out)')
     parser.add_argument('-alg2', action='store_true', help='if flag added, MGS will be solved using algorithm2)')
-    parser.add_argument('-solver', type=str, required=False,  help='specify solver to use for IP problems default = cbc')
 
 
     args = parser.parse_args()
@@ -360,9 +359,6 @@ def main():
     if args.memorylimit:
         MEMORY_LIMIT = args.memorylimit
 
-    if args.solver:
-        assert args.solver in ["cbc", "cplex_direct", "plpk", "glpk"], f"{args.solver=}"
-        minimum_generator.solve_model == set_defaults(solver_str = args.solver)(minimum_generator.solve_model)
 
     TI = MSPInstances(MSP_preset, ignore_ifonly_l=args.alg2) # if -alg2 then 'l' instances are ignored 
 
@@ -405,7 +401,6 @@ def main():
         "running alg2":args.alg2,
         "n partitions": args.npartition,
         "k partition": args.kpartition,
-        "IP solver": args.solver if args.solver else 'cbc (default)',
     }
 
     options_str = "Options:\n" + "\n".join([f"\t{key}={value}" for key, value in options.items()])
@@ -419,7 +414,6 @@ def main():
     #   limit memory used by c script
  
     
-
     methods.call_c_nondomDC = set_defaults(max_time = TERMINATE_AFTER_X_MINUTES, logger = logger)(methods.call_c_nondomDC)
     methods.call_c_ND_pointsSum2 = set_defaults(max_gb = MEMORY_LIMIT, logger=logger)(methods.call_c_ND_pointsSum2)
 

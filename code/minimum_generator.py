@@ -7,9 +7,14 @@ import matplotlib
 import pyomo.environ as pyomo
 from timing import timeit, print_timeit
 from pyomo.common.fileutils import Executable
+import os
 
 # Set the path to the GLPK executable
-Executable('glpsol').set_path('$HOME/solvers/glpk/bin/glpsol')
+if os.path.exists('$HOME/solvers/glpk/bin/glpsol'):
+    Executable('glpsol').set_path('$HOME/solvers/glpk/bin/glpsol')
+    DEFAULT_SOLVER = 'glpk'
+else:
+    DEFAULT_SOLVER = 'cplex_direct'
 
 # def buildModel(Y_list: list[PointList],) -> pyomo.ConcreteModel():
     # pass
@@ -167,13 +172,14 @@ def build_model_covering(Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
 
 
 
-@timeit
-def solve_model(model:pyomo.ConcreteModel(), solver_str = "cbc", verbose = False):
+# @timeit
+def solve_model(model:pyomo.ConcreteModel(), solver_str = DEFAULT_SOLVER, verbose = False):
     assert solver_str in ["cbc", "cplex_direct", "plpk", "glpk"]
-    print(f"Solving model.. using {solver_str}")
+    print(f"Solving model..  using {solver_str}")
     # Solve model
     solver = pyomo.SolverFactory(solver_str)
     solver.solve(model, tee = verbose)
+
 
 
 @timeit
