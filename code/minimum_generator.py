@@ -164,8 +164,8 @@ def build_model_covering(Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
 
 
 @timeit
-def solve_model(model:pyomo.ConcreteModel(), solver_str = "cbc"):
-    assert solver_str in ["cbc", "cplex_direct", "plpk"]
+def solve_model(model:pyomo.ConcreteModel(), solver_str = "glpk"):
+    assert solver_str in ["cbc", "cplex_direct", "plpk", "glpk"]
     print(f"Solving model..")
     # Solve model
     solver = pyomo.SolverFactory(solver_str)
