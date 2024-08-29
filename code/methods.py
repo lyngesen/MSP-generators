@@ -223,14 +223,20 @@ def call_c_nondomDC(call_id:str, max_time=None, logger=None):
 
 
 
-def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=None, logger=None):
+def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=None, logger=None, verbose = False):
     assert 'ND_pointsSum2' in os.listdir()
 
     # print(f"calling subprocess ")
     if max_gb:
-        p = subprocess.Popen(['./ND_pointsSum2',call_id,str(max_gb)])
+        if verbose:
+            p = subprocess.Popen(['./ND_pointsSum2',call_id,str(max_gb)])
+        else:
+            p = subprocess.Popen(['./ND_pointsSum2',call_id,str(max_gb)], stdout=subprocess.DEVNULL)
     else:
-        p = subprocess.Popen(['./ND_pointsSum2',call_id])
+        if verbose:
+            p = subprocess.Popen(['./ND_pointsSum2',call_id])
+        else:
+            p = subprocess.Popen(['./ND_pointsSum2',call_id], stdout=subprocess.DEVNULL)
 
     
     try:
@@ -304,12 +310,15 @@ def ND_pointsSum2_wrapper(A : PointList, B : PointList) -> PointList:
 
 def N(Y = PointList, **kwargs):
     """ 'best' implemented nondominance filter """
-    if Y[0].dim <= 2:
-        return unidirectional_filter(Y, *kwargs)
+    return nondomDC_wrapper(Y)
+
+
+    # if Y[0].dim <= 2:
+        # return unidirectional_filter(Y, *kwargs)
     # elif len(Y) < 1024*2:
         # return KD_filter(Y)
-    else:
-        return nondomDC_wrapper(Y)
+    # else:
+        # return nondomDC_wrapper(Y)
         # return naive_filter(Y, MCtF = True)
         # return two_phase_filter(Y)
 
