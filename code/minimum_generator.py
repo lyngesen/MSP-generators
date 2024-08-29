@@ -74,7 +74,7 @@ def build_model(Y_list) -> pyomo.ConcreteModel():
 
 @timeit
 def build_model_covering(Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced) -> pyomo.ConcreteModel():
-    print(f"Setting up model..")
+    print(f"Setting up covering model..")
     P = Y_list[0][0].dim
     S = len(Y_list)
     assert all((P == Y.dim for Y in Y_list))
@@ -87,32 +87,32 @@ def build_model_covering(Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
     J = list(range(len(Yn_nongenerated)))
     C = list(range(max([len(C_dict[Yn_nongenerated[j]]) for j in J])))
     I = list(range(max([len(Y) for Y in Y_list])))
-    print(f"{len(C)=}")
-    print(f"{S=}")
+    # print(f"{len(C)=}")
+    # print(f"{S=}")
     # print(f"{J=}")
-    print(f"{I=}")
+    # print(f"{I=}")
 
     Y_unfixed_dict = {s: tuple(set(Y_reduced[s])-set(Y_fixed[s])) for s in S}
     Y_unfixed_set_dict = {s: set(Y_reduced[s])-set(Y_fixed[s]) for s in S}
-    print(f"{[len(Y) for Y in Y_unfixed_dict.values()]=}")
+    # print(f"{[len(Y) for Y in Y_unfixed_dict.values()]=}")
 
-    print(f"{len(Yn),len(Yn_nongenerated)=}")
+    # print(f"{len(Yn),len(Yn_nongenerated)=}")
     
 
     # X_dict = {s : list(range(len(Y_list[s]))) for s in S}
     # X_dict = {s : list(range(len(Y_list[s]))) for s in S}
-    print(f"{Y_fixed=}")
-    print(f"{Y_reduced=}")
-    print(f"{Y_unfixed_dict=}")
+    # print(f"{Y_fixed=}")
+    # print(f"{Y_reduced=}")
+    # print(f"{Y_unfixed_dict=}")
     Yn_comb_dict = {j:C_dict[Yn_nongenerated[j]] for j in J}
     for k,v in Yn_comb_dict.items():
         assert len(v) >1
     Yn_comb_reduced_dict = {j:[tuple([ci  if ci in Y_unfixed_set_dict[s] else None for s,ci in enumerate(c)]) for c in C_dict[Yn_nongenerated[j]]] for j in J}
 
     Yn_comb_index = {j:tuple(range(len(C_dict[Yn_nongenerated[j]]))) for j in J}
-    print(f"{Yn_comb_dict[0]=}")
-    print(f"{Yn_comb_reduced_dict[0]=}")
-    print(f"{Yn_comb_index[0]=}")
+    # print(f"{Yn_comb_dict[0]=}")
+    # print(f"{Yn_comb_reduced_dict[0]=}")
+    # print(f"{Yn_comb_index[0]=}")
     # Define your model
     model = pyomo.ConcreteModel()
 
@@ -168,12 +168,12 @@ def build_model_covering(Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
 
 
 @timeit
-def solve_model(model:pyomo.ConcreteModel(), solver_str = "glpk"):
+def solve_model(model:pyomo.ConcreteModel(), solver_str = "cbc", verbose = False):
     assert solver_str in ["cbc", "cplex_direct", "plpk", "glpk"]
-    print(f"Solving model..")
+    print(f"Solving model.. using {solver_str}")
     # Solve model
     solver = pyomo.SolverFactory(solver_str)
-    solver.solve(model, tee = False)
+    solver.solve(model, tee = verbose)
 
 
 @timeit
