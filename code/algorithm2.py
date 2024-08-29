@@ -286,8 +286,8 @@ def algorithm2(MSP, logger = None):
                       'time_check_generating': time_check_generating,
                       'covering_IP_solved': (not check_val),
                       'covering_IP_time': time_covering,
-                      'Y_fixed': Y_fixed,
-                      'Y_reduced': Y_reduced,
+                      'Y_fixed': tuple([len(Yf) for Yf in Y_fixed]),
+                      'Y_reduced': tuple([len(Yr) for Yr in Y_reduced]),
                       }
         MGS = MinkowskiSumProblem(Y_MGS)
         MGS.statistics = statistics
