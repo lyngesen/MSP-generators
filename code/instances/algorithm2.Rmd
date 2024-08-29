@@ -67,6 +67,41 @@ for (i in 1:length(algPaths)) {
 write_csv(datRes, here::here("code/instances/stat-alg2.csv"))
 ```
 
+
+```{r, eval=FALSE}
+cat("Update statistics for results.")
+paths <- fs::dir_ls(here::here("code/instances/results/algorithm2"), recurse = T, type = "file", glob = "*prob*.json")
+prefix <- str_extract(paths, ".*/")
+
+filename <- str_extract(paths, "^.*/(.*)$", group = 1)
+alg <- unique(str_extract(filename, "(.*?)-", group = 1))
+head(alg)
+
+
+a <- "MGS-"
+
+algPaths <- str_subset(paths, a)
+head(algPaths)
+datRes <- NULL
+
+for (i in 1:length(algPaths)) {
+   algFile <- algPaths[i]
+   algFile
+   lstAlg <- jsonlite::read_json(algFile, simplifyVector = F)
+   row <- lstAlg[[2]]
+   row$MGS_sizes <- paste(row$MGS_sizes, collapse = "-")
+   row$MGS_sizes_se <- paste(row$MGS_sizes_se, collapse = "-")
+   row$MGS_sizes_sne <- paste(row$MGS_sizes_sne, collapse = "-")
+   row$MGS_sizes_us <- paste(row$MGS_sizes_us, collapse = "-")
+   row$prob_sizes_se <- paste(row$prob_sizes_se, collapse = "-")
+   row$prob_sizes_sne <- paste(row$prob_sizes_sne, collapse = "-")
+   row$prob_sizes_us <- paste(row$prob_sizes_us, collapse = "-")
+   #row$prob_sizes_us_total <- paste(row$prob_sizes_us, collapse = "-")
+   datRes <- datRes %>% bind_rows(row)
+}
+write_csv(datRes, here::here("code/instances/stat-alg2.csv"))
+```
+
 ```{r}
 dat <- read_csv(here::here("code/instances/stat-alg2.csv"))
 
@@ -75,6 +110,8 @@ dat <- read_csv(here::here("code/instances/stat-alg2.csv"))
 ```{r, eval=FALSE}
 head(dat)
 ```
+
+
 
 
 Total time used in computing minimum generator sets (MGS)
@@ -105,12 +142,53 @@ dat <- dat %>%
   mutate(avg_sp_size = max_size / as.numeric(m))  #%>% filter(method != 'l')
 
 
+dat$m_numeric <- as.numeric(dat$m)
+dat$p_numeric <- as.numeric(dat$p)
 
 dat$m <- as.factor(dat$m)
 dat$p <- as.factor(dat$p)
 ```
 
 
+# STATUS
+
+```{r}
+datAllSolved <- dat %>% 
+  group_by(p, m, method, avg_sp_size) %>% 
+  filter(n() == 5) %>% select(filename, Yn_size) %>% 
+   ungroup()
+nrow(datAllSolved)
+```
+ 
+ 
+```{r}
+# all instances 
+paths <- fs::dir_ls(here::here("code/instances/problems"), recurse = T, type = "file", glob = "*prob*.json")
+prefix <- str_extract(paths, ".*/")
+
+filename <- str_extract(paths, "^.*/(.*)$", group = 1)
+alg <- unique(str_extract(filename, "(.*?)-", group = 1))
+#a <- "prob-"
+#algPaths <- str_subset(paths, a)
+#head(algPaths)
+
+allInstances <- tibble(filename)
+allInstances <- tibble(filename) %>% select(filename) %>% mutate(sp_size = as.numeric(str_extract(filename,  "^.*-(.*?)\\|.*$", group = 1))) %>%
+  mutate(method = str_extract(filename, "^.*-(.*)-.*$", group = 1)) %>% 
+  mutate(method = map_chr(method, function (x) {
+    x <- str_split_1(x, "")
+    x <- unique(x)
+    str_c(x, collapse = "")
+  })) 
+totalInstances <- allInstances %>% filter(sp_size <= 300) %>% nrow()
+
+unsolved <- right_join(dat, allInstances) %>% filter(sp_size <= 300, is.na(Yn_size)) %>% select(filename, method)
+unsolved %>% filter(method != 'l')
+
+```
+
+
+Solved `r nrow(datAllSolved)` of `r totalInstances``
 
 
 
@@ -135,10 +213,24 @@ mean_ul <- dat %>% filter(method == 'ul') %>% summarise(mean(rel_size))
 mean_ul_format <- sprintf("%.2f%%", mean_ul * 100)
 mean_both <- dat %>% filter(method == 'ul' | method == 'm') %>% summarise(mean(rel_size))
 remain_format <- sprintf("%.0f%%", (1-mean_both) * 100)
+
+
+# relative unsupported
+mean_rel_unsupport_ul <- dat %>% filter(method == 'ul') %>% summarise((mean(prob_sizes_us_total/max_size)))
+mean_rel_unsupport_m <- dat %>% filter(method == 'm') %>% summarise((mean(prob_sizes_us_total/max_size)))
+mean_rel_unsupport_u <- dat %>% filter(method == 'u') %>% summarise((mean(prob_sizes_us_total/max_size)))
+mean_rel_unsupport_ul_format <- sprintf("%.0f%%", (mean_rel_unsupport_ul) * 100)
+mean_rel_unsupport_m_format <- sprintf("%.0f%%", (mean_rel_unsupport_m) * 100)
+mean_rel_unsupport_u_format <- sprintf("%.0f%%", (mean_rel_unsupport_u) * 100)
+
+
+mean_rel_unsupport_ul_format
+mean_rel_unsupport_m_format
+mean_rel_unsupport_u_format
 ```
 
 
- For the instances *l* the MGS tend to consist of all subproblem points. Also for the *u* instances a large number of the subproblem points are used in the minimum generator sets, however the spread is significantly higher than that of *l*, and in some cases for *u* the MGS consists of only half the total subproblem points. 
+For the instances *l* the MGS tend to consist of all subproblem points. Also for the *u* instances a large number of the subproblem points are used in the minimum generator sets, however the spread is significantly higher than that of *l*, and in some cases for *u* the MGS consists of only half the total subproblem points. 
 
 The instances *m* and *ul* both contain a larger amount of unsupported and supported points. [TODO Show how many approx 50% of each?]. The difference between the instances are that for *m* each subset consists of a mix of supported and unsupported points, while the *ul* instances consists of subsets which have either many unsupported (*u*), or many supported points (*l*). For *m* and *ul* we find that the MGS is unlikely to consist of all the subproblem points. On average the MGS consists of only `r mean_m_format` of the total subproblem points for *m* instances and `r mean_ul_format` for *ul* instances. This implies that around `r remain_format` of the generated subproblem points are not needed for generating the nondominated sum.
 ```{r}
@@ -147,17 +239,42 @@ The instances *m* and *ul* both contain a larger amount of unsupported and suppo
 
 
 # Relative size of MGS wrt. average subproblem cardinality
+
 ```{r}
-dat %>% 
-  ggplot(aes(x = avg_sp_size, y = rel_size, color = method)) +
-  geom_point() + 
-  #geom_boxplot() + 
+
+
+dat %>% filter(m_numeric == 3, p_numeric == 4) %>%
+  ggplot(aes(x = max_size, y = MGS_size/m_numeric, color = method, fill = method)) +
   stat_summary(fun="mean", geom="line") +
+  geom_ribbon(aes(ymin = MGS_size_min, ymax = MGS_size_max), alpha = 0.1) +
+  geom_line(aes(y = MGS_size/m_numeric), linetype = "dashed") +
+  #geom_boxplot() + 
   facet_grid(p ~ m, labeller =  "label_both")  + 
   labs(title = "Relative size of MGS given subproblem cardinality",
        y = "Relative cardinality MGS/Max MGS",
        x = "Average subproblem cardinality",
        color = "Methods used to generate subproblems") +
+  theme(legend.position = "bottom") 
+```
+
+```{r}
+
+
+dat %>% 
+   #filter(m_numeric == 3, p_numeric == 4) %>%
+  ggplot(aes(x = max_size, y = MGS_size/m_numeric, color = method, fill = method)) +
+  stat_summary(fun="mean", geom="line") +
+  geom_ribbon(aes(ymin = MGS_size_min, ymax = MGS_size_max), alpha = 0.1) +
+  #geom_line(aes(y = MGS_size/m_numeric), linetype = "dashed") +
+  #geom_boxplot() + 
+  geom_point() +
+  facet_grid(p ~ m, labeller =  "label_both")  + 
+  labs(
+#     title = "Relative size of MGS given subproblem cardinality",
+#       y = "Relative cardinality MGS/Max MGS",
+#       x = "Average subproblem cardinality",
+       color = "Methods used to generate subproblems"
+     )+
   theme(legend.position = "bottom") 
 ```
 

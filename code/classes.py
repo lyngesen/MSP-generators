@@ -367,7 +367,7 @@ class PointList:
 
         PointList_dict = {
             "points":
-                          [dict({f"z{p+1}": point[p] for p in range(point.dim)},**({'cls':None})) for point in self.points],
+                          [dict({f"z{p+1}": point[p] for p in range(point.dim)},**({'cls':point.cls})) for point in self.points],
             'statistics': self.statistics
           }
         return PointList_dict 
@@ -479,7 +479,12 @@ class MinkowskiSumProblem:
 
     def from_json(filename: str):
         with open(filename, 'r') as json_file:
-            json_dict = json.load(json_file)[0]
+            json_list = json.load(json_file)
+            json_dict = json_list[0]
+            if len(json_list) > 1:
+                statistics = json_list[1]
+            else:
+                statistics = None
 
         Y_list = []
         for V, Y_filename in sorted(json_dict.items()):
@@ -488,8 +493,8 @@ class MinkowskiSumProblem:
             else:
                 Y = PointList.from_json_str(Y_filename)
             Y_list.append(Y)
-
         MSP = MinkowskiSumProblem(Y_list)
+        MSP.statistics = statistics
         MSP.filename = filename
         MSP.dim = Y_list[0].dim
         return  MSP
