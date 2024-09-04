@@ -218,7 +218,7 @@ prob[!(prob %in% solved)]    # problems not solved yet
 
 
 
-paths <- fs::dir_ls(here::here("code/instances/results/algorithm1big/"), recurse = T, type = "file", glob = "*prob*.json")
+paths <- fs::dir_ls(here::here("code/instances/results/algorithm1/"), recurse = T, type = "file", glob = "*prob*.json")
 datOkay <-  read_csv(here::here("code/instances/stat-prob-okay.csv")) |> # info about what stat already done
    mutate(path = fs::path_file(path)) |>
    distinct(path, type, alg) |>
@@ -265,7 +265,7 @@ calc <- FALSE
 cpu <- difftime(Sys.time(), start, units = "secs")
 if (cpu < timeLimit) {
    for (path in fs::path_file(paths1)) {
-      res <- tryCatchLog(classifyStat(here::here(str_c("code/instances/results/algorithm1big/", path)), classifyExt = T), 
+      res <- tryCatchLog(classifyStat(here::here(str_c("code/instances/results/algorithm1/", path)), classifyExt = T), 
                          error = function(c) {
                             datError <- bind_rows(datError, c(path = path, type = "classifyExt", alg = "alg1"))
                             write_csv(datError, file = here::here("code/instances/stat-prob-error.csv"))
@@ -344,10 +344,10 @@ cat("\n\nFinish running R script.\n\n")
 # }
 
 ## rename files
-# paths <- fs::dir_ls(here::here("code/instances/results/algorithm1big/"), recurse = T, type = "file", glob = "*prob*.json") |> fs::path_file()
+# paths <- fs::dir_ls(here::here("code/instances/results/algorithm1/"), recurse = T, type = "file", glob = "*prob*.json") |> fs::path_file()
 # pathsNew <- str_replace(as.character(paths), "_(?=[:digit:]\\.json)", "%") |> print()
 # pathsNew <- str_replace_all(pathsNew, "_", "|") |> print()
 # pathsNew <- str_replace(pathsNew, "%", "_") |> print()
-# setwd("~/github/minkowski_theory/code/instances/results/algorithm1big")
+# setwd("~/github/minkowski_theory/code/instances/results/algorithm1")
 # fs::file_move(paths, pathsNew)
 
