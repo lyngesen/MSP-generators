@@ -77,10 +77,30 @@ The following instance/problem groups are generated given:
 ### Status 
 
 ```{r}
+extractInfo <- function(path) {
+  path <- fs::path_file(path)
+  dat <- tibble(path = path) |> 
+    mutate(
+      p = as.numeric(str_extract(path, "^alg1-prob-(.).*$", group=1)),
+      m = as.numeric(str_extract(path, "^.*(.)_..json$", group=1)),
+      spAveCard = as.numeric(str_extract(path, "^.*-(.*?)\\|.*$", group = 1)),
+      method = str_extract(path, "^.*-(.*)-.*$", group = 1) %>% 
+        map_chr(function (x) {
+          x <- str_split_1(x, "")
+          x <- unique(x)
+          str_c(x, collapse = "")
+        })
+    )
+  return(dat)
+}
+
 files <- fs::path_file(fs::dir_ls(here::here("code/instances/problems")))
 files <- str_c("alg1-", files)
-raw <- read_csv(here::here("code/instances/stat-prob.csv")) |> mutate(path = fs::path_file(path))
-raw <- full_join(tibble(path = files), raw)
+files <- extractInfo(files)
+raw <- read_csv(here::here("code/instances/stat-prob.csv")) |> 
+  mutate(path = fs::path_file(path)) |> 
+  distinct(path, .keep_all = T)
+raw <- full_join(files, raw)
 dat <- raw %>% 
   mutate(method = str_extract(path, "^.*-(.*)-.*$", group = 1)) %>% 
   mutate(method = map_chr(method, function (x) {
@@ -91,8 +111,9 @@ dat <- raw %>%
   mutate(spSize = as.numeric(str_extract(path, "^.*-(.*?)\\|.*$", group = 1))) |>   # size of the first subprob
   rowwise() %>% 
   mutate(aveWidth = mean(c_across(starts_with("width")), na.rm = T),
-         points_hypercube = if_else(is.nan(aveWidth), NA, prod(1 + c_across(starts_with("width")), na.rm = T)),
-         spAveCard = mean(c_across(starts_with("spCard")), na.rm = T)) %>% 
+         points_hypercube = if_else(is.nan(aveWidth), NA, prod(1 + c_across(starts_with("width")), na.rm = T))
+         #spAveCard = mean(c_across(starts_with("spCard")), na.rm = T)
+         ) %>% 
   ungroup() %>% 
   mutate(
          pctSup = supported/card,
@@ -122,10 +143,31 @@ dat <- datFull %>%
   filter(n() == 5) %>% 
   ungroup()
 ```
-  * `r datFull |> filter(!is.na(card)) |> nrow()`/`r nrow(datFull)` problems have been solved, i.e. `r nrow(datFull) - datFull |> filter(!is.na(card)) |> nrow()` remaining.
-  * `r nrow(dat)`/`r datFull |> filter(!is.na(card)) |> nrow()` problems have 5 instances solved for each configuration.
-  * `r datFull |> filter(is.na(extreme) & !is.na(card)) |> nrow()`/`r datFull |> filter(!is.na(card)) |> nrow()` have not been classified at all.
-  * `r datFull |> filter(is.na(unsupported) & !is.na(extreme)) |> nrow()`/`r datFull |> filter(!is.na(card)) |> nrow() - datFull |> filter(is.na(extreme) & !is.na(card)) |> nrow()` have not been fully classified (only classified extreme).
+
+`r datFull |> filter(!is.na(card)) |> nrow()`/`r nrow(datFull)` problems have been solved, i.e. `r nrow(datFull) - datFull |> filter(!is.na(card)) |> nrow()` remaining:
+
+```{r}
+datFull |> filter(is.na(card)) |> pull(path)
+```
+
+`r nrow(dat)`/`r datFull |> filter(!is.na(card)) |> nrow()` problems have 5 instances solved for each configuration. Configurations with lees that 5 solved:
+
+```{r}
+datFull |> 
+  group_by(p, m, method, spAveCard) %>% 
+  summarise(solved = sum(!is.na(card))) |> 
+  filter(solved != 5) |> 
+  print(n=100)
+```
+
+
+`r datFull |> filter(is.na(extreme) & !is.na(card)) |> nrow()`/`r datFull |> filter(!is.na(card)) |> nrow()` have not been classified at all:
+
+```{r}
+datFull |> filter(is.na(extreme) & !is.na(card)) |> pull(path)
+```
+
+`r datFull |> filter(is.na(unsupported) & !is.na(extreme)) |> nrow()`/`r datFull |> filter(!is.na(card)) |> nrow() - datFull |> filter(is.na(extreme) & !is.na(card)) |> nrow()` classified files have not been fully classified (only classified extreme).
 
   
 ### Problems solved for the analysis  
