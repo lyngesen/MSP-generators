@@ -740,16 +740,12 @@ pt1 <- dat %>%
   theme(legend.position = "bottom", legend.key.width = unit(2, "cm"))
 pt1
 
-tikz("yn-spcard.tex", width = 10, height = 10)
+tikz("~/Library/CloudStorage/Dropbox/Apps/Overleaf/paper1/figures/yn-spcard.tex", width = 10, height = 10)
 pt1
 dev.off()
 
 
-
 ## Number of extreme
-
-
-
 
 
 
