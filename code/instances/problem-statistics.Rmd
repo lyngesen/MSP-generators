@@ -135,7 +135,7 @@ dat <- dat %>%
     ubCard = prod(c_across(starts_with("spCard")), na.rm = T)
   ) %>% 
   ungroup()
-datFull <- dat |> filter(spSize <= 300)
+datFull <- dat |> filter(spSize <= 300, str_detect(path, "alg1-"))
 # remove results where have not solved all instances
 dat <- datFull %>% 
   filter(!is.na(card)) |> 
@@ -746,47 +746,39 @@ dev.off()
 
 
 ## Number of extreme
-
-
-
-
-
-
-
-## how many sne?
 dat |> 
-  filter(card != 10, card != 150) |> 
-  mutate(e = extreme/card, sne = (supported-extreme)/card) |> 
-  group_by(method, p) |> 
-  summarise(e = mean(e), sne = mean(sne))
+  filter(!is.na(extreme)) |> 
+  mutate(e = extreme/card) |> 
+  # group_by(method, p) |> 
+  group_by(method) |> 
+  summarise(n = n(), eMax = max(e), eMin = min(e), e = mean(e)) |> 
+  arrange(desc(e)) 
 
-dat1 <- dat |> 
-  filter(card != 10, card != 150) 
 
-pt1 <- dat1 |> 
-  ggplot(aes(x = card, y = extreme/card, shape = method, linetype = method)) +
-  stat_summary(fun="mean", geom="line") + 
-  geom_point(size = 0.75) + 
-  facet_grid(cols = vars(p)) +
-  labs(x = "$\\Yn^s$", y = NULL) +
-  theme_bw() +
-  theme(legend.position = "none")
-pt1
-
-pt2 <- dat1 |> 
-  ggplot(aes(x = p, y = extreme/card, shape = method, linetype = method)) +
-  geom_point(size = 0.75) + 
-  stat_summary(fun="mean", geom="line") + 
-  facet_grid(cols = vars(card)) + 
-  labs(x = "$p$", y = NULL) +
-  theme_bw() +
-  theme(legend.position = "none")
-pt2
-
-tikz("se-card.tex", width = 8, height = 3)
-pt1
-dev.off()
-tikz("se-p.tex", width = 8, height = 3)
-pt2
-dev.off()
+# pt1 <- dat |> 
+#   ggplot(aes(x = card, y = extreme/card, shape = method, linetype = method)) +
+#   stat_summary(fun="mean", geom="line") + 
+#   geom_point(size = 0.75) + 
+#   facet_grid(cols = vars(p), scales = "free") +
+#   labs(x = "$\\Yn^s$", y = NULL) +
+#   theme_bw() +
+#   theme(legend.position = "none")
+# pt1
+# 
+# pt2 <- dat |> 
+#   ggplot(aes(x = p, y = extreme/card, shape = method, linetype = method)) +
+#   geom_point(size = 0.75) + 
+#   stat_summary(fun="mean", geom="line") + 
+#   facet_grid(cols = vars(card)) + 
+#   labs(x = "$p$", y = NULL) +
+#   theme_bw() +
+#   theme(legend.position = "none")
+# pt2
+# 
+# tikz("se-card.tex", width = 8, height = 3)
+# pt1
+# dev.off()
+# tikz("se-p.tex", width = 8, height = 3)
+# pt2
+# dev.off()
 ```
