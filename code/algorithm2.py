@@ -158,7 +158,9 @@ def alg2(MSP):
 def get_fixed_and_reduced(C_dict, Y_list):
 
     # pprint.pprint(C_dict)
-    # TODO: Use the fact that extreme supported points are known to be in MGS <06-08-24> #
+    # TODO: Use the fact that extreme supported points are known to be in MGS <06-08-24>
+    #   remember se != supported extreme, se= supported efficient
+
     Y_fixed = [set() for s, _ in enumerate(Y_list)]
     Y_reduced = [set() for s, _ in enumerate(Y_list)]
 
@@ -230,6 +232,7 @@ def algorithm2(MSP, logger = None):
     time_check_fixed = time.time() - time_check_fixed
 
     time_covering = time.time()
+    covering_solved = False
     if check_val:
         Y_solution = Y_fixed
     else:
@@ -243,6 +246,7 @@ def algorithm2(MSP, logger = None):
         Yn_nongenerated = [y for y in Yn_with_duplicates if y not in Yn_fixed_set]
         model = build_model_covering(MSP.Y_list,Yn_with_duplicates, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
         solve_model(model)
+        covering_solved = True
         Y_chosen_dict = retrieve_solution_covering(model, MSP.Y_list)
         Y_solution = {s: Y_chosen_dict[s].union(set(Y_fixed[s])) for s in range(len(MSP.Y_list))}
         # print(f"{Y_chosen_dict=}")
@@ -284,7 +288,7 @@ def algorithm2(MSP, logger = None):
                       'time_getfixed': time_getfixed,
                       'time_check_fixed': time_check_fixed,
                       'time_check_generating': time_check_generating,
-                      'covering_IP_solved': (not check_val),
+                      'covering_IP_solved': covering_solved,
                       'covering_IP_time': time_covering,
                       'Y_fixed': tuple([len(Yf) for Yf in Y_fixed]),
                       'Y_reduced': tuple([len(Yr) for Yr in Y_reduced]),
