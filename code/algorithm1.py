@@ -290,36 +290,6 @@ def algorithm1():
 
 
 
-
-def convert_all_raw_files():
-    ''' ad hoc script for converting all pointLists saved as .raw files into .json files'''
-
-
-    solution_dir = './instances/results/algorithm1/'
-    out_dir = '/Users/au618299/Desktop/large-result-files-alg1/'
-    raw_files = [file for file in os.listdir(solution_dir) if file.split(".")[-1]=='raw']
-
-    with alive_bar(len(raw_files), enrich_print=True) as bar:
-        for raw_file in raw_files:
-
-            if raw_file.replace('.raw','.json') in os.listdir(out_dir):
-                # print(f"{raw_file=} already in {out_dir=}")
-                bar()
-                continue
-
-            print(f"{raw_file=}")
-            dir_size_gb = sum(os.path.getsize(out_dir + f) for f in os.listdir(out_dir) if os.path.isfile(out_dir + f))/(1024**3)
-            print(f"Current size of dir is {dir_size_gb:.2f} GB")
-            Y = PointList.from_raw(solution_dir + raw_file)
-            # print(f"{Y.statistics=}")
-            Y.statistics = PointList.from_json(solution_dir + raw_file.replace('.raw','.json')).statistics
-            # print(f"{Y.statistics=}")
-            # Y = PointList.from_json('./instances/results/algorithm1/alg1-prob-2-100|100-ll-2_1.json') # for testing
-            Y.save_json(out_dir + raw_file.replace('.raw','.json'), max_file_size = 1000)
-
-            bar()
-
-
             
 
 
