@@ -12,7 +12,7 @@ import os
 # Set the path to the GLPK executable
 # if os.path.exists('$HOME/solvers/glpk/bin/glpsol'):
 Executable('glpsol').set_path('$HOME/solvers/glpk/bin/glpsol')
-DEFAULT_SOLVER = 'glpk'
+DEFAULT_SOLVER = 'cplex_direct'
 
 # def buildModel(Y_list: list[PointList],) -> pyomo.ConcreteModel():
     # pass
@@ -232,11 +232,11 @@ def display_solution(Y_list: list[PointList], Y_generator_list: list[PointList],
             total_standard += len(Y_list[s])
             if verbose == "all":
                 print(f"|Y{s}| = {len(Y_list[s])}")
-                print(f"|^Y{s}| = {len(Y_generator_list[s])}")
+                print(f"|G{s}| = {len(Y_generator_list[s])}")
             total_generator += len(Y_generator_list[s])
         print("_"*55)
         print(f"SUM|Y| = {total_standard}")
-        print(f"SUM|^Y| = {total_generator}")
+        print(f"SUM|G| = {total_generator}")
         print("_"*55)
 
     if plot:
@@ -248,7 +248,7 @@ def display_solution(Y_list: list[PointList], Y_generator_list: list[PointList],
         for s, Y in enumerate(Y_list):
             Y.plot(l=f"Y{s}", marker = "o")
         for s, Y_generator in enumerate(Y_generator_list):
-            Y_generator.plot(l=f"^Y{s}", marker = f"{s+1}")
+            Y_generator.plot(l=f"G{s}", marker = f"{s+1}")
         
 
         Yn = methods.MS_sequential_filter(Y_list)
@@ -256,7 +256,7 @@ def display_solution(Y_list: list[PointList], Y_generator_list: list[PointList],
 
         Yn_hat = methods.MS_sum(Y_generator_list)
         # assert N(Yn_hat.removed_duplicates()) == N(Yn.removed_duplicates())
-        Yn_hat.plot(l="^Yn", marker= "3")
+        Yn_hat.plot(l="G Yn", marker= "3")
 
         plt.show()
 
