@@ -473,7 +473,8 @@ class MinkowskiSumProblem:
     filename : str = None
     dim : int = None
     S : int = None
-    
+    sp_filenames : list = None
+
     def __post_init__(self):
         self.S = len(self.Y_list)
 
@@ -487,9 +488,12 @@ class MinkowskiSumProblem:
                 statistics = None
 
         Y_list = []
-        for V, Y_filename in sorted(json_dict.items()):
+        sp_filenames = []
+        for V, Y_filename in json_dict.items():
             if isinstance(Y_filename, str):
+                print(f"{Y_filename}")
                 Y = PointList.from_json("instances/" + Y_filename)
+                Y.filename = Y_filename
             else:
                 Y = PointList.from_json_str(Y_filename)
             Y_list.append(Y)
@@ -497,6 +501,7 @@ class MinkowskiSumProblem:
         MSP.statistics = statistics
         MSP.filename = filename
         MSP.dim = Y_list[0].dim
+
         return  MSP
 
     def save_json(self, filename):
