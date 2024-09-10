@@ -1,4 +1,4 @@
-from classes import Point, PointList, MinkowskiSumProblem
+from classes import Point, PointList, MinkowskiSumProblem, MSPInstances
 from classes import Node, LinkedList 
 import methods
 import os
@@ -184,4 +184,21 @@ def test_MSP_json():
 
 
 
+def test_MSPInstances():
 
+    n = 4
+
+    partition_files = list()
+    for k in range(n): # k= 0,1,2,3,4
+        print(f"{k=}")
+        TI = MSPInstances('algorithm2')
+        TI.partition(n,k)
+        print(f"{k,TI=}")
+        for file in TI.filename_list:
+            partition_files.append(file)
+
+
+    TI = MSPInstances('algorithm2')
+
+    assert len(set(TI.filename_list)) == len(partition_files)
+    assert set(TI.filename_list) == set(partition_files)

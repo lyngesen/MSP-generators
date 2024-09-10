@@ -1,5 +1,5 @@
 import pytest
-from classes import Point, PointList, LinkedList, MinkowskiSumProblem
+from classes import Point, PointList, LinkedList, MinkowskiSumProblem, MSPInstances
 import methods
 from methods import U_dominates_L, induced_UB, lex_sort, N
 from timing import timeit, print_timeit, set_defaults
@@ -7,6 +7,7 @@ from functools import reduce
 import matplotlib.pyplot as plt
 import copy
 
+import collections
 
 def test_sorting():
     testset = "instances/testsets/BINOM-p2-n100-s1"
@@ -176,7 +177,68 @@ def test_python_c_wrapper():
         # # plt.show()
         # plt.cla()
 
+def test_duplicates_filtered():
+
+    # test if duplicates are removed
+    # 2d
+    Y = PointList([(1,1) for _ in range(10)] + [(1,2)])
+    assert len(N(Y)) == 1
+    # 3d
+    Y = PointList([(1,1,1) for _ in range(10)] + [(2,1,0)])
+    assert len(N(Y)) == 1
+
+    Yn = methods.nondomDC_wrapper(Y)
+    assert len(Yn) == 1
+    assert Yn == PointList(((1,1),))
+
 def test_c_wrapper_ND_pointsSum2():
+
+
+
+    # test duplicates
+    
+    # jsonfilename = "instances/problems/prob-2-100|100-mm-2_2.json"
+    # MSP = MinkowskiSumProblem.from_json(jsonfilename)
+
+    MSP = list(MSPInstances(preset='algorithm2_test'))[0]
+    A, B, C = MSP.Y_list
+    
+    ABn = methods.ND_pointsSum2_wrapper(A,B)
+    ABn_check = methods.N(A+B)
+
+    print(f"{[len(x) for x in (A,B,C)]=}")
+    print(f"{len(ABn)=}")
+
+    A.plot('A')
+    B.plot('B', marker='x')
+    
+
+    ABn.plot('ABn')
+    ABn_check.plot('ABn_check', marker = 'x')
+    
+    
+    ABn_counts = collections.Counter(ABn)  
+    ABn_check_counts = collections.Counter(ABn_check)  
+
+    plottet = set()
+    for y in ABn:
+        if y in plottet:
+            continue
+        else:
+            label = f"({ABn_counts[y]},{ABn_check_counts[y]})"
+            y.plot(l=label, label_only=True)
+            plottet.add(y)
+
+    print(f"{ABn_counts.most_common(3)=}")
+    print(f"{ABn_check_counts.most_common(3)=}")
+    # ABn_counts.most_common(5)
+    
+    plt.show()
+    
+    assert ABn_check == ABn
+
+    return
+
     jsonfilename = "instances/subproblems/sp-4-300-m_1.json"
     A = PointList.from_json(jsonfilename)
     
