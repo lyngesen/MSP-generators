@@ -3166,12 +3166,27 @@
   "MGS_size_min":81,
   "Yn_size":679657,
   "Yn_size_duplicates":679657,
-  "running_time":522.135576248169,
-  "time_simplefilter":257.07684421539307,
-  "time_getfixed":0.44193363189697266,
-  "time_check_fixed":130.0373306274414,
-  "time_check_generating":134.57907629013062,
+  "running_time":527.2751789093018,
+  "time_simplefilter":258.43611907958984,
+  "time_getfixed":0.39867162704467773,
+  "time_check_fixed":131.1899344921112,
+  "time_check_generating":137.2500443458557,
   "covering_IP_solved":false,
+  "covering_IP_time":2.384185791015625e-07,
+  "Y_fixed":[
+   91,
+   81,
+   81,
+   84,
+   88
+  ],
+  "Y_reduced":[
+   91,
+   81,
+   81,
+   84,
+   88
+  ],
   "prob_sizes_us":[
    62,
    67,

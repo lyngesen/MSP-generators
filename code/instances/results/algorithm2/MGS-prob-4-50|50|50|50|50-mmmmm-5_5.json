@@ -1780,12 +1780,27 @@
   "MGS_size_min":43,
   "Yn_size":189676,
   "Yn_size_duplicates":189676,
-  "running_time":71.29376149177551,
-  "time_simplefilter":34.77629470825195,
-  "time_getfixed":0.11355042457580566,
-  "time_check_fixed":17.684553861618042,
-  "time_check_generating":18.719102144241333,
+  "running_time":71.97606253623962,
+  "time_simplefilter":34.91951298713684,
+  "time_getfixed":0.11636543273925781,
+  "time_check_fixed":17.88571786880493,
+  "time_check_generating":19.050580978393555,
   "covering_IP_solved":false,
+  "covering_IP_time":4.76837158203125e-07,
+  "Y_fixed":[
+   46,
+   43,
+   44,
+   48,
+   46
+  ],
+  "Y_reduced":[
+   46,
+   43,
+   44,
+   48,
+   46
+  ],
   "prob_sizes_us":[
    25,
    29,

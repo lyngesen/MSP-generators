@@ -7023,12 +7023,27 @@
   "MGS_size_min":179,
   "Yn_size":334372,
   "Yn_size_duplicates":334372,
-  "running_time":909.891352891922,
-  "time_simplefilter":434.91926765441895,
-  "time_getfixed":0.1992330551147461,
-  "time_check_fixed":237.05438947677612,
-  "time_check_generating":237.71769833564758,
+  "running_time":885.5945572853088,
+  "time_simplefilter":429.84174609184265,
+  "time_getfixed":0.19201874732971191,
+  "time_check_fixed":228.5701081752777,
+  "time_check_generating":226.98986077308655,
   "covering_IP_solved":false,
+  "covering_IP_time":2.384185791015625e-07,
+  "Y_fixed":[
+   198,
+   179,
+   199,
+   200,
+   200
+  ],
+  "Y_reduced":[
+   198,
+   179,
+   199,
+   200,
+   200
+  ],
   "prob_sizes_us":[
    170,
    180,

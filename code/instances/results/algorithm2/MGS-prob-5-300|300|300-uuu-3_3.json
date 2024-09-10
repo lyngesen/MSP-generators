@@ -7319,17 +7319,29 @@
   "MGS_size_min":300,
   "Yn_size":182739,
   "Yn_size_duplicates":182739,
-  "running_time":210.3773889541626,
-  "time_simplefilter":91.93562841415405,
-  "time_getfixed":0.07185578346252441,
-  "time_check_fixed":58.52687048912048,
-  "time_check_generating":59.84237766265869,
+  "running_time":212.77302885055542,
+  "time_simplefilter":92.95175790786743,
+  "time_getfixed":0.07084393501281738,
+  "time_check_fixed":59.769845962524414,
+  "time_check_generating":59.97992014884949,
   "covering_IP_solved":false,
+  "covering_IP_time":2.384185791015625e-07,
+  "Y_fixed":[
+   300,
+   300,
+   300
+  ],
+  "Y_reduced":[
+   300,
+   300,
+   300
+  ],
   "prob_sizes_us":[
    241,
    252,
    242
   ],
+  "prob_sizes_us_total":735,
   "MGS_sizes_us":[
    241,
    252,
@@ -7338,11 +7350,13 @@
   "MGS_sizes_us_max":252,
   "MGS_sizes_us_min":241,
   "MGS_sizes_us_avg":245.0,
+  "MGS_sizes_us_total":735,
   "prob_sizes_se":[
    59,
    48,
    58
   ],
+  "prob_sizes_se_total":165,
   "MGS_sizes_se":[
    59,
    48,
@@ -7351,11 +7365,13 @@
   "MGS_sizes_se_max":59,
   "MGS_sizes_se_min":48,
   "MGS_sizes_se_avg":55.0,
+  "MGS_sizes_se_total":165,
   "prob_sizes_sne":[
    59,
    48,
    58
   ],
+  "prob_sizes_sne_total":165,
   "MGS_sizes_sne":[
    0,
    0,
@@ -7364,11 +7380,6 @@
   "MGS_sizes_sne_max":0,
   "MGS_sizes_sne_min":0,
   "MGS_sizes_sne_avg":0.0,
-  "prob_sizes_us_total":735,
-  "MGS_sizes_us_total":735,
-  "prob_sizes_se_total":165,
-  "MGS_sizes_se_total":165,
-  "prob_sizes_sne_total":165,
   "MGS_sizes_sne_total":0
  }
 ]

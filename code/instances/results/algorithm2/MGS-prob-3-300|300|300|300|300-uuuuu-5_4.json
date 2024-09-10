@@ -8099,12 +8099,27 @@
   "MGS_size_min":149,
   "Yn_size":54017,
   "Yn_size_duplicates":54017,
-  "running_time":87.16294312477112,
-  "time_simplefilter":74.49050545692444,
-  "time_getfixed":0.036688804626464844,
-  "time_check_fixed":6.188855171203613,
-  "time_check_generating":6.445944309234619,
+  "running_time":85.14413213729858,
+  "time_simplefilter":72.43128204345703,
+  "time_getfixed":0.03873801231384277,
+  "time_check_fixed":6.184514045715332,
+  "time_check_generating":6.488653182983398,
   "covering_IP_solved":false,
+  "covering_IP_time":5.245208740234375e-06,
+  "Y_fixed":[
+   300,
+   285,
+   298,
+   149,
+   286
+  ],
+  "Y_reduced":[
+   300,
+   285,
+   298,
+   149,
+   286
+  ],
   "prob_sizes_us":[
    286,
    291,

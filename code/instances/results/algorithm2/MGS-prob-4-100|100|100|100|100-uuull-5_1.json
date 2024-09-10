@@ -2655,12 +2655,27 @@
   "MGS_size_min":42,
   "Yn_size":386315,
   "Yn_size_duplicates":386315,
-  "running_time":270.1814408302307,
-  "time_simplefilter":129.43360543251038,
-  "time_getfixed":0.24051308631896973,
-  "time_check_fixed":68.79958653450012,
-  "time_check_generating":71.7073814868927,
+  "running_time":269.5566792488098,
+  "time_simplefilter":128.98014307022095,
+  "time_getfixed":0.2277977466583252,
+  "time_check_fixed":68.91204261779785,
+  "time_check_generating":71.43300247192383,
   "covering_IP_solved":false,
+  "covering_IP_time":0.0,
+  "Y_fixed":[
+   55,
+   42,
+   55,
+   100,
+   100
+  ],
+  "Y_reduced":[
+   55,
+   42,
+   55,
+   100,
+   100
+  ],
   "prob_sizes_us":[
    76,
    81,
