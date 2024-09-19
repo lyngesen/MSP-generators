@@ -16,11 +16,18 @@ import methods
 from methods import N
 import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.animation as anim
+from matplotlib.widgets import Button, Slider
 import random
+import minimum_generator
 import time
 import csv
 import math
-from algorithm2 import algorithm2
+from algorithm2 import algorithm2, alg2, Y_list_to_fixed_reduced
+from minimum_generator import solve_MGS_instance
+from copy import deepcopy
+
+
 
 def plot_or_save(fig, fname: str):
     """ call to plot or save fig """
@@ -1288,10 +1295,177 @@ def all_slides():
 
 
 
+def MSP_plot():
 
+
+    file = "prob-2-100|100|100-uuu-3_2.json"
+    # file = "prob-5-50|50-uu-2_1.json"
+    # file = "prob-2-100|100-mm-2_1.json"
+
+    file = "prob-2-100|100-mm-2_1.json"
+    file = "prob-2-100|100-ul-2_2.json"
+    file = "prob-2-200|200|200-uuu-3_1.json"
+    file = "prob-2-50|50|50-uuu-3_3.json"
+
+    MSP = MinkowskiSumProblem.from_json('./instances/problems/' + file)
+
+
+    ######################## Figure validate_algorithm2 START ########################
+    fig_name = "validate_algorithm2"
+    print(f"Plotting figure: {fig_name}")
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout='constrained')
+    
+    print(f"{len(set(MSP.Y_list[0].points).intersection(set(MSP.Y_list[1].points)))=}")
+    
+    # matrix_plot(*MSP.Y_list,fig_name = fig, matrix_only=False)
+    # matrix_plot(MSP.Y_list[0],MSP.Y_list[0]*3, fig_name = fig, matrix_only=False)
+    
+
+
+    # save or plot figure
+    # plot_or_save(fig, fig_name)
+    ######################### Figure validate_algorithm2 END #########################
+
+    # return
+
+    # MGS_check = solve_MGS_instance(MSP.Y_list,plot=True)
+
+
+
+    MGS, Yn = algorithm2(MSP)
+    MSP_reversed = deepcopy(MSP)
+    MSP_reversed.Y_list = MSP_reversed.Y_list[::-1]
+    MGS_reversed, Yn_reversed = algorithm2(MSP_reversed)
+
+    MGS_size = sum(len(Y) for Y in MGS.Y_list)
+    MGS_reversed_size = sum(len(Y) for Y in MGS_reversed.Y_list)
+    print(f"{MGS_size=}")
+    print(f"{MGS_reversed_size=}")
+    assert MGS_size == MGS_reversed_size
+    
+
+    print(f"{[(len(Y), len(G)) for G,Y in zip(MSP.Y_list,MGS.Y_list)]=}")
+    print(f"{[(len(Y), len(G)) for G,Y in zip(MSP_reversed.Y_list,MGS_reversed.Y_list)]=}")
+
+
+
+    for y in MGS.Y_list[0]:
+        Y2 = PointList([ymgs for ymgs in MGS.Y_list[0] if ymgs != y])
+        print(f"{len(Y2),y=}")
+        Y_list_reduced = [MGS.Y_list[1]] + [Y2] + [MGS.Y_list[2]]
+        print(f"{[(len(Y), len(G)) for G,Y in zip(MSP.Y_list,Y_list_reduced)]=}")
+        assert methods.MS_sequential_filter(Y_list_reduced) == methods.MS_sequential_filter(MSP.Y_list) 
+    # print(f"{MGS=}")
+
+    print(f"{Y_list_reduced=}")
+    MGS.plot()
+
+    plt.show()
+
+
+def animate_scalling():
+
+    file = "prob-2-50|50|50-uuu-3_3.json"
+    MSP = MinkowskiSumProblem.from_json('./instances/problems/' + file)
+    alpha = 3
+
+    ######################## Figure validate_algorithm2 START ########################
+    fig_name = "validate_algorithm2"
+    print(f"Plotting figure: {fig_name}")
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout='constrained')
+    
+ 
+    def update(alpha):
+        plt.cla()
+        Y1 = MSP.Y_list[0]
+        Y2 = MSP.Y_list[1]*alpha
+        Y1.plot(f"${_Y1}$")
+        Y2.plot(f"${_Y2}$")
+        Yn = N(Y1+Y2)
+        Yn.plot(f"${_Yn}$")
+
+    # create a slider for alpha which creates a new plot using the new alpha values:
+
+    plt.show()
+
+def interactive_scaling():
+    file = "prob-2-50|50-ul-2_3.json"
+    MSP = MinkowskiSumProblem.from_json('./instances/problems/' + file)
+    alpha = 3
+
+    ######################## Figure validate_algorithm2 START ########################
+    # Define the figure and axis
+    fig, ax = plt.subplots(figsize=(8, 6))
+    plt.subplots_adjust(bottom=0.15)  # Adjust the bottom to make space for the slider
+    # Initial plot data
+    Y1 = MSP.Y_list[0]
+    Y2 = methods.lex_sort(MSP.Y_list[1])[:10]
+    alpha = 2
+
+    # Plot initial data
+    Y1 = MSP.Y_list[0]
+    Y2 = MSP.Y_list[1]*alpha
+    # Y2 = methods.lex_sort(Y2)[:10]
+    Y1.plot(f"${_Y1}$")
+    Y2.plot(f"${_Y2}$")
+    Y2_color = Y2.plot_color
+    Y = Y1 + Y2
+    Y.plot(f"${_Y}$", ax= ax, color = 'gray')
+    # Yn = N(Y1+Y2)
+    # G,Yn = algorithm2(MSP)
+    G,Yn = algorithm2(MinkowskiSumProblem([Y1,Y2]))
+    for s, g in enumerate(G.Y_list):
+        g.plot(f"${_G}^{s}$", color='yellow', marker = 'x')
+    Yn.plot(f"${_Yn}$", color = 'yellow')
+
+    # Add legend
+    ax.legend()
+
+    # Define the update function
+    def update(val):
+        ax.clear()  # Clear the current axes
+        alpha = slider.val
+        Y2 = MSP.Y_list[1] * alpha
+        # Y2 = methods.lex_sort(Y2)[:10]
+        Y1.plot(f"${_Y1}$", ax=ax, color = Y1.plot_color)
+        Y2.plot(f"${_Y2}\cdot \\alpha $", ax= ax, color = Y2_color)
+        Y = Y1 + Y2
+        # G,Yn = algorithm2(MinkowskiSumProblem([Y1,Y2]))
+        Y.plot(f"${_Y}$", ax= ax, color = 'gray')
+        Yn = N(Y1 + Y2)
+
+        # G = alg2(MinkowskiSumProblem([Y1,Y2]))
+        # print(f"{Y_fixed=}")
+        # Yn_with_duplicates, C_dict = SimpleFilter(MSP.Y_list)
+        # for s, g in enumerate(Y_fixed):
+            # g.plot(f"${_G}^{s}$", color='yellow', marker = 'x', ax=ax)
+        Yn.plot(f"${_Yn}$", ax=ax, color= 'yellow')
+
+        ax.legend()
+        fig.canvas.draw_idle()
+
+    # Create a slider for alpha
+    ax_slider = plt.axes([0.25, 0.01, 0.65, 0.03], facecolor='lightgoldenrodyellow')
+    slider = Slider(ax_slider, 'Alpha', 0.1, 50.0, valinit=alpha)
+
+    # Attach the update function to the slider
+    slider.on_changed(update)
+
+    # update(1)
+    
+    # Show the plot
+    plt.show()
 def main():
 
-    slides_matrix_example_MGS()
+    
+    # animate_scalling()
+    interactive_scaling()
+
+    # MSP_plot()
+
+    # slides_matrix_example_MGS()
     # slides_matrix_plot()
 
     # RGS_slides()

@@ -11,7 +11,9 @@ import os
 
 # Set the path to the GLPK executable
 # if os.path.exists('$HOME/solvers/glpk/bin/glpsol'):
-Executable('glpsol').set_path('$HOME/solvers/glpk/bin/glpsol')
+
+
+# Executable('glpsol').set_path('$HOME/solvers/glpk/bin/glpsol')
 DEFAULT_SOLVER = 'cplex_direct'
 
 # def buildModel(Y_list: list[PointList],) -> pyomo.ConcreteModel():

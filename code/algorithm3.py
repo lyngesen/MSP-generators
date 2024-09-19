@@ -16,7 +16,7 @@ import os
 from minimum_generator import solve_MGS_instance
 
 
-
+import random
 import numpy as np
 # from numoy import linalg
 from matplotlib import pyplot as plt
@@ -461,9 +461,11 @@ def test_alg_3():
     for level in [0,1,2]:
         L_Y_U = list()
         for i, file in enumerate(files):
-            Y = PointList.from_json(file)
+            Y = methods.lex_sort(PointList.from_json(file))
             # assert Y == methods.N(Y)
             Yse = PointList([y for y in Y if y.cls =='se'])
+
+
             L = methods.N(induced_LB_3d(Yse, level, PLOT=False))
             U = Yse
             L_Y_U.append((L,Y,U))
@@ -524,28 +526,159 @@ def pairwise_alg3(L1, Y1, U1, L2, Y2, U2):
         if U_dominates_L(U,L):
             G1_not.append(y1)
 
-    G1 = PointList([y1 for y1 in Y1 if y1 not in G1_not])
+    # G1 = PointList([y1 for y1 in Y1 if y1 not in G1_not])
     G2_not = []
     for y2 in methods.lex_sort(Y2):
         L = L1 + PointList(y2)
 
         if U_dominates_L(U,L):
-            G1_not.append(y2)
+            G2_not.append(y2)
 
-    G2 = PointList([y2 for y2 in Y2 if y2 not in G2_not])
+    # G2 = PointList([y2 for y2 in Y2 if y2 not in G2_not])
     
+    if True: # validate resutlts
+        for y1 in G1_not:
+            assert y1 in Y1, f"{y1,Y1=}"
+
+        for y2 in G2_not:
+            assert y2 in Y2
+
     return (G1_not,G2_not)
 def all_pairs_alg3():
     
-    Y1 = PointList.from_json('instances/subproblems/sp-2-100-u_1.json')
+    Y1 = methods.lex_sort(PointList.from_json('instances/subproblems/sp-2-10-m_1.json'))
     Y1se = PointList([l for l in Y1 if l.cls =='se'])
-    Y2 = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')
+    Y2 = methods.lex_sort(PointList.from_json('instances/subproblems/sp-2-50-l_1.json'))
     Y2se = PointList([l for l in Y2 if l.cls =='se'])
+
+
+    if False:
+
+        # '/sp-2-50-l_1.json',
+        # '/sp-2-50-u_1.json'
+        Y1 = methods.lex_sort(PointList.from_json('instances/subproblems/sp-2-50-l_1.json'))
+        Y1se = PointList([l for l in Y1 if l.cls =='se'])
+        Y2 = methods.lex_sort(PointList.from_json('instances/subproblems/sp-2-50-u_1.json'))
+        Y2se = PointList([l for l in Y2 if l.cls =='se'])
+
+    U1_line = methods.induced_UB(Y1se, line = True)
+    U2_line = methods.induced_UB(Y2se, line = True)
+
+    # U1 = methods.induced_UB(Y1se, line = False)
+    # U2 = methods.induced_UB(Y2se, line = False)
+    U1 = Y1se
+    U2 = Y2se
 
     G1_not, G2_not = pairwise_alg3(Y1se, Y1, Y1se, Y2se, Y2, Y2se)
     
+
+    def plot_sets():
+        Y1.plot('Y1')
+        Y2.plot('Y2')
+        Y1se.plot('Y1se', line=True, linestyle = 'dashed', color = Y1.plot_color)
+        Y2se.plot('Y2se', line =True, linestyle = 'dashed', color = Y2.plot_color)
+        U1_line.plot('U1', line =True, linestyle = 'dashed', color = Y1.plot_color)
+        U2_line.plot('U1', line =True, linestyle = 'dashed', color = Y2.plot_color)
+
+        PointList(G1_not).plot(marker='x', color = 'black')
+        PointList(G2_not).plot(marker='x', color = 'black')
+    
+
     print(f"{len(G1_not),len(Y1)=}")
     print(f"{len(G2_not),len(Y2)=}")
+
+
+    if True: # validate
+        for y1 in Y1[::math.floor(len(Y1)/5)]:
+            plot_sets()
+            U = N(U1 + U2)
+            L = PointList(y1) + Y2se
+            U.plot('U')
+            U_line = methods.induced_UB(U, line = True)
+            U_line.plot(line=True)
+            L.plot(line=True)
+            L.plot('L')
+            PointList(y1).plot('y1', marker = 'x')
+            y1.plot('y1', label_only=True)
+            print(f"{U_dominates_L(U, L)=}")
+            plt.show()
+            # return
+            if y1 in G1_not:
+                assert U_dominates_L(U, L)
+
+
+def algorithm3_run(MSP):
+
+    print(f"{MSP.S=}")
+    Y_list = [methods.lex_sort(Y) for Y in MSP.Y_list]
+    Yse_list = [PointList([y for y in Y if y.cls == 'se']) for Y in MSP.Y_list]
+
+
+    print(f"{[len(Y) for Y in Y_list]=}")
+    print(f"{[len(Y) for Y in Yse_list]=}")
+
+    G_not_list = [set() for _ in range(MSP.S)]
+
+    for s1, Y1 in enumerate(MSP.Y_list):
+        
+        for s2, Y2 in enumerate(MSP.Y_list):
+            if s1 >= s2: continue 
+
+            Y1se = Yse_list[s1]
+            Y2se = Yse_list[s2]
+            G1_not, G2_not = pairwise_alg3(Y1se, Y1, Y1se, Y2se, Y2, Y2se)
+
+            print(f"{len(set(G1_not))=}")
+            print(f"{len(set(G2_not))=}")
+            print(f"{G1_not=}")
+            print(f"{G2_not=}")
+            for y1 in G1_not:
+                G_not_list[s1].add(y1)
+            
+            for y2 in G2_not:
+                G_not_list[s2].add(y2)
+            print(f"{len(G_not_list[s1])=}")
+            print(f"{len(G_not_list[s2])=}")
+
+    print(f"{G_not_list=}")
+
+    for s in range(MSP.S):
+        print(f"")
+        print(f"|Y{s}| = {len(Y_list[s])}")
+        print(f"|G_not{s}| = {len(G_not_list[s])}")
+        print(f"")
+
+
+    if True: # plot
+        for s, Y in enumerate(MSP.Y_list):
+            Y.plot(f'Y{s}')
+        for s, Y in enumerate(MSP.Y_list):
+            PointList(G_not_list[s]).plot(f'not {s}',marker='x')
+
+
+        plt.show()
+    pass
+
+def test_algorithm3_run():
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        '/sp-2-10-m_1.json',
+        '/sp-2-50-l_1.json',
+        '/sp-2-50-u_1.json'
+        ])
+
+    # MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-100|100|100|100-uull-4_2.json')
+    # MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-300|300-ul-2_3.json')
+
+    if False: # randomize Y_list
+        MSP.plot()
+        plt.show()
+        MSP.Y_list = [Y*random.randint(1, 4) for Y in MSP.Y_list]
+        MSP.plot()
+        plt.show()
+    # return
+    algorithm3_run(MSP)
+    
 
 def main():
     
@@ -564,5 +697,8 @@ def main():
 if __name__ == '__main__':
     # test_alg_3() 
     # pairwise_alg3()
-    all_pairs_alg3()
     # main()
+
+
+    # test_algorithm3_run()
+    all_pairs_alg3()

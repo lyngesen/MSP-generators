@@ -206,6 +206,9 @@ class PointList:
     
     def plot(self,  l =None,SHOW = False, fname = None, ax= None, line=False, color = None, point_labels = False, **kwargs):
         ax = ax if ax else plt
+        if self.dim is None:
+            print('WARNING: trying to plot empty PointList... Skipping')
+            return
         assert self.dim<=3, 'Not implemented for p > 3'
         # color = self.plot_color if (color is not None) else color
         color = color if (color is not None) else self.plot_color

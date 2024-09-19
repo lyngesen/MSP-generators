@@ -261,12 +261,15 @@ def nondomDC_wrapper(Y : PointList):
     # out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}" # c script directory
     out_file = fr"temp/pointsIn-{call_id}" # c script directory
     Y.save_raw(out_file)
+    assert os.path.exists(out_file), f"{out_file=}"
+
     try:
-        call_c_nondomDC(call_id)
+        out_str = call_c_nondomDC(call_id)
     finally:
         os.remove(out_file)
     # in_file = filepath = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsOut-{call_id}" # c script directory
     in_file = filepath = fr"temp/pointsOut-{call_id}" # c script directory
+    assert os.path.exists(in_file), f"{in_file,out_str=}"
     Yn = PointList.from_raw(in_file)
     # print(f"{in_file=}")
     try:
@@ -480,6 +483,7 @@ def induced_UB(Y: PointList, line=False, assumption = "consecutive"):
     assert assumption in ["consecutive", "supported", "nonconsecutive","localNadir"]
 
     Y = N(Y)
+    Y = lex_sort(Y)
     U = []
     seen = set() # for spotting duplicates
     if line:
@@ -592,9 +596,6 @@ def U_dominates_L(U: PointList, L:PointList):
         for n in local_nadir_points:
             if L[i][0] <= n[0] and n[0] <= L[i+1][0]:
                 if n[1] > lin_fct(n[0]):
-                    # print(f"{lin_fct(n[0])=}")
-                    # print(f"{n[1]=}")
-                    # n.plot(l='   !!!')
                     print(f"line between {L[i],L[i+1]} is not dominated by nadir-point {n}")
                     return False
                 if math.isclose(n[1], lin_fct(n[0])):

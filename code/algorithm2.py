@@ -191,7 +191,17 @@ def get_fixed_and_reduced(C_dict, Y_list):
     return Y_fixed, Y_reduced
 
 
+def Y_list_to_fixed_reduced(Y_list):
+    
+    Yn_with_duplicates, C_dict = SimpleFilter(Y_list)
+    Y_fixed, Y_reduced = get_fixed_and_reduced(C_dict, Y_list)
 
+    print(f"{Y_reduced,Y_fixed=}")
+
+    Y_fixed_pointlist = [PointList([Y_list[s][i] for i in Y_fixed[s]]) for s in range(len(Y_list))]
+    Y_reduced_pointlist = [PointList([Y_list[s][i] for i in Y_reduced[s]]) for s in range(len(Y_list))]
+
+    return C_dict, Y_fixed_pointlist, Y_reduced_pointlist
 
 def algorithm2(MSP, logger = None):
 
@@ -274,7 +284,7 @@ def algorithm2(MSP, logger = None):
         return Y_MGS, Yn_solution
     if True:
         MGS_sizes = tuple([len(Y) for Y in Y_MGS])
-        statistics = {'filename':MSP.filename.split('/')[-1], 
+        statistics = {'filename':MSP.filename.split('/')[-1] if MSP.filename else None, 
                       # 'running_time': time.time() - time_start, 
                       'max_size': sum([len(Y) for Y in MSP.Y_list]),
                       'MGS_sizes': MGS_sizes,
