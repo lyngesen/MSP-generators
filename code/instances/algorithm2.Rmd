@@ -26,6 +26,7 @@ here::i_am("code/instances/algorithm2.Rmd")  # specify relative path given proje
 #library(DT)
 library(tidyverse)
 library(ggplot2)
+library(scales)
 # library(knitr)
 # library(rgl)
 # rgl::setupKnitr()
@@ -68,7 +69,43 @@ write_csv(datRes, here::here("code/instances/stat-alg2.csv"))
 ```
 
 
-```{r, eval=FALSE}
+
+```{r}
+# Method to process the string and save results in row
+process_string <- function(row, method) {
+  u_values <- c()
+  l_values <- c()
+  m_values <- c()
+  
+  # Loop through each character in the method string
+  for (i in 1:nchar(method)) {
+     #cat(i)
+     #cat(method)
+    if (substr(method, i, i) == "u") {
+      u_values <- c(u_values, row$MGS_sizes[[i]])
+    } else if (substr(method, i, i) == "l") {
+      l_values <- c(l_values, row$MGS_sizes[[i]])
+    } else if (substr(method, i, i) == "m") {
+      m_values <- c(l_values, row$MGS_sizes[[i]])
+    }
+  }
+  
+  # Saving the required variables in row
+  row$count_u <- length(u_values)
+  row$only_u <- paste(unlist(u_values), collapse = "-")
+  row$only_u_avg <- mean(unlist(u_values))
+  row$count_l <- length(l_values)
+  row$only_l <- paste(unlist(l_values), collapse = "-")
+  row$only_l_avg <- mean(unlist(l_values))
+  row$count_m <- length(m_values)
+  row$only_m <- paste(unlist(m_values), collapse = "-")
+  row$only_m_avg <- mean(unlist(m_values))
+  return(row)
+}
+```
+
+
+```{r, eval=TRUE}
 cat("Update statistics for results.")
 paths <- fs::dir_ls(here::here("code/instances/results/algorithm2"), recurse = T, type = "file", glob = "*prob*.json")
 prefix <- str_extract(paths, ".*/")
@@ -86,9 +123,10 @@ datRes <- NULL
 
 for (i in 1:length(algPaths)) {
    algFile <- algPaths[i]
-   algFile
+   #algFile
    lstAlg <- jsonlite::read_json(algFile, simplifyVector = F)
    row <- lstAlg[[2]]
+   row <- process_string(row, str_extract(row$filename,  "^.*-(.*)-.*$", group = 1))
    row$MGS_sizes <- paste(row$MGS_sizes, collapse = "-")
    row$MGS_sizes_se <- paste(row$MGS_sizes_se, collapse = "-")
    row$MGS_sizes_sne <- paste(row$MGS_sizes_sne, collapse = "-")
@@ -96,6 +134,8 @@ for (i in 1:length(algPaths)) {
    row$prob_sizes_se <- paste(row$prob_sizes_se, collapse = "-")
    row$prob_sizes_sne <- paste(row$prob_sizes_sne, collapse = "-")
    row$prob_sizes_us <- paste(row$prob_sizes_us, collapse = "-")
+   row$Y_fixed <- paste(row$Y_fixed, collapse = "-")
+   row$Y_reduced <- paste(row$Y_reduced, collapse = "-")
    #row$prob_sizes_us_total <- paste(row$prob_sizes_us, collapse = "-")
    datRes <- datRes %>% bind_rows(row)
 }
@@ -104,7 +144,8 @@ write_csv(datRes, here::here("code/instances/stat-alg2.csv"))
 
 ```{r}
 dat <- read_csv(here::here("code/instances/stat-alg2.csv"))
-
+ip_solved <- dat %>% filter(covering_IP_solved == TRUE) %>% select(filename)
+ip_solved
 ```
 
 ```{r, eval=FALSE}
@@ -118,6 +159,7 @@ Total time used in computing minimum generator sets (MGS)
 
 *Hours used: `r sum(dat$running_time) /60 / 60`*
 
+*IP problems solved: `r nrow(ip_solved)`*
 
 *Note:*
 
@@ -158,7 +200,10 @@ datAllSolved <- dat %>%
   filter(n() == 5) %>% select(filename, Yn_size) %>% 
    ungroup()
 nrow(datAllSolved)
+
 ```
+ 
+ 
  
  
 ```{r}
@@ -194,16 +239,106 @@ Solved `r nrow(datAllSolved)` of `r totalInstances``
 
 # MGS size as a function of maximum possible size.
 ```{r}
+
 dat %>%
    #ggplot(aes(x = max_size, y = MGS_size, color = method)) +
-   ggplot(aes(x = method, y = rel_size, color = method)) +
+   ggplot(aes(x = method, y = MGS_size/max_size, color = method)) +
    geom_boxplot() + 
    stat_summary(fun="mean", geom="line") +
+   #geom_errorbar(aes(ymax = mean(MGS_size_max), ymin=mean(MGS_size_min))) +
    labs(
-        y = "Size of MGS relative to total enumeration",
-        x = "Method") +
+        ) +
    theme(legend.position = "bottom")
 ```
+
+
+### MGS Size (with min/max of MGS sets
+```{r}
+
+#summary_dat <- dat %>% mutate(MGS_size_avt = MGS_size / m_numeric) %>% select(m,p,avg_sp_size, MGS_size_avt, MGS_size_min, MGS_size_max, method, m, Yn_size, m_numeric) %>%
+summary_dat <- dat %>% mutate(MGS_size_avt = MGS_size / m_numeric) %>% select(m,p,avg_sp_size, MGS_size_avt, MGS_size_min, MGS_size_max, method, m, Yn_size, m_numeric, max_size) %>%
+   #group_by(method) %>%
+   group_by(p, m, avg_sp_size) %>%
+     summarise(
+   # mean_MGS_size_avt_abs = mean(MGS_size_avt, na.rm = TRUE),
+    #mean_MGS_size_max = mean(MGS_size_max/avg_sp_size, na.rm = TRUE),
+    #mean_MGS_size_min = mean(MGS_size_min/avg_sp_size, na.rm = TRUE),
+    #mean_rel_Yn_size = mean(Yn_size/(avg_sp_size*m_numeric), na.rm = TRUE)
+    mean_MGS_size_avt = mean(MGS_size_avt/avg_sp_size, na.rm = TRUE),
+    mean_MGS_size_avg = mean(MGS_size_avt/avg_sp_size, na.rm = TRUE),
+    mean_Yn_size = mean(Yn_size, na.rm = TRUE), 
+  ) %>%
+     mutate(size_x = case_when(
+    avg_sp_size == 50 ~ "size-50",
+    avg_sp_size == 100 ~ "size-100",
+    avg_sp_size == 200 ~ "size-200",
+    avg_sp_size == 300 ~ "size-300",
+    TRUE ~ "other"
+  )) %>%
+    mutate(size_x = paste0("size_", avg_sp_size)) %>%
+    spread(key = size_x, value = mean_MGS_size_avt, fill = 0) %>%
+     group_by(p, m) %>%
+  summarize(
+    size_50 = sum(size_50),
+    size_100 = sum(size_100),
+    size_200 = sum(size_200),
+    size_300 = sum(size_300),
+    mean_MGS_size = mean(mean_MGS_size_avg),
+    mean_Yn_size = mean(mean_Yn_size),
+  ) %>%
+  ungroup()
+
+dat$m
+
+summary_dat
+
+```
+
+
+```{r, eval = F}
+# Plotting
+ggplot(summary_dat, aes(x=method)) + 
+  geom_bar(aes(y=mean_MGS_size, fill=method), position=position_dodge(), stat="identity") +
+  geom_errorbar(aes(ymin=mean_MGS_size_min, ymax=mean_MGS_size_max), width=0.5, position=position_dodge(.9)) +
+  labs(y="MGS Size (with min/max of MGS sets)", title="Summary of MGS Size by Method") +
+  #facet_grid(p ~ avg_sp_size, labeller =  "label_both")  + 
+  facet_wrap(~p) + 
+  theme_minimal()   
+   
+```
+
+
+```{r, out.width = "100%"}
+DT::datatable(summary_dat, width = "100%", options = list(autoWidth = T, scrollX = TRUE, columnDefs = list(list(width = '250px', targets = c(1)))))
+```
+
+
+# Consider only vectors removed from u and l subproblems:
+
+```{r}
+seperated_u <- dat %>% filter(count_u > 0) %>%
+   mutate(relative_u_avg = only_u_avg /avg_sp_size) %>%
+   #mutate(MGS_size_avt = only_u_avg  ) %>% select(m,p,avg_sp_size, MGS_size_avt, MGS_size_min, MGS_size_max, method) %>%
+   #group_by(method) %>%
+   group_by(p,method, avg_sp_size) %>%
+     summarise(
+    #mean_MGS_size_avt = mean(MGS_size_avt/avg_sp_size, na.rm = TRUE),
+    mean_absolute_u_avg = mean(only_u_avg, na.rm = TRUE),
+    mean_relative_u_avg = mean(relative_u_avg, na.rm = TRUE),
+    #mean_MGS_size_min = mean(MGS_size_min/avg_sp_size, na.rm = TRUE)
+  ) 
+
+seperated_u
+# Plotting
+ggplot(seperated_u, aes(x=method)) + 
+  geom_bar(aes(y=mean_relative_u_avg, fill=method), position=position_dodge(), stat="identity") +
+  #geom_errorbar(aes(ymin=mean_MGS_size_min, ymax=mean_MGS_size_max), width=0.5, position=position_dodge(.9)) +
+  labs(y="MGS Size (with min/max of MGS sets)", title="Summary of MGS Size by Method") +
+  facet_grid(p ~ avg_sp_size, labeller =  "label_both")  + 
+  theme_minimal()   
+   
+```
+
 
 
 ```{r}
@@ -230,9 +365,9 @@ mean_rel_unsupport_u_format
 ```
 
 
-For the instances *l* the MGS tend to consist of all subproblem points. Also for the *u* instances a large number of the subproblem points are used in the minimum generator sets, however the spread is significantly higher than that of *l*, and in some cases for *u* the MGS consists of only half the total subproblem points. 
+For the instances *l* the MGS tend to consist of all subproblem vectors. Also for the *u* instances a large number of the subproblem vectors are used in the minimum generator sets, however the spread is significantly higher than that of *l*, and in some cases for *u* the MGS consists of only half the total subproblem vectors. 
 
-The instances *m* and *ul* both contain a larger amount of unsupported and supported points. [TODO Show how many approx 50% of each?]. The difference between the instances are that for *m* each subset consists of a mix of supported and unsupported points, while the *ul* instances consists of subsets which have either many unsupported (*u*), or many supported points (*l*). For *m* and *ul* we find that the MGS is unlikely to consist of all the subproblem points. On average the MGS consists of only `r mean_m_format` of the total subproblem points for *m* instances and `r mean_ul_format` for *ul* instances. This implies that around `r remain_format` of the generated subproblem points are not needed for generating the nondominated sum.
+The instances *m* and *ul* both contain a larger amount of unsupported and supported vectors. [TODO Show how many approx 50% of each?]. The difference between the instances are that for *m* each subset consists of a mix of supported and unsupported vectors, while the *ul* instances consists of subsets which have either many unsupported (*u*), or many supported vectors (*l*). For *m* and *ul* we find that the MGS is unlikely to consist of all the subproblem vectors. On average the MGS consists of only `r mean_m_format` of the total subproblem vectors for *m* instances and `r mean_ul_format` for *ul* instances. This implies that around `r remain_format` of the generated subproblem vectors are not needed for generating the nondominated sum.
 ```{r}
 # Bar chart the distribution (supported, unsupported) of each MSP instance
 ```
@@ -279,11 +414,11 @@ dat %>%
   theme(legend.position = "bottom") 
 ```
 
-In [above] we see that the relative size of the MGS for the instances *m* and *ul* decrease in the total number of subproblem points and in the number of subproblems.  
+In [above] we see that the relative size of the MGS for the instances *m* and *ul* decrease in the total number of subproblem vectors and in the number of subproblems.  
 
-For the instances *l* we see that in almost all instances the MGS consists of all subproblem points. 
+For the instances *l* we see that in almost all instances the MGS consists of all subproblem vectors. 
 
-The *u* exibit a different pattern from the rest. Here we find that for instances $p>3$ the MGS tend to consist of all subproblem points. For the remaining instances we find that like *ul* and *m* the size of MGS is decreasing in the number of subproblems.
+The *u* exibit a different pattern from the rest. Here we find that for instances $p>3$ the MGS tend to consist of all subproblem vectors. For the remaining instances we find that like *ul* and *m* the size of MGS is decreasing in the number of subproblems.
 
 
 
@@ -322,29 +457,67 @@ dat %>%
 # classifications
 
 
+Number of US vectors in MGS relative to the number of US vectors in the subproblems.
 ```{r}
+
+check_data <- dat %>% filter(method == 'u', MGS_sizes_us_total /max_size <= .6, m == 3, p ==2)
+
 dat %>% 
-  ggplot(aes(x = avg_sp_size, y = MGS_sizes_us_avg*m_numeric/prob_sizes_us_total, color = method)) +
+  #ggplot(aes(x = avg_sp_size, y = MGS_sizes_us_total/prob_sizes_us_total, color = method)) +
+  ggplot(aes(x = prob_sizes_us_total/max_size, y = MGS_size/max_size, color = method, shape = as.factor(avg_sp_size))) +
   geom_point() + 
   #geom_boxplot() + 
   stat_summary(fun="mean", geom="line") +
   facet_grid(p ~ m, labeller =  "label_both")  + 
   labs(
-     title = "Number of us points in MGS relative to total us points in subproblems",
+     title = "Number of us vectors in MGS relative to total vectors in subproblems",
        color = "Methods used to generate subproblems"
      ) +
   theme(legend.position = "bottom") 
 ```
 
+(Problemer er alle samme størrelse)
+
+M tilfældet ligner (phd) understøtter hypotesen at flere ikke-støttede punkter medfører mindre generator set. 
+"ny opdagelse" forskelligheden mellem delproblemer betyder også noget. Sammenlign u og ul, (kun u-subproblemer). 
+Hvis de ligger oveni hinanden, men har næsten alene ikke-støttede punkter, kan vi ikke nødvendigvis fjerne punkter. Alstå har formen betydning ikke alene antallet af ikke-støttede punkter. Når delproblemerne ligger tæt på hinanden kan vi ikke fjerne noget, dette kan undersøges nærmere.
+
+Når p stiger falder nytten af MGS. Når m stiger, øges nytten (for fast p). 
+
+For m og ul ses det at flere sp punkter medfører mindre MGS. (Overvej argument, ellers fjern kommentar)
+Forbehold: Vi tester kun på (ens) subproblemer. Samme størrelse
+
+Kommentar: Generering af instanser har stor betydning på resultaterne. Antal ikke-støttede punkter er isoleret set ikke sigende for MGS
+
+
+Number of supported but non-extreme vectors removed
 ```{r}
 dat %>% 
-  ggplot(aes(x = avg_sp_size, y = MGS_sizes_se_avg*m_numeric/prob_sizes_se_total, color = method)) +
+  ggplot(aes(x = avg_sp_size, y = (MGS_sizes_sne_total)/(prob_sizes_sne_total), color = method)) +
   geom_point() + 
   #geom_boxplot() + 
   stat_summary(fun="mean", geom="line") +
   facet_grid(p ~ m, labeller =  "label_both")  + 
   labs(
-     title = "Number of supported extreme points in MGS relative to total se points in subproblems",
+     title = "Number of us vectors in MGS relative to total us vectors in subproblems",
+       color = "Methods used to generate subproblems"
+     ) +
+  theme(legend.position = "bottom") 
+```
+
+
+# Validation
+
+Check that each generator set includes all extreme vectors:
+```{r}
+dat %>% 
+  ggplot(aes(x = avg_sp_size, y = (MGS_sizes_se_total )/(prob_sizes_se_total), color = method)) +
+  geom_point() + 
+  #geom_boxplot() + 
+  stat_summary(fun="mean", geom="line") +
+  facet_grid(p ~ m, labeller =  "label_both")  + 
+  labs(
+     title = "Number of supported extreme vectors in MGS relative to total se vectors in subproblems",
        color = "Methods used to generate subproblems"
      ) +
   theme(legend.position = "bottom") 
@@ -352,6 +525,250 @@ dat %>%
 
 
 ```{r}
-check_dat <- dat %>% filter(MGS_sizes_se_avg*m_numeric/prob_sizes_se_total < 0.7)
+check_dat <- dat %>% 
+  # filter(MGS_sizes_se_avg*m_numeric/prob_sizes_se_total < 0.7) %>%
+#  filter(filename == 'prob-2-300|300-mm-2_3.json')%>%
+   #select(Y_fixed, Y_reduced, covering_IP_solved) %>% 
+   mutate(equal = Y_fixed == Y_reduced)
+
+check_dat %>% select(prob_sizes_se_total, prob_sizes_us_total, prob_sizes_sne_total, MGS_sizes_se_total, MGS_sizes_us_total, MGS_sizes_sne_total, MGS_size) %>%
+   mutate(prob_total_extreme = prob_sizes_se_total - prob_sizes_sne_total, MGS_total_extreme = MGS_sizes_se_total - MGS_sizes_sne_total)
+check_dat %>% select(prob_sizes_se, prob_sizes_us, prob_sizes_sne, MGS_sizes_se, MGS_sizes_us, MGS_sizes_sne, MGS_sizes)
+check_dat %>% select(prob_sizes_se_total, prob_sizes_us_total, prob_sizes_sne_total, MGS_sizes_se_total, MGS_sizes_us_total, MGS_sizes_sne_total, MGS_size)
 ```
+
+
+# Add to alg1
+
+Add to alg1:
+
+All tests are run on a Linux (CentOS 7) cluster with cores @ 3.1 GHz (AMD EPYC 9554).
+
+The [algorithm1] was implemented in Python 3.11. The script calls a c-implementation of the LimMem algorithm described in [ref Klamroth] which allows a user-defined maximum memory allocation, instead of storing the entiry Minkowski sum and subsequently filtering out the dominated vectors. A memory limit of 64 GB. The LimMem algorithm computes the nondominated sum of two sets. The c-implementation was provided by Bruno Lang.
+
+# Draft
+
+In this subsection we study the size of MGS for the instances described in [ref to table]. Here we omit the test instances, which only consists of subproblem vectors generated using method [l]. This is because almost all subsets generated with method [l] consists exclusively of extreme supported vectors which necessarily are included in any MGS following [prop x].
+
+<!-- To find a MGS for each instance we ran alg2 on a [Grendel....]. The IP problems where solved using the open source solver GLPK. The [algorithm2] was implemented in python using a c-implementation of the NonDomDC algorithm curtesy of Bruno Lang.  -->
+
+```{r, eval=T}
+satisfy_reduced_fixed <- dat %>% filter(Y_fixed != Y_reduced) %>% count()
+satisfy_covering_IP_solved <- dat %>% filter(covering_IP_solved) %>% count()
+satisfy_unique <- dat %>% filter(!covering_IP_solved) %>% count()
+```
+
+In total all $900$ instances was solved. From these only `r satisfy_reduced_fixed` instances did not satisfy the condition [Reduced = fixed, line reference] and of these only `r satisfy_covering_IP_solved ` did not satisfy the generating property [generating property, line reference]. For these instances an IP problem was solved. As such `r satisfy_unique` problems had a unique generator set following [prop fixed=reduced => unique]. 
+
+(TODO? We can check if the remaining 3 instanced also have unique MGS using no-good constraints).
+
+
+
+```{r}
+decimals <- 1 / (10^1)
+
+mean_mgs_size <- dat %>% summarise(mean_size = percent(mean(MGS_size/max_size), accuracy = decimals))
+mean_removed_mgs_size <- dat %>% summarise(mean_size = percent(1-mean(MGS_size/max_size), accuracy = decimals))
+min_mgs_size <- dat %>% summarise(min_size = percent(min(MGS_size/max_size), accuracy = decimals))
+max_mgs_size <- dat %>% summarise(min_size = percent(max(MGS_size/max_size), accuracy = decimals))
+```
+For each instance we are interested in the size of the MGS. To compare the size of MGS for varying number of subproblems and varying subproblem sizes we consider the MGS size relative to the size of the trivial generator set (the total amount of subproblem vectors).
+The average relative MGS size over all instances was was `r mean_mgs_size`, implying that on average `r mean_removed_mgs_size` of the subproblem vectors where not needed to generate the nondominated sum. The relative size of MGS ranges from `r min_mgs_size` to  `r max_mgs_size` over all `r nrow(dat) ` instances. In the following we investigate to which extend the relative MGS size depends on the factors: subproblem sizes, number of subproblems and number of objectives. Finally, we will investigate how the MGS size depend on the proportion of unsupported vectors in the subproblems. 
+
+
+```{r}
+dat_compare_instances <- dat %>% 
+   #filter(method != 'u') %>%
+   group_by(max_size,m_numeric,avg_sp_size) %>% 
+   summarise(count = n(),MGS_size = mean(MGS_size), rel_size = mean(MGS_size/max_size), Yn_size = mean(Yn_size)) %>% group_by(max_size) %>% 
+   filter(n() >1) 
+
+
+
+dat_compare_sp_size_m  <- dat_compare_instances %>%
+   mutate(large_m = if_else(m_numeric == max(m_numeric), 1, 0)) %>%
+   mutate(small_m = if_else(m_numeric == min(m_numeric), 1, 0)) %>%
+   group_by(max_size) %>%
+   summarise(
+      rel_MGS_large_m = sum(large_m*rel_size),
+      rel_MGS_small_m = sum(small_m*rel_size),
+             ) %>%
+   summarise(
+      avg_rel_size_large = percent(mean(rel_MGS_large_m),accuracy=decimals),
+      avg_rel_size_small = percent(mean(rel_MGS_small_m),accuracy=decimals)
+   )
+
+```
+
+
+We find that the relative MGS size decreases in both the number of subproblems and in the size of subproblems. Both factors increase the denominator in the relative size [formular for relative size]. To compare the two effects we consider the instances where the total number of subproblem vectors are the same but the number of subproblems and the number of subproblem vectors vary. eg. instances with 2 subproblems of 100 vectors have the same total subproblem vectors as the instances with 4 subproblems each containing 50 vectors. In total we compare 360 instances with 200, 300 and 600 total subproblem vectors, partitioned into instances with varying number of subproblems.
+
+```{r}
+DT::datatable(dat_compare_instances %>% mutate(rel_size = percent(rel_size,accuracy = decimals)))
+```
+
+
+As presented in Table[above] the size of MGS for instances with many smaller subproblems was consistantly smaller than those of instances with few, but larger subproblems.
+On average MGS consisted of `r dat_compare_sp_size_m$avg_rel_size_small` for instances with a few, but large subproblems while the size of the MGS instances with many smaller subproblems consisted of `r dat_compare_sp_size_m$avg_rel_size_large`. 
+
+
+```{r}
+dat_dim_compare <- dat %>% group_by(p) %>% summarise(avg_rel_size = percent(mean(MGS_size/max_size),accuracy = decimals)) 
+
+dim_n <- dat_dim_compare %>% nrow()
+
+#paste0(dat_dim_compare$avg_rel_size)
+percentages <- paste0(dat_dim_compare$avg_rel_size[1:(dim_n-1)], " (p=", dat_dim_compare$p[1:(dim_n-1)], ")", collapse = ", ")
+percentages_string <- paste(percentages, "and", paste0(dat_dim_compare$avg_rel_size[dim_n], " (p=", dat_dim_compare$p[dim_n], ")"))
+```
+
+```{r}
+dat_dim_compare <- dat %>% group_by(p) %>% summarise(avg_rel_size = percent(mean(prob_sizes_se_total/max_size),accuracy = decimals)) 
+
+dim_n <- dat_dim_compare %>% nrow()
+
+#paste0(dat_dim_compare$avg_rel_size)
+percentages <- paste0(dat_dim_compare$avg_rel_size[1:(dim_n-1)], " (p=", dat_dim_compare$p[1:(dim_n-1)], ")", collapse = ", ")
+percentages_string_se_proportion <- paste(percentages, "and", paste0(dat_dim_compare$avg_rel_size[dim_n], " (p=", dat_dim_compare$p[dim_n], ")"))
+#percentages_string_us_proportion
+```
+
+When looking at the effects of the number of objective functions on the relative MGS size we get `r percentages_string`. Here we see a clear tendency that the number of subproblem vectors required for a MGS increases in the dimension of the objective space. This might be a direct consequence of the higher proportion of extreme supported vectors in higher dimension [refer to general comment "large dimension => many extreme vectors" by Serpil Sayın?]. To see this we note that the proportion of supported vectors also increase in the number of objective functions `r percentages_string_se_proportion`.
+
+```{r}
+# proportion of unsupported vectors for each method
+dat_method_compare <- dat %>% group_by(method) %>% summarise(avg_rel_size = percent(mean(prob_sizes_us_total/max_size),accuracy = decimals)) 
+dat_method_compare <- dat %>% group_by(method) %>% summarise(
+   avg_us_size = percent(mean(prob_sizes_us_total/max_size),accuracy = decimals),
+   avg_rel_size = percent(mean(MGS_size/max_size),accuracy = decimals),
+   ) 
+#dat_method_compare
+method_n <- dat_method_compare %>% nrow()
+percentages <- paste0(dat_method_compare$avg_us_size[1:(method_n-1)], " (", dat_method_compare$method[1:(method_n-1)], ")", collapse = ", ")
+percentages_string_us_proportion_method <- paste(percentages, "and", paste0(dat_method_compare$avg_us_size[method_n], " (", dat_method_compare$method[method_n], ")"))
+#percentages_string_us_proportion_method
+percentages <- paste0(dat_method_compare$avg_rel_size[1:(method_n-1)], " (", dat_method_compare$method[1:(method_n-1)], ")", collapse = ", ")
+percentages_string_us_MGS_method <- paste(percentages, "and", paste0(dat_method_compare$avg_rel_size[method_n], " (", dat_method_compare$method[method_n], ")"))
+percentages_string_us_MGS_method <- paste(percentages, "and", paste0(dat_method_compare$avg_rel_size[method_n], " (", dat_method_compare$method[method_n], ")"))
+```
+
+We will now consider the effect of the number of unsupported subproblem vectors on the MGS size. From [prop X] we know that all extreme subproblem vectors must be included in any MGS. Because of this we hypothesize that the size of the MGS decreases in the relative number of unsupported subproblem vectors. To test the hypothesis we use the generation methods $l,m,ul$ as indicators for the amount of unsupported vectors. We expect the MGS to be smallest in the case $u$ which have the highest proportion of unsupported vectors. Surprisingly, we find that the MGS size is largest for the instances where all subproblems are generated using the $u$ method. We do not see the expected negative correlation between the proportion of unsupported vectors `r percentages_string_us_proportion_method`, and the average relative size of MGS `r percentages_string_us_MGS_method`. This surprisingly shows that MGS are larger in the instances where almost all subproblem vectors are unsupported. 
+This might be an artifact of the generation method chosen for the $u$ subproblems. Two subproblems generated using $u$ method will lie on the same circle, while vectors generated using the $m$ method will lie between the same two hyperplanes.
+
+(TODO add scalling argument)
+
+```{r}
+DT::datatable(dat_method_compare)
+```
+
+```{r, eval = F}
+library(xtable)
+print(xtable(dat_method_compare), type = "latex")
+```
+
+```{r}
+dat %>% 
+  #ggplot(aes(x = avg_sp_size, y = MGS_sizes_us_total/prob_sizes_us_total, color = method)) +
+  ggplot(aes(x = prob_sizes_us_total/max_size, y = MGS_size/max_size, color = method)) +
+  geom_smooth(method='lm') + 
+  #geom_boxplot() + 
+  #stat_summary(fun="mean", geom="line") +
+  geom_point() + 
+  facet_grid(p ~ m, labeller =  "label_both")  + 
+  labs(
+     title = "Number of us vectors in MGS relative to total vectors in subproblems",
+       color = "Methods used to generate subproblems"
+     ) +
+  theme(legend.position = "bottom") 
+```
+
+
+
+
+```{r}
+
+library(broom)
+library(purrr)
+
+# Normalize variables and create a new dataset
+dat_regression <- dat %>%
+   #filter(method != 'u') %>%
+  mutate(
+     x = avg_sp_size,
+     #x = prob_sizes_us_total / max_size,
+         y = MGS_size/max_size)
+
+# Calculate R-squared values for each group
+r_squared <- dat_regression %>%
+  group_by(m, p, method) %>%
+  nest() %>%
+  mutate(model = map(data, ~ lm(x ~ y, data = .x)),
+         r_squared = map_dbl(model, ~ summary(.x)$r.squared)) %>%
+  select(-data, -model)
+# a table
+r_squared_grouped <- r_squared %>% group_by(method) %>% summarise(avg_r_squared = percent(mean(r_squared), accuracy = decimals))
+
+dim_n <- 3
+r_squared_string <- paste0(r_squared_grouped$avg_r_squared[1:(dim_n-1)], " (", r_squared_grouped$method[1:(dim_n-1)], ")", collapse = ", ")
+r_squared_string_size <- paste(r_squared_string, "and", paste0(r_squared_grouped$avg_r_squared[dim_n], " (", r_squared_grouped$method[dim_n], ")"))
+
+#r_squared_string_size
+```
+
+```{r}
+# Normalize variables and create a new dataset
+dat_regression <- dat %>%
+   #filter(method != 'u') %>%
+  mutate(
+     #x = avg_sp_size,
+     x = prob_sizes_us_total / max_size,
+         y = MGS_size / max_size
+     #x = avg_sp_size,
+   #      y = MGS_size/max_size
+     )
+
+# Calculate R-squared values for each group
+r_squared <- dat_regression %>%
+  group_by(m, p, method) %>%
+  nest() %>%
+  mutate(model = map(data, ~ lm(x ~ y, data = .x)),
+         r_squared = map_dbl(model, ~ summary(.x)$r.squared)) %>%
+  select(-data, -model)
+# a table
+r_squared_grouped <- r_squared %>% group_by(method) %>% summarise(avg_r_squared = percent(mean(r_squared), accuracy = decimals))
+
+dim_n <- 3
+r_squared_string <- paste0(r_squared_grouped$avg_r_squared[1:(dim_n-1)], " (", r_squared_grouped$method[1:(dim_n-1)], ")", collapse = ", ")
+r_squared_string <- paste(r_squared_string, "and", paste0(r_squared_grouped$avg_r_squared[dim_n], " (", r_squared_grouped$method[dim_n], ")"))
+
+#r_squared_string
+#r_squared_string_size
+
+# Merge R-squared values back into the new dataset
+dat_regression <- dat_regression %>%
+  left_join(r_squared, by = c("m", "p", "method"))
+
+```
+
+If we instead fix the generation method and look at the relative size of MGS as a function of the proportion of unsupported vectors we find a strong relationship between the proportion of unsupported vectors and the size of the MGS. We get the following $R^2$ values `r r_squared_string`. However, we get a similar fit if we instead use the average subproblem size as the explanitory variable for the relative MGS size. Here we get the $R^2$ values `r r_squared_string_size`. 
+
+```{r}
+
+# Plot the data with vectors colored by R-squared values
+ggplot(dat_regression, aes(x = x, y = y, color = r_squared, shape = method)) +
+  geom_point() +
+  #facet_wrap(~ m + p + avg_sp_size) +
+  facet_grid(p ~ m, labeller = 'label_both') +
+  labs(title = "Normalized Variables Plot Colored by R-squared",
+       x = "relative us vectors",
+       y = "relative MGS_size",
+       color = "R-squared") +
+  scale_color_gradient(low = "blue", high = "red")
+
+```
+
+# Acknowledgement
+
+- "The numerical results presented in this work were obtained at the Centre for Scientific Computing, Aarhus https://phys.au.dk/forskning/faciliteter/cscaa/"
+- C-implementation of NonDomDC algorithm from Bruno Lang
 
