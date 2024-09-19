@@ -313,11 +313,12 @@ def ND_pointsSum2_wrapper(A : PointList, B : PointList) -> PointList:
 
 def N(Y = PointList, **kwargs):
     """ 'best' implemented nondominance filter """
-    return nondomDC_wrapper(Y)
+    if Y[0].dim <= 2:
+        return unidirectional_filter(Y, *kwargs)
+    else:
+        return nondomDC_wrapper(Y)
 
 
-    # if Y[0].dim <= 2:
-        # return unidirectional_filter(Y, *kwargs)
     # elif len(Y) < 1024*2:
         # return KD_filter(Y)
     # else:
