@@ -282,7 +282,7 @@ class PointList:
         output: Minkowski subtration of sets
         """
         match other:
-            case ( float() | int() ):
+            case ( float() | int() | Point() ):
                 return PointList([y*other for y in self])
             case _:
                 print(f"{other=}")
