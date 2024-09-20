@@ -17,7 +17,7 @@ from methods import N
 import matplotlib.pyplot as plt
 import matplotlib
 import matplotlib.animation as anim
-from matplotlib.widgets import Button, Slider
+from matplotlib.widgets import Button, Slider, TextBox
 import random
 import minimum_generator
 import time
@@ -1402,11 +1402,16 @@ def interactive_scaling():
     # Initial plot data
     Y1 = MSP.Y_list[0]
     Y2 = methods.lex_sort(MSP.Y_list[1])[:10]
-    alpha = 2
+    alpha_1 = 2
+    alpha_2 = 3
+    y01, y02 = 0,0
+
+    y0 = Point((y01, y02))
+    alpha = Point((alpha_1, alpha_2))
 
     # Plot initial data
     Y1 = MSP.Y_list[0]
-    Y2 = MSP.Y_list[1]*alpha
+    Y2 = MSP.Y_list[1]*alpha + PointList((y0,))
     # Y2 = methods.lex_sort(Y2)[:10]
     Y1.plot(f"${_Y1}$")
     Y2.plot(f"${_Y2}$")
@@ -1415,9 +1420,11 @@ def interactive_scaling():
     Y.plot(f"${_Y}$", ax= ax, color = 'gray')
     # Yn = N(Y1+Y2)
     # G,Yn = algorithm2(MSP)
-    G,Yn = algorithm2(MinkowskiSumProblem([Y1,Y2]))
-    for s, g in enumerate(G.Y_list):
-        g.plot(f"${_G}^{s}$", color='yellow', marker = 'x')
+
+    Yn = N(Y)
+    # G,Yn = algorithm2(MinkowskiSumProblem([Y1,Y2]))
+    # for s, g in enumerate(G.Y_list):
+        # g.plot(f"${_G}^{s}$", color='yellow', marker = 'x')
     Yn.plot(f"${_Yn}$", color = 'yellow')
 
     # Add legend
@@ -1426,11 +1433,18 @@ def interactive_scaling():
     # Define the update function
     def update(val):
         ax.clear()  # Clear the current axes
-        alpha = slider.val
-        Y2 = MSP.Y_list[1] * alpha
+        alpha_1 = slider_3.val
+        alpha_2 = slider_4.val
+        alpha = Point((alpha_1, alpha_2))
+        # also update y0
+        y01 = float(textbox_1.text)
+        y02 = float(textbox_2.text)
+        # y02 = slider_2.val
+        y0 = Point((y01, y02))
+        Y2 = MSP.Y_list[1] * alpha + PointList((y0,))
         # Y2 = methods.lex_sort(Y2)[:10]
         Y1.plot(f"${_Y1}$", ax=ax, color = Y1.plot_color)
-        Y2.plot(f"${_Y2}\cdot \\alpha $", ax= ax, color = Y2_color)
+        Y2.plot(f"${_Y2}\cdot \\alpha  + y^0$", ax= ax, color = Y2_color)
         Y = Y1 + Y2
         # G,Yn = algorithm2(MinkowskiSumProblem([Y1,Y2]))
         Y.plot(f"${_Y}$", ax= ax, color = 'gray')
@@ -1441,20 +1455,38 @@ def interactive_scaling():
         # Yn_with_duplicates, C_dict = SimpleFilter(MSP.Y_list)
         # for s, g in enumerate(Y_fixed):
             # g.plot(f"${_G}^{s}$", color='yellow', marker = 'x', ax=ax)
+
+
+
         Yn.plot(f"${_Yn}$", ax=ax, color= 'yellow')
+        y0.plot(ax=ax, label = '$y0$', color = 'black', marker = 'x')
 
         ax.legend()
         fig.canvas.draw_idle()
 
-    # Create a slider for alpha
-    ax_slider = plt.axes([0.25, 0.01, 0.65, 0.03], facecolor='lightgoldenrodyellow')
-    slider = Slider(ax_slider, 'Alpha', 0.1, 50.0, valinit=alpha)
+    # Define the position of each slider
+    ax_slider3 = plt.axes([0.25, 0.05, 0.65, 0.03], facecolor='lightgoldenrodyellow')
+    ax_slider4 = plt.axes([0.25, 0.01, 0.65, 0.03], facecolor='lightgoldenrodyellow')
 
-    # Attach the update function to the slider
-    slider.on_changed(update)
+    # Create the sliders
+    slider_3 = Slider(ax_slider3, 'Alpha_1', 0.1, 50.0, valinit=alpha_1)
+    slider_4 = Slider(ax_slider4, 'Alpha_2', 0.1, 50.0, valinit=alpha_2)
 
     # update(1)
-    
+    slider_3.on_changed(update)
+    slider_4.on_changed(update)
+        
+    # Define the position of each textbox
+    ax_textbox1 = plt.axes([0.25, 0.1, 0.25, 0.03], facecolor='lightgoldenrodyellow')
+    ax_textbox2 = plt.axes([0.55, 0.1, 0.25, 0.03], facecolor='lightgoldenrodyellow')
+
+    # Create the textboxes
+    textbox_1 = TextBox(ax_textbox1, 'y01', initial=str(y01))
+    textbox_2 = TextBox(ax_textbox2, 'y02', initial=str(y02))
+
+    textbox_1.on_submit(update)
+    textbox_2.on_submit(update)
+
     # Show the plot
     plt.show()
 def main():
