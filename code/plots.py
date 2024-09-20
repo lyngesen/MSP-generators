@@ -1393,6 +1393,14 @@ def animate_scalling():
 def interactive_scaling():
     file = "prob-2-50|50-ul-2_3.json"
     MSP = MinkowskiSumProblem.from_json('./instances/problems/' + file)
+
+    if True:
+        MSP = MinkowskiSumProblem.from_subsets([
+            '/sp-2-10-m_1.json',
+            '/sp-2-50-l_1.json',
+            ])
+
+
     alpha = 3
 
     ######################## Figure validate_algorithm2 START ########################
