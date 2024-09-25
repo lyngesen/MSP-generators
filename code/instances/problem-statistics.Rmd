@@ -720,7 +720,7 @@ dat %>%
 
 # Number of nondominated points given subproblem cardinality"
 pt1 <- dat %>% 
-  mutate(str_lbl = str_c("$p=", p, "$", " $|S|=", m, "$")) |> 
+  mutate(str_lbl = str_c("$p=", p, "$", " $S=", m, "$")) |> 
   mutate(method = case_when(
     method == "l" ~ "\\mL",
     method == "m" ~ "\\mM",

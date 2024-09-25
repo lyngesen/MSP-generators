@@ -38,6 +38,23 @@ knitr::opts_chunk$set(
   message=FALSE, include = TRUE, warning = FALSE,
   out.width = "69%", fig.width = 12, fig.align = "center", fig.asp = 0.8
 )
+
+library(tikzDevice)
+options(tikzLatexPackages = c(
+   getOption('tikzLatexPackages'),
+   "\\usepackage{xspace}",
+   "\\newcommand{\\Y}{\\mathcal{Y}}",
+   "\\newcommand{\\Yn}{\\mathcal{Y}_{\\textnormal{N}}}",
+   "\\newcommand{\\Yns}{\\mathcal{Y}_{\\textnormal{s}}}",
+   "\\newcommand{\\Ynse}{\\mathcal{Y}_{\\textnormal{se}}}",
+   "\\newcommand{\\Ynsne}{\\mathcal{Y}_{\\textnormal{sne}}}",
+   "\\newcommand{\\Ynu}{\\mathcal{Y}_{\\textnormal{u}}}",
+   "\\newcommand{\\Yd}{\\mathcal{Y}_{\\textnormal{d}}}",
+   "\\newcommand{\\mL}{\\texttt{\\textsc{l}}\\xspace}",
+   "\\newcommand{\\mU}{\\texttt{\\textsc{u}}\\xspace}",
+   "\\newcommand{\\mM}{\\texttt{\\textsc{m}}\\xspace}",
+   "\\newcommand{\\mLU}{\\mL{}\\mU}"
+))
 ```
 
 
@@ -149,7 +166,7 @@ ip_solved
 ```
 
 ```{r, eval=FALSE}
-head(dat)
+dat
 ```
 
 
@@ -771,4 +788,121 @@ ggplot(dat_regression, aes(x = x, y = y, color = r_squared, shape = method)) +
 
 - "The numerical results presented in this work were obtained at the Centre for Scientific Computing, Aarhus https://phys.au.dk/forskning/faciliteter/cscaa/"
 - C-implementation of NonDomDC algorithm from Bruno Lang
+
+
+
+<!-- ## Plots used in the paper -->
+
+```{r, eval=FALSE}
+calcR <- function(card_mgs, card_yns, filename) {
+  # card_yns <- 300
+  # card_mgs <- "111-109-300-300"
+  # filename <- "prob-4-300|300|300|300-uull-4_4.json"
+  tmp <- tibble( mgs = str_split_1(card_mgs, "-") |> as.numeric(),
+                 method = str_split_1(str_extract(filename,"^prob-.-.*-(.*)-.*$", group = 1), ""),
+                 r = mgs/card_yns
+  )
+  tmp |> group_by(method) |> summarise(r = 100 * mean(r)) |> deframe()
+}
+# tmp <- pmap(list(dat1$card_mgs, dat1$card_yns, dat1$filename), calcR) 
+# dat2 <- tibble(l = NA_real_, u = NA_real_, m = NA_real_, .rows = 0)
+# tmp |> map_df(function(x) {dat2 <- bind_rows(dat2,x)})
+
+dat1 <- dat |> select(filename, card_yns = max_size, card_mgs = MGS_sizes, method, p = p_numeric, S = m_numeric, prob_sizes_us) |> 
+  # mutate(l = NA_real_, u = NA_real_, m = NA_real_) |> 
+  mutate(card_yns = card_yns / S, res = pmap_df(list(card_mgs, card_yns, filename), calcR)) |> 
+  unnest(res) |> 
+  rename(rU = u, rL = l, rM = m) |> 
+  mutate(res = pmap_df(list(prob_sizes_us, card_yns, filename), calcR)) |> 
+  unnest(res) |> 
+  rename(usU = u, usL = l, usM = m) |> 
+  select(-card_mgs, -prob_sizes_us) |> 
+  print()
+
+
+# Averages and ranges of r values:
+dat1 |> summarise(meanU  = mean(rU, na.rm = T), rngU = str_c("[", round(min(rU, na.rm = T), 1), ",", round(max(rU, na.rm = T), 1), "]"), 
+                  meanL = mean(rL, na.rm = T), rngL = str_c("[", round(min(rL, na.rm = T), 1), ",", round(max(rL, na.rm = T), 1), "]"),
+                  meanM = mean(rM, na.rm = T), rngM = str_c("[", round(min(rM, na.rm = T), 1), ",", round(max(rM, na.rm = T), 1), "]"),)
+
+
+# Relativ plot
+pt1 <- dat1 %>% 
+  pivot_longer(cols = rM:usU, names_to = c(".value", "subsetMethod"), names_pattern = "(.*)(.)", values_to = "rValue", values_drop_na = T) |> 
+  mutate(method = str_c(method, "|", subsetMethod),
+         p = str_c("$p=", p, "$"), 
+         S = str_c("$S=", S, "$"))|> 
+  mutate(method = case_when(
+    method == "m|M" ~ "$\\mM|\\mM$",
+    method == "u|U" ~ "$\\mU|\\mU$",
+    method == "ul|L" ~ "$\\mLU|\\mL$",
+    method == "ul|U" ~ "$\\mLU|\\mU$",
+    .default = "error"
+  )) |> 
+  ggplot() +
+  geom_smooth(aes(x = us, y = r, color = method), method='lm', se = F, linewidth = 0.5) + 
+  geom_point(aes(x = us, y = r, color = method, shape = factor(card_yns))) + 
+  facet_grid(p ~ S) +# purrr::partial(label_both, sep = " = "))  + 
+  labs(
+    y = "$\\bar{r}$",
+    x = "Relative number of unsupported vectors",
+    color = NULL,
+    shape= "$|\\Yn^s|$"
+     ) +
+  scale_linetype_manual(values = c("solid", "dashed", "dotted", "dotdash")) +
+  scale_y_continuous(labels = scales::number_format(big.mark = ",", prefix = "\\ ")) +
+  guides(linetype = guide_legend(override.aes = list(size = 0, keywidth = 16))) +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.key.width = unit(1, "cm"))  # legend.key.width = unit(2, "cm")
+pt1
+
+tikz("~/Library/CloudStorage/Dropbox/Apps/Overleaf/paper1/figures/mgs-rel-values.tex", width = 10, height = 10)
+pt1
+dev.off()
+
+# Make longer
+dat1Long <- dat1 %>% 
+  pivot_longer(cols = rM:usU, names_to = c(".value", "subsetMethod"), names_pattern = "(.*)(.)", values_to = "rValue", values_drop_na = T) |> 
+  mutate(method = str_c(method, "|", subsetMethod))
+
+# r values for Yn size
+dat1Long |> 
+  group_by(card_yns) |> 
+  summarise(r = mean(r))
+
+# r values for Yn size without L cases
+dat1Long |> 
+  filter(subsetMethod != "L") |> 
+  group_by(card_yns) |> 
+  summarise(r = mean(r))
+
+
+# r values given S
+dat1Long |> 
+  group_by(S) |> 
+  summarise(r = mean(r))
+
+# r values given S without L cases
+dat1Long |> 
+  filter(subsetMethod != "L") |> 
+  group_by(S) |> 
+  summarise(r = mean(r))
+
+
+# r values given p
+dat1Long |> 
+  group_by(p) |> 
+  summarise(r = mean(r))
+
+# r values given p without L cases
+dat1Long |> 
+  filter(subsetMethod != "L") |> 
+  group_by(p) |> 
+  summarise(r = mean(r))
+```
+
+
+
+
+
 
