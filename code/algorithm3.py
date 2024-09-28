@@ -6,7 +6,7 @@ Usage:
     output saved in: ./instances/results/algorithm3/result.csv
 """
 
-from classes import Point, PointList, LinkedList, MinkowskiSumProblem
+from classes import Point, PointList, LinkedList, MinkowskiSumProblem, MSPInstances 
 import methods
 from methods import N, U_dominates_L
 import time
@@ -15,7 +15,9 @@ import math
 import os
 from minimum_generator import solve_MGS_instance
 
+from algorithm2 import algorithm2
 
+import logging
 import random
 import numpy as np
 # from numoy import linalg
@@ -607,7 +609,9 @@ def all_pairs_alg3():
                 assert U_dominates_L(U, L)
 
 
-def algorithm3_run(MSP):
+def algorithm3_run(MSP, logger = None):
+
+    time_start = time.time()
 
     print(f"{MSP.S=}")
     Y_list = [methods.lex_sort(Y) for Y in MSP.Y_list]
@@ -649,7 +653,7 @@ def algorithm3_run(MSP):
         print(f"")
 
 
-    if True: # plot
+    if False: # plot
         for s, Y in enumerate(MSP.Y_list):
             Y.plot(f'Y{s}')
         for s, Y in enumerate(MSP.Y_list):
@@ -657,9 +661,52 @@ def algorithm3_run(MSP):
 
 
         plt.show()
+
+    RGS = MinkowskiSumProblem([PointList(G_not) for G_not in G_not_list])
+
+    MGS, Yn = algorithm2(MSP, logger)
+
+    statistics = {
+            '|G_sizes|': [len(G_not) for G_not in RGS.Y_list],
+            '|Ys|-|Gs|_sizes': [len(Ys) - len(Gs) for (Ys,Gs) in zip(MSP.Y_list, MGS.Y_list)],
+            '|G_not_sizes_total|': sum([len(G_not) for G_not in RGS.Y_list]),
+            'running_time_RGS': time.time() - time_start
+            }
+
+    print(f"{statistics=}")
+
+    # add statistics from MGS
+    statistics.update(MGS.statistics)
+    
+    RGS.statistics = statistics
+
+    print(f"{RGS.statistics=}")
+
+    
+
+    return RGS
+
     pass
 
+
+
+
 def test_algorithm3_run():
+
+
+
+    # for logging
+    logname = 'algorithm3.log'
+    logging.basicConfig(level=logging.INFO, 
+                        filename=logname,
+                        format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+                        )
+
+    logger = logging.getLogger(logname)
+
+
+
+
 
     MSP = MinkowskiSumProblem.from_subsets([
         '/sp-2-10-m_1.json',
@@ -667,18 +714,42 @@ def test_algorithm3_run():
         '/sp-2-50-u_1.json'
         ])
 
+    TI = MSPInstances(preset = 'algorithm1', p_options = (2,))
+
+    save_solution_dir = './instances/results/algorithm3/'
+    save_prefix = 'alg3-'
+    TI.filter_out_solved(save_prefix, save_solution_dir)
+
     # MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-100|100|100|100-uull-4_2.json')
     # MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-300|300-ul-2_3.json')
 
-    if False: # randomize Y_list
-        MSP.plot()
-        plt.show()
-        MSP.Y_list = [Y*random.randint(1, 4) for Y in MSP.Y_list]
-        MSP.plot()
-        plt.show()
-    # return
-    algorithm3_run(MSP)
-    
+
+    for MSP in TI:
+        
+
+        if False: # randomize Y_list
+            MSP.plot()
+            plt.show()
+            MSP.Y_list = [Y*random.randint(1, 4) for Y in MSP.Y_list]
+            MSP.plot()
+            plt.show()
+        # return
+        RGS = algorithm3_run(MSP, logger)
+
+
+
+        RGS.filename = save_solution_dir + save_prefix + MSP.filename.split('/')[-1]
+
+        RGS.save_json(RGS.filename)
+
+
+
+def result_validation():
+
+
+    # check that no points of G_not_s is in G_s
+
+    pass
 
 def main():
     
@@ -700,5 +771,5 @@ if __name__ == '__main__':
     # main()
 
 
-    # test_algorithm3_run()
-    all_pairs_alg3()
+    test_algorithm3_run()
+    # all_pairs_alg3()
