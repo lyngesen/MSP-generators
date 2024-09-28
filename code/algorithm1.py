@@ -317,6 +317,7 @@ def main():
     parser.add_argument('-msppreset', type=str, required=False, help='Choice of preset instances to solve default: algorithm1. other choices grendel_test, algorithm2')
     parser.add_argument('-solveall', action='store_true', help='if flag added, all instances are solved (already solved instances will not be filtered out)')
     parser.add_argument('-alg2', action='store_true', help='if flag added, MGS will be solved using algorithm2)')
+    parser.add_argument('-skipYn', action='store_true', help='if flag added, the found Yn sets will be saved')
 
 
     args = parser.parse_args()
@@ -330,7 +331,10 @@ def main():
         MEMORY_LIMIT = args.memorylimit
 
 
-    TI = MSPInstances(MSP_preset, ignore_ifonly_l=args.alg2) # if -alg2 then 'l' instances are ignored 
+    # TI = MSPInstances(MSP_preset, ignore_ifonly_l=args.alg2) # if -alg2 then 'l' instances are ignored 
+
+    # for the remaining l-instances
+    TI = MSPInstances(generation_options = ('l',), size_options = (50,100, 150, 200, 300))
 
     if not args.solveall:
         TI.filter_out_solved(save_prefix, save_solution_dir)
@@ -371,6 +375,7 @@ def main():
         "running alg2":args.alg2,
         "n partitions": args.npartition,
         "k partition": args.kpartition,
+        "skip Yn (dont save)": args.skipYn
     }
 
     options_str = "Options:\n" + "\n".join([f"\t{key}={value}" for key, value in options.items()])
@@ -418,7 +423,8 @@ def main():
                 Yn.statistics['filter_time'] = time.time() - filter_time
 
 
-            Yn.save_json(save_solution_dir + 'algorithm1/alg1-' + MSP.filename.split('/')[-1])
+            if not args.skipYn: # set to true if Yn should be saved
+                Yn.save_json(save_solution_dir + 'algorithm1/alg1-' + MSP.filename.split('/')[-1])
             logger.info(f"{MSP.filename=}, {len(Yn)=}, filter_time = {Yn.statistics['filter_time']}")
             
             if args.alg2: # also run alg2
@@ -430,7 +436,11 @@ def main():
 
                 Yn_2.statistics['filter_time'] = MGS.statistics['time_simplefilter']
                 assert Yn_2 == Yn, f"{len(Yn),len(Yn_2)=}"
-                Yn_2.save_json(save_solution_dir + 'algorithm1/alg2-' + MSP.filename.split('/')[-1])
+
+
+                if not args.skipYn: # set to true if Yn should be saved
+                    Yn_2.save_json(save_solution_dir + 'algorithm1/alg2-' + MSP.filename.split('/')[-1])
+
                 MGS.filename = save_solution_dir + 'algorithm2/MGS-' + MSP.filename.split('/')[-1]
                 MGS.save_json(MGS.filename)
             
