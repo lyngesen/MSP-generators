@@ -20,6 +20,7 @@ import matplotlib.animation as anim
 from matplotlib.widgets import Button, Slider, TextBox
 import random
 import minimum_generator
+import csv
 import time
 import csv
 import math
@@ -1390,14 +1391,39 @@ def animate_scalling():
 
     plt.show()
 
+
+
+# def plot_eks():
+
+
+    # ######################## Figure plot_til_forklaring START ########################
+    # fig_name = "plot_til_forklaring"
+    # print(f"Plotting figure: {fig_name}")
+    # # define new figure
+    # fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout='constrained')
+   
+    # MSP = MinkowskiSumProblem.from_subsets([
+        # 'sp-2-50-l_1.json',
+         # 'sp-2-50-u_2.json',
+    
+    
+    
+    # # save or plot figure
+    # plot_or_save(fig, fig_name)
+    # ######################### Figure plot_til_forklaring END #########################
+
 def interactive_scaling():
+
     file = "prob-2-50|50-ul-2_3.json"
     MSP = MinkowskiSumProblem.from_json('./instances/problems/' + file)
 
     if True:
         MSP = MinkowskiSumProblem.from_subsets([
-            '/sp-2-10-m_1.json',
-            '/sp-2-50-l_1.json',
+            # '/sp-2-100-u_1.json',
+            # '/sp-2-100-u_2.json',
+            # '/sp-2-100-u_3.json',
+            'sp-2-50-l_1.json',
+             'sp-2-50-u_2.json',
             ])
 
 
@@ -1410,19 +1436,21 @@ def interactive_scaling():
     # Initial plot data
     Y1 = MSP.Y_list[0]
     Y2 = methods.lex_sort(MSP.Y_list[1])[:10]
-    alpha_1 = 2
-    alpha_2 = 3
-    y01, y02 = 0,0
+    alpha_1 = 1
+    alpha_2 = 4
+    y01, y02 = 0, 0
 
     y0 = Point((y01, y02))
     alpha = Point((alpha_1, alpha_2))
 
     # Plot initial data
-    Y1 = MSP.Y_list[0]
+    Y1 = MSP.Y_list[0] * 4
     Y2 = MSP.Y_list[1]*alpha + PointList((y0,))
+    # Y3 = MSP.Y_list[2]
     # Y2 = methods.lex_sort(Y2)[:10]
     Y1.plot(f"${_Y1}$")
     Y2.plot(f"${_Y2}$")
+    # Y3.plot(f"${Y3}$")
     Y2_color = Y2.plot_color
     Y = Y1 + Y2
     Y.plot(f"${_Y}$", ax= ax, color = 'gray')
@@ -1430,9 +1458,9 @@ def interactive_scaling():
     # G,Yn = algorithm2(MSP)
 
     Yn = N(Y)
-    # G,Yn = algorithm2(MinkowskiSumProblem([Y1,Y2]))
-    # for s, g in enumerate(G.Y_list):
-        # g.plot(f"${_G}^{s}$", color='yellow', marker = 'x')
+    G,Yn = algorithm2(MinkowskiSumProblem([Y1,Y2]))
+    for s, g in enumerate(G.Y_list):
+        g.plot(f"${_G}^{s}$", color='yellow', marker = 'x')
     Yn.plot(f"${_Yn}$", color = 'yellow')
 
     # Add legend
@@ -1453,9 +1481,12 @@ def interactive_scaling():
         # Y2 = methods.lex_sort(Y2)[:10]
         Y1.plot(f"${_Y1}$", ax=ax, color = Y1.plot_color)
         Y2.plot(f"${_Y2}\cdot \\alpha  + y^0$", ax= ax, color = Y2_color)
+        # Y3.plot(f"${_Y1}$", ax=ax, color = Y3.plot_color)
+        # Y = Y1 + Y2 + Y3
         Y = Y1 + Y2
         # G,Yn = algorithm2(MinkowskiSumProblem([Y1,Y2]))
         Y.plot(f"${_Y}$", ax= ax, color = 'gray')
+        # Yn = N(Y1 + Y2 + Y3)
         Yn = N(Y1 + Y2)
 
         # G = alg2(MinkowskiSumProblem([Y1,Y2]))
@@ -1497,11 +1528,277 @@ def interactive_scaling():
 
     # Show the plot
     plt.show()
+
+def interactive_scaling_3d():
+
+    file = "prob-2-50|50-ul-2_3.json"
+    MSP = MinkowskiSumProblem.from_json('./instances/problems/' + file)
+
+    if True:
+        MSP = MinkowskiSumProblem.from_subsets([
+            '/sp-3-10-m_1.json',
+            '/sp-3-50-l_1.json',
+            ])
+
+
+
+    # Create the figure first
+    fig = plt.figure(figsize = (30,10))
+    ax = fig.add_subplot(111, projection='3d')
+    ax.set_axis_off()
+    # fig.subplots_adjust(top=1.1, bottom=-.1)
+    plt.subplots_adjust(bottom=0.25)  # Adjust the bottom to make space for the slider
+    ax.set_aspect('auto')
+
+    # Initial plot data
+    Y1 = MSP.Y_list[0]
+    Y2 = methods.lex_sort(MSP.Y_list[1])[:10]
+    alpha_1 = 2
+    alpha_2 = 3
+    alpha_3 = 1
+    y01, y02, y03 = 0, 0, 0
+
+    y0 = Point((y01, y02, y03))
+    alpha = Point((alpha_1, alpha_2, alpha_3))
+
+    # Plot initial data
+    Y1.plot(f"${_Y1}$", ax=ax)
+    Y2 = MSP.Y_list[1] * alpha + PointList((y0,))
+    Y2.plot(f"${_Y2}$", ax=ax)
+    Y2_color = Y2.plot_color
+    Y = Y1 + Y2
+    Y.plot(f"${_Y}$", ax=ax, color='gray')
+    Yn = N(Y)
+    Yn.plot(f"${_Yn}$", color='yellow', ax=ax)
+
+    # Add legend
+    ax.legend()
+
+
+    # Calculate the new axis limits
+    x_max, y_max, z_max = [max([y[p] for y in Y]) for p in range(3)]
+    ax.set_xlim([0, 2 * x_max])
+    ax.set_ylim([0, 2 * y_max])
+    ax.set_zlim([0, 2 * z_max])
+
+    # Plot the vectors
+    ax.quiver(0, 0, 0, 2 * x_max, 0, 0, color='black', arrow_length_ratio=0.1)
+    ax.quiver(0, 0, 0, 0, 2 * y_max, 0, color='black', arrow_length_ratio=0.1)
+    ax.quiver(0, 0, 0, 0, 0, 2 * z_max, color='black', arrow_length_ratio=0.1)
+
+
+
+    # Define the update function
+    def update(val):
+        ax.clear()  # Clear the current axes
+
+        ax.set_xlim([0, 2 * x_max])
+        ax.set_ylim([0, 2 * y_max])
+        ax.set_zlim([0, 2 * z_max])
+        ax.set_axis_off()
+
+        ax.quiver(0, 0, 0, 2 * x_max, 0, 0, color='black', arrow_length_ratio=0.1)
+        ax.quiver(0, 0, 0, 0, 2 * y_max, 0, color='black', arrow_length_ratio=0.1)
+        ax.quiver(0, 0, 0, 0, 0, 2 * z_max, color='black', arrow_length_ratio=0.1)
+
+        alpha_1 = slider_3.val
+        alpha_2 = slider_4.val
+        alpha_3 = slider_5.val
+        alpha = Point((alpha_1, alpha_2, alpha_3))
+        y01 = float(textbox_1.text)
+        y02 = float(textbox_2.text)
+        y03 = float(textbox_3.text)
+        y0 = Point((y01, y02, y03))
+        Y2 = MSP.Y_list[1] * alpha + PointList((y0,))
+        Y1.plot(f"${_Y1}$", ax=ax, color=Y1.plot_color)
+        Y2.plot(f"${_Y2}\cdot \\alpha  + y^0$", ax=ax, color=Y2_color)
+        Y = Y1 + Y2
+        Y.plot(f"${_Y}$", ax=ax, color='gray')
+        Yn = N(Y1 + Y2)
+        Yn.plot(f"${_Yn}$", ax=ax, color='yellow')
+        y0.plot(ax=ax, label='$y0$', color='black', marker='x')
+        ax.legend()
+        fig.canvas.draw_idle()
+
+    # Define the position of each slider
+    ax_slider3 = fig.add_axes([0.25, 0.05, 0.65, 0.03], facecolor='lightgoldenrodyellow')
+    ax_slider4 = fig.add_axes([0.25, 0.10, 0.65, 0.03], facecolor='lightgoldenrodyellow')
+    ax_slider5 = fig.add_axes([0.25, 0.15, 0.65, 0.03], facecolor='lightgoldenrodyellow')
+
+    # Create the sliders
+    slider_3 = Slider(ax_slider3, 'Alpha_1', 0.1, 50.0, valinit=alpha_1)
+    slider_4 = Slider(ax_slider4, 'Alpha_2', 0.1, 50.0, valinit=alpha_2)
+    slider_5 = Slider(ax_slider5, 'Alpha_3', 0.1, 50.0, valinit=alpha_3)
+
+    # Connect sliders to the update function
+    slider_3.on_changed(update)
+    slider_4.on_changed(update)
+    slider_5.on_changed(update)
+
+    # Define the position of each textbox
+    ax_textbox1 = fig.add_axes([0.2, 0.2, 0.2, 0.03], facecolor='lightgoldenrodyellow')
+    ax_textbox2 = fig.add_axes([0.45, 0.2, 0.2, 0.03], facecolor='lightgoldenrodyellow')
+    ax_textbox3 = fig.add_axes([0.65, 0.2, 0.2, 0.03], facecolor='lightgoldenrodyellow')
+
+    # Create the textboxes
+    textbox_1 = TextBox(ax_textbox1, 'y01', initial=str(y01))
+    textbox_2 = TextBox(ax_textbox2, 'y02', initial=str(y02))
+    textbox_3 = TextBox(ax_textbox3, 'y03', initial=str(y03))
+
+    # Connect textboxes to the update function
+    textbox_1.on_submit(update)
+    textbox_2.on_submit(update)
+    textbox_3.on_submit(update)
+
+    # Show the plot
+    plt.show()
+
+
+
+def article_plots_csv():
+    ''' ad-hoc script for creating csv-files for plots '''
+
+    # % For each plot I need a csv with columns:
+    # %  p1, p2: coordinates 
+    # %  subprob: either "1", "2" or "m" (master problem)
+    # %  ndom: 1 (if nondom), 0 (otherwise)  (that is for the subprob all equal 1)
+    # %  gen: 1 (if generator), 0 (otherwise)    (that is for the master all equal 0)
+
+
+
+    # % First subplot: (no scaling)
+    # % 'sp-2-50-u_1.json',
+    # % 'sp-2-50-u_2.json',
+    
+    MSP_name_list = []
+
+    
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        '/sp-2-50-u_1.json',
+        '/sp-2-50-m_2.json',
+        ])
+
+    plot_name = "first"
+    MSP_name_list.append((MSP, plot_name))
+
+    # % Second subplot: (no scaling)
+    # % 'sp-2-50-l_1.json',
+    # % 'sp-2-50-u_2.json',
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        'sp-2-50-l_1.json',
+        'sp-2-50-u_2.json',
+        ])
+
+    plot_name = "second"
+
+    MSP_name_list.append((MSP, plot_name))
+    # % Third subplot: (no scaling)
+    # % 'sp-2-50-m_1.json',
+    # % 'sp-2-50-m_2.json',
+    # %
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        'sp-2-50-m_1.json',
+        'sp-2-50-m_2.json',
+        ])
+    plot_name = "third"
+    MSP_name_list.append((MSP, plot_name))
+
+        
+
+    # % Fourth subplot: (2. plot where the u subset have be scalled on lie in [0, 2500]^2)
+    # %
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        'sp-2-50-l_1.json',
+        'sp-2-50-u_2.json',
+        ])
+    plot_name = "fourth"
+    # scale problems
+
+    MSP.Y_list = [MSP.Y_list[0], MSP.Y_list[1]*(1/4)  ]
+    MSP_name_list.append((MSP, plot_name))
+
+
+    for MSP, plot_name in MSP_name_list:
+
+        Y = methods.MS_sum(MSP.Y_list)
+        G,Yn = algorithm2(MinkowskiSumProblem(MSP.Y_list))
+
+
+        with open(f'./temp/plot_{plot_name}.csv', 'w') as out_file:
+
+            csv_writer = csv.writer(out_file)
+
+
+            for j, y in enumerate(Y):
+                y_dir = {
+                        'p1' : y[0],
+                        'p2' : y[1],
+                        'subprob' : 'm',
+                        'ndom' : int(y in Yn), 
+                        'gen' : 0,
+                         }
+                
+                if j == 0: # write header
+                    csv_writer.writerow(y_dir.keys())
+                csv_writer.writerow(y_dir.values())
+
+                print(f"{y_dir=}")
+
+
+
+            
+            for s, Ys in enumerate(MSP.Y_list):
+                for ys in Ys:
+                    y_dir = {
+                            'p1' : ys[0],
+                            'p2' : ys[1],
+                            'subprob' : s+1,
+                            'ndom' : 1,
+                            'gen' : int(ys in G.Y_list[s]),
+                             }
+
+                    print(f"{y_dir=}")
+            
+                    csv_writer.writerow(y_dir.values())
+
+
+            ######################## Figure csv_plot_view START ########################
+
+            # define new figure
+            fig, ax = plt.subplots(figsize=(10,7), layout='constrained')
+            
+            if True:
+                MSP.plot()
+                G.plot(set_label = 'G', marker= 'x')
+                Y.plot(color= 'gray')
+                Yn.plot()
+                # plt.show()
+                fig.savefig(fname = f"temp/{plot_name}.png")
+                # plt.cla()
+            
+            ######################### Figure csv_plot_view END #########################
+
+           
+
+
+
+    
+
+
 def main():
 
     
     # animate_scalling()
-    interactive_scaling()
+
+
+    article_plots_csv()    
+
+    # interactive_scaling()
+    # interactive_scaling_3d()
 
     # MSP_plot()
 
@@ -1569,7 +1866,7 @@ if __name__ == '__main__':
     # Style options for plots
     all_styles = ['Solarize_Light2', '_mpl-gallery', '_mpl-gallery-nogrid', 'bmh', 'classic', 'dark_background', 'fast', 'fivethirtyeight', 'ggplot', 'grayscale',  'tableau-colorblind10']
     # STYLE = "ggplot" 
-    STYLE = all_styles[8] # 1 6 8 9 10
+    STYLE = all_styles[6] # 1 6 8 9 10
     plt.style.use(STYLE)
 
 
