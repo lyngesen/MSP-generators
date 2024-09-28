@@ -13,8 +13,8 @@ import os
 # if os.path.exists('$HOME/solvers/glpk/bin/glpsol'):
 
 
-# Executable('glpsol').set_path('$HOME/solvers/glpk/bin/glpsol')
-DEFAULT_SOLVER = 'cplex_direct'
+Executable('glpsol').set_path('$HOME/solvers/glpk/bin/glpsol')
+DEFAULT_SOLVER = 'glpk'
 
 # def buildModel(Y_list: list[PointList],) -> pyomo.ConcreteModel():
     # pass
