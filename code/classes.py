@@ -542,10 +542,10 @@ class MinkowskiSumProblem:
         return string
 
 
-    def plot(self,  hidelabel = False, ax = None, **kwargs):
+    def plot(self,  hidelabel = False,set_label='Y', ax = None, **kwargs):
         ax = ax if ax else plt
         for s, Y in enumerate(self.Y_list):
-            Y.plot(l= "_"*hidelabel + "$\mathcal{Y}_{\mathcal{N}}^{" + str(s+1) + "}$", ax = ax, **kwargs)
+            Y.plot(l= "_"*hidelabel + "$\mathcal{" + set_label + "}_{\mathcal{N}}^{" + str(s+1) + "}$", ax = ax, **kwargs)
 
 
 @dataclass
