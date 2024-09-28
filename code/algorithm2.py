@@ -257,10 +257,11 @@ def algorithm2(MSP, logger = None):
         model = build_model_covering(MSP.Y_list,Yn_with_duplicates, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
         solve_model(model)
         covering_solved = True
-        Y_chosen_dict = retrieve_solution_covering(model, MSP.Y_list)
+        Y_chosen_dict = retrieve_solution_covering(model, MSP.Y_list, verbose=False)
         Y_solution = {s: Y_chosen_dict[s].union(set(Y_fixed[s])) for s in range(len(MSP.Y_list))}
-        # print(f"{Y_chosen_dict=}")
-        # print(f"{Y_solution=}")
+        print(f"{Y_chosen_dict=}")
+        print(f"{Y_solution=}")
+        print(f"Optimal Value: {sum(len(Ys) for Ys in Y_solution.values())}")
     
     time_covering = time.time() - time_covering
 
@@ -386,6 +387,7 @@ def algorithm2_run(MSP):
 
 save_prefix = 'alg2-'
 save_solution_dir = './instances/results/testdir/'
+# save_solution_dir = './instances/results/algorithm2_uniqueness/'
 
 def main():
     # for logging
@@ -404,10 +406,13 @@ def main():
 
 
     TestBank = MSPInstances('algorithm2_test', ignore_ifonly_l=True)
+    TestBank = MSPInstances(generation_options = ('l',), size_options = (50,100, 150, 200, 300))
     # TestBank = MSPInstances(max_instances = 10, m_options = (4,), p_options = (4,))
-    TestBank.filter_out_solved(save_prefix, save_solution_dir)
+    TestBank.filter_out_solved(save_prefix, './instances/results/algorithm2/')
 
     print(f"{TestBank=}")
+
+    return
 
     time_start = time.time()    
     if 'multi' in sys.argv:
@@ -426,7 +431,36 @@ def main():
     print(f"total time: {time.time() - time_start}")
 
 
+# logname = 'algorithm2.log'
+# logging.basicConfig(level=logging.INFO, 
+                    # filename=logname,
+                    # format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+                    # )
+
+# logger = logging.getLogger(logname)
+
+
+
+def check_uniqueness_of_problem():
+
+
+    # 1 prob-2-200|200|200|200-mmmm-4_2.json      209
+    # 2 prob-2-300|300-mm-2_1.json                261
+    # 3 prob-2-300|300-mm-2_2.json                267
+
+    MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-200|200|200|200-mmmm-4_2.json')
+    MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-300|300-mm-2_1.json')
+    MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-300|300-mm-2_2.json')
+
+    statistics = algorithm2_run(MSP) # saves the results under results/algorithm2_uniqueness
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
     main()
+    # check_uniqueness_of_problem()
