@@ -73,6 +73,7 @@ def build_model(Y_list) -> pyomo.ConcreteModel():
     def objective_rule(model):
         return sum(model.x[s, i] for s, i in model.IS)
 
+
     model.obj = pyomo.Objective(rule=objective_rule, sense=pyomo.minimize)
 
     return model
@@ -160,6 +161,23 @@ def build_model_covering(Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
 #     if True:
         # for (s,i) in model.SI:
             # model.cons.add(model.x[s,i] >=1)
+
+
+    if False: # Check uniqueness
+        pass
+        # for each problem only one of the decision variables was chosen
+
+        # for checking prob-2-200|200|200|200-mmmm-4_2.json
+        # model.cons.add(model.x[0,177] == 0) gives new solution
+        # model.cons.add(model.x[2,188] == 0) adding makes infeasible
+
+        # model.cons.add(model.x[0,194] == 0) gives new solution
+        # model.cons.add(model.x[1,239] == 0) adding makes infeasible
+
+        # for checking prob-2-300|300-mm-2_2.json
+        # model.cons.add(model.x[0,288] == 0) gives new solution
+        # model.cons.add(model.x[1,257] == 0) adding makes infeasible
+
 
     # Define objective
     def objective_rule(model):
