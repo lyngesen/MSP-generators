@@ -150,6 +150,7 @@ ip_solved
 
 ```{r, eval=FALSE}
 head(dat)
+
 ```
 
 
@@ -556,6 +557,8 @@ In this subsection we study the size of MGS for the instances described in [ref 
 satisfy_reduced_fixed <- dat %>% filter(Y_fixed != Y_reduced) %>% count()
 satisfy_covering_IP_solved <- dat %>% filter(covering_IP_solved) %>% count()
 satisfy_unique <- dat %>% filter(!covering_IP_solved) %>% count()
+not_unique <- dat %>% filter(covering_IP_solved)
+head(not_unique) %>% select(filename, MGS_size)
 ```
 
 In total all $900$ instances was solved. From these only `r satisfy_reduced_fixed` instances did not satisfy the condition [Reduced = fixed, line reference] and of these only `r satisfy_covering_IP_solved ` did not satisfy the generating property [generating property, line reference]. For these instances an IP problem was solved. As such `r satisfy_unique` problems had a unique generator set following [prop fixed=reduced => unique]. 
@@ -668,8 +671,9 @@ print(xtable(dat_method_compare), type = "latex")
 
 ```{r}
 dat %>% 
-  #ggplot(aes(x = avg_sp_size, y = MGS_sizes_us_total/prob_sizes_us_total, color = method)) +
-  ggplot(aes(x = prob_sizes_us_total/max_size, y = MGS_size/max_size, color = method)) +
+  ggplot(aes(x = avg_sp_size, y = MGS_sizes_us_total/prob_sizes_us_total, color = method)) +
+  #ggplot(aes(x = avg_sp_size, y = MGS_size/max_size, color = method)) +
+  #ggplot(aes(x = prob_sizes_us_total/max_size, y = MGS_size/max_size, color = method)) +
   geom_smooth(method='lm') + 
   #geom_boxplot() + 
   #stat_summary(fun="mean", geom="line") +
@@ -720,8 +724,8 @@ r_squared_string_size <- paste(r_squared_string, "and", paste0(r_squared_grouped
 dat_regression <- dat %>%
    #filter(method != 'u') %>%
   mutate(
-     #x = avg_sp_size,
-     x = prob_sizes_us_total / max_size,
+     x = avg_sp_size,
+     #x = prob_sizes_us_total / max_size,
          y = MGS_size / max_size
      #x = avg_sp_size,
    #      y = MGS_size/max_size
