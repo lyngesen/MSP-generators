@@ -406,7 +406,7 @@ dat |>
   summarise(e = mean(e), sne = mean(sne))
 
 dat1 <- dat |> 
-  filter(card != 10, card != 150) 
+  filter(card != 10, card != 150, card != 600) 
 
 pt1 <- dat1 |> 
   ggplot(aes(x = card, y = extreme/card, shape = method, linetype = method)) +
@@ -428,10 +428,10 @@ pt2 <- dat1 |>
   theme(legend.position = "none")
 pt2
 
-tikz("se-card.tex", width = 8, height = 3)
+tikz("~/Library/CloudStorage/Dropbox/Apps/Overleaf/paper1/figures/se-card.tex", width = 8, height = 3)
 pt1
 dev.off()
-tikz("se-p.tex", width = 8, height = 3)
+tikz("~/Library/CloudStorage/Dropbox/Apps/Overleaf/paper1/figures/se-p.tex", width = 8, height = 3)
 pt2
 dev.off()
 ```
