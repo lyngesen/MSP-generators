@@ -1,0 +1,910 @@
+---
+title: "Results: Algorithm 3"
+output: html_document
+date: "`r Sys.Date()`"
+editor_options: 
+  chunk_output_type: console
+knit: (function(inputFile, encoding) { 
+    out_dir <- '../../docs/';
+    rmarkdown::render(inputFile,
+                      encoding=encoding, 
+                      output_file=file.path(dirname(inputFile), out_dir, 'algorithm3.html')) })
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r setup, include=FALSE}
+here::i_am("code/instances/algorithm3.Rmd")  # specify relative path given project
+# remotes::install_github("relund/gMOIP")
+# library(gMOIP)
+#library(DT)
+library(tidyverse)
+library(ggplot2)
+# library(knitr)
+# library(rgl)
+# rgl::setupKnitr()
+# options(rgl.useNULL=TRUE)
+# rgl::par3d("family" = "serif")
+# library(tikzDevice)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message=FALSE, include = TRUE, warning = FALSE,
+  out.width = "69%", fig.width = 12, fig.align = "center", fig.asp = 0.8,
+  knitr.table.format = 'html'
+)
+
+library(DT)
+library(scales)
+
+style_table <- function(df) {
+  # Identify columns with numbers in the range 0 - 1
+  percent_cols <- sapply(df, function(col) is.numeric(col) && all(col >= 0 & col <= 1))
+  
+  # Convert these columns to percentage format
+  df[percent_cols] <- lapply(df[percent_cols], function(col) percent(col, accuracy = 0.1))
+  
+  # Identify other numerical columns
+  numeric_cols <- sapply(df, is.numeric) & !percent_cols
+  
+  # Format these columns to have a maximum of 2 decimal places
+  df[numeric_cols] <- lapply(df[numeric_cols], function(col) round(col, 2))
+  
+  # Create the datatable
+  DT::datatable(df, rownames = FALSE, options = list(pageLength = 5, autoWidth = TRUE))
+}
+
+
+library(tikzDevice)
+options(tikzLatexPackages = c(
+   getOption('tikzLatexPackages'),
+   "\\usepackage{xspace}",
+   "\\newcommand{\\Y}{\\mathcal{Y}}",
+   "\\newcommand{\\Yn}{\\mathcal{Y}_{\\textnormal{N}}}",
+   "\\newcommand{\\Yns}{\\mathcal{Y}_{\\textnormal{s}}}",
+   "\\newcommand{\\Ynse}{\\mathcal{Y}_{\\textnormal{se}}}",
+   "\\newcommand{\\Ynsne}{\\mathcal{Y}_{\\textnormal{sne}}}",
+   "\\newcommand{\\Ynu}{\\mathcal{Y}_{\\textnormal{u}}}",
+   "\\newcommand{\\Yd}{\\mathcal{Y}_{\\textnormal{d}}}",
+   "\\newcommand{\\mL}{\\texttt{\\textsc{l}}\\xspace}",
+   "\\newcommand{\\mU}{\\texttt{\\textsc{u}}\\xspace}",
+   "\\newcommand{\\mM}{\\texttt{\\textsc{m}}\\xspace}",
+   "\\newcommand{\\mLU}{\\mL{}\\mU}"
+))
+
+```
+
+
+```{latex}
+% ## Ehrgott set notation
+\newcommand{\X}{\mathcal{X}} % Decision space
+\newcommand{\Xe}{\mathcal{X}_E} % Effecient solutions
+\newcommand{\Y}{\mathcal{Y}} % Objective space points
+%hide \newcommand[\Y][1][][\mathcal{Y}^{#1}] % objective space with argument
+\newcommand{\Yn}{\mathcal{Y}_{\textnormal{N}}} % Non-dominated points
+\newcommand{\Zn}{\mathcal{Z}_{\textnormal{N}}} % Non-dominated points
+\newcommand{\Yns}{\mathcal{Y}_{\textnormal{\texttt{s}}}} % Supported points
+\newcommand{\Ynse}{\mathcal{Y}_{\textnormal{\texttt{se}}}}  % Supported extreme points
+\newcommand{\Ynsne}{\mathcal{Y}_{\textnormal{\texttt{sne}}}}  % Supported non-extreme points
+\newcommand{\Ynu}{\mathcal{Y}_{\textnormal{\texttt{u}}}}  % Unsupported points
+\newcommand{\Yd}{\mathcal{Y}_{\textnormal{\texttt{d}}}}  % Unsupported points
+\renewcommand{\L}{\mathcal{L}} % Lower bound set
+\newcomma
+
+```
+
+```{r, eval=FALSE}
+cat("Update statistics for results.")
+paths <- fs::dir_ls(here::here("code/instances/results/algorithm3_partial_levels"), recurse = T, type = "file", glob = "*prob*.json")
+prefix <- str_extract(paths, ".*/")
+
+filename <- str_extract(paths, "^.*/(.*)$", group = 1)
+alg <- unique(str_extract(filename, "(.*?)-", group = 1))
+
+
+a <- "alg3-"
+
+algPaths <- str_subset(paths, a)
+datRes <- NULL
+
+for (i in 1:length(algPaths)) {
+   algFile <- algPaths[i]
+   # algFile
+   lstAlg <- jsonlite::read_json(algFile, simplifyVector = F)
+   row <- lstAlg[[2]]
+   p <- as.integer(str_extract(filename, "-(\\d+)-", group = 1))
+   m <- as.integer(str_extract(filename, "-(\\d+)_", group = 1))
+   tmp <- tibble(
+      filename = row$filename,
+      filename_levels = str_extract(algFile, "[^/]+$"),
+      q_stats = str_c(row$q_stats, collapse = "-"),
+      method = str_extract(row$filename, "^.*-(.*)-.*$", group = 1),
+      removed = str_c(row$removed, collapse = "-"),
+      known = str_c(row$known, collapse = "-"),
+      known_relative = str_c(row$known_relative, collapse = "-"),
+      max_size = as.integer(row$max_size),  
+      p = str_extract(filename, "-(\\d+)-", group = 1),
+      m = str_extract(filename, "-(\\d+)_", group = 1),
+      MGS_sizes = str_c(row$MGS_sizes, collapse = '-'),
+      RGS_sizes = str_c(rep(max_size/as.numeric(m), as.numeric(m))-as.numeric(row$removed), collapse = '-'),
+      redundant_sizes = str_c(rep(max_size/as.numeric(m), as.numeric(m))-as.numeric(row$MGS_sizes), collapse = '-'),
+      partial_levels = str_replace_all(str_replace(str_extract(filename_levels, "^.*-(.*)[.]json*$", group = 1), "-",''), '\\|', '-'),
+   )
+   
+   tmp
+   #row <- process_string(row, str_extract(row$filename,  "^.*-(.*)-.*$", group = 1))
+   #row$filename_levels <- str_extract(algFile, "[^/]+$")
+   #row$MGS_sizes <- paste(row$MGS_sizes, collapse = "-")
+   #row$MGS_sizes_se <- paste(row$MGS_sizes_se, collapse = "-")
+   #row$MGS_sizes_sne <- paste(row$MGS_sizes_sne, collapse = "-")
+   #row$MGS_sizes_us <- paste(row$MGS_sizes_us, collapse = "-")
+   #row$prob_sizes_se <- paste(row$prob_sizes_se, collapse = "-")
+   #row$prob_sizes_sne <- paste(row$prob_sizes_sne, collapse = "-")
+   #row$prob_sizes_us <- paste(row$prob_sizes_us, collapse = "-")
+   # row$`|G_sizes|` <- paste(row$`|G_sizes|`, collapse = "-")
+   #row$`|Ys|-|Gs|_sizes` <- paste(row$`|Ys|-|Gs|_sizes`, collapse = "-")
+   # row$method = str_extract(row$filename, "^.*-(.*)-.*$", group = 1)
+   # row$method = str_split(row$method, "")
+  #  row$method = map_chr(row$method, function (x) {
+  # x <- str_split_1(x, "")
+  # x <- unique(x)
+  # str_c(x, collapse = "")
+  # })
+   
+   # row$p = str_extract(row$filename, "-(\\d+)-", group = 1)
+   # row$m = str_extract(row$filename, "-(\\d+)_", group = 1) 
+   # row$removed <- paste(row$removed, collapse = "-")
+   # row$removed_unknown <- paste(row$removed_unknown, collapse = "-")
+   # row$Y_fixed <- paste(row$Y_fixed, collapse = "-")
+   # row$Y_reduced <- paste(row$Y_reduced, collapse = "-")
+   #row$prob_sizes_us_total <- paste(row$prob_sizes_us, collapse = "-")
+   # row <- unlist(row)
+   datRes <- datRes %>% bind_rows(tmp)
+   
+}
+
+dat <- datRes
+
+dat$m_numeric <- as.numeric(dat$m)
+dat$p_numeric <- as.numeric(dat$p)
+
+dat$method <- as.factor(dat$method)
+dat$m <- as.factor(dat$m)
+dat$p <- as.factor(dat$p)
+
+
+
+view(dat)
+
+# write_csv(datRes, here::here("code/instances/stat-alg3_levels.csv"))
+
+```
+
+
+
+```{r, eval=FALSE}
+cat("Update statistics for results.")
+paths <- fs::dir_ls(here::here("code/instances/results/algorithm3_partial_levels"), recurse = T, type = "file", glob = "*prob*.json")
+prefix <- str_extract(paths, ".*/")
+
+filename <- str_extract(paths, "^.*/(.*)$", group = 1)
+alg <- unique(str_extract(filename, "(.*?)-", group = 1))
+
+
+a <- "alg3-"
+
+algPaths <- str_subset(paths, a)
+datRes <- NULL
+
+for (i in 1:length(algPaths)) {
+   algFile <- algPaths[i]
+   # algFile
+   lstAlg <- jsonlite::read_json(algFile, simplifyVector = F)
+   row <- lstAlg[[2]]
+   row$filename_levels = str_extract(algFile, "[^/]+$")
+   row$partial_levels = str_replace_all(str_replace(str_extract(row$filename_levels, "^.*-(.*)[.]json*$", group = 1), "-",''), '\\|', '-')
+   row$partial_levels = str_replace_all(row$partial_levels, 'all', '100')
+   row$partial_levels = as.list(as.numeric(str_split(row$partial_levels, '-', simplify = TRUE)))
+   
+   row$method_str <- str_extract(row$filename, "^.*\\|[0-9]+-(.*)-.*$", group = 1)
+   row$subset_method <- as.list(str_split(row$method_str, "", simplify = T))
+   row$global_method <- row$subset_method %>% unique() %>%  paste(collapse = '')
+   row$subset_global_method <- str_c(row$global_method, '|', row$subset_method)
+   row$m <- as.numeric(str_extract(row$filename, "^.*-([0-9])_[0-9].json$", group = 1 ))
+   row$Ys_sizes <- as.list(as.numeric((str_split(str_extract(row$filename, "^prob-[0-9]-(.*)-[a-z].*$", group = 1), '\\|', simplify=T))))
+   
+   
+   datRes <- datRes %>% bind_rows(row)
+   
+}
+
+
+ 
+
+# Identify list columns and unnest them
+list_columns <- datRes %>% select(where(is.list)) %>% names()
+
+
+dat <- datRes %>%
+  unnest(all_of(list_columns)) %>%
+  group_by(filename_levels) %>%
+  mutate(subproblem_id = row_number()) %>%
+  ungroup()
+
+
+write_csv(dat, here::here("code/instances/stat-alg3_levels.csv"))
+```
+
+
+
+
+```{r}
+dat <- read_csv(here::here("code/instances/stat-alg3_levels.csv"))
+
+
+# ignore 'all' instances 
+# dat %>% filter(!any_L_is_U)
+
+
+# calculate q_stats
+
+dat <- dat %>% mutate(
+   q_stats_check = if_else(
+             (Ys_sizes - MGS_sizes) == 0,
+             1,
+             (Ys_sizes - RGS_size) / (Ys_sizes - MGS_sizes)
+           ),
+   q_stats_unknown_check = if_else(
+             (Ys_sizes - MGS_sizes) == 0,
+             1,
+             removed_unknown / (Ys_sizes - MGS_sizes)
+           ),
+   
+               rel_known_check = known / Ys_sizes )
+
+
+dat %>% group_by(partial_levels, subset_global_method) %>% 
+   summarise(q_stat_avg = mean(q_stats_check), count = n()) %>% 
+   style_table()
+
+
+# plot m=2 case
+
+# Define the function to get other columns
+get_other_cols <- function(this_file, this_subproblem_id) {
+  tmp <- dat %>%
+    filter(filename_levels == this_file, subproblem_id != this_subproblem_id) %>%
+    summarize(
+      other_count = n(),
+      other_partial_levels = mean(partial_levels, na.rm = TRUE),
+      other_known_relative = mean(known_relative, na.rm = TRUE),
+      other_any_L_is_U = any(L_is_U),
+    )
+  return(tmp)
+}
+
+# Apply the function to each row using pmap
+dat <- dat %>%
+  mutate(
+    other_stats = pmap(list(filename_levels, subproblem_id), get_other_cols)
+  ) %>%
+  unnest_wider(other_stats)
+
+
+
+
+# dat %>% group_by(partial_levels, other_partial_levels, subset_global_method)
+
+# Create the ggplot
+
+
+# dat %>% filter(subset_global_method == 'ul|l') 
+
+
+# add factors for partial levels
+#  partial_levels = percent me
+#
+dat <- dat %>% mutate(
+   partial_levels_factor =cut(partial_levels, breaks = seq(0, 100, by = 25), include.lowest = TRUE, include.highest = TRUE,labels = c("0-25", "26-50", "51-75", "76-100")),
+   other_partial_levels_factor =cut(other_partial_levels, breaks = seq(0, 100, by = 25), include.lowest = TRUE, include.highest = TRUE, labels = c("0-25", "26-50", "51-75", "76-100")),
+   known_relative_factor =cut(known_relative*100, breaks = seq(0, 100, by = 25), include.lowest = TRUE, labels = c("0-25", "26-50", "51-75", "76-100")),
+   other_known_relative_factor =cut(other_known_relative*100, breaks = seq(0, 100, by = 25), include.lowest = TRUE, labels = c("0-25", "26-50", "51-75", "76-100")),
+   )
+
+dat <- dat %>% mutate(
+  partial_levels_factor = cut(partial_levels, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100")),
+  other_partial_levels_factor = cut(other_partial_levels, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100")),
+  known_relative_factor = cut(known_relative * 100, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100")),
+  other_known_relative_factor = cut(other_known_relative * 100, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100"))
+)
+
+dat <- dat %>% mutate(
+  partial_levels_factor = cut(partial_levels, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100")),
+  other_partial_levels_factor = cut(other_partial_levels, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100")),
+  known_relative_factor = cut(known_relative * 100, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100")),
+  other_known_relative_factor = cut(other_known_relative * 100, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100")),
+  other_partial_levels_factor = ifelse(other_partial_levels == 100 & other_any_L_is_U, "all",
+                                       ifelse(other_partial_levels == 100, "100",
+                                              cut(other_partial_levels, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100"))))
+)
+
+# Convert the new column to a factor with the desired levels
+dat$other_partial_levels_factor <- factor(dat$other_partial_levels_factor, levels = c("0-24", "25-49", "50-74", "75-99", "100", "all"))
+
+
+dat <- dat %>% mutate(
+  partial_levels_factor = cut(partial_levels, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100")),
+  known_relative_factor = cut(known_relative * 100, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100")),
+  other_known_relative_factor = cut(other_known_relative * 100, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100")),
+  other_partial_levels_factor = ifelse(other_partial_levels == 100 & other_any_L_is_U, "all",
+                                       ifelse(other_partial_levels == 100, "100",
+                                              as.character(cut(other_partial_levels, breaks = c(0, 24, 49, 74, 99, 100), include.lowest = TRUE, labels = c("0-24", "25-49", "50-74", "75-99", "100")))))
+)
+
+# Convert the new column to a factor with the desired levels
+dat$other_partial_levels_factor <- factor(dat$other_partial_levels_factor, levels = c("0-24", "25-49", "50-74", "75-99", "100", "all"))
+
+
+# seperate 'all' to 125
+# dat <- dat %>%
+#    mutate(partial_levels = if_else(L_is_U, 125, partial_levels)) %>% 
+#    mutate(other_partial_levels = if_else(L_is_U, 125, other_partial_levels)) %>% 
+#    mutate(
+#    partial_levels_factor =cut(partial_levels, breaks = seq(0, 125, by = 25), include.lowest = TRUE, include.highest = TRUE,labels = c("0-25", "26-50", "51-75", "76-100", "all")),
+#    other_partial_levels_factor =cut(other_partial_levels, breaks = seq(0, 125, by = 25), include.lowest = TRUE, include.highest = TRUE, labels = c("0-25", "26-50", "51-75", "76-100", 'all')),
+#    known_relative_factor =cut(known_relative*100, breaks = seq(0, 100, by = 25), include.lowest = TRUE, labels = c("0-25", "26-50", "51-75", "76-100")),
+#    other_known_relative_factor =cut(other_known_relative*100, breaks = seq(0, 100, by = 25), include.lowest = TRUE, labels = c("0-25", "26-50", "51-75", "76-100")),
+#    )
+
+
+
+
+```
+
+
+
+# Tests
+
+Levels tested: Extreme + x for x in [0,25,50,100,all] 
+all implies L = Y, ie not defined by Yse.
+
+```{r}
+
+dat %>% filter(subproblem_id == 1) %>% select(filename_levels, filename, `|G_not_sizes_total|`) %>%  style_table()
+
+dat %>% group_by(filename_levels) %>% summarise(count = n()) %>% style_table()
+
+dat %>% group_by(Ys_sizes) %>% summarise(count = n()) %>% style_table()
+
+dat %>% group_by(partial_levels) %>% summarise(count = n()) %>% style_table()
+
+dat %>% group_by(known_relative_factor) %>% summarise(count = n()) %>% style_table()
+
+dat %>% group_by(m) %>% summarise(count = n()) %>% style_table()
+
+dat %>% group_by(subset_global_method) %>% summarise(count = n())  %>% style_table()
+
+# Cases where MGS^s = Y^s 
+dat %>% mutate(Ys_is_MGSs = Ys_sizes == MGS_sizes) %>% group_by(Ys_is_MGSs) %>% summarise(count = n()) %>% style_table()
+
+```
+
+
+We expect that q_stats increase in the number of subproblems (when Ys_is_Gs is removed).
+
+```{r}
+dat %>% group_by(m, subset_global_method) %>% filter(!is.na(q_stats)) %>%  summarise(q_mean = mean(q_stats), q_unknown_mean = mean(q_stats_unknown), instance_count = n())
+```
+
+Suprisingly we find that $q^M$ decreases in the number of subproblems?
+(Maybe because only a subset of all instances have been run? instances with many known vectors not run for m=4). 
+
+
+Effects of lower bound:
+
+```{r}
+# dat %>% group_by(any_L_is_U) %>% summarise(count = n(), q_stats_mean = mean(q_stats_check)) %>% style_table()
+
+dat %>% 
+   # filter(other_known_relative == 1) %>% 
+   # filter(str_extract(filename_levels, "/[\|-]all[\|-]/gm", group = 1) ) %>% 
+   group_by(filename_levels, subset_global_method, global_method) %>% 
+   summarise(any_L_is_U = any(any_L_is_U), q_stats_avg = mean(q_stats_check), counts = n(), all_L_is_U = all(L_is_U)) %>% 
+   group_by(global_method, any_L_is_U,all_L_is_U) %>% 
+   summarise(q_stats_avg = mean(q_stats_avg), count = n(),subproblem_count = sum(counts), .groups = 'drop') %>% 
+   style_table()
+```
+
+We here consider the effect of assumptions on the lower bound set. We compare the cases where all vectors of the 
+
+We consider only the $\bar q^s$ values where the lower bound used in ALG3_pair. In the above table 
+
+
+
+
+
+
+
+We now compare the q_stats for different levels of known vectors $\frac{|\hat Y^s|}{|Y^s|}$.
+To limit the number of plots we split the ration of known vectors if other subproblems into intervals of 25%.
+
+
+```{r}
+dat %>% 
+   filter(m == 2) %>%
+   # filter(Ys_sizes == 50) %>% 
+  # filter(!is.na(q_stats)) %>%
+  # filter(any_L_is_U == FALSE) %>%
+   ggplot(aes(x = known_relative, y = q_stats_check, color = subset_global_method)) +
+  geom_point() +
+  geom_smooth(se = FALSE) + 
+  facet_wrap(~other_known_relative_factor, ncol = 2) +
+  labs(
+    title = "Q Stats vs knwon relative Levels of other SP",
+    x = "Knonw relative of SP",
+    y = "Q Stats",
+    color = "Global Method"
+  ) +
+  theme_minimal()
+
+```
+
+
+Check the size of RGS relative to MGS
+
+$$ \frac{|\hat G^s|}{|G^s|} $$
+
+```{r}
+dat %>% 
+   ggplot(aes(x = partial_levels, y = (RGS_size)/MGS_sizes, color = subset_global_method)) +
+  geom_point() +
+   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
+  facet_wrap(~other_partial_levels_factor, ncol = 2) +
+  labs(
+  ) +
+  theme_minimal()
+
+```
+
+
+Now we consider the number of removed vectors relative to the subproblem size:
+
+
+```{r}
+dat %>% 
+   ggplot(aes(x = partial_levels, y =removed/Ys_sizes, color = subset_global_method)) +
+   # ggplot(aes(x = partial_levels, y =removed_unknown/Ys_sizes, color = subset_global_method)) +
+  geom_point() +
+   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
+  facet_wrap(~other_partial_levels_factor, ncol = 2) +
+  labs(
+  ) +
+  theme_minimal()
+
+```
+
+Here we see a trend that a higher proportion of redundant vectors are identified/removed when more vectors are known.
+
+
+
+
+# Section text
+
+For reference: ALG3_Pair
+
+![](alg3_pair.png)
+
+
+
+In this section, we wish to answer the research question: "How many redundant vectors can be identified using [ALG3_pair]".
+
+When solving MSPs, one can use bound sets of subproblems along with theorem [X] to decrease the search area for minimum generator vectors of the subproblems. 
+<!-- Removing subsets which do not satisfy the condiation X.1 as such regions would only include redundant vectors. -->
+ALG3_pair uses bound set information of subsets to identify redundant vectors of subproblems. We will use the result of ALG3_pair as a proxy, of how many vectors one can expect to remove from the search areas of subproblems using theorem [X]. 
+
+We want to see how many of the redundant vectors $Y^s \setminus G^s $ that can be identified by the algorithm [ref alg3_pair] using lower and upper bound sets $L^s, U^s$ for each subproblem. In the following, $G$ denotes any minimum generator set and $\hat{G}$ denotes the generator set returned by [ALG3_pair].
+
+We expect, that the number of identified redundant vectors increase in the quality of the bound sets. 
+To test this hypothesis, we will define a variaty of lower and upper bound sets for each instance used in [MGS study]. For each subproblem we will generate subsets of nondominated subproblem vectors $\hat Y^s \subseteq Y^s_N$ and use these to define bound sets. Motivated by the fact that all supported extreme vectors of subproblems must be part of any generator set, and hence must be computed we generate bound sets which always assume that these vectors are known in the subproblems. We will compare two types of lower bound sets: $L^s = conv(Y_{se}^s)_N$ and $L^s = Y^s_N$. 
+<!-- Adding the assumption that $L^2 = Y^2$, improves the lower bound of used to identify redundant vectors of $Y^1$.  -->
+Given a subset $\hat{Y}^s \subseteq Y^s_N$ we will define an upper bound set using the local nadir vectors of $\hat Y^s$. $[U(\hat Y) = \bigcup_{i}{(y^{i+1}_1,y^i_2)}]$. 
+
+Given a $\lambda^s \in [0,1]$ we will define a subset of partial level $\lambda^s$ as one of the smallest subsets $\hat{ Y^s} \subseteq Y^s$ which satisfies $Y_{se}^s \subseteq \hat Y^s$ and $|\hat Y^s| \ge |Y_{se}^s| + |Y^s \setminus Y_{se}^s| $. i.e. we define a partially known set of partial level $\lambda^s$ as a subset of $Y^s$ which contains all extreme supported vectors along with $\lambda^s$ of the remaining vectors of $Y^s$. In our experiments we choose a random subset which satisfies the condition. We create instances for different levels of $\lambda^s \in \{0, 25\%, 50\%, 75\%, 100\%\}$ for all subproblems.
+
+Total instances:
+for a problem of size $m$ we get $5^m$ instances of varying partial levels, when creating all possible partial level combinations. 
+
+Total subproblems: `r dat %>% nrow()`
+
+```{r}
+# calculate number of instances (original) and instances (with levels)
+dat %>% 
+   group_by(filename,filename_levels) %>% 
+   summarise(count = 1, m = max(m)) %>% 
+   group_by(filename) %>% 
+   summarise(count = n(), m = max(m)) %>% 
+   mutate(check = if_else(m==2, 6**m, 5**m)) %>%  # all (lower bound) option added for m = 2 
+   select(-m) %>% 
+   style_table()
+```
+
+Total instances: `r dat %>% group_by(filename_levels) %>% summarise() %>% nrow()`.
+
+TODO (check all instances are solved).
+
+<!-- We wish to investigate how the quality of the bound sets affect the number of redundant vectors which can be identified by [ref alg3_pair]. -->
+
+For each instance and subproblem $s \in S$, we define the measure $\bar q^s = \frac{|Y^s|- |\hat G^s|}{|Y^s|-|G^s|}$ as the proportion of redundant vectors in $Y^s \setminus G^s$ which are identified by the algorithm [alg3_pair]. In case $Y^s = G^s$, we define $\bar q^s = 1$ as all redundant vectors in $\emptyset$, are identified. (We might only show statistics where $|Y^s| \neq |G^s|$). To show the number of redundant vectors that are identified we consider the statistic $\bar t^s = \frac{|Y^s|-|\hat G^s|}{|Y^s|}$, i.e. the amount of vectors identified relative to the number of subproblem vectors.
+
+
+<!-- ### Upper bound sets -->
+
+<!-- We now consider the effects of the quality of the upper bound sets used: -->
+
+```{r}
+
+dat %>% 
+  filter(Ys_sizes != MGS_size) %>% # ignore G^s = Yn^s case
+   # filter(subproblem_id == 1) %>% # same 'weight' for all instances
+   # filter(m != 2) %>%
+   # filter(Ys_sizes == 50) %>% 
+  filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>% 
+  ggplot(aes(x = partial_levels, y = q_stats_check, color = subset_global_method)) +
+  geom_point() +
+   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
+  facet_wrap(~other_partial_levels_factor, ncol = 2) +
+  # stat_summary(aes(y = removed/Ys_sizes), fun = mean, geom = "smooth", linetype = "dashed", se = FALSE) + 
+  labs(
+    title = expression(bar(lambda)^{-s} ~ "Avg. partial level of other subproblems S\\{s}"),
+    x = expression(lambda^s~  "partial level of subproblem s"),
+    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
+    color = "instance|subproblem Method"
+  ) +
+  theme_minimal()
+```
+
+
+OBS: The line averages are over all subproblems, not instances. That is, instances with m=4 have higher weight than instances with m = 2. There are more instances per filename (MSP instance) and more subproblems per instance.
+
+In plot [above] we see how the proportion of redundant vectors identified by [alg3_pair] ($\bar q^s$) varies for different partial levels $\lambda^s$ of both a subproblem and the average partial level of the other subproblems for the same instance $\bar \lambda^{-s} = \frac{1}{|S|-1}\sum_{s' \neq s}\lambda^{s'}$.
+
+We find that $\bar q^s$ increases in the partial level $\lambda^s$ and in $\bar \lambda^{-s}$ for the methods $ul|u$ and $m|m$.
+
+For subsets $s$ of type $ul|u$ with $\lambda^s = 0$, the upper bound consists of only the nadir point which is a bad approximation of $Y_N^s$ resulting in low $\bar q^s$ values. Increasing $\lambda^s$ and adding vectors to $\hat Y^s$ improves the quality of the upper bound which in turn increases the $\bar q^s$ values. This explains the initial jump in the $\bar q^s$ values for $ul|u$ subproblems which does not appear for $m|m$ instances where the initial approximation are likely to include several vectors and not only the subproblem nadir vectors.
+
+$l|l$ and $ul|l$ are special cases where all redundant vectors are identified only because no redundant vectors exist. Similarly for most instances $u|u$ no redundant vectors are identified apart from the case where all other subsets are fully known and the stronger lower bound is used.
+
+In the final row of [above plot] we compare the two cases where the lower bound sets of the other subproblems are $L^s = conv(Y_{se}^s)_N$ [100] or $L^s = Y^s_N$ [all]. Here we see a significant incease in $\bar q^s$ values when using the better lower bound. In our experiments we only consider two lower bound sets but one could also consider lower bound sets based on the extreme supported solutions and remove known empty search regions by adding local nadir vectors.
+
+```{r}
+dat %>% 
+  filter(Ys_sizes != MGS_size) %>% # ignore G^s = Yn^s case
+  filter(any_L_is_U == FALSE) %>%
+  ggplot(aes(x = known_relative, y = q_stats_check, color = subset_global_method)) +
+  geom_point() +
+   geom_smooth(method = "glm", se = FALSE) + # Add linear regression 
+  facet_wrap(~other_known_relative_factor, ncol = 2) +
+labs(
+   title = expression("Avg. " * frac(abs(hat(Y))^{s*minute}, abs(Y[N]^{s*minute})) * " for s' in S " ~ "relative size of known vectors other subsets"),
+    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
+  x = expression(frac(abs(hat(Y))^s, abs(Y[N]^s)) ~ " known vectors relative"),
+    color = "instance|subproblem Method"
+) +
+  theme_minimal()
+```
+
+Same plot as above, but now we consider the relative size of the known subsets $\frac{|\hat Y^s|}{Y_N^s}$ instead of the partial level ($\lambda^s$). Again we see that $\bar q^s$ increases in both the number of known vectors.
+
+
+
+In the following, we plot the proportion of vectors removed from subproblems ($\bar t^s$).
+```{r}
+dat %>% 
+  filter(Ys_sizes != MGS_size) %>% # ignore G^s = Yn^s case
+  # filter(any_L_is_U == FALSE) %>%
+   # filter(L_is_U == FALSE) %>% 
+  ggplot(aes(x = partial_levels, y = removed/Ys_sizes, color = subset_global_method)) +
+  geom_point() +
+   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
+  facet_wrap(~other_partial_levels_factor, ncol = 2) +
+  labs(
+    title = expression(bar(lambda)^{-s} ~ "Avg. partial level of other subproblems S\\{s}"),
+    x = expression(lambda^s~  "partial level of subproblem s"),
+    y = expression(bar(t)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s))),
+    color = "instance|subproblem Method"
+  ) +
+  theme_minimal()
+```
+
+(Maybe add the above lines in the first plot as dashed lines?)
+
+In the plot [above], we plot the number of redundant vectors removed from each subproblem relative to the subproblem size. Here it is clear that no redundant vectors are found in the cases $ul|l$ and $u|u$.
+
+
+Note: The [alg3_pair] is ineffective at identifying the redundant vectors in the $u|u$ case, only being able to remove vectors when all other subsets are known and using the better lower bound sets. We know from the above section [MGS empirical] that there are relatively many for $p=2$ and $m > 2$. Instead of the pairwise approach taken in [alg3_pair], perhaps a sequential approach will prove effective for these instances.
+
+### Lower bound sets
+
+```{r}
+# overall average
+# dat %>% filter(m == 2, other_partial_levels == 100) %>% 
+#    group_by(subset_global_method, other_any_L_is_U) %>% 
+#    summarise(counts = n(), q_mean = mean(q_stats_check, rm.na=T))
+
+# averages by instance first, then overall
+dat %>% filter(m == 2, other_partial_levels == 100) %>% 
+   group_by(filename_levels, subset_global_method, other_any_L_is_U) %>% 
+   summarise(counts = n(), q_mean = mean(q_stats_check, rm.na=T), removed_rel = mean(removed/Ys_sizes)) %>% 
+   group_by(subset_global_method, other_any_L_is_U) %>% 
+   summarise(q_mean = mean(q_mean, rm.na=T), removed_rel_mean = mean(removed_rel)) %>% 
+  pivot_wider(
+    names_from = other_any_L_is_U,
+    values_from = c(q_mean, removed_rel_mean),
+    # names_prefix = "q_mean_",
+  ) %>%
+  rename(
+    'q^s, L=conv(Y_se)' = q_mean_FALSE ,
+    'q^s, L=Yn' = q_mean_TRUE ,
+    't^s, L=conv(Y_se)' = removed_rel_mean_FALSE ,
+    't^s, L=Yn' = removed_rel_mean_TRUE ,
+  ) %>%  
+   style_table()
+   
+
+
+```
+
+In the table [ref], we summarize results for $m=2, p=2$ where $\hat Y^2 = Yn^2$, comparing the effects of the different lower bounds $L^s = Y_N$ and $L^s = conv(Y^s_N)$. This shows that the improved lower bound set obtained using the assumption, significantly improves the number of redundant vectors that can be identified by [ref alg3_pair].
+
+
+
+# Other plots (removed unknown vectors)
+
+Compare removed $Y^s \setminus \hat G^s$ and removed unknown $Y^s \setminus \hat G^s \setminus \hat Y^s$.
+
+Same plots as above, but statistics for unknown $(U)$ vectors.
+$$\bar q_U^s = \frac{|Y^s \setminus \hat G^s \setminus \hat Y^s|}{|Y^s|-|G^s|}$$
+$$\bar t_U^s = \frac{|Y^s \setminus \hat G^s \setminus \hat Y^s|}{|Y^s|}$$
+
+
+```{r}
+
+dat %>% 
+  filter(Ys_sizes != MGS_size) %>% # ignore G^s = Yn^s case
+   # filter(subproblem_id == 1) %>% # same 'weight' for all instances
+   filter(m != 2) %>%
+   # filter(Ys_sizes == 50) %>% 
+  filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>% 
+  ggplot(aes(x = partial_levels, y = q_stats_unknown_check, color = subset_global_method)) +
+  geom_point() +
+   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
+  facet_wrap(~other_partial_levels_factor, ncol = 2) +
+  stat_summary(aes(y = removed_unknown/Ys_sizes), fun = mean, geom = "smooth", linetype = "dashed", se = FALSE) +
+  labs(
+    title = expression(bar(lambda)^{-s} ~ "Avg. partial level of other subproblems S\\{s}"),
+    x = expression(lambda^s~  "partial level of subproblem s"),
+    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
+    color = "instance|subproblem Method"
+  ) +
+  theme_minimal()
+```
+(dashed lines shows $removed\_unkown / |Y_N^s|$)
+
+
+The relative plot from above:
+
+
+```{r}
+dat %>% 
+  filter(Ys_sizes != MGS_size) %>% # ignore G^s = Yn^s case
+  filter(any_L_is_U == FALSE) %>%
+  ggplot(aes(x = known_relative, y = q_stats_unknown_check, color = subset_global_method)) +
+  geom_point() +
+   geom_smooth(method = "glm", se = FALSE) + # Add linear regression 
+  facet_wrap(~other_known_relative_factor, ncol = 2) +
+labs(
+   title = expression("Avg. " * frac(abs(hat(Y))^{s*minute}, abs(Y[N]^{s*minute})) * " for s' in S " ~ "relative size of known vectors other subsets"),
+    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
+  x = expression(frac(abs(hat(Y))^s, abs(Y[N]^s)) ~ " known vectors relative"),
+    color = "instance|subproblem Method"
+) +
+  theme_minimal()
+```
+
+
+```{r, eval=FALSE}
+calcR <- function(card_mgs, card_yns, filename) {
+  # card_yns <- 300
+  # card_mgs <- "111-109-300-300"
+  # filename <- "prob-4-300|300|300|300-uull-4_4.json"
+  tmp <- tibble( mgs = str_split_1(card_mgs, "-") |> as.numeric(),
+                 method = str_split_1(str_extract(filename,"^prob-.-.*-(.*)-.*$", group = 1), ""),
+                 #r = mgs/card_yns
+                 q_stats = q_stats,
+                 
+  )
+  tmp |> group_by(method) |> summarise(q = 100 * mean(q)) |> deframe()
+}
+
+calcQ <- function(card_mgs, card_removed, card_redundant, card_yns, filename, q_stats) {
+  # card_mgs <- "64-62"
+  # card_removed <- "2-3"
+  # card_redundant <- "36-38"
+  # filename <- "prob-2-100|100-mm-2_1.json"
+  # q_stats <- "0.0555555555555556-0.0789473684210526"
+  
+  tmp <- tibble( 
+     # mgs = str_split_1(card_mgs, "-") |> as.numeric(),
+                 removed =  str_split_1(card_removed, "-") |> as.numeric(),
+                 # rgs =  str_split_1(card_rgs, "-") |> as.numeric(),
+                 redundant =  str_split_1(card_redundant, "-") |> as.numeric(),
+                 method = str_split_1(str_extract(filename,"^prob-.-.*-(.*)-.*$", group = 1), ""),
+                 #r = mgs/card_yns
+                 q_stats = q_stats,
+                 # q_stats_check = removed/redundant
+                 q_stats_check = ifelse(redundant == 0, 1, removed / redundant)
+
+  )
+  tmp |> group_by(method) |> summarise(q = 100 * mean(q_stats_check)) |> deframe()
+}
+
+
+levelQ <- function(partial_levels, card_redundant, card_removed){
+   #partial_levels <- "0-50"            
+   # card_redundant <- "36-38"
+   # card_removed <- "0-0"
+   cat(partial_levels , "\n")
+   cat(card_redundant, "\n")
+   cat(card_removed , "\n")
+   tmp <- tibble( 
+                 removed =  str_split_1(card_removed, "-") |> as.numeric(),
+                 redundant =  str_split_1(card_redundant, "-") |> as.numeric(),
+                 partial_level = as.numeric(str_split_1(partial_levels, "-")),
+                 q_stats_check = ifelse(redundant == 0, 1, removed / redundant)
+
+  )
+  tmp |> group_by(partial_level) |> summarise(q = 100 * mean(q_stats_check)) |> deframe()
+}
+
+
+   # filter(m_numeric == 2, max_size == 100) %>%
+dat1 <- dat  %>%  select(filename,partial_levels = partial_levels, card_yns = max_size, card_mgs = MGS_sizes, card_rgs = RGS_sizes, card_redundant = redundant_sizes, card_removed = removed, method, p = p_numeric, S = m_numeric, q_stats) |> 
+  # mutate(l = NA_real_, u = NA_real_, m = NA_real_) |> 
+  mutate(card_yns = card_yns / S, res = pmap_df(list(card_mgs,card_removed, card_redundant, card_yns, filename, q_stats), calcQ)) |> 
+  unnest(res) |> 
+  rename(qU = u, qL = l, qM = m) |> 
+  mutate(level = pmap_df(list(partial_levels, card_redundant, card_removed), levelQ)) 
+
+|> 
+  unnest(res) |> 
+  rename(usU = u, usL = l, usM = m) |> 
+  select(-card_mgs) |> 
+  print()
+
+```
+
+
+```{r, eval=FALSE}
+
+
+view(dat)
+
+dat
+
+
+
+
+dat1 <- dat |> filter(!is.na(q_stats), m ==2) %>% select(filename, card_yns = max_size, card_mgs = MGS_sizes, method, p = p_numeric, S = m_numeric, q = q_stats, filename_levels) |> 
+  group_by(method) %>%
+   summarise(q = 100 * mean(q)) 
+
+
+%>%
+   deframe()
+   
+   
+   # mutate(l = NA_real_, u = NA_real_, m = NA_real_) |> 
+   
+   
+  mutate(card_yns = card_yns / S, res = pmap_df(list(card_mgs, card_yns, filename), calcR))
+
+|> 
+  unnest(res) |> 
+  rename(rU = u, rL = l, rM = m) |> 
+  mutate(res = pmap_df(list(prob_sizes_us, card_yns, filename), calcR)) |> 
+  unnest(res) |> 
+  rename(usU = u, usL = l, usM = m) |> 
+  select(-card_mgs, -prob_sizes_us) |> 
+  print()
+
+
+# Averages and ranges of r values:
+dat1 |> summarise(meanU  = mean(rU, na.rm = T), rngU = str_c("[", round(min(rU, na.rm = T), 1), ",", round(max(rU, na.rm = T), 1), "]"), 
+                  meanL = mean(rL, na.rm = T), rngL = str_c("[", round(min(rL, na.rm = T), 1), ",", round(max(rL, na.rm = T), 1), "]"),
+                  meanM = mean(rM, na.rm = T), rngM = str_c("[", round(min(rM, na.rm = T), 1), ",", round(max(rM, na.rm = T), 1), "]"),)
+
+
+# Relativ plot
+pt1 <- dat1 %>% 
+  pivot_longer(cols = rM:usU, names_to = c(".value", "subsetMethod"), names_pattern = "(.*)(.)", values_to = "rValue", values_drop_na = T) |> 
+  mutate(method = str_c(method, "|", subsetMethod),
+         p = str_c("$p=", p, "$"), 
+         S = str_c("$S=", S, "$"))|> 
+  mutate(method = case_when(
+    method == "m|M" ~ "$\\mM|\\mM$",
+    method == "u|U" ~ "$\\mU|\\mU$",
+    method == "ul|L" ~ "$\\mLU|\\mL$",
+    method == "ul|U" ~ "$\\mLU|\\mU$",
+    .default = "error"
+  )) |> 
+  ggplot() +
+  geom_smooth(aes(x = us, y = r, color = method), method='lm', se = F, linewidth = 0.5) + 
+  geom_point(aes(x = us, y = r, color = method, shape = factor(card_yns))) + 
+  facet_grid(p ~ S) +# purrr::partial(label_both, sep = " = "))  + 
+  labs(
+    y = "$\\bar{r}$",
+    x = "Relative number of unsupported vectors",
+    color = NULL,
+    shape= "$|\\Yn^s|$"
+     ) +
+  scale_linetype_manual(values = c("solid", "dashed", "dotted", "dotdash")) +
+  scale_y_continuous(labels = scales::number_format(big.mark = ",", prefix = "\\ ")) +
+  guides(linetype = guide_legend(override.aes = list(size = 0, keywidth = 16))) +
+  theme_bw() +
+  theme(legend.position = "bottom", legend.key.width = unit(1, "cm"))  # legend.key.width = unit(2, "cm")
+pt1
+
+tikz("~/Library/CloudStorage/Dropbox/Apps/Overleaf/paper1/figures/mgs-rel-values.tex", width = 10, height = 10)
+pt1
+dev.off()
+
+# Make longer
+dat1Long <- dat1 %>% 
+  pivot_longer(cols = rM:usU, names_to = c(".value", "subsetMethod"), names_pattern = "(.*)(.)", values_to = "rValue", values_drop_na = T) |> 
+  mutate(method = str_c(method, "|", subsetMethod))
+
+# r values for Yn size
+dat1Long |> 
+  group_by(card_yns) |> 
+  summarise(r = mean(r))
+
+# r values for Yn size without L cases
+dat1Long |> 
+  filter(subsetMethod != "L") |> 
+  group_by(card_yns) |> 
+  summarise(r = mean(r))
+
+
+# r values given S
+dat1Long |> 
+  group_by(S) |> 
+  summarise(r = mean(r))
+
+# r values given S without L cases
+dat1Long |> 
+  filter(subsetMethod != "L") |> 
+  group_by(S) |> 
+  summarise(r = mean(r))
+
+
+# r values given p
+dat1Long |> 
+  group_by(p) |> 
+  summarise(r = mean(r))
+
+# r values given p without L cases
+dat1Long |> 
+  filter(subsetMethod != "L") |> 
+  group_by(p) |> 
+  summarise(r = mean(r))
+```
+
+
+
+
+
