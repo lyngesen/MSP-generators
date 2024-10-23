@@ -106,14 +106,16 @@ def test_raw_write():
     Y = reduce(lambda x,y: x+y, MSP.Y_list[:2])
     # Y = Y + MSP.Y_list[-1]
     # print(f"{len(Y)=}")
-    out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/pointsCin" # c script directory
+    # out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/pointsCin" # c script directory
+    out_file = "tests/temp/test_raw"
     Y.save_raw(out_file)
     # print(f"saved")
     # Yn = reduce(lambda x,y: methods.naive_filter(x+y), MSP.Y_list)
     # print(f"{len(Yn)=}")
 
 def test_raw_read():
-    in_file = filepath = fr"/Users/au618299/Desktop/cythonTest/nondom/pointsCin" # c script directory
+    # in_file = filepath = fr"/Users/au618299/Desktop/cythonTest/nondom/pointsCin" # c script directory
+    in_file = "tests/temp/test_raw"
     Y = PointList.from_raw(in_file)
     print(f"{Y=}")
     print(f"{Y.statistics=}")
@@ -184,12 +186,12 @@ def test_duplicates_filtered():
     Y = PointList([(1,1) for _ in range(10)] + [(1,2)])
     assert len(N(Y)) == 1
     # 3d
-    Y = PointList([(1,1,1) for _ in range(10)] + [(2,1,0)])
+    Y = PointList([(1,1,1) for _ in range(10)] + [(2,1,1)])
     assert len(N(Y)) == 1
 
     Yn = methods.nondomDC_wrapper(Y)
     assert len(Yn) == 1
-    assert Yn == PointList(((1,1),))
+    assert Yn == PointList(((1,1,1),))
 
 def test_c_wrapper_ND_pointsSum2():
 
@@ -233,7 +235,7 @@ def test_c_wrapper_ND_pointsSum2():
     print(f"{ABn_check_counts.most_common(3)=}")
     # ABn_counts.most_common(5)
     
-    plt.show()
+    # plt.show()
     
     assert ABn_check == ABn
 
