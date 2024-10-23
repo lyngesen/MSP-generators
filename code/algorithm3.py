@@ -29,28 +29,31 @@ from scipy.optimize import linprog
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
+
+def get_partial(Y, level='all'):   
+    Y = N(Y)
+    Y2e_points = [y for y in Y if y.cls == 'se']
+    Y2other_points = [y for y in Y if y.cls != 'se']
+    # random.shuffle(Y2other_points)
+    match level:
+        case 'all':
+            return Y
+        case 'lexmin': 
+            return PointList((Y[0], Y[-1]))
+        case 'extreme':
+            return PointList(Y2e_points)
+        # case float():
+        case _:
+            to_index = math.floor(float(level)*len(Y2other_points))
+            return PointList(Y2e_points + Y2other_points[:to_index])
+            # print(f"case not implemented {level}")
+
+    
+
 def induced_UB_plot(level, Y1,Y2, prefix='', plot=True):
     print(f"{prefix}")
     # print(f"{level=}")
-    def get_partial(Y, level='all'):   
-        Y = N(Y)
-        Y2e_points = [y for y in Y if y.cls == 'se']
-        Y2other_points = [y for y in Y if y.cls != 'se']
-        # random.shuffle(Y2other_points)
-        match level:
-            case 'all':
-                return Y
-            case 'lexmin': 
-                return PointList((Y[0], Y[-1]))
-            case 'extreme':
-                return PointList(Y2e_points)
-            # case float():
-            case _:
-                to_index = math.floor(float(level)*len(Y2other_points))
-                return PointList(Y2e_points + Y2other_points[:to_index])
-                # print(f"case not implemented {level}")
-    
-    
+
     Y2_partial = get_partial(Y2, level)
 
 
@@ -510,20 +513,12 @@ def pairwise_alg3(L1, Y1, U1, L2, Y2, U2):
     """Implementation of the pairwise algorithm3
     Returns: Subset Y_hat of Y1
     """
-#     Y1 = PointList.from_json('instances/subproblems/sp-2-100-u_1.json')
-    # Y1se = PointList([l for l in Y1 if l.cls =='se'])
-    # Y2 = PointList.from_json('instances/subproblems/sp-2-10-l_1.json')
-    # Y2se = PointList([l for l in Y2 if l.cls =='se'])
-
-    # Y1.plot(SHOW=False)
-    # Y2.plot(SHOW=False)
-    # Y1se.plot(SHOW=False, marker='x')
-    # Y2se.plot(SHOW=True, marker='x')
 
     U = N(U1 + U2)
     G1_not = []
     for y1 in methods.lex_sort(Y1):
         L = L2 + PointList(y1)
+        L.is_complete = L2.is_complete
 
         if U_dominates_L(U,L):
             G1_not.append(y1)
@@ -532,6 +527,7 @@ def pairwise_alg3(L1, Y1, U1, L2, Y2, U2):
     G2_not = []
     for y2 in methods.lex_sort(Y2):
         L = L1 + PointList(y2)
+        L.is_complete = L1.is_complete
 
         if U_dominates_L(U,L):
             G2_not.append(y2)
@@ -546,6 +542,10 @@ def pairwise_alg3(L1, Y1, U1, L2, Y2, U2):
             assert y2 in Y2
 
     return (G1_not,G2_not)
+
+
+
+
 def all_pairs_alg3():
     
     Y1 = methods.lex_sort(PointList.from_json('instances/subproblems/sp-2-10-m_1.json'))
@@ -609,17 +609,40 @@ def all_pairs_alg3():
                 assert U_dominates_L(U, L)
 
 
-def algorithm3_run(MSP, logger = None):
+def algorithm3_run(MSP,levels = None, logger = None):
+    if levels is None:
+        levels = [0 for s in range(MSP.S)]
+    
 
     time_start = time.time()
 
     print(f"{MSP.S=}")
     Y_list = [methods.lex_sort(Y) for Y in MSP.Y_list]
-    Yse_list = [PointList([y for y in Y if y.cls == 'se']) for Y in MSP.Y_list]
+    # Yse_list = [PointList([y for y in Y if y.cls == 'se']) for Y in MSP.Y_list]
 
+    L_list = []
+    U_list = []
 
-    print(f"{[len(Y) for Y in Y_list]=}")
-    print(f"{[len(Y) for Y in Yse_list]=}")
+    for s in range(MSP.S):
+        if levels[s] == 1 or levels[s] == 'all':
+            Ls = MSP.Y_list[s]
+            if levels[s] == 'all':
+                Ls.is_complete = True
+        else:
+            Ls = get_partial(MSP.Y_list[s], 0) # only se points
+            Ls.is_complete = False # convex hull of Ls points
+        L_list.append(Ls)
+
+    
+        if levels[s] == 'all':
+            U_list.append(get_partial(MSP.Y_list[s], 1))
+        else:
+            U_list.append(get_partial(MSP.Y_list[s], levels[s]/100))
+
+            
+
+    print(f"{[len(Y) for Y in MSP.Y_list]=}")
+    print(f"{[len(U) for U in U_list]=}")
 
     G_not_list = [set() for _ in range(MSP.S)]
 
@@ -628,9 +651,10 @@ def algorithm3_run(MSP, logger = None):
         for s2, Y2 in enumerate(MSP.Y_list):
             if s1 >= s2: continue 
 
-            Y1se = Yse_list[s1]
-            Y2se = Yse_list[s2]
-            G1_not, G2_not = pairwise_alg3(Y1se, Y1, Y1se, Y2se, Y2, Y2se)
+            # Y1se = Yse_list[s1]
+            # Y2se = Yse_list[s2]
+            # G1_not, G2_not = pairwise_alg3(Y1se, Y1, Y1se, Y2se, Y2, Y2se)
+            G1_not, G2_not = pairwise_alg3(L_list[s1], Y1, U_list[s1], L_list[s2], Y2, U_list[s2])
 
             print(f"{len(set(G1_not))=}")
             print(f"{len(set(G2_not))=}")
@@ -668,9 +692,18 @@ def algorithm3_run(MSP, logger = None):
 
     statistics = {
             '|G_sizes|': [len(G_not) for G_not in RGS.Y_list],
+            'removed': [len(G_not) for G_not in RGS.Y_list],
+            'removed_unknown': [len([g for g in G_not if g not in Us]) for G_not, Us in zip(RGS.Y_list, U_list)],
+            'RGS_size': [len(Ys)- len(G_not) for G_not,Ys in zip(RGS.Y_list, MSP.Y_list)],
             '|Ys|-|Gs|_sizes': [len(Ys) - len(Gs) for (Ys,Gs) in zip(MSP.Y_list, MGS.Y_list)],
             '|G_not_sizes_total|': sum([len(G_not) for G_not in RGS.Y_list]),
-            'running_time_RGS': time.time() - time_start
+            'running_time_RGS': time.time() - time_start,
+            'known': [len(Us) for Us in U_list],
+            'known_relative': [len(Us)/len(Ys) for Us, Ys in zip(U_list, MSP.Y_list)],
+            'q_stats': [len(G_not_list[s])/(len(MSP.Y_list[s]) - len(MGS.Y_list[s])) if (len(MSP.Y_list[s]) - len(MGS.Y_list[s])) != 0 else None  for s in range(MSP.S) ],
+            'q_stats_unknown': [len(G_not_list[s].difference(U_list[s]))/(len(MSP.Y_list[s]) - len(MGS.Y_list[s])) if (len(MSP.Y_list[s]) - len(MGS.Y_list[s])) != 0 else None  for s in range(MSP.S) ],
+            'L_is_U': [Ls.is_complete for Ls in L_list],
+            'any_L_is_U': any([Ls.is_complete for Ls in L_list])
             }
 
     print(f"{statistics=}")
@@ -714,33 +747,53 @@ def test_algorithm3_run():
         '/sp-2-50-u_1.json'
         ])
 
-    TI = MSPInstances(preset = 'algorithm1', p_options = (2,))
+    # TI = MSPInstances(preset = 'algorithm1', p_options = (2,), m_options = (2,3,4), size_options = (100,200,), seed_options = (1,) ,ignore_ifonly_l=True)
+    TI = MSPInstances(p_options = (2,), m_options = (2,3), size_options = (50, 100,200, 300), seed_options = (1,) ,ignore_ifonly_l=True)
 
-    save_solution_dir = './instances/results/algorithm3/'
+    save_solution_dir = './instances/results/algorithm3_partial_levels/'
     save_prefix = 'alg3-'
     TI.filter_out_solved(save_prefix, save_solution_dir)
 
+    print(f"{TI=}")
+
+
+    # return
     # MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-100|100|100|100-uull-4_2.json')
     # MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-300|300-ul-2_3.json')
 
 
+    all_partial_levels = [0,25,50,75,100]
+
+    
+    solved_instances = set(os.listdir(save_solution_dir))
+
     for MSP in TI:
         
 
-        if False: # randomize Y_list
-            MSP.plot()
-            plt.show()
-            MSP.Y_list = [Y*random.randint(1, 4) for Y in MSP.Y_list]
-            MSP.plot()
-            plt.show()
-        # return
-        RGS = algorithm3_run(MSP, logger)
+        for levels in itertools.product(*[all_partial_levels for s in range(MSP.S)]):
+            RGS_filename = save_prefix + MSP.filename.split('/')[-1].replace('.json', '-' + '|'.join((str(l) for l in levels)) + '.json' )
+
+            if RGS_filename in solved_instances:
+                print(f"SKIPPING (solved)")
+                continue
+            # levels = [25, 75, 25]
+            print(f"{MSP=}")
+            print(f"{levels=}")
+            if False: # randomize Y_list
+                MSP.plot()
+                plt.show()
+                MSP.Y_list = [Y*random.randint(1, 4) for Y in MSP.Y_list]
+                MSP.plot()
+                plt.show()
+            # return
+            RGS = algorithm3_run(MSP, levels=levels, logger=logger)
+
+            # levels = [0 for s in range(MSP.S)]
 
 
+            print(f"{RGS_filename=}")
 
-        RGS.filename = save_solution_dir + save_prefix + MSP.filename.split('/')[-1]
-
-        RGS.save_json(RGS.filename)
+            RGS.save_json(save_solution_dir + RGS_filename)
 
 
 
