@@ -115,6 +115,7 @@ class Point:
     def __add__(self, other):
         if isinstance(other, PointList):
             return PointList((self,)) + other
+        
         return Point(self.val + other.val)
 
   
@@ -122,13 +123,15 @@ class Point:
         return Point(self.val - other.val)
     def __mul__(self, other):
         if isinstance(other, int):
-            return Point(self.val * other)
+            new_point = Point(self.val * other)
         elif isinstance(other, float):
-            return Point(self.val * other)
+            new_point = Point(self.val * other)
         elif isinstance(other, Point):
-            return Point(self.val * other.val)
+            new_point = Point(self.val * other.val)
         else:
             raise TypeError(f'__mul__ not implemented for {type(other)=}')
+        new_point.cls = self.cls
+        return new_point
     
 
     def plot(self, SHOW = False, fname = None, ax = None, l =None,label_only = False, color = None,  **kwargs):
