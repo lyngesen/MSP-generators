@@ -217,6 +217,7 @@ def algorithm2(MSP, logger = None):
 
     time_getfixed = time.time()
     Y_fixed, Y_reduced = get_fixed_and_reduced(C_dict, MSP.Y_list)
+    print(f"{Y_fixed=}")
     time_getfixed = time.time() - time_getfixed
 
     # print(f"{[len(Y) for Y in Y_fixed]=}")
