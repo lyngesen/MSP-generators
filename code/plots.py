@@ -17,7 +17,8 @@ from methods import N
 import matplotlib.pyplot as plt
 import matplotlib
 import matplotlib.animation as anim
-from matplotlib.widgets import Button, Slider, TextBox
+from matplotlib.widgets import Button, Slider, TextBox, RangeSlider, CheckButtons
+from matplotlib.widgets import RadioButtons
 import random
 import minimum_generator
 import csv
@@ -25,10 +26,12 @@ import time
 import csv
 import math
 from algorithm2 import algorithm2, alg2, Y_list_to_fixed_reduced
+import algorithm3
+from algorithm3 import get_partial
 from minimum_generator import solve_MGS_instance
 from copy import deepcopy
-
-
+import matplotlib.gridspec as gridspec
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 def plot_or_save(fig, fname: str):
     """ call to plot or save fig """
@@ -48,9 +51,6 @@ def example():
     Y2 = PointList(([(i,i) for i in N_list]))
     Y3 = PointList(([(i,len(N_list)-1-i) for i in N_list]))
 
-    # Y1.plot()
-    # Y2.plot()
-    # Y3.plot()
     Y1.plot()
     Y2.plot()
     Y3.plot()
@@ -829,22 +829,22 @@ def klamroth2023_lemma2():
 def induced_UB_plot(level, Y1,Y2, prefix='', plot=True):
     print(f"{prefix}")
     # print(f"{level=}")
-    def get_partial(Y, level='all'):   
-        Y = N(Y)
-        Y2e_points = [y for y in Y if y.cls == 'se']
-        Y2other_points = [y for y in Y if y.cls != 'se']
-        # random.shuffle(Y2other_points)
-        match level:
-            case 'all':
-                return Y
-            case 'lexmin': 
-                return PointList((Y[0], Y[-1]))
-            case 'extreme':
-                return PointList(Y2e_points)
-            # case float():
-            case _:
-                to_index = math.floor(float(level)*len(Y2other_points))
-                return PointList(Y2e_points + Y2other_points[:to_index])
+#     def get_partial(Y, level='all'):   
+        # Y = N(Y)
+        # Y2e_points = [y for y in Y if y.cls == 'se']
+        # Y2other_points = [y for y in Y if y.cls != 'se']
+        # # random.shuffle(Y2other_points)
+        # match level:
+            # case 'all':
+                # return Y
+            # case 'lexmin': 
+                # return PointList((Y[0], Y[-1]))
+            # case 'extreme':
+                # return PointList(Y2e_points)
+            # # case float():
+            # case _:
+                # to_index = math.floor(float(level)*len(Y2other_points))
+                # return PointList(Y2e_points + Y2other_points[:to_index])
                 # print(f"case not implemented {level}")
     ######################## Figure Induced_UB START ########################
     # fig_name = f"Induced_UB_{level}".replace('lexmin','0.00lexmin')
@@ -857,7 +857,7 @@ def induced_UB_plot(level, Y1,Y2, prefix='', plot=True):
     fig_name = f"/RGS_example/RGS_sup"
 
 
-    only_supported = True 
+    only_supported =  False
 
     LB_assumption = 'consecutive'
     if only_supported:
@@ -949,9 +949,9 @@ def induced_UB_plot(level, Y1,Y2, prefix='', plot=True):
             # U_partial = methods.induced_UB(Y_partial, line=True)
             U_partial.plot(line=True, color='lightgray')
             
-
-            plot_or_save(fig, fig_name + str(plot_count))
-            plot_count +=1
+            if False:
+                plot_or_save(fig, fig_name + str(plot_count))
+                plot_count +=1
             plt.cla()
             reset_graph()
 
@@ -1137,8 +1137,8 @@ def empirical_matrix():
 
 def RGS_slides():
 
-    Y1 = PointList.from_json('./instances/subproblems/sp-2-10-m_1.json')*2
-    Y2 = PointList.from_json('./instances/subproblems/sp-2-10-u_4.json')
+    Y1 = PointList.from_json('./instances/subproblems/sp-2-10-l_1.json')*1
+    Y2 = PointList.from_json('./instances/subproblems/sp-2-10-m_4.json')
     # Y1.points = [y2 for y2 in list(Y1)[::2]]
     point_labels = ['plane1','Plane 2', 'Train','Bus']
 
@@ -1676,7 +1676,7 @@ def article_plots_csv():
 
     MSP = MinkowskiSumProblem.from_subsets([
         '/sp-2-50-u_1.json',
-        '/sp-2-50-m_2.json',
+        '/sp-2-50-u_2.json',
         ])
 
     plot_name = "first"
@@ -1718,7 +1718,7 @@ def article_plots_csv():
     plot_name = "fourth"
     # scale problems
 
-    MSP.Y_list = [MSP.Y_list[0], MSP.Y_list[1]*(1/4)  ]
+    MSP.Y_list = [MSP.Y_list[0], MSP.Y_list[1]*Point((1/2,1))  ]
     MSP_name_list.append((MSP, plot_name))
 
 
@@ -1784,18 +1784,455 @@ def article_plots_csv():
 
            
 
+def pairwise_alg3_plot(L1, Y1, U1, L2, Y2, U2, ax, ax_bar, ax_table, point_index = 0, checkbox = None):
+    """Implementation of the pairwise algorithm3
+    Returns: Subset Y_hat of Y1
+    """
 
 
     
+    
+    
+    
+    UB_color = 'red'
+    LB_color = 'blue'
+    bound_linestyle = 'dashed'
 
+    Y1.plot(ax = ax , l= f"${_Yn1}$", color = 'lightblue')
+    Y2.plot(ax = ax , l= f"${_Yn2}$", color = 'lightcoral')
+
+
+    if checkbox.get_status()[4]:
+        U1.plot(ax = ax , l= f"${_Yh1}$", color = 'blue')
+        U2.plot(ax = ax , l= f"${_Yh2}$", color = 'red')
+
+    if checkbox.get_status()[3]:
+        L1_line = methods.induced_UB(L1, line=True) if checkbox.get_status()[6] else L1
+        L2_line = methods.induced_UB(L2, line=True) if checkbox.get_status()[7] else L2
+
+        L1_line.plot(ax = ax , l= f"${_L1}$", line = True, color = Y1.plot_color, linestyle=bound_linestyle)
+        L2_line.plot(ax = ax , l= f"${_L2}$", line = True, color = Y2.plot_color, linestyle=bound_linestyle)
+
+        methods.induced_UB(U1, line=True).plot(ax = ax , l= f"${_U1}$", line = True, color = Y1.plot_color, linestyle=bound_linestyle, marker ='+')
+        methods.induced_UB(U2, line=True).plot(ax = ax , l= f"${_U2}$", line = True, color = Y2.plot_color, linestyle=bound_linestyle, marker= '+')
+
+    
+
+    Y = Y1 + Y2 
+    Yn = N(Y)
+
+    U = N(U1 + U2)
+
+    U_line = methods.induced_UB(U, line = True)
+
+    if checkbox.get_status()[3]:
+        U_line.plot(ax = ax , l= f"${_U}$", color = UB_color, linestyle=bound_linestyle, line=True)
+    Y.plot(ax = ax , l= f"${_Y}$", color = 'gray')
+    Yn.plot(ax = ax , l= f"${_Yn}$", color = 'green')
+
+
+
+    # generator upper bound
+
+    if checkbox.get_status()[5]:
+        U1_G = U1
+        U2_G = U2
+        for _ in range(1):
+            print(f"{len(U1_G)=}")
+            print(f"{len(U2_G)=}")
+            U1_G = N(methods.find_generator_U(U1_G,U2_G))
+            U2_G = N(methods.find_generator_U(U2_G,U1_G))
+            # U2_G = methods.find_generator_U(U1,U2)
+        U1_G_line = methods.induced_UB(U1_G, line = True)
+        U1_G_line.plot(ax=ax, l =f"$UB^1$", line = True, linestyle = bound_linestyle, color = 'gray')
+        U2_G_line = methods.induced_UB(U2_G, line = True)
+        U2_G_line.plot(ax=ax, l =f"$UB^2$", line = True, linestyle = bound_linestyle, color = 'gray')
+
+        # return
+
+        # U2_G = methods.find_generator_U(U1,U2)
+        # U2_G_line = methods.induced_UB(U1_G, line = True)
+        # U2_G_line.plot(ax=ax, l =f"$UB$", line = True)
+
+
+    # plot g_not points
+    # RGS = algorithm3.algorithm3_run(MinkowskiSumProblem([Y1,Y2]))
+    G1_not, G2_not = algorithm3.pairwise_alg3(L1, Y1, U1, L2, Y2, U2)
+    if checkbox.get_status()[2]:
+        PointList(G1_not).plot(ax = ax, l=f'Removable {1}', marker = 'x', color = 'black')
+        PointList(G2_not).plot(ax = ax, l=f'Removable {2}', marker = 'x', color = 'black')
+
+    MGS, _ = algorithm2(MinkowskiSumProblem([Y1,Y2]))
+
+
+    if checkbox.get_status()[0]:
+        MGS.Y_list[0].plot(ax = ax, l= f"${_G1}$", marker= 'x', color = 'yellow')
+        MGS.Y_list[1].plot(ax = ax, l= f"${_G2}$", marker= 'x', color = 'yellow')
+
+
+    # for s, G_not in enumerate(RGS.Y_list):
+        # G_not.plot(ax = ax, l=f'Redundant {s}', marker = 'x', color = 'black')
+    # Column labels
+
+
+
+    # Right hand side figures:
+    column_labels = ['', f"${_G}^1$", 'Removable', '$Removable \\setminus ' + f"{_Yh1}$",f"${_Yh1}$" , "$q^1$" , f"${_Yn}^1$"]
+    column_colors = ['white', 'yellow', 'grey', 'white', 'white', 'white','lightblue',]
+
+    q1_stat = (len(G1_not) / (len(Y1) - len(MGS.Y_list[0])))*100 if (len(MGS.Y_list[0]) != len(Y1)) else None
+    q2_stat = (len(G2_not) / (len(Y2) - len(MGS.Y_list[1])))*100 if (len(MGS.Y_list[1]) != len(Y2)) else None
+    q1_format = f"{q1_stat:.1f}%" if q1_stat is not None else None
+    q2_format = f"{q2_stat:.1f}%" if q2_stat is not None else None
+
+    # Sample data for the table
+    data = [
+            ['card', len(MGS.Y_list[0]), len(G1_not), len([y1 for y1 in G1_not if y1 not in U1]), len(U1), '' , len(Y1)],
+            ['\%', f"{len(MGS.Y_list[0])/len(Y1)*100:.1f}\%", f"{len(G1_not)/len(Y1)*100:.1f}\%", f"{len([y1 for y1 in G1_not if y1 not in U1])/len(Y1)*100:.1f}%", f"{len(U1)/len(Y1)*100:.1f}%",q1_format,''],
+            ]
+    # Create the table
+    table = ax_table[0].table(cellText=data, colLabels=column_labels, colColours=column_colors, cellLoc='center', loc='center')
+    percentages = [
+            len([y for y in Y1 if y in MGS.Y_list[0]]), 
+            len([y for y in Y1 if y not in PointList(G1_not) and y not in MGS.Y_list[0]]), 
+            len([y for y in Y1 if y in PointList(G1_not)]), 
+            ]
+    print(f"{percentages=}")
+    assert sum(percentages) == len(Y1)
+    # bars = ax_bar.barh([0,1], percentages, color=['black', 'green'])
+    
+    bars1 = ax_bar[0].barh(0, percentages[0], color='yellow', label = f"${_G1}$")
+    bars2 = ax_bar[0].barh(0, percentages[1], left=percentages[0], color='lightblue', label = 'Rest')
+    bars2 = ax_bar[0].barh(0, percentages[2], left=percentages[0] + percentages[1], color='black', label = 'Removable')
+    ax_bar[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0),
+          ncol=3, fancybox=True, shadow=True)
+    # repeat for s2
+    column_labels = ['', f"${_G}^2$", 'Removable', '$Removable \\setminus ' + f"{_Yh2}$",f"${_Yh2}$" , "$q^2$", f"${_Yn}^2$"]
+    column_colors = ['white', 'yellow', 'grey', 'white', 'white','white', 'lightcoral']
+    # Sample data for the table
+    data = [
+            ['card', len(MGS.Y_list[1]), len(G2_not), len([y2 for y2 in G2_not if y2 not in U2]), len(U2),'', len(Y2)],
+            ['\%', f"{len(MGS.Y_list[1])/len(Y2)*100:.1f}\%", f"{len(G2_not)/len(Y2)*100:.1f}\%", f"{len([y2 for y2 in G2_not if y2 not in U2])/len(Y2)*100:.1f}%", f"{len(U2)/len(Y2)*100:.1f}%",q2_format,''],
+            ]
+    # Create the table
+    table = ax_table[1].table(cellText=data, colLabels=column_labels, colColours=column_colors, cellLoc='center', loc='center')
+    percentages = [
+            len([y for y in Y2 if y in MGS.Y_list[1]]), 
+            len([y for y in Y2 if y not in PointList(G2_not) and y not in MGS.Y_list[1]]), 
+            len([y for y in Y2 if y in PointList(G2_not)]), 
+            ]
+    print(f"{percentages=}")
+    assert sum(percentages) == len(Y2)
+    # bars = ax_bar.barh([0,1], percentages, color=['black', 'green'])
+    
+    bars1 = ax_bar[1].barh(0, percentages[0], color='yellow', label = f"${_G2}$")
+    bars2 = ax_bar[1].barh(0, percentages[1], left=percentages[0], color='lightcoral', label = 'Rest')
+    bars2 = ax_bar[1].barh(0, percentages[2], left=percentages[0] + percentages[1], color='black', label = 'Removable')
+    ax_bar[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0),
+          ncol=3, fancybox=True, shadow=True)
+
+
+
+
+    G1_not = []
+    for y1_index, y1 in enumerate(methods.lex_sort(Y1)):
+        L = L2 + PointList(y1)
+        L.is_complete = L2.is_complete
+
+        is_dominated = methods.U_dominates_L(U,L)
+
+        if point_index == y1_index:
+            if checkbox.get_status()[1]:
+                print(f"{point_index=}")
+                L_line = methods.induced_UB(L, line=True) if checkbox.get_status()[7] else L
+                L_line.plot(ax = ax, l = f"${_L2} +" + "{y^1}$", color = LB_color, line = True, linestyle = bound_linestyle)
+                PointList(y1).plot(ax= ax, point_labels = True, marker='x', color = ('red' if is_dominated else 'green'))
+
+        
+            # plot_or_save(fig, fig_name)
+            return
+
+        
+        if methods.U_dominates_L(U,L):
+            G1_not.append(y1)
+
+    # G1 = PointList([y1 for y1 in Y1 if y1 not in G1_not])
+    G2_not = []
+    for y2 in methods.lex_sort(Y2):
+        L = L1 + PointList(y2)
+        L.is_complete = L1.is_complete
+
+        if U_dominates_L(U,L):
+            G2_not.append(y2)
+
+    # G2 = PointList([y2 for y2 in Y2 if y2 not in G2_not])
+    
+    if True: # validate resutlts
+        for y1 in G1_not:
+            assert y1 in Y1, f"{y1,Y1=}"
+
+        for y2 in G2_not:
+            assert y2 in Y2
+
+    return (G1_not,G2_not)
+
+
+
+def pairwise_alg3_plot_setup():
+
+    ######################## Figure RGS_plot START ########################
+    fig_name = "RGS_plot"
+    print(f"Plotting figure: {fig_name}")
+    # define new figure
+    fig = plt.figure(figsize=(20,15), layout='constrained')
+
+    gs = gridspec.GridSpec(2, 2, height_ratios=[7, 3], width_ratios = [4,3])
+
+    # main plot
+    ax = fig.add_subplot(gs[0, :])
+    ax2 = fig.add_subplot(gs[1, 0])
+
+    # options plot
+    ax2.set_axis_off()
+
+    ax3 = fig.add_subplot(gs[1, 1])
+    ax3.set_axis_off()
+
+
+    # Function to update the slider limits
+    def update_slider_limits(slider, new_min, new_max):
+        # slider.valmin = new_min
+        # slider.valmax = new_max
+        slider.ax.set_xlim(new_min, new_max)
+        if index_slider.val < new_min:
+            slider.set_val(new_min)  # Update the slider to reflect new limits
+        if index_slider.val > new_max:
+            slider.set_val(new_max)  # Update the slider to reflect new limits
+
+
+    def update(_):
+        
+        ax.clear()  # Clear the current axes
+        ax_bar[0].clear()  # Clear the current axes
+        ax_bar[1].clear()  # Clear the current axes
+        ax_table[0].clear()  # Clear the current axes
+        ax_table[1].clear()  # Clear the current axes
+        # Hide the axis
+        ax_table[0].set_axis_off()
+        ax_table[1].set_axis_off()
+        ax_bar[0].set_axis_off()
+        ax_bar[1].set_axis_off()
+
+        # update options
+        level = level_slider.val
+        level2 = level2_slider.val
+        level_slider.valtext.set_text(f'{level_slider.val*100:.0f}\%')
+        level2_slider.valtext.set_text(f'{level2_slider.val*100:.0f}\%')
+        # index_slider.set_val(10)
+        sp1 = sp1_textbox.text
+        sp2 = sp2_textbox.text
+        update_slider_limits(index_slider, 0, len(PointList.from_json('./instances/subproblems/' + sp1))-1)
+        point_index = int(index_slider.val)
+        seed = int(seed_textbox.text)
+        alpha = Point((int(alpha1_slider.val), int(alpha2_slider.val)))
+
+        # y0 = Point((1000,1000))
+        y0 = Point((int(y01_slider.val), int(y02_slider.val)))
+
+
+        MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-50|50-ul-2_1.json')
+
+        MSP = MinkowskiSumProblem.from_subsets([
+            sp1,
+            sp2,
+            ])
+
+        Y_list = [methods.lex_sort(Y) for Y in MSP.Y_list]
+     
+
+        Y_list[s1] = Y_list[s1] * alpha
+        # Add y0 - translate the plot so that they are not on top of eachother
+        Y1_new = [y1+ y0 for y1 in Y_list[s1]]
+        for i, _ in enumerate(Y_list[s1]):
+            Y1_new[i].cls = Y_list[s1][i].cls
+        Y_list[s1] = PointList(Y1_new)
+    
+        Yse_list = [PointList([y for y in Y if y.cls == 'se']) for Y in Y_list]
+
+        Y1, Y2 = Y_list[s1], Y_list[s2]
+
+#         if level_slider.val < len([y1 for y1 in Y1 if y1.cls == 'se' ])/len(Y1):
+            # level_slider.set_val(len([y1 for y1 in Y1 if y1.cls == 'se']) /len(Y1))
+
+        # if level2_slider.val < len([y2 for y2 in Y2 if y2.cls == 'se']) /len(Y2):
+            # level2_slider.set_val(len([y2 for y2 in Y2 if y2.cls == 'se' ])/len(Y2))
+        # update_slider_limits(level_slider, )/ len(Y1), 1)
+        # update_slider_limits(level2_slider, len([y2 for y2 in Y2 if y2.cls == 'se' ])/ len(Y2), 1)
+
+        assert point_index in set(range(len(Y1))), point_index
+
+        Y1se = Yse_list[s1]
+        Y2se = Yse_list[s2]
+
+        L1 = Y1se
+        L2 = Y2se
+
+
+        L1.is_complete, L2.is_complete = False, False
+        if checkbox.get_status()[6]:
+            L1 = Y1
+            L1.is_complete= True
+            assert level == 1
+        if checkbox.get_status()[7]:
+            L2 = Y2
+            L2.is_complete= True
+            assert level2 == 1
+
+
+        def get_partial(Y, level='all'):   
+            Y = N(Y)
+            Y2e_points = [y for y in Y if y.cls == 'se']
+            Y2other_points = [y for y in Y if y.cls != 'se']
+            if seed != 0:
+                random.seed(seed)
+                random.shuffle(Y2other_points)
+            match level:
+                case 'all':
+                    return Y
+                case 'lexmin': 
+                    return PointList((Y[0], Y[-1]))
+                case 'extreme':
+                    return PointList(Y2e_points)
+                # case float():
+                case _:
+                    to_index = math.floor(float(level)*len(Y2other_points))
+                    return PointList(Y2e_points + Y2other_points[:to_index])
+
+
+        U1 = get_partial(Y1, level = level)
+        U2 = get_partial(Y2, level = level2)
+
+        pairwise_alg3_plot(L1, Y1, U1, L2, Y2, U2,ax,ax_bar, ax_table, point_index = point_index, checkbox=checkbox)
+
+
+    # Options
+    alpha = Point((1,1)) # add sliders alpha1 and alpha2 between 0.5 and 20
+    y0_point = Point((5000,5000))
+    level = 0 # add slider to scale between 0 and 1
+    level2 = 0 # add slider to scale between 0 and 1
+    s1 = 0 # drop down choose between set(range(len(Y_list)))
+    s2 = 1 # drop down choose between set(range(len(Y_list)))
+    point_index = 1 # add slider to integers on scale between 0 and len(Y_list[s1])
+    sp1 = 'sp-2-100-m_6.json' # add textinput 
+    sp2 = 'sp-2-100-m_7.json' # add textinpu
+    seed = 1
+
+
+    inner_gs = gridspec.GridSpecFromSubplotSpec(10, 3, subplot_spec=gs[1, 0])
+
+
+    i = 0
+
+    # slider for index
+    ax_index_slider = fig.add_subplot(inner_gs[i, :])
+    index_slider = Slider(ax_index_slider, '$y^1$ index', 0, len(PointList.from_json('./instances/subproblems/' + sp1)) -1, valinit=point_index, valfmt="%i", valstep = point_index)
+    index_slider.on_changed(update)
+
+
+    i+=1
+
+    ax_level_slider = fig.add_subplot(inner_gs[i, :])
+    level_slider = Slider(ax_level_slider, 'partial level ' + f"${_Y1}$", 0, 1, valinit=level)
+    level_slider.on_changed(update)
+    i+=1
+    # Define the position of each textbox
+    ax_level2_slider = fig.add_subplot(inner_gs[i, :])
+    level2_slider = Slider(ax_level2_slider, 'partial level ' + f"${_Y2}$", 0, 1, valinit=level2)
+    level2_slider.on_changed(update)
+
+
+
+    i+=1
+
+    ax_textbox = fig.add_subplot(inner_gs[i,0:2])
+    ax_textbox.text(0.5,0,f"${_Y1} := " +  f"{_Y1}" + "\\cdot \\alpha + y^0$")
+    ax_textbox.set_axis_off()
+
+    ax_alpha1_slider = fig.add_subplot(inner_gs[i+1, 0])
+    alpha1_slider = Slider(ax_alpha1_slider, '$\\alpha_1$', 0.5, 20, valinit=alpha[0], valfmt="%i" )
+    alpha1_slider.on_changed(update)
+
+    ax_alpha2_slider = fig.add_subplot(inner_gs[i+2, 0])
+    alpha2_slider = Slider(ax_alpha2_slider, '$\\alpha_2$', 0.5, 20, valinit=alpha[1], valfmt = '%i')
+    alpha2_slider.on_changed(update)
+
+
+
+    ax_y01_slider = fig.add_subplot(inner_gs[i+1, 1])
+    y01_slider = Slider(ax_y01_slider, '$y^0_1$', 0, 10000, valinit=y0_point[0], valfmt="%i" )
+    y01_slider.on_changed(update)
+
+    ax_y02_slider = fig.add_subplot(inner_gs[i+2, 1])
+    y02_slider = Slider(ax_y02_slider, '$y^0_2$', 0, 10000, valinit=y0_point[1], valfmt = '%i')
+    y02_slider.on_changed(update)
+
+
+
+
+    ax_seed_textbox = fig.add_subplot(inner_gs[i, 2])
+    seed_textbox = TextBox(ax_seed_textbox, 'level seed (0=left to right) ', initial=seed)
+
+    ax_sp1_textbox = fig.add_subplot(inner_gs[i+1, 2])
+    sp1_textbox = TextBox(ax_sp1_textbox, f"${_Y1}$", initial=sp1)
+
+    ax_sp2_textbox = fig.add_subplot(inner_gs[i+2, 2])
+    sp2_textbox = TextBox(ax_sp2_textbox, f"${_Y2}$", initial=sp2)
+    
+    i+=2
+    ax_update_button = fig.add_subplot(inner_gs[-3:-1,1:])
+    update_button = Button(ax_update_button, 'Update')
+    update_button.on_clicked(update)
+ 
+    # add checkboxes
+
+    # Add a subplot for the checkbox
+    ax_checkbox = fig.add_subplot(inner_gs[i+1:i+8, 0:1])
+
+    # Define the labels and initial state of the checkbox
+    labels = ['MGS',f"$y^1$", 'Removable', 'Bound sets', 'Known points', 'MGS Bounds', f"${_Yn1} = {_L1}$", f"${_Yn2} = {_L2}$"]
+    states = [False, True, True, True, False, False, False, False]
+
+    # Create the checkbox
+    checkbox = CheckButtons(ax_checkbox, labels, states)
+    
+    # checkbox.on_clicked(update)
+
+    # add stuff to ax3
+    ax3_gs = gridspec.GridSpecFromSubplotSpec(9, 1, subplot_spec=gs[1, 1])
+
+    ax_table = []
+    ax_bar = []
+
+    ax_table.append(fig.add_subplot(ax3_gs[1]))
+    ax_table.append(fig.add_subplot(ax3_gs[6]))
+    ax_bar.append(fig.add_subplot(ax3_gs[3]))
+    ax_bar.append(fig.add_subplot(ax3_gs[8]))
+
+
+    update(None)
+
+    plt.show()
 
 def main():
 
     
     # animate_scalling()
 
+    # RGS_slides()
 
-    article_plots_csv()    
+    pairwise_alg3_plot_setup()
+
+    # article_plots_csv()    
 
     # interactive_scaling()
     # interactive_scaling_3d()
@@ -1899,6 +2336,8 @@ if __name__ == '__main__':
     _Y2 = "\mathcal{Y}^2" # % objective space 1
     _L1 = "\mathcal{L}^1" # % lower bound set 1
     _L2 = "\mathcal{L}^2" # % lower bound set 2
+    _U1 = "\mathcal{U}^1" # % upper bound set 1
+    _U2 = "\mathcal{U}^2" # % upper bound set 2
     _Yn = "\mathcal{Y}_\mathcal{N}" # % non-dominated objective space
     _Yn1 = "\mathcal{Y}_\mathcal{N}^1" # % non-dominated objective space
     _G1 = "\mathcal{G}^1" # % generator set 1
