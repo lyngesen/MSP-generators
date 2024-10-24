@@ -103,7 +103,7 @@ process_string <- function(row, method) {
     } else if (substr(method, i, i) == "l") {
       l_values <- c(l_values, row$MGS_sizes[[i]])
     } else if (substr(method, i, i) == "m") {
-      m_values <- c(l_values, row$MGS_sizes[[i]])
+      m_values <- c(m_values, row$MGS_sizes[[i]])
     }
   }
   
