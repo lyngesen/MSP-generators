@@ -185,6 +185,7 @@ get_other_cols <- function(this_file, this_subproblem_id) {
       other_known_relative = mean(known_relative, na.rm = TRUE),
       other_equal = all(partial_levels == partial_levels[1], na.rm =TRUE),
       other_any_L_is_U = any(L_is_U),
+      other_all_L_is_U = all(L_is_U)
     )
   return(tmp)
 }
@@ -452,6 +453,8 @@ For each instance and subproblem $s \in S$, we define the measure $\bar q^s = \f
 
 dat %>% 
    filter(other_equal == TRUE) %>% 
+  filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+  filter(L_is_U == FALSE) %>% 
    # filter(any_L_is_U == FALSE) %>%
   # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>% 
   # filter(Ys_sizes != MGS_sizes) %>% # ignore G^s = Yn^s case
@@ -459,8 +462,7 @@ dat %>%
    # filter(m == 2) %>%
     # filter(Ys_sizes == 100) %>%
   # filter(filename == 'prob-2-50|50-ul-2_1.json') %>% 
-  filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>%
-  filter(L_is_U == FALSE) %>% 
+  # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>%
   ggplot(aes(x = partial_levels, y = q_stats_check, color = subset_global_method)) +
   geom_point() +
    stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
@@ -496,6 +498,7 @@ dat %>%
    # filter(subset_global_method == 'ul|u') %>% 
   filter(any_L_is_U == FALSE) %>%
   filter(other_equal == TRUE) %>% 
+  filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
   ggplot(aes(x = known_relative, y = q_stats_check, color = subset_global_method)) +
   geom_jitter() +
    geom_smooth(method = "glm", se = FALSE) + # Add linear regression
@@ -518,7 +521,10 @@ Same plot as above, but now we consider the relative size of the known subsets $
 In the following, we plot the proportion of vectors removed from subproblems ($\bar t^s$).
 ```{r}
 dat %>% 
-  filter(Ys_sizes != MGS_size) %>% # ignore G^s = Yn^s case
+   filter(other_equal == TRUE) %>% 
+  filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+  filter(L_is_U == FALSE) %>% 
+  # filter(Ys_sizes != MGS_size) %>% # ignore G^s = Yn^s case
   # filter(any_L_is_U == FALSE) %>%
    # filter(L_is_U == FALSE) %>% 
   ggplot(aes(x = partial_levels, y = removed/Ys_sizes, color = subset_global_method)) +
@@ -555,6 +561,9 @@ TODO: del op for m, tjek om der er samme stigning for all m ✅  Tabel er  nu fo
 
 # averages by instance first, then overall
 dat %>% filter(other_partial_levels == 100) %>% 
+   filter(other_equal == TRUE) %>% 
+  filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+  filter(L_is_U == FALSE) %>% 
    group_by(m, filename_levels, subset_global_method, other_any_L_is_U) %>% 
    summarise(counts = n(), q_mean = mean(q_stats_check, rm.na=T), removed_rel = mean(removed/Ys_sizes)) %>% 
    group_by(m, subset_global_method, other_any_L_is_U) %>% 
