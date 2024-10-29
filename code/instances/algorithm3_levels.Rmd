@@ -83,7 +83,7 @@ options(tikzLatexPackages = c(
 
 
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 cat("Update statistics for results.")
 paths <- fs::dir_ls(here::here("code/instances/results/algorithm3_partial_levels"), recurse = T, type = "file", glob = "*prob*.json")
 prefix <- str_extract(paths, ".*/")
@@ -391,6 +391,40 @@ dat %>%
 Here we see a trend that a higher proportion of redundant vectors are identified/removed when more vectors are known.
 
 
+# Instance validation
+
+Total subproblems: `r dat %>% nrow()`
+
+```{r}
+# calculate number of instances (original) and instances (with levels)
+dat %>% 
+   group_by(filename,filename_levels) %>% 
+   summarise(count = 1, m = max(m)) %>% 
+   group_by(filename) %>% 
+   summarise(count = n(), m = max(m)) %>% 
+   mutate(check = if_else(m==2, 6**m, 65)) %>%   # all (lower bound) option added for m = 2 
+   # filter(check != count) %>% 
+   style_table()
+
+```
+
+Total instances solved: `r dat %>% group_by(filename_levels) %>% summarise() %>% nrow()`.
+
+Total instances: `r dat %>% group_by(filename) %>% summarise(count = 1, m = mean(m) ) %>%  mutate(check = if_else(m==2, 6**m, 5**m)) %>%  summarise(total = sum(check))`
+
+TODO (check all instances are solved).
+
+
+```{r}
+
+dat %>%
+  filter(other_equal == TRUE) %>% 
+  filter(any_L_is_U == FALSE) %>% 
+   group_by(m,subset_global_method, partial_levels, other_partial_levels) %>% 
+   summarise(count = n()) %>% 
+   filter(m ==2, subset_global_method == "ul|u", partial_levels == "0")
+
+```
 
 
 # Section text
@@ -419,26 +453,6 @@ Given a $\lambda^s \in [0,1]$ we will define a subset of partial level $\lambda^
 Total instances:
 for a problem of size $m$ we get $5^m$ instances of varying partial levels, when creating all possible partial level combinations. 
 
-Total subproblems: `r dat %>% nrow()`
-
-```{r}
-# calculate number of instances (original) and instances (with levels)
-dat %>% 
-   group_by(filename,filename_levels) %>% 
-   summarise(count = 1, m = max(m)) %>% 
-   group_by(filename) %>% 
-   summarise(count = n(), m = max(m)) %>% 
-   mutate(check = if_else(m==2, 6**m, 65)) %>%   # all (lower bound) option added for m = 2 
-   # filter(check != count) %>% 
-   style_table()
-
-```
-
-Total instances solved: `r dat %>% group_by(filename_levels) %>% summarise() %>% nrow()`.
-
-Total instances: `r dat %>% group_by(filename) %>% summarise(count = 1, m = mean(m) ) %>%  mutate(check = if_else(m==2, 6**m, 5**m)) %>%  summarise(total = sum(check))`
-
-TODO (check all instances are solved).
 
 <!-- We wish to investigate how the quality of the bound sets affect the number of redundant vectors which can be identified by [ref alg3_pair]. -->
 
@@ -452,9 +466,10 @@ For each instance and subproblem $s \in S$, we define the measure $\bar q^s = \f
 ```{r}
 
 dat %>% 
-   filter(other_equal == TRUE) %>% 
-  filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
-  filter(L_is_U == FALSE) %>% 
+  filter(other_equal == TRUE) %>% 
+  filter(any_L_is_U == FALSE) %>% 
+  # filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+   # filter(Ys_sizes != MGS_sizes) %>% 
    # filter(any_L_is_U == FALSE) %>%
   # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>% 
   # filter(Ys_sizes != MGS_sizes) %>% # ignore G^s = Yn^s case
@@ -478,6 +493,29 @@ dat %>%
   theme_minimal()
 ```
 
+(Samme plot uden $G^s = Y_N^s$)
+```{r}
+
+dat %>%
+   filter(Ys_sizes != MGS_sizes) %>% 
+   filter(other_equal == TRUE) %>% 
+  # filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+  filter(any_L_is_U == FALSE) %>% 
+  # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>%
+  ggplot(aes(x = partial_levels, y = q_stats_check, color = subset_global_method)) +
+  geom_point() +
+   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
+  facet_grid(m~other_partial_levels_factor) +
+  labs(
+    title = expression(bar(lambda)^{-s} ~ "partial level of other subproblems S\\{s}"),
+    x = expression(lambda^s~  "partial level of subproblem s"),
+    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
+    color = "instance|subproblem Method"
+  ) +
+  theme_minimal()
+```
+
+
 <!-- OBS: The line averages are over all subproblems, not instances. That is, instances with m=4 have higher weight than instances with m = 2. There are more instances per filename (MSP instance) and more subproblems per instance. -->
 
 In plot [above] we see how the proportion of redundant vectors identified by [alg3_pair] ($\bar q^s$) varies for different partial levels $\lambda^s$ of both a subproblem and the average partial level of the other subproblems for the same instance $\bar \lambda^{-s} = \frac{1}{|S|-1}\sum_{s' \neq s}\lambda^{s'}$.
@@ -492,17 +530,11 @@ In the final row of [above plot] we compare the two cases where the lower bound 
 
 ```{r}
 dat %>% 
-  # filter(Ys_sizes != MGS_sizes) %>% # ignore G^s = Yn^s case
-   #filter(other_equal == TRUE) %>% 
-   # filter(subset_global_method == 'm|m', m == 2, other_known_relative_factor == '25-49') %>% nrow()
-   # filter(subset_global_method == 'ul|u') %>% 
   filter(any_L_is_U == FALSE) %>%
   filter(other_equal == TRUE) %>% 
-  filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
   ggplot(aes(x = known_relative, y = q_stats_check, color = subset_global_method)) +
   geom_jitter() +
    geom_smooth(method = "glm", se = FALSE) + # Add linear regression
-   # geom_smooth() +
   facet_grid(m~other_known_relative_factor) +
 labs(
    title = expression("Avg. " * frac(abs(hat(Y))^{s*minute}, abs(Y[N]^{s*minute})) * " for s' in S " ~ "relative size of known vectors other subsets"),
@@ -510,6 +542,7 @@ labs(
   x = expression(frac(abs(hat(Y))^s, abs(Y[N]^s)) ~ " known vectors relative"),
     color = "instance|subproblem Method"
 ) 
+
 # +
   # theme_minimal()
 ```
@@ -588,6 +621,27 @@ dat %>% filter(other_partial_levels == 100) %>%
 In the table [ref], we summarize results for $m=2, p=2$ where $\hat Y^2 = Yn^2$, comparing the effects of the different lower bounds $L^s = Y_N$ and $L^s = conv(Y^s_N)$. This shows that the improved lower bound set obtained using the assumption, significantly improves the number of redundant vectors that can be identified by [ref alg3_pair].
 
 
+```{r}
+
+dat %>% 
+  filter(other_equal == TRUE) %>% 
+  filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+  filter(L_is_U == FALSE) %>% 
+  filter(other_partial_levels_factor %in% c("100",'all')) %>% 
+  ggplot(aes(x = partial_levels, y = q_stats_check, color = subset_global_method)) +
+  geom_point() +
+   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
+  facet_wrap(m~other_partial_levels_factor) +
+  labs(
+    title = expression(bar(lambda)^{-s} ~ "partial level of other subproblems S\\{s}"),
+    x = expression(lambda^s~  "partial level of subproblem s"),
+    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
+    color = "instance|subproblem Method"
+  ) +
+  theme_minimal()
+```
+
+
 
 # Other plots (removed unknown vectors)
 
@@ -597,6 +651,68 @@ Same plots as above, but statistics for unknown $(U)$ vectors.
 $$\bar q_U^s = \frac{|Y^s \setminus \hat G^s \setminus \hat Y^s|}{|Y^s|-|G^s|}$$
 $$\bar t_U^s = \frac{|Y^s \setminus \hat G^s \setminus \hat Y^s|}{|Y^s|}$$
 
+# Some 3d plots
+
+
+  
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(htmlwidgets)
+library(htmltools)
+
+# Assuming 'dat' is your data frame
+filtered_data <- dat %>%
+  filter(any_L_is_U == FALSE) %>%
+  filter(other_equal == TRUE)
+
+for(m_val in 2:4){
+
+# Create the ggplot object
+# p <- ggplot(filter(filtered_data, m==m_val) , aes(x = known_relative, y = other_known_relative, z = q_stats_check, color = subset_global_method)) +
+#   geom_point() +
+#   labs(
+#     title = str_c("m=",m_val ,  " 3D Plot of known_relative, other_known_relative, and q_stats_check"),
+#     y = "q_stats_check",
+#     x = "known_relative",
+#     color = "instance|subproblem Method"
+#   ) +
+#   theme_minimal()
+
+# Convert ggplot to plotly
+# Create the 3D plot
+fig <- plot_ly(filtered_data, x = ~known_relative, y = ~other_known_relative, z = ~q_stats_check, 
+               color = ~subset_global_method, colors = c('#636EFA', '#EF553B')) %>%
+  add_markers() %>%
+  layout(
+    scene = list(
+      xaxis = list(title = "known_relative"),
+      yaxis = list(title = "other_known_relative"),
+      zaxis = list(title = "q_stats_check")
+    ),
+    title = str_c("m=", m_val, " 3D Plot of known_relative, other_known_relative, and q_stats_check")
+  )
+
+# Display the plot
+# fig
+
+fig_filename <- str_c("../../docs/3d_plot_", m_val, ".html")
+
+# Save the plot as an HTML file
+saveWidget(fig, fig_filename, selfcontained = TRUE)
+
+}
+
+```
+  
+```{r}
+knitr::include_url("3d_plot_2.html", height = "700px")
+knitr::include_url("3d_plot_3.html", height = "700px")
+knitr::include_url("3d_plot_4.html", height = "700px")
+```
+  
 
 # average by 
 
