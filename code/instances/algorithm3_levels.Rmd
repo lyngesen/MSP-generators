@@ -627,6 +627,8 @@ dat %>% filter(other_partial_levels == 100) %>%
 In the table [ref], we summarize results for $m=2, p=2$ where $\hat Y^2 = Yn^2$, comparing the effects of the different lower bounds $L^s = Y_N$ and $L^s = conv(Y^s_N)$. This shows that the improved lower bound set obtained using the assumption, significantly improves the number of redundant vectors that can be identified by [ref alg3_pair].
 
 
+### Plot A version
+
 ```{r}
 
 dat %>% 
@@ -648,6 +650,32 @@ dat %>%
 # +
   # theme_minimal()
 ```
+
+
+### Plot B version
+
+```{r}
+
+dat %>% 
+  filter(other_equal == TRUE) %>% 
+  filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+  filter(L_is_U == FALSE) %>% 
+   filter(Ys_sizes != MGS_sizes) %>% 
+  filter(other_partial_levels_factor %in% c("100",'all')) %>% 
+  ggplot(aes(x = partial_levels, y = q_stats_check, color =other_partial_levels_factor)) +
+  geom_jitter() +
+   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
+  facet_grid(subset_global_method~m) +
+  labs(
+    color = expression(bar(lambda)^{-s} ~ "partial level of other subproblems S\\{s}"),
+    x = expression(lambda^s~  "partial level of subproblem s"),
+    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
+    title = "instance|subproblem Method"
+  ) 
+# +
+  # theme_minimal()
+```
+
 
 
 # other plots (relative known points)
