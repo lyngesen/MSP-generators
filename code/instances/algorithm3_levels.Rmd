@@ -463,11 +463,79 @@ For each instance and subproblem $s \in S$, we define the measure $\bar q^s = \f
 
 <!-- We now consider the effects of the quality of the upper bound sets used: -->
 
+
+
+<!-- (Samme plot uden $G^s = Y_N^s$) -->
+### Plot A
+
+```{r}
+
+dat %>%
+   filter(Ys_sizes != MGS_sizes) %>% 
+   filter(other_equal == TRUE) %>% 
+  # filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+  filter(any_L_is_U == FALSE) %>% 
+  # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>%
+  ggplot(aes(x = partial_levels, y = q_stats_check, color = factor(subset_global_method))) +
+  geom_jitter() +
+   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
+  facet_grid(m~other_partial_levels_factor) +
+  labs(
+    title = expression(bar(lambda)^{-s} ~ "partial level of other subproblems S\\{s}"),
+    x = expression(lambda^s~  "partial level of subproblem s"),
+    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
+    color = "instance|subproblem Method"
+  ) 
+# +
+  # theme_minimal()
+```
+
+
+
+### Plot B
+
+(Other plot with line/color for each partial level and row for each instance|subproblem method)
+
+
+
 ```{r}
 
 dat %>% 
   filter(other_equal == TRUE) %>% 
   filter(any_L_is_U == FALSE) %>% 
+  filter(Ys_sizes != MGS_sizes) %>%
+  # filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+   # filter(any_L_is_U == FALSE) %>%
+  # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>% 
+  # filter(Ys_sizes != MGS_sizes) %>% # ignore G^s = Yn^s case
+   # filter(subproblem_id == 1) %>% # same 'weight' for all instances
+   # filter(m == 2) %>%
+    # filter(Ys_sizes == 100) %>%
+  # filter(filename == 'prob-2-50|50-ul-2_1.json') %>% 
+  # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>%
+  ggplot(aes(x = partial_levels, y = q_stats_check, color = as.factor(other_partial_levels))) +
+  geom_jitter() +
+   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
+  facet_grid(subset_global_method~m) +
+  # facet_grid(m~other_partial_levels_factor, ncol = 2) +
+  # stat_summary(aes(y = removed/Ys_sizes), fun = mean, geom = "smooth", linetype = "dashed", se = FALSE) +
+  labs(
+    color = expression(bar(lambda)^{-s} ~ "partial level of other subproblems S\\{s}"),
+    x = expression(lambda^s~  "partial level of subproblem s"),
+    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
+    title = "instance|subproblem Method"
+  ) 
+
+# +
+  # theme_minimal()
+```
+
+```{r, eval=FALSE}
+
+dat %>% 
+  filter(other_equal == TRUE) %>% 
+  filter(any_L_is_U == FALSE) %>% 
+   filter(Ys_sizes != MGS_sizes) %>% 
   # filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
    # filter(Ys_sizes != MGS_sizes) %>% 
    # filter(any_L_is_U == FALSE) %>%
@@ -478,10 +546,12 @@ dat %>%
     # filter(Ys_sizes == 100) %>%
   # filter(filename == 'prob-2-50|50-ul-2_1.json') %>% 
   # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>%
-  ggplot(aes(x = partial_levels, y = q_stats_check, color = subset_global_method)) +
+  ggplot( aes(x = known_relative, y = q_stats_check, color = factor(round(other_known_relative,2)))) +
   geom_point() +
-   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
-  facet_grid(m~other_partial_levels_factor) +
+   # stat_summary(fun = mean, geom = "smooth", se = FALSE) +
+   # geom_smooth( method = "lm", se = FALSE) + # Add linear regression
+   # geom_smooth(se= FALSE) +
+  facet_grid(m~subset_global_method) +
   # facet_grid(m~other_partial_levels_factor, ncol = 2) +
   # stat_summary(aes(y = removed/Ys_sizes), fun = mean, geom = "smooth", linetype = "dashed", se = FALSE) +
   labs(
@@ -489,31 +559,12 @@ dat %>%
     x = expression(lambda^s~  "partial level of subproblem s"),
     y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
     color = "instance|subproblem Method"
-  ) +
-  theme_minimal()
+  )
+
+# +
+  # theme_minimal()
 ```
 
-(Samme plot uden $G^s = Y_N^s$)
-```{r}
-
-dat %>%
-   filter(Ys_sizes != MGS_sizes) %>% 
-   filter(other_equal == TRUE) %>% 
-  # filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
-  filter(any_L_is_U == FALSE) %>% 
-  # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>%
-  ggplot(aes(x = partial_levels, y = q_stats_check, color = subset_global_method)) +
-  geom_point() +
-   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
-  facet_grid(m~other_partial_levels_factor) +
-  labs(
-    title = expression(bar(lambda)^{-s} ~ "partial level of other subproblems S\\{s}"),
-    x = expression(lambda^s~  "partial level of subproblem s"),
-    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
-    color = "instance|subproblem Method"
-  ) +
-  theme_minimal()
-```
 
 
 <!-- OBS: The line averages are over all subproblems, not instances. That is, instances with m=4 have higher weight than instances with m = 2. There are more instances per filename (MSP instance) and more subproblems per instance. -->
@@ -528,54 +579,8 @@ $l|l$ and $ul|l$ are special cases where all redundant vectors are identified on
 
 In the final row of [above plot] we compare the two cases where the lower bound sets of the other subproblems are $L^s = conv(Y_{se}^s)_N$ [100] or $L^s = Y^s_N$ [all]. Here we see a significant incease in $\bar q^s$ values when using the better lower bound. In our experiments we only consider two lower bound sets but one could also consider lower bound sets based on the extreme supported solutions and remove known empty search regions by adding local nadir vectors.
 
-```{r}
-dat %>% 
-  filter(any_L_is_U == FALSE) %>%
-  filter(other_equal == TRUE) %>% 
-  ggplot(aes(x = known_relative, y = q_stats_check, color = subset_global_method)) +
-  geom_jitter() +
-   geom_smooth(method = "glm", se = FALSE) + # Add linear regression
-  facet_grid(m~other_known_relative_factor) +
-labs(
-   title = expression("Avg. " * frac(abs(hat(Y))^{s*minute}, abs(Y[N]^{s*minute})) * " for s' in S " ~ "relative size of known vectors other subsets"),
-    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
-  x = expression(frac(abs(hat(Y))^s, abs(Y[N]^s)) ~ " known vectors relative"),
-    color = "instance|subproblem Method"
-) 
-
-# +
-  # theme_minimal()
-```
-
-Same plot as above, but now we consider the relative size of the known subsets $\frac{|\hat Y^s|}{Y_N^s}$ instead of the partial level ($\lambda^s$). Again we see that $\bar q^s$ increases in both the number of known vectors.
 
 
-
-In the following, we plot the proportion of vectors removed from subproblems ($\bar t^s$).
-```{r}
-dat %>% 
-   filter(other_equal == TRUE) %>% 
-  filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
-  filter(L_is_U == FALSE) %>% 
-  # filter(Ys_sizes != MGS_size) %>% # ignore G^s = Yn^s case
-  # filter(any_L_is_U == FALSE) %>%
-   # filter(L_is_U == FALSE) %>% 
-  ggplot(aes(x = partial_levels, y = removed/Ys_sizes, color = subset_global_method)) +
-  geom_point() +
-   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
-  facet_wrap(~other_partial_levels_factor, ncol = 2) +
-  labs(
-    title = expression(bar(lambda)^{-s} ~ "Avg. partial level of other subproblems S\\{s}"),
-    x = expression(lambda^s~  "partial level of subproblem s"),
-    y = expression(bar(t)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s))),
-    color = "instance|subproblem Method"
-  ) +
-  theme_minimal()
-```
-
-(Maybe add the above lines in the first plot as dashed lines?)
-
-In the plot [above], we plot the number of redundant vectors removed from each subproblem relative to the subproblem size. Here it is clear that no redundant vectors are found in the cases $ul|l$ and $u|u$.
 
 
 Note: The [alg3_pair] is ineffective at identifying the redundant vectors in the $u|u$ case, only being able to remove vectors when all other subsets are known and using the better lower bound sets. We know from the above section [MGS empirical] that there are relatively many for $p=2$ and $m > 2$. Instead of the pairwise approach taken in [alg3_pair], perhaps a sequential approach will prove effective for these instances.
@@ -595,6 +600,7 @@ TODO: del op for m, tjek om der er samme stigning for all m ✅  Tabel er  nu fo
 # averages by instance first, then overall
 dat %>% filter(other_partial_levels == 100) %>% 
    filter(other_equal == TRUE) %>% 
+   filter(Ys_sizes != MGS_sizes) %>% 
   filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
   filter(L_is_U == FALSE) %>% 
    group_by(m, filename_levels, subset_global_method, other_any_L_is_U) %>% 
@@ -627,20 +633,79 @@ dat %>%
   filter(other_equal == TRUE) %>% 
   filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
   filter(L_is_U == FALSE) %>% 
+   filter(Ys_sizes != MGS_sizes) %>% 
   filter(other_partial_levels_factor %in% c("100",'all')) %>% 
   ggplot(aes(x = partial_levels, y = q_stats_check, color = subset_global_method)) +
-  geom_point() +
+  geom_jitter() +
    stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
-  facet_wrap(m~other_partial_levels_factor) +
+  facet_grid(m~other_partial_levels_factor) +
   labs(
     title = expression(bar(lambda)^{-s} ~ "partial level of other subproblems S\\{s}"),
     x = expression(lambda^s~  "partial level of subproblem s"),
     y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
     color = "instance|subproblem Method"
-  ) +
-  theme_minimal()
+  ) 
+# +
+  # theme_minimal()
 ```
 
+
+# other plots (relative known points)
+
+
+```{r, eval=T}
+dat %>% 
+  filter(any_L_is_U == FALSE) %>%
+  filter(other_equal == TRUE) %>% 
+  filter(Ys_sizes != MGS_sizes) %>% 
+  ggplot(aes(x = known_relative, y = q_stats_check, color = subset_global_method)) +
+  geom_jitter() +
+   geom_smooth(method = "glm", se = FALSE) + # Add linear regression
+  # facet_grid(m~round(other_known_relative,1)) +
+  facet_grid(m~other_known_relative_factor) +
+labs(
+   title = expression("Avg. " * frac(abs(hat(Y))^{s*minute}, abs(Y[N]^{s*minute})) * " for s' in S " ~ "relative size of known vectors other subsets"),
+    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
+  x = expression(frac(abs(hat(Y))^s, abs(Y[N]^s)) ~ " known vectors relative"),
+    color = "instance|subproblem Method"
+) 
+
+# +
+  # theme_minimal()
+```
+
+Same plot as above, but now we consider the relative size of the known subsets $\frac{|\hat Y^s|}{Y_N^s}$ instead of the partial level ($\lambda^s$). Again we see that $\bar q^s$ increases in both the number of known vectors.
+
+
+# other plots (removed points)
+
+
+In the following, we plot the proportion of vectors removed from subproblems ($\bar t^s$).
+```{r}
+dat %>% 
+   filter(other_equal == TRUE) %>% 
+  filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+  filter(L_is_U == FALSE) %>% 
+  # filter(Ys_sizes != MGS_size) %>% # ignore G^s = Yn^s case
+  # filter(any_L_is_U == FALSE) %>%
+   # filter(L_is_U == FALSE) %>% 
+  ggplot(aes(x = partial_levels, y = removed/Ys_sizes, color = subset_global_method)) +
+  geom_point() +
+   stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
+  facet_wrap(~other_partial_levels_factor, ncol = 2) +
+  labs(
+    title = expression(bar(lambda)^{-s} ~ "Avg. partial level of other subproblems S\\{s}"),
+    x = expression(lambda^s~  "partial level of subproblem s"),
+    y = expression(bar(t)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s))),
+    color = "instance|subproblem Method"
+  ) 
+# +
+  # theme_minimal()
+```
+
+(Maybe add the above lines in the first plot as dashed lines?)
+
+In the plot [above], we plot the number of redundant vectors removed from each subproblem relative to the subproblem size. Here it is clear that no redundant vectors are found in the cases $ul|l$ and $u|u$.
 
 
 # Other plots (removed unknown vectors)
@@ -667,6 +732,8 @@ library(htmltools)
 filtered_data <- dat %>%
   filter(any_L_is_U == FALSE) %>%
   filter(other_equal == TRUE)
+   # filter(!(subset_global_method %in% c("ul|l","u|u"))) %>% 
+   # filter(subset_global_method == 'ul|u')
 
 for(m_val in 2:4){
 
@@ -684,8 +751,10 @@ for(m_val in 2:4){
 # Convert ggplot to plotly
 # Create the 3D plot
 fig <- plot_ly(filtered_data, x = ~known_relative, y = ~other_known_relative, z = ~q_stats_check, 
-               color = ~subset_global_method, colors = c('#636EFA', '#EF553B')) %>%
-  add_markers() %>%
+               color = ~filename, colors = c('#636EFA', '#EF553B')) %>%
+               # symbol = ~as.factor(filename_levels)
+  # add_markers(marker = list(opacity = 0.8)) %>%
+   add_markers() %>% 
   layout(
     scene = list(
       xaxis = list(title = "known_relative"),
@@ -698,10 +767,11 @@ fig <- plot_ly(filtered_data, x = ~known_relative, y = ~other_known_relative, z 
 # Display the plot
 # fig
 
-fig_filename <- str_c("../../docs/3d_plot_", m_val, ".html")
-
 # Save the plot as an HTML file
-saveWidget(fig, fig_filename, selfcontained = TRUE)
+# fig_filename <- str_c("../../docs/3d_plot_", m_val, ".html")
+# saveWidget(fig, fig_filename, selfcontained = TRUE)
+
+fig
 
 }
 
