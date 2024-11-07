@@ -4,6 +4,8 @@ output: html_document
 date: "`r Sys.Date()`"
 editor_options: 
   chunk_output_type: console
+  markdown: 
+    wrap: sentence
 knit: (function(inputFile, encoding) { 
     out_dir <- '../../docs/';
     rmarkdown::render(inputFile,
@@ -11,6 +13,7 @@ knit: (function(inputFile, encoding) {
                       output_file=file.path(dirname(inputFile), out_dir, 'algorithm3.html')) })
 ---
 
+```{=html}
 <style type="text/css">
 .main-container {
   max-width: 1800px;
@@ -18,7 +21,7 @@ knit: (function(inputFile, encoding) {
   margin-right: auto;
 }
 </style>
-
+```
 ```{r setup, include=FALSE}
 here::i_am("code/instances/algorithm3_levels.Rmd")  # specify relative path given project
 # remotes::install_github("relund/gMOIP")
@@ -59,6 +62,57 @@ style_table <- function(df) {
   DT::datatable(df, rownames = FALSE, options = list(pageLength = 5, autoWidth = TRUE))
 }
 
+format_tibble <- function(df) {
+  # Multiply avg_q by 100 to convert to percentage
+  df$avg_q <- df$avg_q * 100
+  
+  # Create the formatted string for percentages
+  parts <- sprintf("%.1f", df$avg_q)
+  if (length(parts) > 1) {
+    formatted_string <- paste(paste(parts[-length(parts)], collapse = ", "), "and", parts[length(parts)])
+  } else {
+    formatted_string <- parts
+  }
+  
+  # Create the formatted string for methods
+  methods <- df$subset_global_method
+  if (length(methods) > 1) {
+    methods_string <- paste(paste(methods[-length(methods)], collapse = ", "), "and", methods[length(methods)])
+  } else {
+    methods_string <- methods
+  }
+  
+  # Combine everything into the final string
+  result <- paste(formatted_string, "percent for", methods_string)
+  
+  return(result)
+}
+
+format_tibble_latex <- function(df) {
+  # Multiply avg_q, min_q, and max_q by 100 to convert to percentage
+  df$avg_q <- as.numeric(df$avg_q) * 100
+  df$min_q <- as.numeric(df$min_q) * 100
+  df$max_q <- as.numeric(df$max_q) * 100
+  
+  # Create the formatted string for each row
+  formatted_strings <- apply(df, 1, function(row) {
+    method <- row["subset_global_method"]
+    min_q <- sprintf("%.1f", as.numeric(row["min_q"]))
+    max_q <- sprintf("%.1f", as.numeric(row["max_q"]))
+    avg_q <- sprintf("%.1f", as.numeric(row["avg_q"]))
+    paste0("$q^{", method, "} \\in [", min_q, ", ", max_q, "]\\ (", avg_q, "\\%)$")
+  })
+  
+  # Combine the formatted strings with "and" between the last two elements
+  if (length(formatted_strings) > 1) {
+    formatted_text <- paste(paste(formatted_strings[-length(formatted_strings)], collapse = ", "), "and", formatted_strings[length(formatted_strings)])
+  } else {
+    formatted_text <- formatted_strings
+  }
+  
+  return(formatted_text)
+}
+
 
 library(tikzDevice)
 options(tikzLatexPackages = c(
@@ -78,10 +132,6 @@ options(tikzLatexPackages = c(
 ))
 
 ```
-
-
-
-
 
 ```{r, eval=FALSE}
 cat("Update statistics for results.")
@@ -139,9 +189,6 @@ dat <- datRes %>%
 
 write_csv(dat, here::here("code/instances/stat-alg3_levels.csv"))
 ```
-
-
-
 
 ```{r}
 dat <- read_csv(here::here("code/instances/stat-alg3_levels.csv"))
@@ -266,12 +313,9 @@ dat <- dat %>% mutate(
 
 ```
 
-
-
 # Tests
 
-Levels tested: Extreme + x for x in [0,25,50,100,all] 
-all implies L = Y, ie not defined by Yse.
+Levels tested: Extreme + x for x in [0,25,50,100,all] all implies L = Y, ie not defined by Yse.
 
 ```{r}
 
@@ -294,7 +338,6 @@ dat %>% mutate(Ys_is_MGSs = Ys_sizes == MGS_sizes) %>% group_by(Ys_is_MGSs) %>% 
 
 ```
 
-
 We expect that q_stats increase in the number of subproblems (when Ys_is_Gs is removed).
 
 ```{r}
@@ -302,8 +345,7 @@ dat %>% group_by(m, subset_global_method) %>% filter(!is.na(q_stats)) %>%  summa
 ```
 
 Suprisingly we find that $q^M$ decreases in the number of subproblems?
-(Maybe because only a subset of all instances have been run? instances with many known vectors not run for m=4). 
-
+(Maybe because only a subset of all instances have been run? instances with many known vectors not run for m=4).
 
 Effects of lower bound:
 
@@ -320,19 +362,14 @@ dat %>%
    style_table()
 ```
 
-We here consider the effect of assumptions on the lower bound set. We compare the cases where all vectors of the 
+We here consider the effect of assumptions on the lower bound set.
+We compare the cases where all vectors of the
 
-We consider only the $\bar q^s$ values where the lower bound used in ALG3_pair. In the above table 
-
-
-
-
-
-
+We consider only the $\bar q^s$ values where the lower bound used in ALG3_pair.
+In the above table
 
 We now compare the q_stats for different levels of known vectors $\frac{|\hat Y^s|}{|Y^s|}$.
 To limit the number of plots we split the ration of known vectors if other subproblems into intervals of 25%.
-
 
 ```{r}
 dat %>% 
@@ -354,7 +391,6 @@ dat %>%
 
 ```
 
-
 Check the size of RGS relative to MGS
 
 $$ \frac{|\hat G^s|}{|G^s|} $$
@@ -371,9 +407,7 @@ dat %>%
 
 ```
 
-
 Now we consider the number of removed vectors relative to the subproblem size:
-
 
 ```{r}
 dat %>% 
@@ -389,7 +423,6 @@ dat %>%
 ```
 
 Here we see a trend that a higher proportion of redundant vectors are identified/removed when more vectors are known.
-
 
 # Instance validation
 
@@ -414,7 +447,6 @@ Total instances: `r dat %>% group_by(filename) %>% summarise(count = 1, m = mean
 
 TODO (check all instances are solved).
 
-
 ```{r}
 
 dat %>%
@@ -426,55 +458,131 @@ dat %>%
 
 ```
 
-
 # Section text
 
 For reference: ALG3_Pair
 
 ![](alg3_pair.png)
 
+## How many redundant vectors can be identified using [ALG3_pair]
+
+When solving MSPs,information from other subproblems, along with theorem~X, can be used to decrease the search area for minimum generator vectors of each subproblem.
+ALG3_pair utilizes subproblem information, specifically bound sets of subproblems, to identify redundant vectors within subproblems.
+The results of ALG3_pair will serve as an indicator, of how many vectors that can be removed from the search areas of subproblems using theorem~X.
+As in the previous section, $G$ will denote the unique minimum generator set for each instance, while $\hat G$ will denote the reduced generator set returned by ALG3_pair.
+
+<!-- We want to see how many of the redundant vectors \$Y\^s \setminus G\^s \$ which can be identified by the algorithm [ref alg3_pair] using lower and upper bound sets $L^s, U^s$ for each subproblem. -->
+
+<!-- In the following, $G$ denotes any minimum generator set and $\hat{G}$ denotes the generator set returned by [ALG3_pair]. -->
+
+We expect to show that the number of identified redundant vectors increases with the 'quality' of the provided lower and upper bound sets of the subproblem.
+To test this hypothesis, we will define various lower and upper bound sets for each instance used in subsection~[MGS study subsection].
+
+<!-- TODO: add visualization of bound sets. LB and UB. -->
+
+For each subproblem, we will randomly generate subsets of nondominated subproblem vectors $\hat Y^s \subseteq Y^s_N$, and use these to define bound sets.
+Motivated by the fact that all supported extreme vectors of subproblems must be part of any generator set, and hence must be computed, we generate bound sets which always assume that these vectors are known in the subproblems.
+We will compare two types of lower bound sets: $L^s = conv(Y_{se}^s)_N$ and $L^s = Y^s_N$. Given a subset $\hat{Y}^s \subseteq Y^s_N$ we will define an upper bound set using the local nadir vectors of $\hat Y^s$. In Plot\~[Visualization plot], we show an example of each type of lower bound set.
+
+![A figure with: Two subplots P1 and P2 showing two different subproblems Y\^1, Y\^2 for different partial levels and, induced UB\'s and LB\'s]() TODO create visualization with the two subplots.
+
+Given some $\lambda^s \in [0,1]$, we will define a subset $\hat Y^s \subseteq Y^s$ of partial level $\lambda^s$ as a random subset of $Y^s$ that contains all extreme supported vectors $Y^s_{se}$ along with $\lambda^s$ (proportion) of the remaining vectors of $Y^s$. Examples of partial sets and the nadir point induced upper bounds for $\lambda^1 = 25$ and $\lambda^1 = 75$ can be seen in Plot~[Visualization plot]  . In our experiments, we create instances for different levels of $\lambda^s \in \{0, 25\%, 50\%, 75\%, 100\%\}$ for all subproblems.
+
+For each subproblem, we define the measure $\bar q^s = \frac{|Y^s|- |\hat G^s|}{|Y^s|-|G^s|}$ as the proportion of redundant vectors in $Y^s \setminus G^s$ identified by the algorithm [alg3_pair]. The measure is undefined when no redundant vectors exist $(Y^s = G^s)$, hence any such subproblem will not be included in the following when reporting aggregated results, unless explicitly stated.
+
+For each subproblem $s$ we seek to investigate the effect of $\lambda^s$ on $q^s$ and as well as the effect of the partial levels $\lambda^{s'}$ for $s' \neq s$. To simplify the analysis we assume all other subsets have the same partial level denoted $\lambda^{-s}$.
+
+We stress that $ \lambda^s $, does not correspond to the proportion of known vectors i.e, $\lambda^s \neq \frac{|\hat Y^s|}{Y^s}$, but instead $\lambda^s$ indicates the proportion of non-extreme vectors of the subproblem.
+In Table\~below, we present the actual relative size of the known sets for each method-subproblem, aggregated over all subproblem cardinalities $(|Y^s|)$ and subproblem count $(m)$.
+The table includes subproblems where no redundant vectors exists.
+Table\~[below] shows how the relative size of the partial sets $\frac{|\hat Y^s|}{|Y^s|}$ ranging from [0.02-0.09, 1] for subsets generated with u and m methods, while ranging from [0.72, 1] for subproblems generated with method l.
+
+<!-- Aggragated over all instances the levels $\lambda^s$ of $0, 25, 50, 75, 100$ corrosponds $\frac{hat}{normal}$ values $5, 30, 54, 79, 100$ for ul|u and $96, 97, 98, 99, 100$ for ul|l. Format table: -->
+
+TODO: combine the two tables and format in LaTeX: 
+
+```{r}
+dat %>% 
+   filter(other_equal == TRUE) %>% 
+   # filter(Ys_sizes != MGS_sizes) %>% 
+   group_by(subset_global_method, partial_levels) %>%
+   summarise(avg_rel_known = percent(mean(known_relative))) %>% 
+   pivot_wider(names_from = partial_levels, values_from = avg_rel_known) %>% 
+   style_table()
+```
+
+```{r}
+dat %>%
+   filter(other_equal == TRUE) %>% 
+   # filter(Ys_sizes != MGS_sizes) %>% 
+   group_by(subset_global_method, other_partial_levels) %>%
+   summarise(avg_rel_known = percent(mean(other_known_relative))) %>% 
+   pivot_wider(names_from = other_partial_levels, values_from = avg_rel_known) %>% 
+   style_table()
+```
+Table text: First part shows $\frac{|\hat Y^s|}{|Y^s|}$ as a function of $\lambda^s$, second part shows $\frac{|\hat Y^s|}{|Y^s|}$ as a function of $\lambda^{-1}$.
 
 
-In this section, we wish to answer the research question: "How many redundant vectors can be identified using [ALG3_pair]".
+We will limit the analysis to instances with $m = 2,3,4$ subproblems and $p = 2$ objectives. An instance is solved for each combination of partial levels, m, sizes and configuration.
 
-When solving MSPs, one can use bound sets of subproblems along with theorem [X] to decrease the search area for minimum generator vectors of the subproblems. 
-<!-- Removing subsets which do not satisfy the condiation X.1 as such regions would only include redundant vectors. -->
-ALG3_pair uses bound set information of subsets to identify redundant vectors of subproblems. We will use the result of ALG3_pair as a proxy, of how many vectors one can expect to remove from the search areas of subproblems using theorem [X]. 
-
-We want to see how many of the redundant vectors $Y^s \setminus G^s $ that can be identified by the algorithm [ref alg3_pair] using lower and upper bound sets $L^s, U^s$ for each subproblem. In the following, $G$ denotes any minimum generator set and $\hat{G}$ denotes the generator set returned by [ALG3_pair].
-
-We expect, that the number of identified redundant vectors increase in the quality of the bound sets. 
-To test this hypothesis, we will define a variaty of lower and upper bound sets for each instance used in [MGS study]. For each subproblem we will generate subsets of nondominated subproblem vectors $\hat Y^s \subseteq Y^s_N$ and use these to define bound sets. Motivated by the fact that all supported extreme vectors of subproblems must be part of any generator set, and hence must be computed we generate bound sets which always assume that these vectors are known in the subproblems. We will compare two types of lower bound sets: $L^s = conv(Y_{se}^s)_N$ and $L^s = Y^s_N$. 
-<!-- Adding the assumption that $L^2 = Y^2$, improves the lower bound of used to identify redundant vectors of $Y^1$.  -->
-Given a subset $\hat{Y}^s \subseteq Y^s_N$ we will define an upper bound set using the local nadir vectors of $\hat Y^s$. $[U(\hat Y) = \bigcup_{i}{(y^{i+1}_1,y^i_2)}]$. 
-
-Given a $\lambda^s \in [0,1]$ we will define a subset of partial level $\lambda^s$ as one of the smallest subsets $\hat{ Y^s} \subseteq Y^s$ which satisfies $Y_{se}^s \subseteq \hat Y^s$ and $|\hat Y^s| \ge |Y_{se}^s| + |Y^s \setminus Y_{se}^s| $. i.e. we define a partially known set of partial level $\lambda^s$ as a subset of $Y^s$ which contains all extreme supported vectors along with $\lambda^s$ of the remaining vectors of $Y^s$. In our experiments we choose a random subset which satisfies the condition. We create instances for different levels of $\lambda^s \in \{0, 25\%, 50\%, 75\%, 100\%\}$ for all subproblems.
-
-Total instances:
-for a problem of size $m$ we get $5^m$ instances of varying partial levels, when creating all possible partial level combinations. 
-
+TODO: add a combinatorial argument to why $m = 5$ is skipped.
+Use the combinatorial argument to count the total number of subproblems.
 
 <!-- We wish to investigate how the quality of the bound sets affect the number of redundant vectors which can be identified by [ref alg3_pair]. -->
 
-For each instance and subproblem $s \in S$, we define the measure $\bar q^s = \frac{|Y^s|- |\hat G^s|}{|Y^s|-|G^s|}$ as the proportion of redundant vectors in $Y^s \setminus G^s$ which are identified by the algorithm [alg3_pair]. In case $Y^s = G^s$, we define $\bar q^s = 1$ as all redundant vectors in $\emptyset$, are identified. (We might only show statistics where $|Y^s| \neq |G^s|$). To show the number of redundant vectors that are identified we consider the statistic $\bar t^s = \frac{|Y^s|-|\hat G^s|}{|Y^s|}$, i.e. the amount of vectors identified relative to the number of subproblem vectors.
-
+<!-- To show the number of redundant vectors that are identified we consider the statistic $\bar t^s = \frac{|Y^s|-|\hat G^s|}{|Y^s|}$, i.e. the amount of vectors identified relative to the number of subproblem vectors. -->
 
 <!-- ### Upper bound sets -->
 
 <!-- We now consider the effects of the quality of the upper bound sets used: -->
 
+<!-- Apply filters: -->
 
+```{r}
+dat_filtered <- dat %>% 
+   filter(other_equal == TRUE) %>% 
+   filter(any_L_is_U == FALSE)
+```
 
-<!-- (Samme plot uden $G^s = Y_N^s$) -->
-### Plot A
+A total of `r dat_filtered %>% filter(Ys_sizes == MGS_sizes) %>% nrow()` out of `r dat %>% nrow()` subproblems satisfied $Y^s = G^s$, which are skipped in the following analysis.
+
+```{r}
+dat_filtered <-  dat_filtered %>% 
+   filter(Ys_sizes != MGS_sizes)
+```
+
+## Aggregated results
+
+<!-- For each global generation method $u,ul, m$ and subproblem generation method $u,l,m$ we consider $\bar{q}^M = \frac{1}{S^M}\sum_{s \in S^M} q^s$ -->
+
+TODO: fix group_by - first subproblem, then instance then all
+
+Aggregated over all instances using the lower bound sets defined by the extreme supported solutions, the ranges (average) of the $q^s$ values for each configuration were `r dat_filtered %>% group_by(subset_global_method) %>% summarise(min_q = min(q_stats_check), max_q = max(q_stats_check), avg_q = mean(q_stats_check)) %>%  format_tibble_latex()`.
+We immediately see that no redundant vectors were identified in the u\|u subproblems.
+For these subsets, the upper bound consists often of only the nadir points, which is a bad representation of $Y_N^s$ resulting in low $\bar q^s$ values.
+For the remaining configurations ul\|u and m\|m the algorithm managed to identify a significant number of redundant vectors, resulting in large $q^s$ values.
+<!-- We attribute this to the fact that these subproblem contain few extreme supported vectors which results in weak lower bound sets. -->
+
+<!-- When aggregating over the sizes of the subproblems we see a slight increase in $q^s$ as the size of the subproblems increase. -->
+
+<!-- `r dat_filtered %>% group_by(subset_global_method = factor(Ys_sizes)) %>% summarise(min_q = min(q_stats_check), max_q = max(q_stats_check), avg_q = mean(q_stats_check)) %>%  format_tibble_latex()`. That is, altough the denominator increases in  -->
+
+<!-- This i likely because the upper bound sets for a fixed partial level tends to be better when more subproblem vectors are known even when the total subproblem vectors also increase. -->
+
+<!-- Overall we see the following trend between partial levels $\lambda^s$ and the average $q^s$ values. -->
+
+Averaging over all subproblems, for each partial levels $\lambda^s$, we get the $q^s$ values `r dat_filtered %>% group_by(subset_global_method = partial_levels ) %>% summarise(avg_q = mean(q_stats_check)) %>% format_tibble()`.
+Overall, we see a clear improvement when increasing the known partial level.
+
+<!-- ### Plot A -->
 
 ```{r}
 
 dat %>%
    filter(Ys_sizes != MGS_sizes) %>% 
    filter(other_equal == TRUE) %>% 
-  # filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
   filter(any_L_is_U == FALSE) %>% 
+  # filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
   # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>%
   ggplot(aes(x = partial_levels, y = q_stats_check, color = factor(subset_global_method))) +
   geom_jitter() +
@@ -490,106 +598,117 @@ dat %>%
   # theme_minimal()
 ```
 
+<!-- Description -->
 
+To further investigate the results, the $q^s$ values relative to partial levels $\lambda^s$ (x-axis), $\lambda^{-s}$ (columns), and subproblem count $m$ (rows), are presented in Plot\~A, with a color for each configuration.
 
-### Plot B
+Having filtered out the cases where $Y^s = G^s$, and considering only lower bound sets defined by extreme supported vectors, plot\~A contains points for each subproblem $q^s$ value, with a trend line defined by the average for each partial level $\lambda^s$.
 
-(Other plot with line/color for each partial level and row for each instance|subproblem method)
+<!-- Effects of lambda^s -->
 
+Firstly, note that for fixed $\lambda^{-s}$ (column), $m$ (row), and configuration (color), the average $q^s$ values increase monotonically in $\lambda^s$ for the subproblems m\|m and ul\|u.
+We again note that for u\|u instances, the algorithm failed to identify any redundant vectors, as previously seen in the aggregate statistics, which we explained by the low-quality lower bound set.
+In the sequel, we will see how this changes when the stronger lower bound sets are used.
 
+<!-- Decreasing marginal utility -->
 
-```{r}
+Each such line increases with $\lambda^s$, but the derivative of $q^s$ with respect to $\lambda^s$ decreases, indicating diminishing returns in identifying redundant vectors as the upper bound quality increases.
+
+In summary, more information of subproblems results in more identified redundant vectors, but the effect is decreasing in the amount of vectors known.
+
+<!-- Effect of lambda^-s -->
+
+To see the effect of changing $\lambda^{-s}$ for fixed configuration (color) and $\lambda^s$ value (x-axis), observe that the average $q^s$ values increase in $\lambda^{-s}$ (moving right between subplots).
+We see a consistent increasing trend for m\|m and a small but monotone increase for ul\|u.
+The small effect on $q^s$ when increasing $\lambda^{-s}$ in the ul\|u case can be explained by the fact that a large increase in $\lambda^{-s}$ values corresponds to a small increase in the relative known vectors $\frac{|\hat Y^s|}{|Y^s|}$ as reported in the table\~[above].
+We therefore have the consistent interpretation showing that $q^s$ increases in the quality of the upper bound sets.
+
+<!-- Effect of m -->
+
+Looking at Plot\~A for fixed partial levels $\lambda^s$, $\lambda^{-s}$ and configuration (color), we see the effects of $m$ on $q^s$ by moving vertically between subplots.
+We hypothesize that $q^s$ increase in $m$ as fewer vectors are needed when increasing $m$.
+In particular, we expect $|G^s|$ to decrease faster than $|\hat G^s|$ as the 'scope' of finding MGS is more extensive than the pairwise method for identifying redundant vectors.
+Consider the example where $m=3$, and a subproblem vector in Subset 1 is needed in the MS $Y^{12} = (Y^1 + Y^2)_N$, but redundant when considering the global MS: $Y_n = (Y^{12} + Y^3)_N$ .
+Such a vector, however, would not necessarily be identified by ALG_3 which only checks pairwise for dominance.
+
+For m\|m, we see a clear tendency that $q^s$ decreases as a function of $m$, implying that the MGS decrease more than the RGS returned by the algorithm.
+Surprisingly, we do not see this trend in the ul\|u case, which is likely a result of the generation method where not all subproblems are created using the same generation method. For $m=2$ has methods $ull$ and $m=4$ has $uull$. As such, the effect of $m$ is inconclusive.
+
+<!-- ### Plot B -->
+
+<!-- (Other plot with line/color for each partial level and row for each instance\|subproblem method) -->
+
+```{r, eval=FALSE}
+
+# Plot B
 
 dat %>% 
+  filter(subset_global_method != 'u|u') %>%
+  # filter(Ys_sizes == 50) %>%
   filter(other_equal == TRUE) %>% 
   filter(any_L_is_U == FALSE) %>% 
   filter(Ys_sizes != MGS_sizes) %>%
-  # filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
-   # filter(any_L_is_U == FALSE) %>%
-  # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>% 
-  # filter(Ys_sizes != MGS_sizes) %>% # ignore G^s = Yn^s case
-   # filter(subproblem_id == 1) %>% # same 'weight' for all instances
-   # filter(m == 2) %>%
-    # filter(Ys_sizes == 100) %>%
-  # filter(filename == 'prob-2-50|50-ul-2_1.json') %>% 
-  # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>%
-  ggplot(aes(x = partial_levels, y = q_stats_check, color = as.factor(other_partial_levels))) +
+  ggplot(aes(x = partial_levels, y = q_stats_check, linestyle = 'dashed', color = as.factor(other_partial_levels))) +
   geom_jitter() +
    stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
   facet_grid(subset_global_method~m) +
-  # facet_grid(m~other_partial_levels_factor, ncol = 2) +
-  # stat_summary(aes(y = removed/Ys_sizes), fun = mean, geom = "smooth", linetype = "dashed", se = FALSE) +
   labs(
     color = expression(bar(lambda)^{-s} ~ "partial level of other subproblems S\\{s}"),
     x = expression(lambda^s~  "partial level of subproblem s"),
     y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
     title = "instance|subproblem Method"
   ) 
-
-# +
-  # theme_minimal()
 ```
-
-```{r, eval=FALSE}
-
-dat %>% 
-  filter(other_equal == TRUE) %>% 
-  filter(any_L_is_U == FALSE) %>% 
-   filter(Ys_sizes != MGS_sizes) %>% 
-  # filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
-   # filter(Ys_sizes != MGS_sizes) %>% 
-   # filter(any_L_is_U == FALSE) %>%
-  # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>% 
-  # filter(Ys_sizes != MGS_sizes) %>% # ignore G^s = Yn^s case
-   # filter(subproblem_id == 1) %>% # same 'weight' for all instances
-   # filter(m == 2) %>%
-    # filter(Ys_sizes == 100) %>%
-  # filter(filename == 'prob-2-50|50-ul-2_1.json') %>% 
-  # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>%
-  ggplot( aes(x = known_relative, y = q_stats_check, color = factor(round(other_known_relative,2)))) +
-  geom_point() +
-   # stat_summary(fun = mean, geom = "smooth", se = FALSE) +
-   # geom_smooth( method = "lm", se = FALSE) + # Add linear regression
-   # geom_smooth(se= FALSE) +
-  facet_grid(m~subset_global_method) +
-  # facet_grid(m~other_partial_levels_factor, ncol = 2) +
-  # stat_summary(aes(y = removed/Ys_sizes), fun = mean, geom = "smooth", linetype = "dashed", se = FALSE) +
-  labs(
-    title = expression(bar(lambda)^{-s} ~ "partial level of other subproblems S\\{s}"),
-    x = expression(lambda^s~  "partial level of subproblem s"),
-    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
-    color = "instance|subproblem Method"
-  )
-
-# +
-  # theme_minimal()
-```
-
-
 
 <!-- OBS: The line averages are over all subproblems, not instances. That is, instances with m=4 have higher weight than instances with m = 2. There are more instances per filename (MSP instance) and more subproblems per instance. -->
 
-In plot [above] we see how the proportion of redundant vectors identified by [alg3_pair] ($\bar q^s$) varies for different partial levels $\lambda^s$ of both a subproblem and the average partial level of the other subproblems for the same instance $\bar \lambda^{-s} = \frac{1}{|S|-1}\sum_{s' \neq s}\lambda^{s'}$.
+<!-- In plot [above] we see how the proportion of redundant vectors identified by [alg3_pair] ($\bar q^s$) varies for different partial levels $\lambda^s$ of both a subproblem and the average partial level of the other subproblems for the same instance $\bar \lambda^{-s} = \frac{1}{|S|-1}\sum_{s' \neq s}\lambda^{s'}$. -->
 
-We find that $\bar q^s$ increases in the partial level $\lambda^s$ and in $\bar \lambda^{-s}$ for the methods $ul|u$ and $m|m$.
+<!-- We find that $\bar q^s$ increases in the partial level $\lambda^s$ and in $\bar \lambda^{-s}$ for the methods $ul|u$ and $m|m$. -->
 
-For subsets $s$ of type $ul|u$ with $\lambda^s = 0$, the upper bound consists of only the nadir point which is a bad approximation of $Y_N^s$ resulting in low $\bar q^s$ values. Increasing $\lambda^s$ and adding vectors to $\hat Y^s$ improves the quality of the upper bound which in turn increases the $\bar q^s$ values. This explains the initial jump in the $\bar q^s$ values for $ul|u$ subproblems which does not appear for $m|m$ instances where the initial approximation are likely to include several vectors and not only the subproblem nadir vectors.
+<!-- Increasing $\lambda^s$ and adding vectors to $\hat Y^s$ improves the quality of the upper bound which in turn increases the $\bar q^s$ values. -->
 
-$l|l$ and $ul|l$ are special cases where all redundant vectors are identified only because no redundant vectors exist. Similarly for most instances $u|u$ no redundant vectors are identified apart from the case where all other subsets are fully known and the stronger lower bound is used.
+<!-- This explains the initial jump in the $\bar q^s$ values for $ul|u$ subproblems which does not appear for $m|m$ instances where the initial approximation are likely to include several vectors and not only the subproblem nadir vectors. -->
 
-In the final row of [above plot] we compare the two cases where the lower bound sets of the other subproblems are $L^s = conv(Y_{se}^s)_N$ [100] or $L^s = Y^s_N$ [all]. Here we see a significant incease in $\bar q^s$ values when using the better lower bound. In our experiments we only consider two lower bound sets but one could also consider lower bound sets based on the extreme supported solutions and remove known empty search regions by adding local nadir vectors.
+<!-- $l|l$ and $ul|l$ are special cases where all redundant vectors are identified only because no redundant vectors exist. -->
 
-
-
-
-
-Note: The [alg3_pair] is ineffective at identifying the redundant vectors in the $u|u$ case, only being able to remove vectors when all other subsets are known and using the better lower bound sets. We know from the above section [MGS empirical] that there are relatively many for $p=2$ and $m > 2$. Instead of the pairwise approach taken in [alg3_pair], perhaps a sequential approach will prove effective for these instances.
+<!-- Similarly for most instances $u|u$ no redundant vectors are identified apart from the case where all other subsets are fully known and the stronger lower bound is used. -->
 
 ### Lower bound sets
 
+<!-- We now compare the two cases where the lower bound sets of the other subproblems are $L^s = conv(Y_{se}^s)_N$ [100] or $L^s = Y^s_N$ [all]. -->
 
+We will now consider the effect of the lower bound set quality on $q^s$ for fixed $\lambda^{-s} = 100$.
+Both types of lower bound sets $L^s = conv(Y^s_{se})_N$ and $L^s = Y^s_N$ are visualized in subplot a and b, respectively, in Figure\~[Visual].
+We summarise the results in Plot ALB. For fixed configuration (color), $\lambda^{s}$ (x-axis), we see a large effect on the $q^s$ values when using the tighter lower bound set (moving right).
+<!-- u|u --> Unlike the previous plot~[A ref], we see a large improvement in $q^s$ values for u\|u subproblems when using the stronger lower bound sets.
+The subplots in the right column also show how $q^s$ is increasing in $\lambda^s$ for u\|u subproblems as previously seen for the cases m\|m and ul\|u.
+We also find a significant improvement in $q^s$ values for the ul\|u and m\|m cases using the stronger lower bound sets.
 
-TODO: del op for m, tjek om der er samme stigning for all m ✅  Tabel er  nu fordelt på m.
+<!-- Here we see a significant incease in $\bar q^s$ values when using the tighter lower bound set.  -->
+
+In our experiments, we only consider two lower bound sets with rather extreme quality differences for some subproblems.
+One could also consider lower bound sets based on the extreme supported solutions and remove known empty search regions by adding local nadir vectors, i.e, a hybrid lower bound set.
+
+<!-- Summary of subsection -->
+
+To summarise, the empirical study on the effectiveness of ALG3_pair, we observe that a significant number of redundant vectors are identified in most subproblems when good upper and lower bound sets are known. In some cases, a smoll inprovement in an upper bound leads to substantial improvement in the ALG3_pair performance.
+
+This suggests that using generator upper bound sets in ALG3_pair can effectively avoid generating redundant subproblem solutions when solving subproblems, especially when good bound sets are available.
+
+<!-- To summarise, alg3_pair can often idenfity redundant vectors.  -->
+
+<!-- Better known sets => Better bound sets => better q^s values => more redundant vectors identified => More redundant can be avoided by using RGS bound sets when solving subproblems. -->
+
+<!-- Note: The [alg3_pair] is ineffective at identifying the redundant vectors in the $u|u$ case, only being able to remove vectors when all other subsets are known and using the better lower bound sets. -->
+
+<!-- We know from the above section [MGS empirical] that there are relatively many for $p=2$ and $m > 2$. -->
+
+<!-- Instead of the pairwise approach taken in [alg3_pair], perhaps a sequential approach will prove effective for these instances. -->
+
+# end of text
+
+TODO: del op for m, tjek om der er samme stigning for all m ✅ Tabel er nu fordelt på m.
 
 ```{r}
 # overall average
@@ -598,7 +717,8 @@ TODO: del op for m, tjek om der er samme stigning for all m ✅  Tabel er  nu fo
 #    summarise(counts = n(), q_mean = mean(q_stats_check, rm.na=T))
 
 # averages by instance first, then overall
-dat %>% filter(other_partial_levels == 100) %>% 
+dat %>% 
+   filter(other_partial_levels == 100) %>% 
    filter(other_equal == TRUE) %>% 
    filter(Ys_sizes != MGS_sizes) %>% 
   filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
@@ -619,13 +739,10 @@ dat %>% filter(other_partial_levels == 100) %>%
     't^s, L=Yn' = removed_rel_mean_TRUE ,
   ) %>%
    style_table()
-   
-
-
 ```
 
-In the table [ref], we summarize results for $m=2, p=2$ where $\hat Y^2 = Yn^2$, comparing the effects of the different lower bounds $L^s = Y_N$ and $L^s = conv(Y^s_N)$. This shows that the improved lower bound set obtained using the assumption, significantly improves the number of redundant vectors that can be identified by [ref alg3_pair].
-
+In the table [ref], we summarize results for $m=2, p=2$ where $\hat Y^2 = Yn^2$, comparing the effects of the different lower bounds $L^s = Y_N$ and $L^s = conv(Y^s_N)$.
+This shows that the improved lower bound set obtained using the assumption, significantly improves the number of redundant vectors that can be identified by [ref alg3_pair].
 
 ### Plot A version
 
@@ -651,6 +768,13 @@ dat %>%
   # theme_minimal()
 ```
 
+u\|u er konstant q\^s = 0 for alle partielle niveauer (Når L\^(-s) er fra de 2 ekstreme punkter.
+Dette skyldes at lower bound der bruges til at fjerne punkter er ringe.
+I modsætning hertil fås høje q\^s værdier for u subsets i instanserne ul\|u.
+Nævn kun for i denne sektion.
+Der opnås også højrere q\^s værdier når L\^(-s) = Yn\^(-s).
+Igen bedre LB =\> bedre q\^s Main point: Better known sets =\> Better bound sets =\> better q\^s values =\> more redundant vectors identified =\> More redundant can be avoided by using RGS bound sets when solving subproblems.
+In some cases a small improvement of an upper bound on Yn\^s can give a much better improvement on the RGS bound of \hat G\^s.
 
 ### Plot B version
 
@@ -676,10 +800,7 @@ dat %>%
   # theme_minimal()
 ```
 
-
-
 # other plots (relative known points)
-
 
 ```{r, eval=T}
 dat %>% 
@@ -702,13 +823,13 @@ labs(
   # theme_minimal()
 ```
 
-Same plot as above, but now we consider the relative size of the known subsets $\frac{|\hat Y^s|}{Y_N^s}$ instead of the partial level ($\lambda^s$). Again we see that $\bar q^s$ increases in both the number of known vectors.
-
+Same plot as above, but now we consider the relative size of the known subsets $\frac{|\hat Y^s|}{Y_N^s}$ instead of the partial level ($\lambda^s$).
+Again we see that $\bar q^s$ increases in both the number of known vectors.
 
 # other plots (removed points)
 
-
 In the following, we plot the proportion of vectors removed from subproblems ($\bar t^s$).
+
 ```{r}
 dat %>% 
    filter(other_equal == TRUE) %>% 
@@ -733,21 +854,18 @@ dat %>%
 
 (Maybe add the above lines in the first plot as dashed lines?)
 
-In the plot [above], we plot the number of redundant vectors removed from each subproblem relative to the subproblem size. Here it is clear that no redundant vectors are found in the cases $ul|l$ and $u|u$.
-
+In the plot [above], we plot the number of redundant vectors removed from each subproblem relative to the subproblem size.
+Here it is clear that no redundant vectors are found in the cases $ul|l$ and $u|u$.
 
 # Other plots (removed unknown vectors)
 
 Compare removed $Y^s \setminus \hat G^s$ and removed unknown $Y^s \setminus \hat G^s \setminus \hat Y^s$.
 
 Same plots as above, but statistics for unknown $(U)$ vectors.
-$$\bar q_U^s = \frac{|Y^s \setminus \hat G^s \setminus \hat Y^s|}{|Y^s|-|G^s|}$$
-$$\bar t_U^s = \frac{|Y^s \setminus \hat G^s \setminus \hat Y^s|}{|Y^s|}$$
+$$\bar q_U^s = \frac{|Y^s \setminus \hat G^s \setminus \hat Y^s|}{|Y^s|-|G^s|}$$ $$\bar t_U^s = \frac{|Y^s \setminus \hat G^s \setminus \hat Y^s|}{|Y^s|}$$
 
 # Some 3d plots
 
-
-  
 ```{r}
 # Load necessary libraries
 library(ggplot2)
@@ -804,15 +922,51 @@ fig
 }
 
 ```
-  
+
 ```{r}
 knitr::include_url("3d_plot_2.html", height = "700px")
 knitr::include_url("3d_plot_3.html", height = "700px")
 knitr::include_url("3d_plot_4.html", height = "700px")
 ```
-  
 
-# average by 
+# other plots (q as function of known_relative grouped)
+
+```{r, eval=FALSE}
+
+dat %>% 
+  filter(other_equal == TRUE) %>% 
+  filter(any_L_is_U == FALSE) %>% 
+   filter(Ys_sizes != MGS_sizes) %>% 
+  # filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+   # filter(Ys_sizes != MGS_sizes) %>% 
+   # filter(any_L_is_U == FALSE) %>%
+  # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>% 
+  # filter(Ys_sizes != MGS_sizes) %>% # ignore G^s = Yn^s case
+   # filter(subproblem_id == 1) %>% # same 'weight' for all instances
+   # filter(m == 2) %>%
+    # filter(Ys_sizes == 100) %>%
+  # filter(filename == 'prob-2-50|50-ul-2_1.json') %>% 
+  # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>%
+  ggplot( aes(x = known_relative, y = q_stats_check, color = factor(round(other_known_relative,2)))) +
+  geom_point() +
+   # stat_summary(fun = mean, geom = "smooth", se = FALSE) +
+   # geom_smooth( method = "lm", se = FALSE) + # Add linear regression
+   # geom_smooth(se= FALSE) +
+  facet_grid(m~subset_global_method) +
+  # facet_grid(m~other_partial_levels_factor, ncol = 2) +
+  # stat_summary(aes(y = removed/Ys_sizes), fun = mean, geom = "smooth", linetype = "dashed", se = FALSE) +
+  labs(
+    title = expression(bar(lambda)^{-s} ~ "partial level of other subproblems S\\{s}"),
+    x = expression(lambda^s~  "partial level of subproblem s"),
+    y = expression(bar(q)^s == frac(abs(Y^s) - abs(hat(G)^s), abs(Y^s) - abs(G^s))),
+    color = "instance|subproblem Method"
+  )
+
+# +
+  # theme_minimal()
+```
+
+# average by
 
 ```{r}
 
@@ -835,11 +989,10 @@ dat %>%
   ) +
   theme_minimal()
 ```
+
 (dashed lines shows $removed\_unkown / |Y_N^s|$)
 
-
 The relative plot from above:
-
 
 ```{r}
 dat %>% 
@@ -857,7 +1010,6 @@ labs(
 ) +
   theme_minimal()
 ```
-
 
 ```{r, eval=FALSE}
 calcR <- function(card_mgs, card_yns, filename) {
@@ -929,7 +1081,6 @@ dat1 <- dat  %>%  select(filename,partial_levels = partial_levels, card_yns = ma
   print()
 
 ```
-
 
 ```{r, eval=FALSE}
 
@@ -1045,8 +1196,3 @@ dat1Long |>
   group_by(p) |> 
   summarise(r = mean(r))
 ```
-
-
-
-
-
