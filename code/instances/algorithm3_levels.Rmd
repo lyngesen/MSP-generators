@@ -430,14 +430,25 @@ Total subproblems: `r dat %>% nrow()`
 
 ```{r}
 # calculate number of instances (original) and instances (with levels)
+
+m_check <- function(m){
+   if(m == 2){return(36)};
+   if(m == 3){return(96)};
+   if(m == 4){return(126)};
+}
+
+
 dat %>% 
+   # filter(other_equal) %>% 
    group_by(filename,filename_levels) %>% 
    summarise(count = 1, m = max(m)) %>% 
    group_by(filename) %>% 
    summarise(count = n(), m = max(m)) %>% 
-   mutate(check = if_else(m==2, 6**m, 65)) %>%   # all (lower bound) option added for m = 2 
-   # filter(check != count) %>% 
+   mutate(check = if_else(m==2, 6**m, if_else(m==3,96,126))) %>%   # all (lower bound) option added for m = 2
+   # mutate(check = m_check(m)) %>%   # all (lower bound) option added for m = 2
+   # filter(check != count) %>%
    style_table()
+
 
 ```
 
@@ -446,6 +457,25 @@ Total instances solved: `r dat %>% group_by(filename_levels) %>% summarise() %>%
 Total instances: `r dat %>% group_by(filename) %>% summarise(count = 1, m = mean(m) ) %>%  mutate(check = if_else(m==2, 6**m, 5**m)) %>%  summarise(total = sum(check))`
 
 TODO (check all instances are solved).
+
+
+```{r}
+# total instances
+dat %>% nrow()
+# total p=2 instances 
+dat %>% group_by(filename) %>% summarize() %>% nrow()
+# total partial level variations
+total_solved <- dat %>% group_by(filename_levels) %>% summarize() %>% nrow()
+# check
+total_check <- dat %>% group_by(filename) %>% summarize(m = max(m)) %>% mutate(check = if_else(m==2, 36,if_else(m==3,96,126)))%>% summarize(total_instances = sum(check)) %>% pull()
+
+#total subproblems 
+dat %>%  nrow()
+```
+
+A total of `r total_solved` out of `r total_check` (`r percent(total_solved/total_check)`) instances was solved.
+
+With a total of `r dat %>% nrow()` subproblems.
 
 ```{r}
 
@@ -497,6 +527,8 @@ In Table\~below, we present the actual relative size of the known sets for each 
 The table includes subproblems where no redundant vectors exists.
 Table\~[below] shows how the relative size of the partial sets $\frac{|\hat Y^s|}{|Y^s|}$ ranging from [0.02-0.09, 1] for subsets generated with u and m methods, while ranging from [0.72, 1] for subproblems generated with method l.
 
+ `r dat_filtered %>% group_by(subset_global_method, filename_levels) %>% summarise(other_known_relative = mean(other_known_relative)) %>%  summarise(min_q = min(other_known_relative), max_q = max(other_known_relative), avg_q = mean(other_known_relative)) %>% format_tibble_latex()`
+
 <!-- Aggragated over all instances the levels $\lambda^s$ of $0, 25, 50, 75, 100$ corrosponds $\frac{hat}{normal}$ values $5, 30, 54, 79, 100$ for ul|u and $96, 97, 98, 99, 100$ for ul|l. Format table: -->
 
 TODO: combine the two tables and format in LaTeX: 
@@ -507,8 +539,8 @@ dat %>%
    # filter(Ys_sizes != MGS_sizes) %>% 
    group_by(subset_global_method, partial_levels) %>%
    summarise(avg_rel_known = percent(mean(known_relative))) %>% 
-   pivot_wider(names_from = partial_levels, values_from = avg_rel_known) %>% 
-   style_table()
+   pivot_wider(names_from = partial_levels, values_from = avg_rel_known) 
+
 ```
 
 ```{r}
@@ -517,8 +549,8 @@ dat %>%
    # filter(Ys_sizes != MGS_sizes) %>% 
    group_by(subset_global_method, other_partial_levels) %>%
    summarise(avg_rel_known = percent(mean(other_known_relative))) %>% 
-   pivot_wider(names_from = other_partial_levels, values_from = avg_rel_known) %>% 
-   style_table()
+   pivot_wider(names_from = other_partial_levels, values_from = avg_rel_known) 
+
 ```
 Table text: First part shows $\frac{|\hat Y^s|}{|Y^s|}$ as a function of $\lambda^s$, second part shows $\frac{|\hat Y^s|}{|Y^s|}$ as a function of $\lambda^{-1}$.
 
@@ -544,7 +576,9 @@ dat_filtered <- dat %>%
    filter(any_L_is_U == FALSE)
 ```
 
-A total of `r dat_filtered %>% filter(Ys_sizes == MGS_sizes) %>% nrow()` out of `r dat %>% nrow()` subproblems satisfied $Y^s = G^s$, which are skipped in the following analysis.
+A total of `r dat_filtered %>% filter(Ys_sizes == MGS_sizes) %>% nrow()` out of `r dat %>% nrow()` subproblems satisfied $Y^s = G^s$, which are skipped in the following analysis. 
+`r percent(dat_filtered %>% filter(Ys_sizes == MGS_sizes) %>% nrow()/ dat %>% nrow())``
+
 
 ```{r}
 dat_filtered <-  dat_filtered %>% 
@@ -585,7 +619,7 @@ dat %>%
   # filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
   # filter(!(any_L_is_U == TRUE & other_partial_levels_factor != "all")) %>%
   ggplot(aes(x = partial_levels, y = q_stats_check, color = factor(subset_global_method))) +
-  geom_jitter() +
+  geom_point() +
    stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
   facet_grid(m~other_partial_levels_factor) +
   labs(
@@ -649,7 +683,7 @@ dat %>%
   filter(any_L_is_U == FALSE) %>% 
   filter(Ys_sizes != MGS_sizes) %>%
   ggplot(aes(x = partial_levels, y = q_stats_check, linestyle = 'dashed', color = as.factor(other_partial_levels))) +
-  geom_jitter() +
+  geom_point() +
    stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
   facet_grid(subset_global_method~m) +
   labs(
@@ -681,7 +715,7 @@ dat %>%
 We will now consider the effect of the lower bound set quality on $q^s$ for fixed $\lambda^{-s} = 100$.
 Both types of lower bound sets $L^s = conv(Y^s_{se})_N$ and $L^s = Y^s_N$ are visualized in subplot a and b, respectively, in Figure\~[Visual].
 We summarise the results in Plot ALB. For fixed configuration (color), $\lambda^{s}$ (x-axis), we see a large effect on the $q^s$ values when using the tighter lower bound set (moving right).
-<!-- u|u --> Unlike the previous plot~[A ref], we see a large improvement in $q^s$ values for u\|u subproblems when using the stronger lower bound sets.
+Unlike the previous plot~[A ref], we see a large improvement in $q^s$ values for u\|u subproblems when using the stronger lower bound sets.
 The subplots in the right column also show how $q^s$ is increasing in $\lambda^s$ for u\|u subproblems as previously seen for the cases m\|m and ul\|u.
 We also find a significant improvement in $q^s$ values for the ul\|u and m\|m cases using the stronger lower bound sets.
 
@@ -705,6 +739,9 @@ This suggests that using generator upper bound sets in ALG3_pair can effectively
 <!-- We know from the above section [MGS empirical] that there are relatively many for $p=2$ and $m > 2$. -->
 
 <!-- Instead of the pairwise approach taken in [alg3_pair], perhaps a sequential approach will prove effective for these instances. -->
+
+
+
 
 # end of text
 
@@ -746,6 +783,31 @@ This shows that the improved lower bound set obtained using the assumption, sign
 
 ### Plot A version
 
+
+```{r}
+dat %>% 
+  filter(other_equal == TRUE) %>% 
+  filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+  filter(L_is_U == FALSE) %>% 
+  filter(Ys_sizes != MGS_sizes) %>% 
+  filter(other_partial_levels_factor %in% c("100",'all')) %>% 
+   group_by(subset_global_method) %>% 
+   summarize(n())
+```
+```{r}
+dat %>% 
+  filter(other_equal == TRUE) %>% 
+  filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
+  filter(L_is_U == FALSE) %>% 
+  filter(Ys_sizes != MGS_sizes) %>% 
+  filter(other_partial_levels_factor %in% c("100",'all')) %>% 
+   filter(q_stats_check> 0) %>% 
+   group_by(subset_global_method) %>% 
+   summarize(n())
+```
+
+
+
 ```{r}
 
 dat %>% 
@@ -755,7 +817,7 @@ dat %>%
    filter(Ys_sizes != MGS_sizes) %>% 
   filter(other_partial_levels_factor %in% c("100",'all')) %>% 
   ggplot(aes(x = partial_levels, y = q_stats_check, color = subset_global_method)) +
-  geom_jitter() +
+  geom_point() +
    stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
   facet_grid(m~other_partial_levels_factor) +
   labs(
@@ -787,7 +849,7 @@ dat %>%
    filter(Ys_sizes != MGS_sizes) %>% 
   filter(other_partial_levels_factor %in% c("100",'all')) %>% 
   ggplot(aes(x = partial_levels, y = q_stats_check, color =other_partial_levels_factor)) +
-  geom_jitter() +
+  geom_point() +
    stat_summary(fun = mean, geom = "smooth", se = FALSE) + 
   facet_grid(subset_global_method~m) +
   labs(
@@ -808,7 +870,7 @@ dat %>%
   filter(other_equal == TRUE) %>% 
   filter(Ys_sizes != MGS_sizes) %>% 
   ggplot(aes(x = known_relative, y = q_stats_check, color = subset_global_method)) +
-  geom_jitter() +
+  geom_point() +
    geom_smooth(method = "glm", se = FALSE) + # Add linear regression
   # facet_grid(m~round(other_known_relative,1)) +
   facet_grid(m~other_known_relative_factor) +
