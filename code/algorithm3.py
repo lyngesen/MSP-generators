@@ -22,6 +22,7 @@ import random
 import numpy as np
 # from numoy import linalg
 from matplotlib import pyplot as plt
+import collections
 from scipy.spatial import ConvexHull
 from functools import reduce
 import itertools
@@ -30,11 +31,12 @@ from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
-def get_partial(Y, level='all'):   
+def get_partial(Y, level='all', seed = 0):   
     Y = N(Y)
     Y2e_points = [y for y in Y if y.cls == 'se']
     Y2other_points = [y for y in Y if y.cls != 'se']
-    # random.shuffle(Y2other_points)
+    random.seed(seed)
+    random.shuffle(Y2other_points)
     match level:
         case 'all':
             return Y
@@ -610,6 +612,7 @@ def all_pairs_alg3():
 
 
 def algorithm3_run(MSP,levels = None, logger = None):
+    """ The actual function used for results """
     if levels is None:
         levels = [0 for s in range(MSP.S)]
     
@@ -619,6 +622,8 @@ def algorithm3_run(MSP,levels = None, logger = None):
     print(f"{MSP.S=}")
     Y_list = [methods.lex_sort(Y) for Y in MSP.Y_list]
     # Yse_list = [PointList([y for y in Y if y.cls == 'se']) for Y in MSP.Y_list]
+
+    print(f"{MSP.filename=}")
 
     L_list = []
     U_list = []
@@ -637,10 +642,9 @@ def algorithm3_run(MSP,levels = None, logger = None):
         if levels[s] == 'all':
             U_list.append(get_partial(MSP.Y_list[s], 1))
         else:
-            U_list.append(get_partial(MSP.Y_list[s], levels[s]/100))
+            U_list.append(get_partial(MSP.Y_list[s], levels[s]/100, seed = MSP.filename))
 
             
-
     print(f"{[len(Y) for Y in MSP.Y_list]=}")
     print(f"{[len(U) for U in U_list]=}")
 
@@ -730,7 +734,7 @@ def test_algorithm3_run():
 
     # for logging
     logname = 'algorithm3.log'
-    logging.basicConfig(level=logging.INFO, 
+    logging.basicConfig(level=logging.DEBUG, 
                         filename=logname,
                         format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
                         )
@@ -748,7 +752,8 @@ def test_algorithm3_run():
         ])
 
     # TI = MSPInstances(preset = 'algorithm1', p_options = (2,), m_options = (2,3,4), size_options = (100,200,), seed_options = (1,) ,ignore_ifonly_l=True)
-    TI = MSPInstances(p_options = (2,), m_options = (2,3), size_options = (50, 100,200, 300), seed_options = (1,) ,ignore_ifonly_l=True)
+    TI = MSPInstances(p_options = (2,), m_options = (2,3,4), size_options = (50, 100, 200, 300), seed_options = (1,2,3,4,5) ,ignore_ifonly_l=True)
+    # TI = MSPInstances(p_options = (2,), m_options = (2,3), size_options = (50, 100,200, 300), seed_options = (1,) ,ignore_ifonly_l=True)
 
     save_solution_dir = './instances/results/algorithm3_partial_levels/'
     save_prefix = 'alg3-'
@@ -762,38 +767,52 @@ def test_algorithm3_run():
     # MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-300|300-ul-2_3.json')
 
 
-    all_partial_levels = [0,25,50,75,100]
+    all_partial_levels = [0,25,50,75,100, 'all']
 
     
     solved_instances = set(os.listdir(save_solution_dir))
 
     for MSP in TI:
+    # for MSP in [MinkowskiSumProblem.from_json('./instances/problems/prob-2-50|50|50-ull-3_1.json')]:
+    # if True:
+
+        # MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-50|50-ul-2_1.json')
         
 
         for levels in itertools.product(*[all_partial_levels for s in range(MSP.S)]):
+        # for levels in [(75,74, 73)]:
+
             RGS_filename = save_prefix + MSP.filename.split('/')[-1].replace('.json', '-' + '|'.join((str(l) for l in levels)) + '.json' )
 
-            if RGS_filename in solved_instances:
-                print(f"SKIPPING (solved)")
+            
+            # or tuple([(l if not isinstance(l, str) else 101) for l in levels]) != tuple(sorted([(l if not isinstance(l, str) else 101) for l in levels])):
+            # only two kinds of levels, selv and other same lambda value
+            level_count_dict = collections.Counter(levels)
+            if len([v for v in level_count_dict.values() if v > 0]) > 2 or  len([v for v in level_count_dict.values() if v > 1]) > 1: 
+                logger.debug(f"Skipping, not valid combination {levels=}")
                 continue
-            # levels = [25, 75, 25]
-            print(f"{MSP=}")
-            print(f"{levels=}")
-            if False: # randomize Y_list
-                MSP.plot()
-                plt.show()
-                MSP.Y_list = [Y*random.randint(1, 4) for Y in MSP.Y_list]
-                MSP.plot()
-                plt.show()
-            # return
+            
+            
+
+            # if "all" in levels and MSP.S != 2:
+                # logger.debug(f"Skipping, only all for p=2 {levels=}")
+                # continue
+
+            if RGS_filename in solved_instances:
+                logger.debug(f"Skipping, already solved {RGS_filename=}")
+                continue
+
+            # print(f"{MSP=}")
+            # print(f"{levels=}")
+
+            logger.info("SOLVING " + RGS_filename )
             RGS = algorithm3_run(MSP, levels=levels, logger=logger)
 
-            # levels = [0 for s in range(MSP.S)]
-
-
-            print(f"{RGS_filename=}")
-
+            # print(f"{RGS_filename=}")
+            logger.info("SOLVED " + RGS_filename )
+            print(f"{RGS.statistics=}")
             RGS.save_json(save_solution_dir + RGS_filename)
+            logger.info("SAVED " + RGS_filename )
 
 
 
