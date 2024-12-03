@@ -209,27 +209,44 @@ class PointList:
         defined as Y1-Y2 = {y1+y2: for y1 in Y1, for y2 in Y2}
     __eq__(self,other)
         returns true if the two pointlist contains the same (and same amount of) points. Other attributes are ignored
+    __getitem__(i)
+        returns the Point at index i, to support slicing
     __sub__(self, other)
         returns the Minkowski difference of the two pointlists. 
         defined as Y1-Y2 = {y1-y2: for y1 in Y1, for y2 in Y2}
     __mul__(self, other)
         returns the (Minkowski) product of the two pointlists. 
         defined as Y1*Y2 = {y1*y2: for y1 in Y1, for y2 in Y2}
-    plot(l = 'LABEL', SHOW=True)
-        plots the set of points contained in PointList
-    dominates_point(y:Point)
-        checks if the PointList dominates the point y
-    weakly_dominates_point(y:point)
-        checks if the PointList weakly dominates the point y
-    get_nadir()
-        returns the nadir point of the set. Component-wise max point.
-    get_ideal()
-        returns the ideal point of the set. Component-wise min point.
+    as_dict
+        returns a dictionary version of the PointList object
+    as_np_array
+        retuns an np.array containg all points
     dominates(other)
         returns true of the pointlist dominates other. Use params for weakly,strict dominance
+    dominates_point(y:Point)
+        returns true if some point of the PointList dominates the point y
+    from_csv(path)
+        returns a PointList based on the file path, Only points are read no attributes
+    from_json(path)
+        returns a PointList based on the file path
+    from_raw(path)
+        returns a PointList based on the file path, only points are read no attributes. See save_raw for file description
+    get_ideal()
+        returns the ideal point of the set. Component-wise min point.
+    get_nadir()
+        returns the nadir point of the set. Component-wise max point.
+    plot(l = 'LABEL', SHOW=True)
+        plots the set of points contained in PointList
+    print_data()
+        prints the PointList
     save_csv(filepath)
         saves the pointlist in a csv format. ONLY points are saved, no statistics.
-    save_
+    save_json(filepath)
+        saves the pointlist in a json format. Uses the as_dict method
+    save_raw(filepath)
+        saves the pointlist in a raw format, these files are slightly more memory efficient and can be read by the C NonDomDC filter
+    weakly_dominates_point(y:point)
+        checks if the PointList weakly dominates the point y
     """
 
     points: tuple[Point] = ()
@@ -321,22 +338,22 @@ class PointList:
 
 
 
-    def __add__(self,other):
-        """
-        input: list of two PointList
-        output: Minkowski sum of sets
+    def __add__(self,other:Point):
+        """__add__. returns (PointList) with Minkowski sum of the two pointlists. Defined as Y1+Y2 = {y1+y2: for y1 in Y1, for y2 in Y2}
+        Args:
+            other (PointList): PointList
         """
         return PointList([y1 + y2 for y1 in self for y2 in other])
     
-    def __sub__(self,other):
-        """
-        input: list of two PointList
-        output: Minkowski subtration of sets
+    def __sub__(self,other:PointList):
+        """__sub__. returns (PointList) with Minkowski difference of the two pointlists. Defined as Y1-Y2 = {y1-y2: for y1 in Y1, for y2 in Y2}
+        Args:
+            other (PointList): PointList
         """
         return PointList([y1 - y2 for y1 in self for y2 in other])
 
 
-    def __mul__(self,other):
+    def __mul__(self,other:PointList):
         """
         input: list of two PointList
         output: Minkowski subtration of sets
