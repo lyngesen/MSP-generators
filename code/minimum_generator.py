@@ -165,7 +165,6 @@ def build_model_covering(Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
 
 
     if False: # Check uniqueness
-        pass
         # for each problem only one of the decision variables was chosen
 
         # for checking prob-2-200|200|200|200-mmmm-4_2.json
@@ -179,6 +178,10 @@ def build_model_covering(Y_list,Yn, Yn_nongenerated, C_dict, Y_fixed, Y_reduced)
         # model.cons.add(model.x[0,288] == 0) gives new solution
         # model.cons.add(model.x[1,257] == 0) adding makes infeasible
 
+        # for checking prob-2-300|300|300|300|300-lllll-5_2.json
+        # model.cons.add(model.x[1,262] == 0) #gives new solution but with objective value 1423 instead of 1422
+        pass
+        
 
     # Define objective
     def objective_rule(model):
