@@ -33,6 +33,9 @@ from copy import deepcopy
 import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
+import generator
+
+
 def plot_or_save(fig, fname: str):
     """ call to plot or save fig """
     if SAVE_PLOTS:
@@ -415,13 +418,13 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
 
     plt.xlabel('Objective 1')
     plt.ylabel('Objective 2')
-    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
-    plt.xlim(-1000,11000*2)
-    plt.ylim(-1000,11000*2)
+    # plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    # plt.xlim(-1000,11000*2)
+    # plt.ylim(-1000,11000*2)
+    plt.xlim(-10,303)
+    plt.ylim(-10,303)
     ax.append(fig.add_subplot(1, 3, 2))
 
-    # plt.xlabel('f"${_Yn1}$"')
-    # plt.ylabel('f"${_Yn2}$"')
 
     ax.append(fig.add_subplot(1, 3, 3, projection= projection ))
     # fig, ax = plt.subplots(ncols = 3, figsize=SIZE_LARGE_FIGURE, layout='constrained')
@@ -429,21 +432,29 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
 
     plt.xlabel('Objective 1')
     plt.ylabel('Objective 2')
-    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
-    plt.xlim(-1000,11000*1.9)
-    plt.ylim(-1000,11000*1.9)
-
+    # plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    # plt.xlim(-1000,11000*1.9)
+    # plt.ylim(-1000,11000*1.9)
+    plt.xlim(-10,500)
+    plt.ylim(-10,500)
     # ax[2].xlabel('Objective 1')
     # ax[2].plt.ylabel('Objective 2')
     # ax[2].tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
 
+
     Y1 = methods.lex_sort(Y1)
     Y2 = methods.lex_sort(Y2)
+    Y1.plot_color = '#CC3333'
+    Y2.plot_color = '#3399FF'
     Y1_color = Y1.plot_color   
     Y2_color = Y2.plot_color   
 
-    Y = Y1+Y2
+    Y = N(Y1)+N(Y2)
+
+
     Yn = N(Y)
+    Yn.plot_color = '#408000'
+    Yn.plot_color = '#408000'
     Yn_set = set(Yn.points)
 
     # ######################## Figure ax1 START ########################
@@ -452,8 +463,9 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
     
 
     if not matrix_only:
-        Y1.plot(ax = ax[0], l = f"${_Yn1}$", point_labels= point_labels)
-        Y2.plot(ax = ax[0], l = f"${_Yn2}$", point_labels= point_labels)
+        Y1.plot(ax = ax[0], l = f"${_Y1}$", point_labels= point_labels)
+        Y2.plot(ax = ax[0], l = f"${_Y2}$", point_labels= point_labels)
+        
 
     # # save or plot figure
     # plot_or_save(fig, fig_name)
@@ -466,8 +478,8 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
     if not matrix_only and plot_mapping:
         # Y1_MSP.plot(ax = ax[0], l = f"${_Yn1}\\rightarrow {_Yn}$",color = "yellow", marker='1')
         # Y2_MSP.plot(ax = ax[0], l = f"${_Yn2}\\rightarrow {_Yn}$", color = "yellow", marker='1')
-        Y1_MSP.plot(ax = ax[0], l = f"_",color = "yellow", marker='1')
-        Y2_MSP.plot(ax = ax[0], l = f"_", color = "yellow", marker='1')
+        Y1_MSP.plot(ax = ax[0], l = f"_",color = Yn.plot_color, marker='1')
+        Y2_MSP.plot(ax = ax[0], l = f"_", color = Yn.plot_color, marker='1')
 
     # ######################### Figure ax1 END #########################
 
@@ -487,9 +499,9 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
     ######################## Figure matrix_plot START ########################
     
     # Define your custom colors
-    colors = ['lightgray', 'yellow', 'red', Y1.plot_color, Y2.plot_color, 'white']
+    colors = ['lightgray', '#408000', 'red', Y1.plot_color, Y2.plot_color, 'white']
     if matrix_only:
-        colors = ['lightgray', 'yellow', 'red', 'red', 'blue', 'white']
+        colors = ['lightgray', '#408000', 'red', 'red', 'blue', 'white']
     # Create a colormap with discrete colors
     cmap = matplotlib.colors.ListedColormap(colors)
 
@@ -504,6 +516,8 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
 
     ax[1].axis('off')
 
+    # ax[1].set_xlabel(f"${_Y1}$")
+    # ax[1].set_ylabel(f"${_Y2}$")
 
     ax[1].pcolormesh(M, cmap = cmap, edgecolors='white', linewidth=0.5)
     ax[1] = plt.gca()
@@ -537,7 +551,7 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
     if not matrix_only:
         Y.plot(ax = ax[2], l = f"${_Yn1}"+"\\oplus" +f"{_Yn2}$", color = colors[0])
         if plot_mapping:
-            Yn.plot(ax = ax[2], l = f"${_Yn}$", color = "yellow")
+            Yn.plot(ax = ax[2], l = f"${_Yn}$", color = "#408000", marker= '1')
     
     # save or plot figure
     plot_or_save(fig, fig_name)
@@ -1414,6 +1428,15 @@ def animate_scalling():
 
 def interactive_scaling():
 
+
+    def op(y1: Point, y2: Point):
+        return Point((y1[0] * y2[0], y1[1] * y2[1]))
+
+    Point.__add__ = op
+
+
+
+
     file = "prob-2-50|50-ul-2_3.json"
     MSP = MinkowskiSumProblem.from_json('./instances/problems/' + file)
 
@@ -1454,6 +1477,8 @@ def interactive_scaling():
     Y2_color = Y2.plot_color
     Y = Y1 + Y2
     Y.plot(f"${_Y}$", ax= ax, color = 'gray')
+
+    plt.show()
     # Yn = N(Y1+Y2)
     # G,Yn = algorithm2(MSP)
 
@@ -1727,8 +1752,14 @@ def article_plots_csv():
         Y = methods.MS_sum(MSP.Y_list)
         G,Yn = algorithm2(MinkowskiSumProblem(MSP.Y_list))
 
+        MSP_colored = []
+        for s, Ys in enumerate(MSP.Y_list):
+            Ys.plot_color = ['#CC3333', '#3399FF'][s]
+            MSP_colored.append(Ys)
 
-        with open(f'./temp/plot_{plot_name}.csv', 'w') as out_file:
+        MSP.Y_list = MSP_colored
+
+        with open(f'./temp/plot_{plot_name}_DGPE.csv', 'w') as out_file:
 
             csv_writer = csv.writer(out_file)
 
@@ -1773,11 +1804,12 @@ def article_plots_csv():
             
             if True:
                 MSP.plot()
-                G.plot(set_label = 'G', marker= 'x')
-                Y.plot(color= 'gray')
-                Yn.plot()
+                G.plot(set_label = '\mathcal{G}', hidelabel= True, marker= '1', color = '#408000')
+                Y.plot(color= 'lightgray')
+                Yn.plot(color = '#408000')
                 # plt.show()
-                fig.savefig(fname = f"temp/{plot_name}.png")
+                # fig.savefig(fname = f"temp/{plot_name}.png")
+                plot_or_save(fig, f"{plot_name}")
                 # plt.cla()
             
             ######################### Figure csv_plot_view END #########################
@@ -1980,13 +2012,14 @@ def pairwise_alg3_plot(L1, Y1, U1, L2, Y2, U2, ax, ax_bar, ax_table, point_index
 
 def pairwise_alg3_plot_setup():
 
+
     ######################## Figure RGS_plot START ########################
     fig_name = "RGS_plot"
     print(f"Plotting figure: {fig_name}")
     # define new figure
     fig = plt.figure(figsize=(20,15), layout='constrained')
 
-    gs = gridspec.GridSpec(2, 2, height_ratios=[7, 3], width_ratios = [4,3])
+    gs = gridspec.GridSpec(2, 2, height_ratios=[6, 4], width_ratios = [3,3])
 
     # main plot
     ax = fig.add_subplot(gs[0, :])
@@ -2118,13 +2151,13 @@ def pairwise_alg3_plot_setup():
     # Options
     alpha = Point((1,1)) # add sliders alpha1 and alpha2 between 0.5 and 20
     y0_point = Point((5000,5000))
-    level = 0 # add slider to scale between 0 and 1
+    level = 0.16 # add slider to scale between 0 and 1
     level2 = 0 # add slider to scale between 0 and 1
     s1 = 0 # drop down choose between set(range(len(Y_list)))
     s2 = 1 # drop down choose between set(range(len(Y_list)))
     point_index = 1 # add slider to integers on scale between 0 and len(Y_list[s1])
-    sp1 = 'sp-2-100-m_6.json' # add textinput 
-    sp2 = 'sp-2-100-m_7.json' # add textinpu
+    sp1 = 'sp-2-50-u_2.json' # add textinput 
+    sp2 = 'sp-2-50-l_6.json' # add textinpu
     seed = 1
 
 
@@ -2223,14 +2256,291 @@ def pairwise_alg3_plot_setup():
 
     plt.show()
 
+
+def dgpe_matrix():
+
+    # Y1 = N(generator.generate_PointList(100, 2, method = "CONCAVE"))*2
+    # Y2 = N(generator.generate_PointList(100, 2, method = "CONCAVE"))*2 + PointList(((100,100),))
+ 
+    random.seed(1)
+    
+    np.random.seed(4)
+
+    Y1 = methods.lex_sort(N(generator.generate_PointList(70, 2, method = "CONCAVE"))*2) 
+    Y2 = methods.lex_sort(N(generator.generate_PointList(80, 2, method = "CONCAVE"))*2 + PointList(((50,50),)))
+    Y2 = methods.lex_sort(Y2)
+    Y2 = PointList([y2 for i, y2 in enumerate(Y2) if i not in [1,2,9,10,3,6]] + [Point((300,80))])
+    Y1 = PointList([y2 for i, y2 in enumerate(Y1) if i not in []] + [Point((80,200))])
+
+    # + PointList(((100,100),))
+
+    # Define the colors
+    # Y1.plot_color = (0.8, 0.2, 0.2)
+    # Ytwo = (0.2, 0.6, 1)
+    # Y = (0.25098, 0.50196, 0)
+
+
+    matrix_plot(Y1,Y2, 'DGPE_matrix', point_labels=True, figsize = (18,5))
+
+#DGPE colors
+
+
+def MS_limit():
+    ######################## Figure MS_limit START ########################
+    fig_name = "MS_limit"
+    print(f"Plotting figure: {fig_name}")
+    # define new figure
+    fig = plt.figure(figsize=(5,5), layout='constrained')
+    ax = list()
+    
+    Y = PointList.from_json('./instances/subproblems/sp-2-10-l_1.json')
+    k_list = [1,2,3]
+
+    for k_id, k in enumerate(k_list):
+        ax = fig.add_subplot(1, len(k_list), k_id + 1)
+        Ylim = methods.MS_sequential_filter([Y for _ in range(k)]) * Point((1/k, 1/k))
+
+        ax.set_title(k)
+        Ylim.plot(ax = ax, l= 'Ylim')
+        Y.plot(ax= ax, l = 'Y', color = 'red')
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure MS_limit END #########################
+
+def validate_algorithm3_l():
+    # for some instances with ul|l alg3 manages to remove some subset vectors from l subsets.
+    #ex: alg3-prob-2-300|300|300-ull-3_4-0|all|all.json
+
+    RemSP = MinkowskiSumProblem.from_json("./instances/results/algorithm3_partial_levels/alg3-prob-2-300|300|300-ull-3_4-0|all|all.json")
+    MSP = MinkowskiSumProblem.from_json("./instances/problems/prob-2-300|300|300-ull-3_4.json")
+    
+    # validate q^s = 0.5 for an uuuu instance
+    problem_name = "alg3-prob-2-300|300|300|300-uuuu-4_4-all|all|all|all.json"
+    RemSP = MinkowskiSumProblem.from_json("./instances/results/algorithm3_partial_levels/" + problem_name)
+    MSP = MinkowskiSumProblem.from_json("./instances/problems/prob-2-300|300|300|300-uuuu-4_4.json")
+
+    # removed vectors
+    RGS = MinkowskiSumProblem([PointList(set(Ys.points) - set(RYs.points)) for RYs, Ys in zip(RemSP,MSP)])
+
+
+    from algorithm3 import algorithm3_run
+    
+    MSP.Y_list = MSP.Y_list[::-1]
+
+    RGS_check = algorithm3_run(MSP, levels=('all','all','all','all')) 
+
+    for s, (rYs, Ys, RemYs, Rgs_Check) in enumerate(zip(RGS, MSP, RemSP, RGS_check)):
+        offset = PointList(((1000*s,1000*s),))
+        print(f"\n{s=}")
+        print(f"{len(rYs)=}")
+        print(f"{len(Ys)=}")
+        print(f"{len(RemYs)=}")
+        (offset + Ys).plot(f"Y{s}")
+        # (offset + RemYs).plot(f"removed", marker = 'x')
+        (offset + Rgs_check).plot(f"removed", marker = 'x')
+ 
+
+
+    Yn =  methods.MS_sequential_filter(MSP.Y_list)
+
+    Yn.plot('Yn')
+    plt.show()    
+    RYn =  methods.MS_sequential_filter(RGS.Y_list)
+
+    assert Yn == RYn
+
+
+    # inspect s == 1
+    for i, y in enumerate(RemSP.Y_list[1]):
+        print(f"{i,y.cls=}")
+
+
+def article_plot_emp3_visual():
+
+    random.seed(3)
+    np.random.seed(4)
+    Y1 = methods.lex_sort(N(generator.generate_PointList(70, 2, method = "CONCAVE"))*2) 
+    Y2 = methods.lex_sort(N(generator.generate_PointList(80, 2, method = "CONCAVE"))*2 + PointList(((50,50),)))
+    Y2 = methods.lex_sort(Y2)
+    Y2 = PointList([y2 for i, y2 in enumerate(Y2) if i not in [1,2,9,10,3,6]])
+    # Y1 = PointList([y2 for i, y2 in enumerate(Y1) if i not in []] + [Point((80,200))])
+
+    Y1_points = []
+    for i, y1 in enumerate(Y1):
+        if i in [0,1,7,9]:
+            y1.cls = 'se'
+        Y1_points.append(y1)
+
+    Y1 = PointList(Y1_points)
+
+    ######################## Figure article_plot_emp3_visual START ########################
+    fig_name = "article_plot_emp3_visual"
+    print(f"Plotting figure: {fig_name}")
+    # define new figure
+
+    fig_size = (5,4)
+
+    fig, ax = plt.subplots(figsize=fig_size, layout='constrained')
+    
+
+ 
+
+    Y1_se = get_partial(Y1, level = 0)
+    Y2_se = get_partial(Y2, level = 0)
+
+    Y1_hat = get_partial(Y1, level = 0.25)
+    Y2_hat = get_partial(Y2, level = 0.5)
+
+
+    Y1.plot(ax=ax, l=f"${_Y1}$", point_labels = False, marker='^', color = 'gray')
+    # Y1_hat.plot(ax=ax, l=f"${_Yh1}$", marker='x')
+    nadir1 = methods.induced_UB(Y1)
+    nadir1.plot(ax=ax,l='nadir', color ='black')
+    U1 = Y1_hat
+    U1.plot(ax=ax, l=f"${_U1}$", color = 'red', marker='x')
+
+    # L1 = methods.induced_UB(Y1_se, assumption='supported')
+
+    Y1_se.plot(ax=ax, l=f"${_L1}$", line=True, marker = '.', color = 'blue')
+
+
+    # save in csv_file
+    sets_and_labels = [(Y1, 'Y'), (nadir1, 'nadir'), (U1, 'U'), (Y1_se, 'L')]
+    with open(f'./temp/emp_3_plot_visual.csv', 'w') as out_file:
+
+        csv_writer = csv.writer(out_file)
+        csv_writer.writerow(['x','y','set','fig'])
+        for j, (X, label) in enumerate(sets_and_labels):
+            for y in X:
+                y_dir = {
+                        'p1' : y[0],
+                        'p2' : y[1],
+                        'set' : label,
+                        'fig' : 'a'
+                         }
+                csv_writer.writerow(y_dir.values())
+
+    # Turn off tick labels
+    ax.set_yticklabels([])
+    ax.set_xticklabels([])
+    # save or plot figure
+    # plot_or_save(fig, fig_name)
+    ######################### Figure article_plot_emp3_visual END #########################
+
+    fig, ax = plt.subplots(figsize=fig_size, layout='constrained')
+    # Y1_se = get_partial(Y1, level = 0)
+    # Y2_se = get_partial(Y2, level = 0)
+
+
+    Y1_hat_plot_color = Y1_hat.plot_color
+    Y1_hat = get_partial(Y1, level = 0.75)
+    Y1_hat.plot_color = Y1_hat_plot_color
+
+
+    Y1.plot(ax=ax, l=f"${_Y1}$", point_labels = False, marker='^')
+    # Y1_hat.plot(ax=ax, l=f"${_Yh1}$", marker='x', color = Y1_hat_plot_color)
+    # nadir1 = methods.induced_UB(Y1)
+    nadir1.plot(ax=ax,l='nadir')
+    U1 = Y1_hat
+    U1.plot(ax=ax, l=f"${_U1}$", color = 'red', marker='x')
+
+    # L1 = methods.induced_UB(Y1_se, assumption='supported')
+
+    Y1.plot(ax=ax, l=f"${_L1}$", line=False, marker = ".", color = Y1_se.plot_color)
+
+    sets_and_labels = [(Y1, 'Y'), (nadir1, 'nadir'), (U1, 'U'), (Y1, 'L')]
+    with open(f'./temp/emp_3_plot_visual.csv', 'a') as out_file:
+        csv_writer = csv.writer(out_file)
+        for j, (X, label) in enumerate(sets_and_labels):
+            for y in X:
+                y_dir = {
+                        'p1' : y[0],
+                        'p2' : y[1],
+                        'set' : label,
+                        'fig' : 'b'
+                         }
+                csv_writer.writerow(y_dir.values())
+
+
+    # Y2.plot(ax=ax,l=f"${_Y2}$")
+
+
+    ax.set_yticklabels([])
+    ax.set_xticklabels([])
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure article_plot_emp3_visual END #########################
+
+
+
+
+def example_operators():
+
+    def op(y1: Point, y2: Point):
+        return Point((y1[0] + y2[0], y1[1] + y2[1]))
+
+    Point.__add__ = op
+
+
+
+    Y1 = PointList(((1,2), (1.5,1.2), (2,1)))
+    Y1 = PointList.from_json('./instances/subproblems/sp-2-10-l_1.json')
+    Y2 = PointList(((2,3),(2.9,2.7), (3,2)))
+    Y2 = PointList.from_json('./instances/subproblems/sp-2-10-m_1.json')
+
+    Y1.plot(l=f"${_Y1}$")
+
+    Y2.plot(l=f"${_Y2}$")
+    
+    Y_list = (Y1,Y2)
+
+    Y = Y1 + Y2 
+
+    from minimum_generator import SimpleFilter
+    from algorithm2 import get_fixed_and_reduced
+    # PointList(Yn), C_dict = SimpleFilter()
+    Yn, C_dict = SimpleFilter(Y_list)
+    
+    Y_fixed, Y_reduced = get_fixed_and_reduced(C_dict, Y_list)
+
+    print(f"{[len(Ys) for Ys in Y_list]=}")
+    print(f"{[len(Ys) for Ys in Y_fixed]=}")
+    print(f"{[len(Ys) for Ys in Y_reduced]=}")
+
+    Y.plot(f"${_Y}$")
+
+    
+
+    plt.show()
+
+
 def main():
 
+ 
+    # interactive_scaling()
+    # pairwise_alg3_plot_setup()
+    # example_operators()
+    # article_plot_emp3_visual()
+
+    # validate_algorithm3_l()
+
+    MS_limit()
+
+
+    #DGPE 2024
+#     global FIGURES_LOCATION
+    # FIGURES_LOCATION = "../../../phd/Events/DGPE/poster/image/"
+    # dgpe_matrix()
+    # article_plots_csv()
+
+
+    # pairwise_alg3_plot()
     
     # animate_scalling()
 
     # RGS_slides()
 
-    pairwise_alg3_plot_setup()
 
     # article_plots_csv()    
 
@@ -2289,6 +2599,7 @@ if __name__ == '__main__':
     FIGURES_LOCATION = "../../papers/paper1/figures/UB_instances/"
     FIGURES_LOCATION = "../../../phd/projects/papers/paper1/figures/UB_instances/multiple/"
     FIGURES_LOCATION = "../../../phd/projects/papers/paper1/figures/empirical_example/"
+    FIGURES_LOCATION = "/Users/au618299/Downloads/"
 
     NO_AXIS = False 
 
@@ -2302,9 +2613,14 @@ if __name__ == '__main__':
 
     # Style options for plots
     all_styles = ['Solarize_Light2', '_mpl-gallery', '_mpl-gallery-nogrid', 'bmh', 'classic', 'dark_background', 'fast', 'fivethirtyeight', 'ggplot', 'grayscale',  'tableau-colorblind10']
-    # STYLE = "ggplot" 
-    STYLE = all_styles[6] # 1 6 8 9 10
+    STYLE = all_styles[2] # 1 6 8 9 10
+    STYLE = "ggplot" 
     plt.style.use(STYLE)
+
+
+    # DGPE
+    plt.rcParams['axes.spines.top'] = False
+    plt.rcParams['axes.spines.right'] = False
 
 
     if NO_AXIS:
