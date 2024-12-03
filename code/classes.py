@@ -68,7 +68,7 @@ class Point:
         if self.dim == None:
             self.dim = len(self.val)
     def __lt__(self, other: Point):
-        """__lt__. return True if self dominates other (componen-wise)
+        """__lt__. return True if self dominates other (componen-wise) minimization sense
 
         Args:
             other (Point): other
@@ -123,7 +123,7 @@ class Point:
         return tuple(self.val).__repr__()
     def __getitem__(self, item):
         return self.val[item]
-    def __add__(self, other:Point|PointList):
+    def __add__(self, other):
         if isinstance(other, PointList):
             return PointList((self,)) + other
         
@@ -186,6 +186,52 @@ class Point:
 
 @dataclass
 class PointList:
+    """
+    A class used to represent a set of Points
+
+    ...
+
+    Attributes
+    ----------
+    points: iter[Point]
+        an iterable containing a set of points
+    dim : str
+        the dimension of the points
+    plot_color : str
+        color used when plotted using matplotlib, initially None
+    statistics: dict
+        a dictionary containing statistics for the PointList. This is updated when the PoinsList is return by several methods.
+
+    Methods
+    -------
+    __add__(self, other)
+        returns the Minkowski sum of the two pointlists. 
+        defined as Y1-Y2 = {y1+y2: for y1 in Y1, for y2 in Y2}
+    __eq__(self,other)
+        returns true if the two pointlist contains the same (and same amount of) points. Other attributes are ignored
+    __sub__(self, other)
+        returns the Minkowski difference of the two pointlists. 
+        defined as Y1-Y2 = {y1-y2: for y1 in Y1, for y2 in Y2}
+    __mul__(self, other)
+        returns the (Minkowski) product of the two pointlists. 
+        defined as Y1*Y2 = {y1*y2: for y1 in Y1, for y2 in Y2}
+    plot(l = 'LABEL', SHOW=True)
+        plots the set of points contained in PointList
+    dominates_point(y:Point)
+        checks if the PointList dominates the point y
+    weakly_dominates_point(y:point)
+        checks if the PointList weakly dominates the point y
+    get_nadir()
+        returns the nadir point of the set. Component-wise max point.
+    get_ideal()
+        returns the ideal point of the set. Component-wise min point.
+    dominates(other)
+        returns true of the pointlist dominates other. Use params for weakly,strict dominance
+    save_csv(filepath)
+        saves the pointlist in a csv format. ONLY points are saved, no statistics.
+    save_
+    """
+
     points: tuple[Point] = ()
     dim = None
     plot_color = None
