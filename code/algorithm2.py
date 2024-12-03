@@ -356,7 +356,6 @@ def algorithm2_run(MSP):
     # MGS = MinkowskiSumProblem(Y_MGS)
 
     # time_start = time.time()
-    logger.info(MSP)
     MGS, Yn = algorithm2(MSP)
     MGS.filename = save_solution_dir + save_prefix + MSP.filename.split('/')[-1]
 
@@ -445,13 +444,25 @@ def main():
 def check_uniqueness_of_problem():
 
 
+    logname = 'algorithm2.log'
+    logging.basicConfig(level=logging.INFO, 
+                        filename=logname,
+                        format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
+                        )
+
+    logger = logging.getLogger(logname)
+
+
+
     # 1 prob-2-200|200|200|200-mmmm-4_2.json      209
     # 2 prob-2-300|300-mm-2_1.json                261
     # 3 prob-2-300|300-mm-2_2.json                267
 
+    
     MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-200|200|200|200-mmmm-4_2.json')
     MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-300|300-mm-2_1.json')
     MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-300|300-mm-2_2.json')
+    MSP = MinkowskiSumProblem.from_json('./instances/problems/prob-2-300|300|300|300|300-lllll-5_2.json')
 
     statistics = algorithm2_run(MSP) # saves the results under results/algorithm2_uniqueness
 
@@ -463,5 +474,5 @@ def check_uniqueness_of_problem():
 
 
 if __name__ == "__main__":
-    main()
-    # check_uniqueness_of_problem()
+    # main()
+    check_uniqueness_of_problem()
