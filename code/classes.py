@@ -1,3 +1,4 @@
+# public library imports
 from __future__ import annotations # allow annotation self references (eg. in KD_Node)
 from dataclasses import dataclass
 import numpy as np
@@ -6,11 +7,9 @@ from matplotlib.patches import Rectangle
 import csv
 import json
 import os
-
 import pprint
 import traceback
 import sys
-# from itertools.collections import Counter
 import collections
 
 
@@ -51,6 +50,13 @@ Y2.dominates_point(y1)
 
 @dataclass
 class Point:
+    """Point. A vector object used as elements of PointList(s). Are equipped with componenwise relations <,<=, plot(self) for visualization.
+
+    Example(s):
+        Point((2,3))
+        Point((2,3,1))
+    """
+
     val: np.array(iter)
     dim = None
     plot_color = None
@@ -61,7 +67,12 @@ class Point:
             self.val = np.array(self.val)
         if self.dim == None:
             self.dim = len(self.val)
-    def __lt__(self, other):
+    def __lt__(self, other: Point):
+        """__lt__. return True if self dominates other (componen-wise)
+
+        Args:
+            other (Point): other
+        """
         if all(self.val == other.val):
             return False
         return all(self.val <= other.val)
@@ -112,7 +123,7 @@ class Point:
         return tuple(self.val).__repr__()
     def __getitem__(self, item):
         return self.val[item]
-    def __add__(self, other):
+    def __add__(self, other:Point|PointList):
         if isinstance(other, PointList):
             return PointList((self,)) + other
         
@@ -484,6 +495,9 @@ class MinkowskiSumProblem:
     def __post_init__(self):
         self.S = len(self.Y_list)
 
+    def __iter__(self):
+        return self.Y_list.__iter__()
+
     def from_json(filename: str):
         with open(filename, 'r') as json_file:
             json_list = json.load(json_file)
@@ -545,10 +559,10 @@ class MinkowskiSumProblem:
         return string
 
 
-    def plot(self,  hidelabel = False,set_label='Y', ax = None, **kwargs):
+    def plot(self,  hidelabel = False,set_label="\mathcal{Y}_{\mathcal{N}}", ax = None, **kwargs):
         ax = ax if ax else plt
         for s, Y in enumerate(self.Y_list):
-            Y.plot(l= "_"*hidelabel + "$\mathcal{" + set_label + "}_{\mathcal{N}}^{" + str(s+1) + "}$", ax = ax, **kwargs)
+            Y.plot(l= "_"*hidelabel + "$ " + set_label +  "^{" + str(s+1) + "}$", ax = ax, **kwargs)
 
 
 @dataclass
