@@ -201,3 +201,14 @@ def test_MSPInstances():
 
     assert len(set(TI.filename_list)) == len(partition_files)
     assert set(TI.filename_list) == set(partition_files)
+
+
+    # from specific files 
+    TI = MSPInstances(preset = 'all')
+    TI.filename_list = [
+        "prob-5-100|100|100|100|100-mmmmm-5_1.json",
+        "prob-5-100|100|100|100|100-mmmmm-5_2.json",
+            ]
+
+    assert len(set(TI.filename_list)) == 2
+    print(f"{TI=}")

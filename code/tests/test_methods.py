@@ -408,6 +408,7 @@ def test_U_dominates_L():
         fig, ax = plt.subplots(layout='constrained')
         Y = N(Y)
         L = N(L)
+        L.is_complete = False  # use convex hull, not tight bound
         L_is_dominated = U_dominates_L(Y,L)
         
         # sort for plot
