@@ -125,6 +125,37 @@ dat <- dat %>%
 DT::datatable(dat, width = "100%", options = list(autoWidth = T, scrollX = TRUE, columnDefs = list(list(width = '250px', targets = c(1)))))
 ```
 
+
+
+```{r}
+
+time_limit <- 1*30*60
+
+my_dat <- dat %>% 
+   mutate(under_limit = (filter_time < time_limit)) %>%
+   filter(filter_time < 40000)
+
+
+my_dat %>% filter(under_limit == FALSE) %>% select(path)
+
+my_dat %>%    group_by(under_limit) %>%
+ summarise(
+    true_count = sum(under_limit == TRUE),
+    false_count = sum(under_limit == FALSE)
+   )
+
+my_dat$under_limit <- as.factor(my_dat$under_limit)
+
+my_dat %>% select(path, filter_time, under_limit) %>% filter(under_limit == FALSE) %>% summarise(max = max(filter_time))
+
+ggplot(my_dat, aes(x = filter_time), color=under_limit) +
+  geom_histogram(binwidth = 5, fill = "blue") +
+  labs(title = "Histogram of filter times", x = "filter time", y = "Frequency", colors = 'Under_limit')
+
+```
+
+
+
 Note that the width of objective $i = 1, \ldots p$, $w_i = [l_i, u_i]$ should be approx. $10000m$. Check:
 
 ```{r}

@@ -193,6 +193,7 @@ write_csv(dat, here::here("code/instances/stat-alg3_levels.csv"))
 ```{r}
 dat <- read_csv(here::here("code/instances/stat-alg3_levels.csv"))
 
+dat <- dat %>% filter(m!=3)
 
 # ignore 'all' instances 
 # dat %>% filter(!any_L_is_U)
@@ -527,7 +528,6 @@ In Table\~below, we present the actual relative size of the known sets for each 
 The table includes subproblems where no redundant vectors exists.
 Table\~[below] shows how the relative size of the partial sets $\frac{|\hat Y^s|}{|Y^s|}$ ranging from [0.02-0.09, 1] for subsets generated with u and m methods, while ranging from [0.72, 1] for subproblems generated with method l.
 
- `r dat_filtered %>% group_by(subset_global_method, filename_levels) %>% summarise(other_known_relative = mean(other_known_relative)) %>%  summarise(min_q = min(other_known_relative), max_q = max(other_known_relative), avg_q = mean(other_known_relative)) %>% format_tibble_latex()`
 
 <!-- Aggragated over all instances the levels $\lambda^s$ of $0, 25, 50, 75, 100$ corrosponds $\frac{hat}{normal}$ values $5, 30, 54, 79, 100$ for ul|u and $96, 97, 98, 99, 100$ for ul|l. Format table: -->
 
@@ -576,6 +576,8 @@ dat_filtered <- dat %>%
    filter(any_L_is_U == FALSE)
 ```
 
+
+
 A total of `r dat_filtered %>% filter(Ys_sizes == MGS_sizes) %>% nrow()` out of `r dat %>% nrow()` subproblems satisfied $Y^s = G^s$, which are skipped in the following analysis. 
 `r percent(dat_filtered %>% filter(Ys_sizes == MGS_sizes) %>% nrow()/ dat %>% nrow())``
 
@@ -584,6 +586,9 @@ A total of `r dat_filtered %>% filter(Ys_sizes == MGS_sizes) %>% nrow()` out of 
 dat_filtered <-  dat_filtered %>% 
    filter(Ys_sizes != MGS_sizes)
 ```
+
+ `r dat_filtered %>% group_by(subset_global_method, filename_levels) %>% summarise(other_known_relative = mean(other_known_relative)) %>%  summarise(min_q = min(other_known_relative), max_q = max(other_known_relative), avg_q = mean(other_known_relative)) %>% format_tibble_latex()`
+
 
 ## Aggregated results
 
@@ -812,6 +817,7 @@ dat %>%
 
 dat %>% 
   filter(other_equal == TRUE) %>% 
+   filter(m!= 3) %>% 
   filter(!(any_L_is_U & !other_all_L_is_U)) %>% 
   filter(L_is_U == FALSE) %>% 
    filter(Ys_sizes != MGS_sizes) %>% 
