@@ -207,44 +207,61 @@ class PointList:
     __add__(self, other)
         returns the Minkowski sum of the two pointlists. 
         defined as Y1-Y2 = {y1+y2: for y1 in Y1, for y2 in Y2}
+
     __eq__(self,other)
         returns true if the two pointlist contains the same (and same amount of) points. Other attributes are ignored
+
     __getitem__(i)
         returns the Point at index i, to support slicing
+
     __sub__(self, other)
-        returns the Minkowski difference of the two pointlists. 
-        defined as Y1-Y2 = {y1-y2: for y1 in Y1, for y2 in Y2}
+        returns the Minkowski difference of the two pointlists. Defined as Y1-Y2 = {y1-y2: for y1 in Y1, for y2 in Y2}
+
     __mul__(self, other)
-        returns the (Minkowski) product of the two pointlists. 
-        defined as Y1*Y2 = {y1*y2: for y1 in Y1, for y2 in Y2}
-    as_dict
+        returns the (Minkowski) product of the two pointlists. Defined as Y1*Y2 = {y1\*y2: for y1 in Y1, for y2 in Y2}
+
+    as_dict(self)
         returns a dictionary version of the PointList object
-    as_np_array
-        retuns an np.array containg all points
+
+    as_np_array(self)
+        returns an np.array containg all points
+
     dominates(other)
         returns true of the pointlist dominates other. Use params for weakly,strict dominance
+
     dominates_point(y:Point)
         returns true if some point of the PointList dominates the point y
+
     from_csv(path)
         returns a PointList based on the file path, Only points are read no attributes
+
     from_json(path)
         returns a PointList based on the file path
+
     from_raw(path)
         returns a PointList based on the file path, only points are read no attributes. See save_raw for file description
+
     get_ideal()
         returns the ideal point of the set. Component-wise min point.
+
     get_nadir()
         returns the nadir point of the set. Component-wise max point.
+
     plot(l = 'LABEL', SHOW=True)
         plots the set of points contained in PointList
+
     print_data()
         prints the PointList
+
     save_csv(filepath)
         saves the pointlist in a csv format. ONLY points are saved, no statistics.
+
     save_json(filepath)
         saves the pointlist in a json format. Uses the as_dict method
+
     save_raw(filepath)
         saves the pointlist in a raw format, these files are slightly more memory efficient and can be read by the C NonDomDC filter
+
     weakly_dominates_point(y:point)
         checks if the PointList weakly dominates the point y
     """
@@ -342,6 +359,8 @@ class PointList:
         """__add__. returns (PointList) with Minkowski sum of the two pointlists. Defined as Y1+Y2 = {y1+y2: for y1 in Y1, for y2 in Y2}
         Args:
             other (PointList): PointList
+        Returns:
+            (PointList) with Minkowski sum 
         """
         return PointList([y1 + y2 for y1 in self for y2 in other])
     
@@ -349,14 +368,18 @@ class PointList:
         """__sub__. returns (PointList) with Minkowski difference of the two pointlists. Defined as Y1-Y2 = {y1-y2: for y1 in Y1, for y2 in Y2}
         Args:
             other (PointList): PointList
+        Returns:
+            (PointList) with Minkowski difference 
         """
         return PointList([y1 - y2 for y1 in self for y2 in other])
 
 
     def __mul__(self,other:PointList):
-        """
-        input: list of two PointList
-        output: Minkowski subtration of sets
+        """__mul__. returns (PointList) with Minkowski product of the two pointlists. Defined as Y1*Y2 = {y1*y2: for y1 in Y1, for y2 in Y2}
+        Args:
+            other (PointList): PointList
+        Returns:
+            (PointList) with Minkowski product
         """
         match other:
             case ( float() | int() | Point() ):
@@ -367,9 +390,12 @@ class PointList:
                 raise NotImplementedError
 
 
-
-
     def get_nadir(self):
+        """get_nadir. Returns the nadir point of the set. Component-wise max point.
+
+        Returns:
+            (Point) nadir point of the PointList
+        """
         nadir_vals = list(tuple(self.points[0].val))
         for point in self.points:
             for p in range(self.dim):
@@ -378,6 +404,12 @@ class PointList:
         self.nadir = Point(nadir_vals)
         return self.nadir
     def get_ideal(self):
+
+        """get_ideal. Returns the nadir point of the set. Component-wise min point.
+
+        Returns:
+            (Point) ideal point of the PointList
+        """
         ideal_vals = list(tuple(self.points[0].val))
         for point in self.points:
             for p in range(self.dim):
@@ -389,6 +421,14 @@ class PointList:
 
 
     def dominates(self, other, power="default"):
+        """dominates. Returns true of the PointList dominates other. Use params for weakly,strict dominance
+
+        Args:
+            other:
+            (str) power: "default", "weakly", "strict"
+        Returns:
+            (bool) true if PointList self dominates other wrt. power
+        """
         match power:
             case "default":
                 if self == other:
@@ -409,22 +449,36 @@ class PointList:
                 return True
 
 
-    def save_csv(self, filename="testsets/disk.csv"):
+    def save_csv(self, filename: str):
+        """save_csv. Saves the PointList in a csv format. ONLY points are saved, no statistics.
+        Args:
+            filename (str): filename
+        """
         with open(f"{filename}", "w") as out:
             csv_out=csv.writer(out)
             for y in self.__iter__():
                 csv_out.writerow(y)   
 
 
-    def save_raw(self, filename : str):
-        # raw format used in c-interface
+    def save_raw(self, filename: str):
+        """save_csv. Saves the PointList in a raw format. ONLY points are saved, no statistics. Used by C interface, and more memory efficient than json/csv.
+        Args:
+            filename (str): filename
+        """
         with open(filename, 'w') as out:
             out.write(f"{self.statistics['p'][0]}" + "\n")
             out.write(f"{self.statistics['card'][0]}" + "\n")
             for y in self.__iter__():
                 out.write(" ".join([f"{yp:.6f}" for yp in y]) + "\n")
 
-    def from_raw(filename : str):
+    def from_raw(filename: str):
+        """from_raw. Returns a PointList based on the file path, only points are read no attributes. See save_raw for file description
+
+        Args:
+            filename (str): filename
+        Returns:
+            (PointList) PointList read from filename
+        """
         # raw format used in c-interface
         with open(filename, "r") as rawfile:
             dim = int(rawfile.readline())
@@ -436,14 +490,18 @@ class PointList:
             y_list.append(y)
         return PointList(y_list)
 
-    def from_csv(filename = "disk.csv"):
-        with open(f"{filename}", "r") as csvfile:
+    def from_csv(filename: str):
+       with open(f"{filename}", "r") as csvfile:
             points = []
             for y in csv.reader(csvfile, quoting=csv.QUOTE_NONNUMERIC):
                 points.append(Point(y))
             return PointList(points)
 
     def as_dict(self):
+        """as_dict. returns a dictionary version of the PointList object
+        Returns:
+            (PointList) a dictionary containing the PointList points and statistics.
+        """
 
         PointList_dict = {
             "points":
@@ -453,14 +511,20 @@ class PointList:
         return PointList_dict 
     
     def as_np_array(self):
-        # if self.np_array is not None:
-        # if isinstance(self.np_array, NoneType):
-            # print(f"bla bla")
-            # self.np_array = np.array([y.val for y in self.points])
+        """as_np_array. returns an np.array with the points in PointList
+        Returns:
+            (np.array) containing the list of points.
+        """
         return np.array([y.val for y in self.points])
-        # return self.np_array
 
-    def save_json(self, filename, max_file_size = 100):
+    def save_json(self, filename:str, max_file_size:int = 100):
+        """save_json. Saves the pointlist in a json format. Uses the as_dict method
+
+        Args:
+            filename (str): filename
+            max_file_size (int): max_file_size in GB
+        """
+
         json_str = json.dumps(self.as_dict(), indent=None, separators=(',', ':'))
         # Calculate size (approx) in bytes
         size_mb = len(json_str.encode('utf-8')) / 1_000_000
@@ -480,8 +544,15 @@ class PointList:
 
 
 
+    def from_json_str(json_dict:dict) -> PointList:
+        """from_json_str. Reads the PointList from a str containing a dictionary version of a PointList
 
-    def from_json_str(json_dict):
+        Args:
+            json_dict (dict): json_dict, with the PointList object
+
+        Returns:
+            PointList:
+        """
         statistics = json_dict['statistics']
         points = []
         for json_point in json_dict['points']:

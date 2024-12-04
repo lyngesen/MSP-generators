@@ -48,11 +48,25 @@ import methods
 from methods import N
 import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.animation as anim
+from matplotlib.widgets import Button, Slider, TextBox, RangeSlider, CheckButtons
+from matplotlib.widgets import RadioButtons
 import random
+import minimum_generator
+import csv
 import time
 import csv
 import math
-from algorithm2 import algorithm2
+from algorithm2 import algorithm2, alg2, Y_list_to_fixed_reduced
+import algorithm3
+from algorithm3 import get_partial
+from minimum_generator import solve_MGS_instance
+from copy import deepcopy
+import matplotlib.gridspec as gridspec
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+
+import generator
+
 
 def plot_or_save(fig, fname: str):
     &#34;&#34;&#34; call to plot or save fig &#34;&#34;&#34;
@@ -72,9 +86,6 @@ def example():
     Y2 = PointList(([(i,i) for i in N_list]))
     Y3 = PointList(([(i,len(N_list)-1-i) for i in N_list]))
 
-    # Y1.plot()
-    # Y2.plot()
-    # Y3.plot()
     Y1.plot()
     Y2.plot()
     Y3.plot()
@@ -439,13 +450,13 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
 
     plt.xlabel(&#39;Objective 1&#39;)
     plt.ylabel(&#39;Objective 2&#39;)
-    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
-    plt.xlim(-1000,11000*2)
-    plt.ylim(-1000,11000*2)
+    # plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    # plt.xlim(-1000,11000*2)
+    # plt.ylim(-1000,11000*2)
+    plt.xlim(-10,303)
+    plt.ylim(-10,303)
     ax.append(fig.add_subplot(1, 3, 2))
 
-    # plt.xlabel(&#39;f&#34;${_Yn1}$&#34;&#39;)
-    # plt.ylabel(&#39;f&#34;${_Yn2}$&#34;&#39;)
 
     ax.append(fig.add_subplot(1, 3, 3, projection= projection ))
     # fig, ax = plt.subplots(ncols = 3, figsize=SIZE_LARGE_FIGURE, layout=&#39;constrained&#39;)
@@ -453,21 +464,29 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
 
     plt.xlabel(&#39;Objective 1&#39;)
     plt.ylabel(&#39;Objective 2&#39;)
-    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
-    plt.xlim(-1000,11000*1.9)
-    plt.ylim(-1000,11000*1.9)
-
+    # plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    # plt.xlim(-1000,11000*1.9)
+    # plt.ylim(-1000,11000*1.9)
+    plt.xlim(-10,500)
+    plt.ylim(-10,500)
     # ax[2].xlabel(&#39;Objective 1&#39;)
     # ax[2].plt.ylabel(&#39;Objective 2&#39;)
     # ax[2].tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
 
+
     Y1 = methods.lex_sort(Y1)
     Y2 = methods.lex_sort(Y2)
+    Y1.plot_color = &#39;#CC3333&#39;
+    Y2.plot_color = &#39;#3399FF&#39;
     Y1_color = Y1.plot_color   
     Y2_color = Y2.plot_color   
 
-    Y = Y1+Y2
+    Y = N(Y1)+N(Y2)
+
+
     Yn = N(Y)
+    Yn.plot_color = &#39;#408000&#39;
+    Yn.plot_color = &#39;#408000&#39;
     Yn_set = set(Yn.points)
 
     # ######################## Figure ax1 START ########################
@@ -476,8 +495,9 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
     
 
     if not matrix_only:
-        Y1.plot(ax = ax[0], l = f&#34;${_Yn1}$&#34;, point_labels= point_labels)
-        Y2.plot(ax = ax[0], l = f&#34;${_Yn2}$&#34;, point_labels= point_labels)
+        Y1.plot(ax = ax[0], l = f&#34;${_Y1}$&#34;, point_labels= point_labels)
+        Y2.plot(ax = ax[0], l = f&#34;${_Y2}$&#34;, point_labels= point_labels)
+        
 
     # # save or plot figure
     # plot_or_save(fig, fig_name)
@@ -490,8 +510,8 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
     if not matrix_only and plot_mapping:
         # Y1_MSP.plot(ax = ax[0], l = f&#34;${_Yn1}\\rightarrow {_Yn}$&#34;,color = &#34;yellow&#34;, marker=&#39;1&#39;)
         # Y2_MSP.plot(ax = ax[0], l = f&#34;${_Yn2}\\rightarrow {_Yn}$&#34;, color = &#34;yellow&#34;, marker=&#39;1&#39;)
-        Y1_MSP.plot(ax = ax[0], l = f&#34;_&#34;,color = &#34;yellow&#34;, marker=&#39;1&#39;)
-        Y2_MSP.plot(ax = ax[0], l = f&#34;_&#34;, color = &#34;yellow&#34;, marker=&#39;1&#39;)
+        Y1_MSP.plot(ax = ax[0], l = f&#34;_&#34;,color = Yn.plot_color, marker=&#39;1&#39;)
+        Y2_MSP.plot(ax = ax[0], l = f&#34;_&#34;, color = Yn.plot_color, marker=&#39;1&#39;)
 
     # ######################### Figure ax1 END #########################
 
@@ -511,9 +531,9 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
     ######################## Figure matrix_plot START ########################
     
     # Define your custom colors
-    colors = [&#39;lightgray&#39;, &#39;yellow&#39;, &#39;red&#39;, Y1.plot_color, Y2.plot_color, &#39;white&#39;]
+    colors = [&#39;lightgray&#39;, &#39;#408000&#39;, &#39;red&#39;, Y1.plot_color, Y2.plot_color, &#39;white&#39;]
     if matrix_only:
-        colors = [&#39;lightgray&#39;, &#39;yellow&#39;, &#39;red&#39;, &#39;red&#39;, &#39;blue&#39;, &#39;white&#39;]
+        colors = [&#39;lightgray&#39;, &#39;#408000&#39;, &#39;red&#39;, &#39;red&#39;, &#39;blue&#39;, &#39;white&#39;]
     # Create a colormap with discrete colors
     cmap = matplotlib.colors.ListedColormap(colors)
 
@@ -528,6 +548,8 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
 
     ax[1].axis(&#39;off&#39;)
 
+    # ax[1].set_xlabel(f&#34;${_Y1}$&#34;)
+    # ax[1].set_ylabel(f&#34;${_Y2}$&#34;)
 
     ax[1].pcolormesh(M, cmap = cmap, edgecolors=&#39;white&#39;, linewidth=0.5)
     ax[1] = plt.gca()
@@ -561,7 +583,7 @@ def matrix_plot(Y1,Y2, fig_name, point_labels = False, matrix_only = False, plot
     if not matrix_only:
         Y.plot(ax = ax[2], l = f&#34;${_Yn1}&#34;+&#34;\\oplus&#34; +f&#34;{_Yn2}$&#34;, color = colors[0])
         if plot_mapping:
-            Yn.plot(ax = ax[2], l = f&#34;${_Yn}$&#34;, color = &#34;yellow&#34;)
+            Yn.plot(ax = ax[2], l = f&#34;${_Yn}$&#34;, color = &#34;#408000&#34;, marker= &#39;1&#39;)
     
     # save or plot figure
     plot_or_save(fig, fig_name)
@@ -853,22 +875,22 @@ def klamroth2023_lemma2():
 def induced_UB_plot(level, Y1,Y2, prefix=&#39;&#39;, plot=True):
     print(f&#34;{prefix}&#34;)
     # print(f&#34;{level=}&#34;)
-    def get_partial(Y, level=&#39;all&#39;):   
-        Y = N(Y)
-        Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
-        Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
-        # random.shuffle(Y2other_points)
-        match level:
-            case &#39;all&#39;:
-                return Y
-            case &#39;lexmin&#39;: 
-                return PointList((Y[0], Y[-1]))
-            case &#39;extreme&#39;:
-                return PointList(Y2e_points)
-            # case float():
-            case _:
-                to_index = math.floor(float(level)*len(Y2other_points))
-                return PointList(Y2e_points + Y2other_points[:to_index])
+#     def get_partial(Y, level=&#39;all&#39;):   
+        # Y = N(Y)
+        # Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
+        # Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
+        # # random.shuffle(Y2other_points)
+        # match level:
+            # case &#39;all&#39;:
+                # return Y
+            # case &#39;lexmin&#39;: 
+                # return PointList((Y[0], Y[-1]))
+            # case &#39;extreme&#39;:
+                # return PointList(Y2e_points)
+            # # case float():
+            # case _:
+                # to_index = math.floor(float(level)*len(Y2other_points))
+                # return PointList(Y2e_points + Y2other_points[:to_index])
                 # print(f&#34;case not implemented {level}&#34;)
     ######################## Figure Induced_UB START ########################
     # fig_name = f&#34;Induced_UB_{level}&#34;.replace(&#39;lexmin&#39;,&#39;0.00lexmin&#39;)
@@ -881,7 +903,7 @@ def induced_UB_plot(level, Y1,Y2, prefix=&#39;&#39;, plot=True):
     fig_name = f&#34;/RGS_example/RGS_sup&#34;
 
 
-    only_supported = True 
+    only_supported =  False
 
     LB_assumption = &#39;consecutive&#39;
     if only_supported:
@@ -973,9 +995,9 @@ def induced_UB_plot(level, Y1,Y2, prefix=&#39;&#39;, plot=True):
             # U_partial = methods.induced_UB(Y_partial, line=True)
             U_partial.plot(line=True, color=&#39;lightgray&#39;)
             
-
-            plot_or_save(fig, fig_name + str(plot_count))
-            plot_count +=1
+            if False:
+                plot_or_save(fig, fig_name + str(plot_count))
+                plot_count +=1
             plt.cla()
             reset_graph()
 
@@ -1161,8 +1183,8 @@ def empirical_matrix():
 
 def RGS_slides():
 
-    Y1 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-m_1.json&#39;)*2
-    Y2 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-u_4.json&#39;)
+    Y1 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-l_1.json&#39;)*1
+    Y2 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-m_4.json&#39;)
     # Y1.points = [y2 for y2 in list(Y1)[::2]]
     point_labels = [&#39;plane1&#39;,&#39;Plane 2&#39;, &#39;Train&#39;,&#39;Bus&#39;]
 
@@ -1320,10 +1342,1246 @@ def all_slides():
 
 
 
+def MSP_plot():
+
+
+    file = &#34;prob-2-100|100|100-uuu-3_2.json&#34;
+    # file = &#34;prob-5-50|50-uu-2_1.json&#34;
+    # file = &#34;prob-2-100|100-mm-2_1.json&#34;
+
+    file = &#34;prob-2-100|100-mm-2_1.json&#34;
+    file = &#34;prob-2-100|100-ul-2_2.json&#34;
+    file = &#34;prob-2-200|200|200-uuu-3_1.json&#34;
+    file = &#34;prob-2-50|50|50-uuu-3_3.json&#34;
+
+    MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/&#39; + file)
+
+
+    ######################## Figure validate_algorithm2 START ########################
+    fig_name = &#34;validate_algorithm2&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    
+    print(f&#34;{len(set(MSP.Y_list[0].points).intersection(set(MSP.Y_list[1].points)))=}&#34;)
+    
+    # matrix_plot(*MSP.Y_list,fig_name = fig, matrix_only=False)
+    # matrix_plot(MSP.Y_list[0],MSP.Y_list[0]*3, fig_name = fig, matrix_only=False)
+    
+
+
+    # save or plot figure
+    # plot_or_save(fig, fig_name)
+    ######################### Figure validate_algorithm2 END #########################
+
+    # return
+
+    # MGS_check = solve_MGS_instance(MSP.Y_list,plot=True)
+
+
+
+    MGS, Yn = algorithm2(MSP)
+    MSP_reversed = deepcopy(MSP)
+    MSP_reversed.Y_list = MSP_reversed.Y_list[::-1]
+    MGS_reversed, Yn_reversed = algorithm2(MSP_reversed)
+
+    MGS_size = sum(len(Y) for Y in MGS.Y_list)
+    MGS_reversed_size = sum(len(Y) for Y in MGS_reversed.Y_list)
+    print(f&#34;{MGS_size=}&#34;)
+    print(f&#34;{MGS_reversed_size=}&#34;)
+    assert MGS_size == MGS_reversed_size
+    
+
+    print(f&#34;{[(len(Y), len(G)) for G,Y in zip(MSP.Y_list,MGS.Y_list)]=}&#34;)
+    print(f&#34;{[(len(Y), len(G)) for G,Y in zip(MSP_reversed.Y_list,MGS_reversed.Y_list)]=}&#34;)
+
+
+
+    for y in MGS.Y_list[0]:
+        Y2 = PointList([ymgs for ymgs in MGS.Y_list[0] if ymgs != y])
+        print(f&#34;{len(Y2),y=}&#34;)
+        Y_list_reduced = [MGS.Y_list[1]] + [Y2] + [MGS.Y_list[2]]
+        print(f&#34;{[(len(Y), len(G)) for G,Y in zip(MSP.Y_list,Y_list_reduced)]=}&#34;)
+        assert methods.MS_sequential_filter(Y_list_reduced) == methods.MS_sequential_filter(MSP.Y_list) 
+    # print(f&#34;{MGS=}&#34;)
+
+    print(f&#34;{Y_list_reduced=}&#34;)
+    MGS.plot()
+
+    plt.show()
+
+
+def animate_scalling():
+
+    file = &#34;prob-2-50|50|50-uuu-3_3.json&#34;
+    MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/&#39; + file)
+    alpha = 3
+
+    ######################## Figure validate_algorithm2 START ########################
+    fig_name = &#34;validate_algorithm2&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    
+ 
+    def update(alpha):
+        plt.cla()
+        Y1 = MSP.Y_list[0]
+        Y2 = MSP.Y_list[1]*alpha
+        Y1.plot(f&#34;${_Y1}$&#34;)
+        Y2.plot(f&#34;${_Y2}$&#34;)
+        Yn = N(Y1+Y2)
+        Yn.plot(f&#34;${_Yn}$&#34;)
+
+    # create a slider for alpha which creates a new plot using the new alpha values:
+
+    plt.show()
+
+
+
+# def plot_eks():
+
+
+    # ######################## Figure plot_til_forklaring START ########################
+    # fig_name = &#34;plot_til_forklaring&#34;
+    # print(f&#34;Plotting figure: {fig_name}&#34;)
+    # # define new figure
+    # fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+   
+    # MSP = MinkowskiSumProblem.from_subsets([
+        # &#39;sp-2-50-l_1.json&#39;,
+         # &#39;sp-2-50-u_2.json&#39;,
+    
+    
+    
+    # # save or plot figure
+    # plot_or_save(fig, fig_name)
+    # ######################### Figure plot_til_forklaring END #########################
+
+def interactive_scaling():
+
+
+    def op(y1: Point, y2: Point):
+        return Point((y1[0] * y2[0], y1[1] * y2[1]))
+
+    Point.__add__ = op
+
+
+
+
+    file = &#34;prob-2-50|50-ul-2_3.json&#34;
+    MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/&#39; + file)
+
+    if True:
+        MSP = MinkowskiSumProblem.from_subsets([
+            # &#39;/sp-2-100-u_1.json&#39;,
+            # &#39;/sp-2-100-u_2.json&#39;,
+            # &#39;/sp-2-100-u_3.json&#39;,
+            &#39;sp-2-50-l_1.json&#39;,
+             &#39;sp-2-50-u_2.json&#39;,
+            ])
+
+
+    alpha = 3
+
+    ######################## Figure validate_algorithm2 START ########################
+    # Define the figure and axis
+    fig, ax = plt.subplots(figsize=(8, 6))
+    plt.subplots_adjust(bottom=0.15)  # Adjust the bottom to make space for the slider
+    # Initial plot data
+    Y1 = MSP.Y_list[0]
+    Y2 = methods.lex_sort(MSP.Y_list[1])[:10]
+    alpha_1 = 1
+    alpha_2 = 4
+    y01, y02 = 0, 0
+
+    y0 = Point((y01, y02))
+    alpha = Point((alpha_1, alpha_2))
+
+    # Plot initial data
+    Y1 = MSP.Y_list[0] * 4
+    Y2 = MSP.Y_list[1]*alpha + PointList((y0,))
+    # Y3 = MSP.Y_list[2]
+    # Y2 = methods.lex_sort(Y2)[:10]
+    Y1.plot(f&#34;${_Y1}$&#34;)
+    Y2.plot(f&#34;${_Y2}$&#34;)
+    # Y3.plot(f&#34;${Y3}$&#34;)
+    Y2_color = Y2.plot_color
+    Y = Y1 + Y2
+    Y.plot(f&#34;${_Y}$&#34;, ax= ax, color = &#39;gray&#39;)
+
+    plt.show()
+    # Yn = N(Y1+Y2)
+    # G,Yn = algorithm2(MSP)
+
+    Yn = N(Y)
+    G,Yn = algorithm2(MinkowskiSumProblem([Y1,Y2]))
+    for s, g in enumerate(G.Y_list):
+        g.plot(f&#34;${_G}^{s}$&#34;, color=&#39;yellow&#39;, marker = &#39;x&#39;)
+    Yn.plot(f&#34;${_Yn}$&#34;, color = &#39;yellow&#39;)
+
+    # Add legend
+    ax.legend()
+
+    # Define the update function
+    def update(val):
+        ax.clear()  # Clear the current axes
+        alpha_1 = slider_3.val
+        alpha_2 = slider_4.val
+        alpha = Point((alpha_1, alpha_2))
+        # also update y0
+        y01 = float(textbox_1.text)
+        y02 = float(textbox_2.text)
+        # y02 = slider_2.val
+        y0 = Point((y01, y02))
+        Y2 = MSP.Y_list[1] * alpha + PointList((y0,))
+        # Y2 = methods.lex_sort(Y2)[:10]
+        Y1.plot(f&#34;${_Y1}$&#34;, ax=ax, color = Y1.plot_color)
+        Y2.plot(f&#34;${_Y2}\cdot \\alpha  + y^0$&#34;, ax= ax, color = Y2_color)
+        # Y3.plot(f&#34;${_Y1}$&#34;, ax=ax, color = Y3.plot_color)
+        # Y = Y1 + Y2 + Y3
+        Y = Y1 + Y2
+        # G,Yn = algorithm2(MinkowskiSumProblem([Y1,Y2]))
+        Y.plot(f&#34;${_Y}$&#34;, ax= ax, color = &#39;gray&#39;)
+        # Yn = N(Y1 + Y2 + Y3)
+        Yn = N(Y1 + Y2)
+
+        # G = alg2(MinkowskiSumProblem([Y1,Y2]))
+        # print(f&#34;{Y_fixed=}&#34;)
+        # Yn_with_duplicates, C_dict = SimpleFilter(MSP.Y_list)
+        # for s, g in enumerate(Y_fixed):
+            # g.plot(f&#34;${_G}^{s}$&#34;, color=&#39;yellow&#39;, marker = &#39;x&#39;, ax=ax)
+
+
+
+        Yn.plot(f&#34;${_Yn}$&#34;, ax=ax, color= &#39;yellow&#39;)
+        y0.plot(ax=ax, label = &#39;$y0$&#39;, color = &#39;black&#39;, marker = &#39;x&#39;)
+
+        ax.legend()
+        fig.canvas.draw_idle()
+
+    # Define the position of each slider
+    ax_slider3 = plt.axes([0.25, 0.05, 0.65, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+    ax_slider4 = plt.axes([0.25, 0.01, 0.65, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+
+    # Create the sliders
+    slider_3 = Slider(ax_slider3, &#39;Alpha_1&#39;, 0.1, 50.0, valinit=alpha_1)
+    slider_4 = Slider(ax_slider4, &#39;Alpha_2&#39;, 0.1, 50.0, valinit=alpha_2)
+
+    # update(1)
+    slider_3.on_changed(update)
+    slider_4.on_changed(update)
+        
+    # Define the position of each textbox
+    ax_textbox1 = plt.axes([0.25, 0.1, 0.25, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+    ax_textbox2 = plt.axes([0.55, 0.1, 0.25, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+
+    # Create the textboxes
+    textbox_1 = TextBox(ax_textbox1, &#39;y01&#39;, initial=str(y01))
+    textbox_2 = TextBox(ax_textbox2, &#39;y02&#39;, initial=str(y02))
+
+    textbox_1.on_submit(update)
+    textbox_2.on_submit(update)
+
+    # Show the plot
+    plt.show()
+
+def interactive_scaling_3d():
+
+    file = &#34;prob-2-50|50-ul-2_3.json&#34;
+    MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/&#39; + file)
+
+    if True:
+        MSP = MinkowskiSumProblem.from_subsets([
+            &#39;/sp-3-10-m_1.json&#39;,
+            &#39;/sp-3-50-l_1.json&#39;,
+            ])
+
+
+
+    # Create the figure first
+    fig = plt.figure(figsize = (30,10))
+    ax = fig.add_subplot(111, projection=&#39;3d&#39;)
+    ax.set_axis_off()
+    # fig.subplots_adjust(top=1.1, bottom=-.1)
+    plt.subplots_adjust(bottom=0.25)  # Adjust the bottom to make space for the slider
+    ax.set_aspect(&#39;auto&#39;)
+
+    # Initial plot data
+    Y1 = MSP.Y_list[0]
+    Y2 = methods.lex_sort(MSP.Y_list[1])[:10]
+    alpha_1 = 2
+    alpha_2 = 3
+    alpha_3 = 1
+    y01, y02, y03 = 0, 0, 0
+
+    y0 = Point((y01, y02, y03))
+    alpha = Point((alpha_1, alpha_2, alpha_3))
+
+    # Plot initial data
+    Y1.plot(f&#34;${_Y1}$&#34;, ax=ax)
+    Y2 = MSP.Y_list[1] * alpha + PointList((y0,))
+    Y2.plot(f&#34;${_Y2}$&#34;, ax=ax)
+    Y2_color = Y2.plot_color
+    Y = Y1 + Y2
+    Y.plot(f&#34;${_Y}$&#34;, ax=ax, color=&#39;gray&#39;)
+    Yn = N(Y)
+    Yn.plot(f&#34;${_Yn}$&#34;, color=&#39;yellow&#39;, ax=ax)
+
+    # Add legend
+    ax.legend()
+
+
+    # Calculate the new axis limits
+    x_max, y_max, z_max = [max([y[p] for y in Y]) for p in range(3)]
+    ax.set_xlim([0, 2 * x_max])
+    ax.set_ylim([0, 2 * y_max])
+    ax.set_zlim([0, 2 * z_max])
+
+    # Plot the vectors
+    ax.quiver(0, 0, 0, 2 * x_max, 0, 0, color=&#39;black&#39;, arrow_length_ratio=0.1)
+    ax.quiver(0, 0, 0, 0, 2 * y_max, 0, color=&#39;black&#39;, arrow_length_ratio=0.1)
+    ax.quiver(0, 0, 0, 0, 0, 2 * z_max, color=&#39;black&#39;, arrow_length_ratio=0.1)
+
+
+
+    # Define the update function
+    def update(val):
+        ax.clear()  # Clear the current axes
+
+        ax.set_xlim([0, 2 * x_max])
+        ax.set_ylim([0, 2 * y_max])
+        ax.set_zlim([0, 2 * z_max])
+        ax.set_axis_off()
+
+        ax.quiver(0, 0, 0, 2 * x_max, 0, 0, color=&#39;black&#39;, arrow_length_ratio=0.1)
+        ax.quiver(0, 0, 0, 0, 2 * y_max, 0, color=&#39;black&#39;, arrow_length_ratio=0.1)
+        ax.quiver(0, 0, 0, 0, 0, 2 * z_max, color=&#39;black&#39;, arrow_length_ratio=0.1)
+
+        alpha_1 = slider_3.val
+        alpha_2 = slider_4.val
+        alpha_3 = slider_5.val
+        alpha = Point((alpha_1, alpha_2, alpha_3))
+        y01 = float(textbox_1.text)
+        y02 = float(textbox_2.text)
+        y03 = float(textbox_3.text)
+        y0 = Point((y01, y02, y03))
+        Y2 = MSP.Y_list[1] * alpha + PointList((y0,))
+        Y1.plot(f&#34;${_Y1}$&#34;, ax=ax, color=Y1.plot_color)
+        Y2.plot(f&#34;${_Y2}\cdot \\alpha  + y^0$&#34;, ax=ax, color=Y2_color)
+        Y = Y1 + Y2
+        Y.plot(f&#34;${_Y}$&#34;, ax=ax, color=&#39;gray&#39;)
+        Yn = N(Y1 + Y2)
+        Yn.plot(f&#34;${_Yn}$&#34;, ax=ax, color=&#39;yellow&#39;)
+        y0.plot(ax=ax, label=&#39;$y0$&#39;, color=&#39;black&#39;, marker=&#39;x&#39;)
+        ax.legend()
+        fig.canvas.draw_idle()
+
+    # Define the position of each slider
+    ax_slider3 = fig.add_axes([0.25, 0.05, 0.65, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+    ax_slider4 = fig.add_axes([0.25, 0.10, 0.65, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+    ax_slider5 = fig.add_axes([0.25, 0.15, 0.65, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+
+    # Create the sliders
+    slider_3 = Slider(ax_slider3, &#39;Alpha_1&#39;, 0.1, 50.0, valinit=alpha_1)
+    slider_4 = Slider(ax_slider4, &#39;Alpha_2&#39;, 0.1, 50.0, valinit=alpha_2)
+    slider_5 = Slider(ax_slider5, &#39;Alpha_3&#39;, 0.1, 50.0, valinit=alpha_3)
+
+    # Connect sliders to the update function
+    slider_3.on_changed(update)
+    slider_4.on_changed(update)
+    slider_5.on_changed(update)
+
+    # Define the position of each textbox
+    ax_textbox1 = fig.add_axes([0.2, 0.2, 0.2, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+    ax_textbox2 = fig.add_axes([0.45, 0.2, 0.2, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+    ax_textbox3 = fig.add_axes([0.65, 0.2, 0.2, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+
+    # Create the textboxes
+    textbox_1 = TextBox(ax_textbox1, &#39;y01&#39;, initial=str(y01))
+    textbox_2 = TextBox(ax_textbox2, &#39;y02&#39;, initial=str(y02))
+    textbox_3 = TextBox(ax_textbox3, &#39;y03&#39;, initial=str(y03))
+
+    # Connect textboxes to the update function
+    textbox_1.on_submit(update)
+    textbox_2.on_submit(update)
+    textbox_3.on_submit(update)
+
+    # Show the plot
+    plt.show()
+
+
+
+def article_plots_csv():
+    &#39;&#39;&#39; ad-hoc script for creating csv-files for plots &#39;&#39;&#39;
+
+    # % For each plot I need a csv with columns:
+    # %  p1, p2: coordinates 
+    # %  subprob: either &#34;1&#34;, &#34;2&#34; or &#34;m&#34; (master problem)
+    # %  ndom: 1 (if nondom), 0 (otherwise)  (that is for the subprob all equal 1)
+    # %  gen: 1 (if generator), 0 (otherwise)    (that is for the master all equal 0)
+
+
+
+    # % First subplot: (no scaling)
+    # % &#39;sp-2-50-u_1.json&#39;,
+    # % &#39;sp-2-50-u_2.json&#39;,
+    
+    MSP_name_list = []
+
+    
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        &#39;/sp-2-50-u_1.json&#39;,
+        &#39;/sp-2-50-u_2.json&#39;,
+        ])
+
+    plot_name = &#34;first&#34;
+    MSP_name_list.append((MSP, plot_name))
+
+    # % Second subplot: (no scaling)
+    # % &#39;sp-2-50-l_1.json&#39;,
+    # % &#39;sp-2-50-u_2.json&#39;,
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        &#39;sp-2-50-l_1.json&#39;,
+        &#39;sp-2-50-u_2.json&#39;,
+        ])
+
+    plot_name = &#34;second&#34;
+
+    MSP_name_list.append((MSP, plot_name))
+    # % Third subplot: (no scaling)
+    # % &#39;sp-2-50-m_1.json&#39;,
+    # % &#39;sp-2-50-m_2.json&#39;,
+    # %
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        &#39;sp-2-50-m_1.json&#39;,
+        &#39;sp-2-50-m_2.json&#39;,
+        ])
+    plot_name = &#34;third&#34;
+    MSP_name_list.append((MSP, plot_name))
+
+        
+
+    # % Fourth subplot: (2. plot where the u subset have be scalled on lie in [0, 2500]^2)
+    # %
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        &#39;sp-2-50-l_1.json&#39;,
+        &#39;sp-2-50-u_2.json&#39;,
+        ])
+    plot_name = &#34;fourth&#34;
+    # scale problems
+
+    MSP.Y_list = [MSP.Y_list[0], MSP.Y_list[1]*Point((1/2,1))  ]
+    MSP_name_list.append((MSP, plot_name))
+
+
+    for MSP, plot_name in MSP_name_list:
+
+        Y = methods.MS_sum(MSP.Y_list)
+        G,Yn = algorithm2(MinkowskiSumProblem(MSP.Y_list))
+
+        MSP_colored = []
+        for s, Ys in enumerate(MSP.Y_list):
+            Ys.plot_color = [&#39;#CC3333&#39;, &#39;#3399FF&#39;][s]
+            MSP_colored.append(Ys)
+
+        MSP.Y_list = MSP_colored
+
+        with open(f&#39;./temp/plot_{plot_name}_DGPE.csv&#39;, &#39;w&#39;) as out_file:
+
+            csv_writer = csv.writer(out_file)
+
+
+            for j, y in enumerate(Y):
+                y_dir = {
+                        &#39;p1&#39; : y[0],
+                        &#39;p2&#39; : y[1],
+                        &#39;subprob&#39; : &#39;m&#39;,
+                        &#39;ndom&#39; : int(y in Yn), 
+                        &#39;gen&#39; : 0,
+                         }
+                
+                if j == 0: # write header
+                    csv_writer.writerow(y_dir.keys())
+                csv_writer.writerow(y_dir.values())
+
+                print(f&#34;{y_dir=}&#34;)
+
+
+
+            
+            for s, Ys in enumerate(MSP.Y_list):
+                for ys in Ys:
+                    y_dir = {
+                            &#39;p1&#39; : ys[0],
+                            &#39;p2&#39; : ys[1],
+                            &#39;subprob&#39; : s+1,
+                            &#39;ndom&#39; : 1,
+                            &#39;gen&#39; : int(ys in G.Y_list[s]),
+                             }
+
+                    print(f&#34;{y_dir=}&#34;)
+            
+                    csv_writer.writerow(y_dir.values())
+
+
+            ######################## Figure csv_plot_view START ########################
+
+            # define new figure
+            fig, ax = plt.subplots(figsize=(10,7), layout=&#39;constrained&#39;)
+            
+            if True:
+                MSP.plot()
+                G.plot(set_label = &#39;\mathcal{G}&#39;, hidelabel= True, marker= &#39;1&#39;, color = &#39;#408000&#39;)
+                Y.plot(color= &#39;lightgray&#39;)
+                Yn.plot(color = &#39;#408000&#39;)
+                # plt.show()
+                # fig.savefig(fname = f&#34;temp/{plot_name}.png&#34;)
+                plot_or_save(fig, f&#34;{plot_name}&#34;)
+                # plt.cla()
+            
+            ######################### Figure csv_plot_view END #########################
+
+           
+
+def pairwise_alg3_plot(L1, Y1, U1, L2, Y2, U2, ax, ax_bar, ax_table, point_index = 0, checkbox = None):
+    &#34;&#34;&#34;Implementation of the pairwise algorithm3
+    Returns: Subset Y_hat of Y1
+    &#34;&#34;&#34;
+
+
+    
+    
+    
+    
+    UB_color = &#39;red&#39;
+    LB_color = &#39;blue&#39;
+    bound_linestyle = &#39;dashed&#39;
+
+    Y1.plot(ax = ax , l= f&#34;${_Yn1}$&#34;, color = &#39;lightblue&#39;)
+    Y2.plot(ax = ax , l= f&#34;${_Yn2}$&#34;, color = &#39;lightcoral&#39;)
+
+
+    if checkbox.get_status()[4]:
+        U1.plot(ax = ax , l= f&#34;${_Yh1}$&#34;, color = &#39;blue&#39;)
+        U2.plot(ax = ax , l= f&#34;${_Yh2}$&#34;, color = &#39;red&#39;)
+
+    if checkbox.get_status()[3]:
+        L1_line = methods.induced_UB(L1, line=True) if checkbox.get_status()[6] else L1
+        L2_line = methods.induced_UB(L2, line=True) if checkbox.get_status()[7] else L2
+
+        L1_line.plot(ax = ax , l= f&#34;${_L1}$&#34;, line = True, color = Y1.plot_color, linestyle=bound_linestyle)
+        L2_line.plot(ax = ax , l= f&#34;${_L2}$&#34;, line = True, color = Y2.plot_color, linestyle=bound_linestyle)
+
+        methods.induced_UB(U1, line=True).plot(ax = ax , l= f&#34;${_U1}$&#34;, line = True, color = Y1.plot_color, linestyle=bound_linestyle, marker =&#39;+&#39;)
+        methods.induced_UB(U2, line=True).plot(ax = ax , l= f&#34;${_U2}$&#34;, line = True, color = Y2.plot_color, linestyle=bound_linestyle, marker= &#39;+&#39;)
+
+    
+
+    Y = Y1 + Y2 
+    Yn = N(Y)
+
+    U = N(U1 + U2)
+
+    U_line = methods.induced_UB(U, line = True)
+
+    if checkbox.get_status()[3]:
+        U_line.plot(ax = ax , l= f&#34;${_U}$&#34;, color = UB_color, linestyle=bound_linestyle, line=True)
+    Y.plot(ax = ax , l= f&#34;${_Y}$&#34;, color = &#39;gray&#39;)
+    Yn.plot(ax = ax , l= f&#34;${_Yn}$&#34;, color = &#39;green&#39;)
+
+
+
+    # generator upper bound
+
+    if checkbox.get_status()[5]:
+        U1_G = U1
+        U2_G = U2
+        for _ in range(1):
+            print(f&#34;{len(U1_G)=}&#34;)
+            print(f&#34;{len(U2_G)=}&#34;)
+            U1_G = N(methods.find_generator_U(U1_G,U2_G))
+            U2_G = N(methods.find_generator_U(U2_G,U1_G))
+            # U2_G = methods.find_generator_U(U1,U2)
+        U1_G_line = methods.induced_UB(U1_G, line = True)
+        U1_G_line.plot(ax=ax, l =f&#34;$UB^1$&#34;, line = True, linestyle = bound_linestyle, color = &#39;gray&#39;)
+        U2_G_line = methods.induced_UB(U2_G, line = True)
+        U2_G_line.plot(ax=ax, l =f&#34;$UB^2$&#34;, line = True, linestyle = bound_linestyle, color = &#39;gray&#39;)
+
+        # return
+
+        # U2_G = methods.find_generator_U(U1,U2)
+        # U2_G_line = methods.induced_UB(U1_G, line = True)
+        # U2_G_line.plot(ax=ax, l =f&#34;$UB$&#34;, line = True)
+
+
+    # plot g_not points
+    # RGS = algorithm3.algorithm3_run(MinkowskiSumProblem([Y1,Y2]))
+    G1_not, G2_not = algorithm3.pairwise_alg3(L1, Y1, U1, L2, Y2, U2)
+    if checkbox.get_status()[2]:
+        PointList(G1_not).plot(ax = ax, l=f&#39;Removable {1}&#39;, marker = &#39;x&#39;, color = &#39;black&#39;)
+        PointList(G2_not).plot(ax = ax, l=f&#39;Removable {2}&#39;, marker = &#39;x&#39;, color = &#39;black&#39;)
+
+    MGS, _ = algorithm2(MinkowskiSumProblem([Y1,Y2]))
+
+
+    if checkbox.get_status()[0]:
+        MGS.Y_list[0].plot(ax = ax, l= f&#34;${_G1}$&#34;, marker= &#39;x&#39;, color = &#39;yellow&#39;)
+        MGS.Y_list[1].plot(ax = ax, l= f&#34;${_G2}$&#34;, marker= &#39;x&#39;, color = &#39;yellow&#39;)
+
+
+    # for s, G_not in enumerate(RGS.Y_list):
+        # G_not.plot(ax = ax, l=f&#39;Redundant {s}&#39;, marker = &#39;x&#39;, color = &#39;black&#39;)
+    # Column labels
+
+
+
+    # Right hand side figures:
+    column_labels = [&#39;&#39;, f&#34;${_G}^1$&#34;, &#39;Removable&#39;, &#39;$Removable \\setminus &#39; + f&#34;{_Yh1}$&#34;,f&#34;${_Yh1}$&#34; , &#34;$q^1$&#34; , f&#34;${_Yn}^1$&#34;]
+    column_colors = [&#39;white&#39;, &#39;yellow&#39;, &#39;grey&#39;, &#39;white&#39;, &#39;white&#39;, &#39;white&#39;,&#39;lightblue&#39;,]
+
+    q1_stat = (len(G1_not) / (len(Y1) - len(MGS.Y_list[0])))*100 if (len(MGS.Y_list[0]) != len(Y1)) else None
+    q2_stat = (len(G2_not) / (len(Y2) - len(MGS.Y_list[1])))*100 if (len(MGS.Y_list[1]) != len(Y2)) else None
+    q1_format = f&#34;{q1_stat:.1f}%&#34; if q1_stat is not None else None
+    q2_format = f&#34;{q2_stat:.1f}%&#34; if q2_stat is not None else None
+
+    # Sample data for the table
+    data = [
+            [&#39;card&#39;, len(MGS.Y_list[0]), len(G1_not), len([y1 for y1 in G1_not if y1 not in U1]), len(U1), &#39;&#39; , len(Y1)],
+            [&#39;\%&#39;, f&#34;{len(MGS.Y_list[0])/len(Y1)*100:.1f}\%&#34;, f&#34;{len(G1_not)/len(Y1)*100:.1f}\%&#34;, f&#34;{len([y1 for y1 in G1_not if y1 not in U1])/len(Y1)*100:.1f}%&#34;, f&#34;{len(U1)/len(Y1)*100:.1f}%&#34;,q1_format,&#39;&#39;],
+            ]
+    # Create the table
+    table = ax_table[0].table(cellText=data, colLabels=column_labels, colColours=column_colors, cellLoc=&#39;center&#39;, loc=&#39;center&#39;)
+    percentages = [
+            len([y for y in Y1 if y in MGS.Y_list[0]]), 
+            len([y for y in Y1 if y not in PointList(G1_not) and y not in MGS.Y_list[0]]), 
+            len([y for y in Y1 if y in PointList(G1_not)]), 
+            ]
+    print(f&#34;{percentages=}&#34;)
+    assert sum(percentages) == len(Y1)
+    # bars = ax_bar.barh([0,1], percentages, color=[&#39;black&#39;, &#39;green&#39;])
+    
+    bars1 = ax_bar[0].barh(0, percentages[0], color=&#39;yellow&#39;, label = f&#34;${_G1}$&#34;)
+    bars2 = ax_bar[0].barh(0, percentages[1], left=percentages[0], color=&#39;lightblue&#39;, label = &#39;Rest&#39;)
+    bars2 = ax_bar[0].barh(0, percentages[2], left=percentages[0] + percentages[1], color=&#39;black&#39;, label = &#39;Removable&#39;)
+    ax_bar[0].legend(loc=&#39;upper center&#39;, bbox_to_anchor=(0.5, -0),
+          ncol=3, fancybox=True, shadow=True)
+    # repeat for s2
+    column_labels = [&#39;&#39;, f&#34;${_G}^2$&#34;, &#39;Removable&#39;, &#39;$Removable \\setminus &#39; + f&#34;{_Yh2}$&#34;,f&#34;${_Yh2}$&#34; , &#34;$q^2$&#34;, f&#34;${_Yn}^2$&#34;]
+    column_colors = [&#39;white&#39;, &#39;yellow&#39;, &#39;grey&#39;, &#39;white&#39;, &#39;white&#39;,&#39;white&#39;, &#39;lightcoral&#39;]
+    # Sample data for the table
+    data = [
+            [&#39;card&#39;, len(MGS.Y_list[1]), len(G2_not), len([y2 for y2 in G2_not if y2 not in U2]), len(U2),&#39;&#39;, len(Y2)],
+            [&#39;\%&#39;, f&#34;{len(MGS.Y_list[1])/len(Y2)*100:.1f}\%&#34;, f&#34;{len(G2_not)/len(Y2)*100:.1f}\%&#34;, f&#34;{len([y2 for y2 in G2_not if y2 not in U2])/len(Y2)*100:.1f}%&#34;, f&#34;{len(U2)/len(Y2)*100:.1f}%&#34;,q2_format,&#39;&#39;],
+            ]
+    # Create the table
+    table = ax_table[1].table(cellText=data, colLabels=column_labels, colColours=column_colors, cellLoc=&#39;center&#39;, loc=&#39;center&#39;)
+    percentages = [
+            len([y for y in Y2 if y in MGS.Y_list[1]]), 
+            len([y for y in Y2 if y not in PointList(G2_not) and y not in MGS.Y_list[1]]), 
+            len([y for y in Y2 if y in PointList(G2_not)]), 
+            ]
+    print(f&#34;{percentages=}&#34;)
+    assert sum(percentages) == len(Y2)
+    # bars = ax_bar.barh([0,1], percentages, color=[&#39;black&#39;, &#39;green&#39;])
+    
+    bars1 = ax_bar[1].barh(0, percentages[0], color=&#39;yellow&#39;, label = f&#34;${_G2}$&#34;)
+    bars2 = ax_bar[1].barh(0, percentages[1], left=percentages[0], color=&#39;lightcoral&#39;, label = &#39;Rest&#39;)
+    bars2 = ax_bar[1].barh(0, percentages[2], left=percentages[0] + percentages[1], color=&#39;black&#39;, label = &#39;Removable&#39;)
+    ax_bar[1].legend(loc=&#39;upper center&#39;, bbox_to_anchor=(0.5, -0),
+          ncol=3, fancybox=True, shadow=True)
+
+
+
+
+    G1_not = []
+    for y1_index, y1 in enumerate(methods.lex_sort(Y1)):
+        L = L2 + PointList(y1)
+        L.is_complete = L2.is_complete
+
+        is_dominated = methods.U_dominates_L(U,L)
+
+        if point_index == y1_index:
+            if checkbox.get_status()[1]:
+                print(f&#34;{point_index=}&#34;)
+                L_line = methods.induced_UB(L, line=True) if checkbox.get_status()[7] else L
+                L_line.plot(ax = ax, l = f&#34;${_L2} +&#34; + &#34;{y^1}$&#34;, color = LB_color, line = True, linestyle = bound_linestyle)
+                PointList(y1).plot(ax= ax, point_labels = True, marker=&#39;x&#39;, color = (&#39;red&#39; if is_dominated else &#39;green&#39;))
+
+        
+            # plot_or_save(fig, fig_name)
+            return
+
+        
+        if methods.U_dominates_L(U,L):
+            G1_not.append(y1)
+
+    # G1 = PointList([y1 for y1 in Y1 if y1 not in G1_not])
+    G2_not = []
+    for y2 in methods.lex_sort(Y2):
+        L = L1 + PointList(y2)
+        L.is_complete = L1.is_complete
+
+        if U_dominates_L(U,L):
+            G2_not.append(y2)
+
+    # G2 = PointList([y2 for y2 in Y2 if y2 not in G2_not])
+    
+    if True: # validate resutlts
+        for y1 in G1_not:
+            assert y1 in Y1, f&#34;{y1,Y1=}&#34;
+
+        for y2 in G2_not:
+            assert y2 in Y2
+
+    return (G1_not,G2_not)
+
+
+
+def pairwise_alg3_plot_setup():
+
+
+    ######################## Figure RGS_plot START ########################
+    fig_name = &#34;RGS_plot&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig = plt.figure(figsize=(20,15), layout=&#39;constrained&#39;)
+
+    gs = gridspec.GridSpec(2, 2, height_ratios=[6, 4], width_ratios = [3,3])
+
+    # main plot
+    ax = fig.add_subplot(gs[0, :])
+    ax2 = fig.add_subplot(gs[1, 0])
+
+    # options plot
+    ax2.set_axis_off()
+
+    ax3 = fig.add_subplot(gs[1, 1])
+    ax3.set_axis_off()
+
+
+    # Function to update the slider limits
+    def update_slider_limits(slider, new_min, new_max):
+        # slider.valmin = new_min
+        # slider.valmax = new_max
+        slider.ax.set_xlim(new_min, new_max)
+        if index_slider.val &lt; new_min:
+            slider.set_val(new_min)  # Update the slider to reflect new limits
+        if index_slider.val &gt; new_max:
+            slider.set_val(new_max)  # Update the slider to reflect new limits
+
+
+    def update(_):
+        
+        ax.clear()  # Clear the current axes
+        ax_bar[0].clear()  # Clear the current axes
+        ax_bar[1].clear()  # Clear the current axes
+        ax_table[0].clear()  # Clear the current axes
+        ax_table[1].clear()  # Clear the current axes
+        # Hide the axis
+        ax_table[0].set_axis_off()
+        ax_table[1].set_axis_off()
+        ax_bar[0].set_axis_off()
+        ax_bar[1].set_axis_off()
+
+        # update options
+        level = level_slider.val
+        level2 = level2_slider.val
+        level_slider.valtext.set_text(f&#39;{level_slider.val*100:.0f}\%&#39;)
+        level2_slider.valtext.set_text(f&#39;{level2_slider.val*100:.0f}\%&#39;)
+        # index_slider.set_val(10)
+        sp1 = sp1_textbox.text
+        sp2 = sp2_textbox.text
+        update_slider_limits(index_slider, 0, len(PointList.from_json(&#39;./instances/subproblems/&#39; + sp1))-1)
+        point_index = int(index_slider.val)
+        seed = int(seed_textbox.text)
+        alpha = Point((int(alpha1_slider.val), int(alpha2_slider.val)))
+
+        # y0 = Point((1000,1000))
+        y0 = Point((int(y01_slider.val), int(y02_slider.val)))
+
+
+        MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/prob-2-50|50-ul-2_1.json&#39;)
+
+        MSP = MinkowskiSumProblem.from_subsets([
+            sp1,
+            sp2,
+            ])
+
+        Y_list = [methods.lex_sort(Y) for Y in MSP.Y_list]
+     
+
+        Y_list[s1] = Y_list[s1] * alpha
+        # Add y0 - translate the plot so that they are not on top of eachother
+        Y1_new = [y1+ y0 for y1 in Y_list[s1]]
+        for i, _ in enumerate(Y_list[s1]):
+            Y1_new[i].cls = Y_list[s1][i].cls
+        Y_list[s1] = PointList(Y1_new)
+    
+        Yse_list = [PointList([y for y in Y if y.cls == &#39;se&#39;]) for Y in Y_list]
+
+        Y1, Y2 = Y_list[s1], Y_list[s2]
+
+#         if level_slider.val &lt; len([y1 for y1 in Y1 if y1.cls == &#39;se&#39; ])/len(Y1):
+            # level_slider.set_val(len([y1 for y1 in Y1 if y1.cls == &#39;se&#39;]) /len(Y1))
+
+        # if level2_slider.val &lt; len([y2 for y2 in Y2 if y2.cls == &#39;se&#39;]) /len(Y2):
+            # level2_slider.set_val(len([y2 for y2 in Y2 if y2.cls == &#39;se&#39; ])/len(Y2))
+        # update_slider_limits(level_slider, )/ len(Y1), 1)
+        # update_slider_limits(level2_slider, len([y2 for y2 in Y2 if y2.cls == &#39;se&#39; ])/ len(Y2), 1)
+
+        assert point_index in set(range(len(Y1))), point_index
+
+        Y1se = Yse_list[s1]
+        Y2se = Yse_list[s2]
+
+        L1 = Y1se
+        L2 = Y2se
+
+
+        L1.is_complete, L2.is_complete = False, False
+        if checkbox.get_status()[6]:
+            L1 = Y1
+            L1.is_complete= True
+            assert level == 1
+        if checkbox.get_status()[7]:
+            L2 = Y2
+            L2.is_complete= True
+            assert level2 == 1
+
+
+        def get_partial(Y, level=&#39;all&#39;):   
+            Y = N(Y)
+            Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
+            Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
+            if seed != 0:
+                random.seed(seed)
+                random.shuffle(Y2other_points)
+            match level:
+                case &#39;all&#39;:
+                    return Y
+                case &#39;lexmin&#39;: 
+                    return PointList((Y[0], Y[-1]))
+                case &#39;extreme&#39;:
+                    return PointList(Y2e_points)
+                # case float():
+                case _:
+                    to_index = math.floor(float(level)*len(Y2other_points))
+                    return PointList(Y2e_points + Y2other_points[:to_index])
+
+
+        U1 = get_partial(Y1, level = level)
+        U2 = get_partial(Y2, level = level2)
+
+        pairwise_alg3_plot(L1, Y1, U1, L2, Y2, U2,ax,ax_bar, ax_table, point_index = point_index, checkbox=checkbox)
+
+
+    # Options
+    alpha = Point((1,1)) # add sliders alpha1 and alpha2 between 0.5 and 20
+    y0_point = Point((5000,5000))
+    level = 0.16 # add slider to scale between 0 and 1
+    level2 = 0 # add slider to scale between 0 and 1
+    s1 = 0 # drop down choose between set(range(len(Y_list)))
+    s2 = 1 # drop down choose between set(range(len(Y_list)))
+    point_index = 1 # add slider to integers on scale between 0 and len(Y_list[s1])
+    sp1 = &#39;sp-2-50-u_2.json&#39; # add textinput 
+    sp2 = &#39;sp-2-50-l_6.json&#39; # add textinpu
+    seed = 1
+
+
+    inner_gs = gridspec.GridSpecFromSubplotSpec(10, 3, subplot_spec=gs[1, 0])
+
+
+    i = 0
+
+    # slider for index
+    ax_index_slider = fig.add_subplot(inner_gs[i, :])
+    index_slider = Slider(ax_index_slider, &#39;$y^1$ index&#39;, 0, len(PointList.from_json(&#39;./instances/subproblems/&#39; + sp1)) -1, valinit=point_index, valfmt=&#34;%i&#34;, valstep = point_index)
+    index_slider.on_changed(update)
+
+
+    i+=1
+
+    ax_level_slider = fig.add_subplot(inner_gs[i, :])
+    level_slider = Slider(ax_level_slider, &#39;partial level &#39; + f&#34;${_Y1}$&#34;, 0, 1, valinit=level)
+    level_slider.on_changed(update)
+    i+=1
+    # Define the position of each textbox
+    ax_level2_slider = fig.add_subplot(inner_gs[i, :])
+    level2_slider = Slider(ax_level2_slider, &#39;partial level &#39; + f&#34;${_Y2}$&#34;, 0, 1, valinit=level2)
+    level2_slider.on_changed(update)
+
+
+
+    i+=1
+
+    ax_textbox = fig.add_subplot(inner_gs[i,0:2])
+    ax_textbox.text(0.5,0,f&#34;${_Y1} := &#34; +  f&#34;{_Y1}&#34; + &#34;\\cdot \\alpha + y^0$&#34;)
+    ax_textbox.set_axis_off()
+
+    ax_alpha1_slider = fig.add_subplot(inner_gs[i+1, 0])
+    alpha1_slider = Slider(ax_alpha1_slider, &#39;$\\alpha_1$&#39;, 0.5, 20, valinit=alpha[0], valfmt=&#34;%i&#34; )
+    alpha1_slider.on_changed(update)
+
+    ax_alpha2_slider = fig.add_subplot(inner_gs[i+2, 0])
+    alpha2_slider = Slider(ax_alpha2_slider, &#39;$\\alpha_2$&#39;, 0.5, 20, valinit=alpha[1], valfmt = &#39;%i&#39;)
+    alpha2_slider.on_changed(update)
+
+
+
+    ax_y01_slider = fig.add_subplot(inner_gs[i+1, 1])
+    y01_slider = Slider(ax_y01_slider, &#39;$y^0_1$&#39;, 0, 10000, valinit=y0_point[0], valfmt=&#34;%i&#34; )
+    y01_slider.on_changed(update)
+
+    ax_y02_slider = fig.add_subplot(inner_gs[i+2, 1])
+    y02_slider = Slider(ax_y02_slider, &#39;$y^0_2$&#39;, 0, 10000, valinit=y0_point[1], valfmt = &#39;%i&#39;)
+    y02_slider.on_changed(update)
+
+
+
+
+    ax_seed_textbox = fig.add_subplot(inner_gs[i, 2])
+    seed_textbox = TextBox(ax_seed_textbox, &#39;level seed (0=left to right) &#39;, initial=seed)
+
+    ax_sp1_textbox = fig.add_subplot(inner_gs[i+1, 2])
+    sp1_textbox = TextBox(ax_sp1_textbox, f&#34;${_Y1}$&#34;, initial=sp1)
+
+    ax_sp2_textbox = fig.add_subplot(inner_gs[i+2, 2])
+    sp2_textbox = TextBox(ax_sp2_textbox, f&#34;${_Y2}$&#34;, initial=sp2)
+    
+    i+=2
+    ax_update_button = fig.add_subplot(inner_gs[-3:-1,1:])
+    update_button = Button(ax_update_button, &#39;Update&#39;)
+    update_button.on_clicked(update)
+ 
+    # add checkboxes
+
+    # Add a subplot for the checkbox
+    ax_checkbox = fig.add_subplot(inner_gs[i+1:i+8, 0:1])
+
+    # Define the labels and initial state of the checkbox
+    labels = [&#39;MGS&#39;,f&#34;$y^1$&#34;, &#39;Removable&#39;, &#39;Bound sets&#39;, &#39;Known points&#39;, &#39;MGS Bounds&#39;, f&#34;${_Yn1} = {_L1}$&#34;, f&#34;${_Yn2} = {_L2}$&#34;]
+    states = [False, True, True, True, False, False, False, False]
+
+    # Create the checkbox
+    checkbox = CheckButtons(ax_checkbox, labels, states)
+    
+    # checkbox.on_clicked(update)
+
+    # add stuff to ax3
+    ax3_gs = gridspec.GridSpecFromSubplotSpec(9, 1, subplot_spec=gs[1, 1])
+
+    ax_table = []
+    ax_bar = []
+
+    ax_table.append(fig.add_subplot(ax3_gs[1]))
+    ax_table.append(fig.add_subplot(ax3_gs[6]))
+    ax_bar.append(fig.add_subplot(ax3_gs[3]))
+    ax_bar.append(fig.add_subplot(ax3_gs[8]))
+
+
+    update(None)
+
+    plt.show()
+
+
+def dgpe_matrix():
+
+    # Y1 = N(generator.generate_PointList(100, 2, method = &#34;CONCAVE&#34;))*2
+    # Y2 = N(generator.generate_PointList(100, 2, method = &#34;CONCAVE&#34;))*2 + PointList(((100,100),))
+ 
+    random.seed(1)
+    
+    np.random.seed(4)
+
+    Y1 = methods.lex_sort(N(generator.generate_PointList(70, 2, method = &#34;CONCAVE&#34;))*2) 
+    Y2 = methods.lex_sort(N(generator.generate_PointList(80, 2, method = &#34;CONCAVE&#34;))*2 + PointList(((50,50),)))
+    Y2 = methods.lex_sort(Y2)
+    Y2 = PointList([y2 for i, y2 in enumerate(Y2) if i not in [1,2,9,10,3,6]] + [Point((300,80))])
+    Y1 = PointList([y2 for i, y2 in enumerate(Y1) if i not in []] + [Point((80,200))])
+
+    # + PointList(((100,100),))
+
+    # Define the colors
+    # Y1.plot_color = (0.8, 0.2, 0.2)
+    # Ytwo = (0.2, 0.6, 1)
+    # Y = (0.25098, 0.50196, 0)
+
+
+    matrix_plot(Y1,Y2, &#39;DGPE_matrix&#39;, point_labels=True, figsize = (18,5))
+
+#DGPE colors
+
+
+def MS_limit():
+    ######################## Figure MS_limit START ########################
+    fig_name = &#34;MS_limit&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig = plt.figure(figsize=(5,5), layout=&#39;constrained&#39;)
+    ax = list()
+    
+    Y = PointList.from_json(&#39;./instances/subproblems/sp-2-10-l_1.json&#39;)
+    k_list = [1,2,3]
+
+    for k_id, k in enumerate(k_list):
+        ax = fig.add_subplot(1, len(k_list), k_id + 1)
+        Ylim = methods.MS_sequential_filter([Y for _ in range(k)]) * Point((1/k, 1/k))
+
+        ax.set_title(k)
+        Ylim.plot(ax = ax, l= &#39;Ylim&#39;)
+        Y.plot(ax= ax, l = &#39;Y&#39;, color = &#39;red&#39;)
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure MS_limit END #########################
+
+def validate_algorithm3_l():
+    # for some instances with ul|l alg3 manages to remove some subset vectors from l subsets.
+    #ex: alg3-prob-2-300|300|300-ull-3_4-0|all|all.json
+
+    RemSP = MinkowskiSumProblem.from_json(&#34;./instances/results/algorithm3_partial_levels/alg3-prob-2-300|300|300-ull-3_4-0|all|all.json&#34;)
+    MSP = MinkowskiSumProblem.from_json(&#34;./instances/problems/prob-2-300|300|300-ull-3_4.json&#34;)
+    
+    # validate q^s = 0.5 for an uuuu instance
+    problem_name = &#34;alg3-prob-2-300|300|300|300-uuuu-4_4-all|all|all|all.json&#34;
+    RemSP = MinkowskiSumProblem.from_json(&#34;./instances/results/algorithm3_partial_levels/&#34; + problem_name)
+    MSP = MinkowskiSumProblem.from_json(&#34;./instances/problems/prob-2-300|300|300|300-uuuu-4_4.json&#34;)
+
+    # removed vectors
+    RGS = MinkowskiSumProblem([PointList(set(Ys.points) - set(RYs.points)) for RYs, Ys in zip(RemSP,MSP)])
+
+
+    from algorithm3 import algorithm3_run
+    
+    MSP.Y_list = MSP.Y_list[::-1]
+
+    RGS_check = algorithm3_run(MSP, levels=(&#39;all&#39;,&#39;all&#39;,&#39;all&#39;,&#39;all&#39;)) 
+
+    for s, (rYs, Ys, RemYs, Rgs_Check) in enumerate(zip(RGS, MSP, RemSP, RGS_check)):
+        offset = PointList(((1000*s,1000*s),))
+        print(f&#34;\n{s=}&#34;)
+        print(f&#34;{len(rYs)=}&#34;)
+        print(f&#34;{len(Ys)=}&#34;)
+        print(f&#34;{len(RemYs)=}&#34;)
+        (offset + Ys).plot(f&#34;Y{s}&#34;)
+        # (offset + RemYs).plot(f&#34;removed&#34;, marker = &#39;x&#39;)
+        (offset + Rgs_check).plot(f&#34;removed&#34;, marker = &#39;x&#39;)
+ 
+
+
+    Yn =  methods.MS_sequential_filter(MSP.Y_list)
+
+    Yn.plot(&#39;Yn&#39;)
+    plt.show()    
+    RYn =  methods.MS_sequential_filter(RGS.Y_list)
+
+    assert Yn == RYn
+
+
+    # inspect s == 1
+    for i, y in enumerate(RemSP.Y_list[1]):
+        print(f&#34;{i,y.cls=}&#34;)
+
+
+def article_plot_emp3_visual():
+
+    random.seed(3)
+    np.random.seed(4)
+    Y1 = methods.lex_sort(N(generator.generate_PointList(70, 2, method = &#34;CONCAVE&#34;))*2) 
+    Y2 = methods.lex_sort(N(generator.generate_PointList(80, 2, method = &#34;CONCAVE&#34;))*2 + PointList(((50,50),)))
+    Y2 = methods.lex_sort(Y2)
+    Y2 = PointList([y2 for i, y2 in enumerate(Y2) if i not in [1,2,9,10,3,6]])
+    # Y1 = PointList([y2 for i, y2 in enumerate(Y1) if i not in []] + [Point((80,200))])
+
+    Y1_points = []
+    for i, y1 in enumerate(Y1):
+        if i in [0,1,7,9]:
+            y1.cls = &#39;se&#39;
+        Y1_points.append(y1)
+
+    Y1 = PointList(Y1_points)
+
+    ######################## Figure article_plot_emp3_visual START ########################
+    fig_name = &#34;article_plot_emp3_visual&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+
+    fig_size = (5,4)
+
+    fig, ax = plt.subplots(figsize=fig_size, layout=&#39;constrained&#39;)
+    
+
+ 
+
+    Y1_se = get_partial(Y1, level = 0)
+    Y2_se = get_partial(Y2, level = 0)
+
+    Y1_hat = get_partial(Y1, level = 0.25)
+    Y2_hat = get_partial(Y2, level = 0.5)
+
+
+    Y1.plot(ax=ax, l=f&#34;${_Y1}$&#34;, point_labels = False, marker=&#39;^&#39;, color = &#39;gray&#39;)
+    # Y1_hat.plot(ax=ax, l=f&#34;${_Yh1}$&#34;, marker=&#39;x&#39;)
+    nadir1 = methods.induced_UB(Y1)
+    nadir1.plot(ax=ax,l=&#39;nadir&#39;, color =&#39;black&#39;)
+    U1 = Y1_hat
+    U1.plot(ax=ax, l=f&#34;${_U1}$&#34;, color = &#39;red&#39;, marker=&#39;x&#39;)
+
+    # L1 = methods.induced_UB(Y1_se, assumption=&#39;supported&#39;)
+
+    Y1_se.plot(ax=ax, l=f&#34;${_L1}$&#34;, line=True, marker = &#39;.&#39;, color = &#39;blue&#39;)
+
+
+    # save in csv_file
+    sets_and_labels = [(Y1, &#39;Y&#39;), (nadir1, &#39;nadir&#39;), (U1, &#39;U&#39;), (Y1_se, &#39;L&#39;)]
+    with open(f&#39;./temp/emp_3_plot_visual.csv&#39;, &#39;w&#39;) as out_file:
+
+        csv_writer = csv.writer(out_file)
+        csv_writer.writerow([&#39;x&#39;,&#39;y&#39;,&#39;set&#39;,&#39;fig&#39;])
+        for j, (X, label) in enumerate(sets_and_labels):
+            for y in X:
+                y_dir = {
+                        &#39;p1&#39; : y[0],
+                        &#39;p2&#39; : y[1],
+                        &#39;set&#39; : label,
+                        &#39;fig&#39; : &#39;a&#39;
+                         }
+                csv_writer.writerow(y_dir.values())
+
+    # Turn off tick labels
+    ax.set_yticklabels([])
+    ax.set_xticklabels([])
+    # save or plot figure
+    # plot_or_save(fig, fig_name)
+    ######################### Figure article_plot_emp3_visual END #########################
+
+    fig, ax = plt.subplots(figsize=fig_size, layout=&#39;constrained&#39;)
+    # Y1_se = get_partial(Y1, level = 0)
+    # Y2_se = get_partial(Y2, level = 0)
+
+
+    Y1_hat_plot_color = Y1_hat.plot_color
+    Y1_hat = get_partial(Y1, level = 0.75)
+    Y1_hat.plot_color = Y1_hat_plot_color
+
+
+    Y1.plot(ax=ax, l=f&#34;${_Y1}$&#34;, point_labels = False, marker=&#39;^&#39;)
+    # Y1_hat.plot(ax=ax, l=f&#34;${_Yh1}$&#34;, marker=&#39;x&#39;, color = Y1_hat_plot_color)
+    # nadir1 = methods.induced_UB(Y1)
+    nadir1.plot(ax=ax,l=&#39;nadir&#39;)
+    U1 = Y1_hat
+    U1.plot(ax=ax, l=f&#34;${_U1}$&#34;, color = &#39;red&#39;, marker=&#39;x&#39;)
+
+    # L1 = methods.induced_UB(Y1_se, assumption=&#39;supported&#39;)
+
+    Y1.plot(ax=ax, l=f&#34;${_L1}$&#34;, line=False, marker = &#34;.&#34;, color = Y1_se.plot_color)
+
+    sets_and_labels = [(Y1, &#39;Y&#39;), (nadir1, &#39;nadir&#39;), (U1, &#39;U&#39;), (Y1, &#39;L&#39;)]
+    with open(f&#39;./temp/emp_3_plot_visual.csv&#39;, &#39;a&#39;) as out_file:
+        csv_writer = csv.writer(out_file)
+        for j, (X, label) in enumerate(sets_and_labels):
+            for y in X:
+                y_dir = {
+                        &#39;p1&#39; : y[0],
+                        &#39;p2&#39; : y[1],
+                        &#39;set&#39; : label,
+                        &#39;fig&#39; : &#39;b&#39;
+                         }
+                csv_writer.writerow(y_dir.values())
+
+
+    # Y2.plot(ax=ax,l=f&#34;${_Y2}$&#34;)
+
+
+    ax.set_yticklabels([])
+    ax.set_xticklabels([])
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure article_plot_emp3_visual END #########################
+
+
+
+
+def example_operators():
+
+    def op(y1: Point, y2: Point):
+        return Point((y1[0] + y2[0], y1[1] + y2[1]))
+
+    Point.__add__ = op
+
+
+
+    Y1 = PointList(((1,2), (1.5,1.2), (2,1)))
+    Y1 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-l_1.json&#39;)
+    Y2 = PointList(((2,3),(2.9,2.7), (3,2)))
+    Y2 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-m_1.json&#39;)
+
+    Y1.plot(l=f&#34;${_Y1}$&#34;)
+
+    Y2.plot(l=f&#34;${_Y2}$&#34;)
+    
+    Y_list = (Y1,Y2)
+
+    Y = Y1 + Y2 
+
+    from minimum_generator import SimpleFilter
+    from algorithm2 import get_fixed_and_reduced
+    # PointList(Yn), C_dict = SimpleFilter()
+    Yn, C_dict = SimpleFilter(Y_list)
+    
+    Y_fixed, Y_reduced = get_fixed_and_reduced(C_dict, Y_list)
+
+    print(f&#34;{[len(Ys) for Ys in Y_list]=}&#34;)
+    print(f&#34;{[len(Ys) for Ys in Y_fixed]=}&#34;)
+    print(f&#34;{[len(Ys) for Ys in Y_reduced]=}&#34;)
+
+    Y.plot(f&#34;${_Y}$&#34;)
+
+    
+
+    plt.show()
+
 
 def main():
 
-    slides_matrix_example_MGS()
+ 
+    # interactive_scaling()
+    # pairwise_alg3_plot_setup()
+    # example_operators()
+    # article_plot_emp3_visual()
+
+    # validate_algorithm3_l()
+
+    MS_limit()
+
+
+    #DGPE 2024
+#     global FIGURES_LOCATION
+    # FIGURES_LOCATION = &#34;../../../phd/Events/DGPE/poster/image/&#34;
+    # dgpe_matrix()
+    # article_plots_csv()
+
+
+    # pairwise_alg3_plot()
+    
+    # animate_scalling()
+
+    # RGS_slides()
+
+
+    # article_plots_csv()    
+
+    # interactive_scaling()
+    # interactive_scaling_3d()
+
+    # MSP_plot()
+
+    # slides_matrix_example_MGS()
     # slides_matrix_plot()
 
     # RGS_slides()
@@ -1373,6 +2631,7 @@ if __name__ == &#39;__main__&#39;:
     FIGURES_LOCATION = &#34;../../papers/paper1/figures/UB_instances/&#34;
     FIGURES_LOCATION = &#34;../../../phd/projects/papers/paper1/figures/UB_instances/multiple/&#34;
     FIGURES_LOCATION = &#34;../../../phd/projects/papers/paper1/figures/empirical_example/&#34;
+    FIGURES_LOCATION = &#34;/Users/au618299/Downloads/&#34;
 
     NO_AXIS = False 
 
@@ -1386,9 +2645,14 @@ if __name__ == &#39;__main__&#39;:
 
     # Style options for plots
     all_styles = [&#39;Solarize_Light2&#39;, &#39;_mpl-gallery&#39;, &#39;_mpl-gallery-nogrid&#39;, &#39;bmh&#39;, &#39;classic&#39;, &#39;dark_background&#39;, &#39;fast&#39;, &#39;fivethirtyeight&#39;, &#39;ggplot&#39;, &#39;grayscale&#39;,  &#39;tableau-colorblind10&#39;]
-    # STYLE = &#34;ggplot&#34; 
-    STYLE = all_styles[8] # 1 6 8 9 10
+    STYLE = all_styles[2] # 1 6 8 9 10
+    STYLE = &#34;ggplot&#34; 
     plt.style.use(STYLE)
+
+
+    # DGPE
+    plt.rcParams[&#39;axes.spines.top&#39;] = False
+    plt.rcParams[&#39;axes.spines.right&#39;] = False
 
 
     if NO_AXIS:
@@ -1420,6 +2684,8 @@ if __name__ == &#39;__main__&#39;:
     _Y2 = &#34;\mathcal{Y}^2&#34; # % objective space 1
     _L1 = &#34;\mathcal{L}^1&#34; # % lower bound set 1
     _L2 = &#34;\mathcal{L}^2&#34; # % lower bound set 2
+    _U1 = &#34;\mathcal{U}^1&#34; # % upper bound set 1
+    _U2 = &#34;\mathcal{U}^2&#34; # % upper bound set 2
     _Yn = &#34;\mathcal{Y}_\mathcal{N}&#34; # % non-dominated objective space
     _Yn1 = &#34;\mathcal{Y}_\mathcal{N}^1&#34; # % non-dominated objective space
     _G1 = &#34;\mathcal{G}^1&#34; # % generator set 1
@@ -1448,6 +2714,84 @@ if __name__ == &#39;__main__&#39;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="plots.MSP_plot"><code class="name flex">
+<span>def <span class="ident">MSP_plot</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def MSP_plot():
+
+
+    file = &#34;prob-2-100|100|100-uuu-3_2.json&#34;
+    # file = &#34;prob-5-50|50-uu-2_1.json&#34;
+    # file = &#34;prob-2-100|100-mm-2_1.json&#34;
+
+    file = &#34;prob-2-100|100-mm-2_1.json&#34;
+    file = &#34;prob-2-100|100-ul-2_2.json&#34;
+    file = &#34;prob-2-200|200|200-uuu-3_1.json&#34;
+    file = &#34;prob-2-50|50|50-uuu-3_3.json&#34;
+
+    MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/&#39; + file)
+
+
+    ######################## Figure validate_algorithm2 START ########################
+    fig_name = &#34;validate_algorithm2&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    
+    print(f&#34;{len(set(MSP.Y_list[0].points).intersection(set(MSP.Y_list[1].points)))=}&#34;)
+    
+    # matrix_plot(*MSP.Y_list,fig_name = fig, matrix_only=False)
+    # matrix_plot(MSP.Y_list[0],MSP.Y_list[0]*3, fig_name = fig, matrix_only=False)
+    
+
+
+    # save or plot figure
+    # plot_or_save(fig, fig_name)
+    ######################### Figure validate_algorithm2 END #########################
+
+    # return
+
+    # MGS_check = solve_MGS_instance(MSP.Y_list,plot=True)
+
+
+
+    MGS, Yn = algorithm2(MSP)
+    MSP_reversed = deepcopy(MSP)
+    MSP_reversed.Y_list = MSP_reversed.Y_list[::-1]
+    MGS_reversed, Yn_reversed = algorithm2(MSP_reversed)
+
+    MGS_size = sum(len(Y) for Y in MGS.Y_list)
+    MGS_reversed_size = sum(len(Y) for Y in MGS_reversed.Y_list)
+    print(f&#34;{MGS_size=}&#34;)
+    print(f&#34;{MGS_reversed_size=}&#34;)
+    assert MGS_size == MGS_reversed_size
+    
+
+    print(f&#34;{[(len(Y), len(G)) for G,Y in zip(MSP.Y_list,MGS.Y_list)]=}&#34;)
+    print(f&#34;{[(len(Y), len(G)) for G,Y in zip(MSP_reversed.Y_list,MGS_reversed.Y_list)]=}&#34;)
+
+
+
+    for y in MGS.Y_list[0]:
+        Y2 = PointList([ymgs for ymgs in MGS.Y_list[0] if ymgs != y])
+        print(f&#34;{len(Y2),y=}&#34;)
+        Y_list_reduced = [MGS.Y_list[1]] + [Y2] + [MGS.Y_list[2]]
+        print(f&#34;{[(len(Y), len(G)) for G,Y in zip(MSP.Y_list,Y_list_reduced)]=}&#34;)
+        assert methods.MS_sequential_filter(Y_list_reduced) == methods.MS_sequential_filter(MSP.Y_list) 
+    # print(f&#34;{MGS=}&#34;)
+
+    print(f&#34;{Y_list_reduced=}&#34;)
+    MGS.plot()
+
+    plt.show()</code></pre>
+</details>
+</dd>
 <dt id="plots.MSP_sol_example"><code class="name flex">
 <span>def <span class="ident">MSP_sol_example</span></span>(<span>)</span>
 </code></dt>
@@ -1487,6 +2831,39 @@ if __name__ == &#39;__main__&#39;:
     ######################### Figure slides_MSP_example END #########################</code></pre>
 </details>
 </dd>
+<dt id="plots.MS_limit"><code class="name flex">
+<span>def <span class="ident">MS_limit</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def MS_limit():
+    ######################## Figure MS_limit START ########################
+    fig_name = &#34;MS_limit&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig = plt.figure(figsize=(5,5), layout=&#39;constrained&#39;)
+    ax = list()
+    
+    Y = PointList.from_json(&#39;./instances/subproblems/sp-2-10-l_1.json&#39;)
+    k_list = [1,2,3]
+
+    for k_id, k in enumerate(k_list):
+        ax = fig.add_subplot(1, len(k_list), k_id + 1)
+        Ylim = methods.MS_sequential_filter([Y for _ in range(k)]) * Point((1/k, 1/k))
+
+        ax.set_title(k)
+        Ylim.plot(ax = ax, l= &#39;Ylim&#39;)
+        Y.plot(ax= ax, l = &#39;Y&#39;, color = &#39;red&#39;)
+    
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure MS_limit END #########################</code></pre>
+</details>
+</dd>
 <dt id="plots.RGS_slides"><code class="name flex">
 <span>def <span class="ident">RGS_slides</span></span>(<span>)</span>
 </code></dt>
@@ -1498,8 +2875,8 @@ if __name__ == &#39;__main__&#39;:
 </summary>
 <pre><code class="python">def RGS_slides():
 
-    Y1 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-m_1.json&#39;)*2
-    Y2 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-u_4.json&#39;)
+    Y1 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-l_1.json&#39;)*1
+    Y2 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-m_4.json&#39;)
     # Y1.points = [y2 for y2 in list(Y1)[::2]]
     point_labels = [&#39;plane1&#39;,&#39;Plane 2&#39;, &#39;Train&#39;,&#39;Bus&#39;]
 
@@ -1526,6 +2903,333 @@ if __name__ == &#39;__main__&#39;:
     # slides_MSP_example()
     slides_matrix_plot()
     RGS_slides()</code></pre>
+</details>
+</dd>
+<dt id="plots.animate_scalling"><code class="name flex">
+<span>def <span class="ident">animate_scalling</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def animate_scalling():
+
+    file = &#34;prob-2-50|50|50-uuu-3_3.json&#34;
+    MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/&#39; + file)
+    alpha = 3
+
+    ######################## Figure validate_algorithm2 START ########################
+    fig_name = &#34;validate_algorithm2&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+    
+ 
+    def update(alpha):
+        plt.cla()
+        Y1 = MSP.Y_list[0]
+        Y2 = MSP.Y_list[1]*alpha
+        Y1.plot(f&#34;${_Y1}$&#34;)
+        Y2.plot(f&#34;${_Y2}$&#34;)
+        Yn = N(Y1+Y2)
+        Yn.plot(f&#34;${_Yn}$&#34;)
+
+    # create a slider for alpha which creates a new plot using the new alpha values:
+
+    plt.show()
+
+
+
+# def plot_eks():
+
+
+    # ######################## Figure plot_til_forklaring START ########################
+    # fig_name = &#34;plot_til_forklaring&#34;
+    # print(f&#34;Plotting figure: {fig_name}&#34;)
+    # # define new figure
+    # fig, ax = plt.subplots(figsize=SIZE_STANDARD_FIGURE, layout=&#39;constrained&#39;)
+   
+    # MSP = MinkowskiSumProblem.from_subsets([
+        # &#39;sp-2-50-l_1.json&#39;,
+         # &#39;sp-2-50-u_2.json&#39;,
+    
+    
+    
+    # # save or plot figure
+    # plot_or_save(fig, fig_name)
+    # ######################### Figure plot_til_forklaring END #########################</code></pre>
+</details>
+</dd>
+<dt id="plots.article_plot_emp3_visual"><code class="name flex">
+<span>def <span class="ident">article_plot_emp3_visual</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def article_plot_emp3_visual():
+
+    random.seed(3)
+    np.random.seed(4)
+    Y1 = methods.lex_sort(N(generator.generate_PointList(70, 2, method = &#34;CONCAVE&#34;))*2) 
+    Y2 = methods.lex_sort(N(generator.generate_PointList(80, 2, method = &#34;CONCAVE&#34;))*2 + PointList(((50,50),)))
+    Y2 = methods.lex_sort(Y2)
+    Y2 = PointList([y2 for i, y2 in enumerate(Y2) if i not in [1,2,9,10,3,6]])
+    # Y1 = PointList([y2 for i, y2 in enumerate(Y1) if i not in []] + [Point((80,200))])
+
+    Y1_points = []
+    for i, y1 in enumerate(Y1):
+        if i in [0,1,7,9]:
+            y1.cls = &#39;se&#39;
+        Y1_points.append(y1)
+
+    Y1 = PointList(Y1_points)
+
+    ######################## Figure article_plot_emp3_visual START ########################
+    fig_name = &#34;article_plot_emp3_visual&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+
+    fig_size = (5,4)
+
+    fig, ax = plt.subplots(figsize=fig_size, layout=&#39;constrained&#39;)
+    
+
+ 
+
+    Y1_se = get_partial(Y1, level = 0)
+    Y2_se = get_partial(Y2, level = 0)
+
+    Y1_hat = get_partial(Y1, level = 0.25)
+    Y2_hat = get_partial(Y2, level = 0.5)
+
+
+    Y1.plot(ax=ax, l=f&#34;${_Y1}$&#34;, point_labels = False, marker=&#39;^&#39;, color = &#39;gray&#39;)
+    # Y1_hat.plot(ax=ax, l=f&#34;${_Yh1}$&#34;, marker=&#39;x&#39;)
+    nadir1 = methods.induced_UB(Y1)
+    nadir1.plot(ax=ax,l=&#39;nadir&#39;, color =&#39;black&#39;)
+    U1 = Y1_hat
+    U1.plot(ax=ax, l=f&#34;${_U1}$&#34;, color = &#39;red&#39;, marker=&#39;x&#39;)
+
+    # L1 = methods.induced_UB(Y1_se, assumption=&#39;supported&#39;)
+
+    Y1_se.plot(ax=ax, l=f&#34;${_L1}$&#34;, line=True, marker = &#39;.&#39;, color = &#39;blue&#39;)
+
+
+    # save in csv_file
+    sets_and_labels = [(Y1, &#39;Y&#39;), (nadir1, &#39;nadir&#39;), (U1, &#39;U&#39;), (Y1_se, &#39;L&#39;)]
+    with open(f&#39;./temp/emp_3_plot_visual.csv&#39;, &#39;w&#39;) as out_file:
+
+        csv_writer = csv.writer(out_file)
+        csv_writer.writerow([&#39;x&#39;,&#39;y&#39;,&#39;set&#39;,&#39;fig&#39;])
+        for j, (X, label) in enumerate(sets_and_labels):
+            for y in X:
+                y_dir = {
+                        &#39;p1&#39; : y[0],
+                        &#39;p2&#39; : y[1],
+                        &#39;set&#39; : label,
+                        &#39;fig&#39; : &#39;a&#39;
+                         }
+                csv_writer.writerow(y_dir.values())
+
+    # Turn off tick labels
+    ax.set_yticklabels([])
+    ax.set_xticklabels([])
+    # save or plot figure
+    # plot_or_save(fig, fig_name)
+    ######################### Figure article_plot_emp3_visual END #########################
+
+    fig, ax = plt.subplots(figsize=fig_size, layout=&#39;constrained&#39;)
+    # Y1_se = get_partial(Y1, level = 0)
+    # Y2_se = get_partial(Y2, level = 0)
+
+
+    Y1_hat_plot_color = Y1_hat.plot_color
+    Y1_hat = get_partial(Y1, level = 0.75)
+    Y1_hat.plot_color = Y1_hat_plot_color
+
+
+    Y1.plot(ax=ax, l=f&#34;${_Y1}$&#34;, point_labels = False, marker=&#39;^&#39;)
+    # Y1_hat.plot(ax=ax, l=f&#34;${_Yh1}$&#34;, marker=&#39;x&#39;, color = Y1_hat_plot_color)
+    # nadir1 = methods.induced_UB(Y1)
+    nadir1.plot(ax=ax,l=&#39;nadir&#39;)
+    U1 = Y1_hat
+    U1.plot(ax=ax, l=f&#34;${_U1}$&#34;, color = &#39;red&#39;, marker=&#39;x&#39;)
+
+    # L1 = methods.induced_UB(Y1_se, assumption=&#39;supported&#39;)
+
+    Y1.plot(ax=ax, l=f&#34;${_L1}$&#34;, line=False, marker = &#34;.&#34;, color = Y1_se.plot_color)
+
+    sets_and_labels = [(Y1, &#39;Y&#39;), (nadir1, &#39;nadir&#39;), (U1, &#39;U&#39;), (Y1, &#39;L&#39;)]
+    with open(f&#39;./temp/emp_3_plot_visual.csv&#39;, &#39;a&#39;) as out_file:
+        csv_writer = csv.writer(out_file)
+        for j, (X, label) in enumerate(sets_and_labels):
+            for y in X:
+                y_dir = {
+                        &#39;p1&#39; : y[0],
+                        &#39;p2&#39; : y[1],
+                        &#39;set&#39; : label,
+                        &#39;fig&#39; : &#39;b&#39;
+                         }
+                csv_writer.writerow(y_dir.values())
+
+
+    # Y2.plot(ax=ax,l=f&#34;${_Y2}$&#34;)
+
+
+    ax.set_yticklabels([])
+    ax.set_xticklabels([])
+    # save or plot figure
+    plot_or_save(fig, fig_name)
+    ######################### Figure article_plot_emp3_visual END #########################</code></pre>
+</details>
+</dd>
+<dt id="plots.article_plots_csv"><code class="name flex">
+<span>def <span class="ident">article_plots_csv</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>ad-hoc script for creating csv-files for plots</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def article_plots_csv():
+    &#39;&#39;&#39; ad-hoc script for creating csv-files for plots &#39;&#39;&#39;
+
+    # % For each plot I need a csv with columns:
+    # %  p1, p2: coordinates 
+    # %  subprob: either &#34;1&#34;, &#34;2&#34; or &#34;m&#34; (master problem)
+    # %  ndom: 1 (if nondom), 0 (otherwise)  (that is for the subprob all equal 1)
+    # %  gen: 1 (if generator), 0 (otherwise)    (that is for the master all equal 0)
+
+
+
+    # % First subplot: (no scaling)
+    # % &#39;sp-2-50-u_1.json&#39;,
+    # % &#39;sp-2-50-u_2.json&#39;,
+    
+    MSP_name_list = []
+
+    
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        &#39;/sp-2-50-u_1.json&#39;,
+        &#39;/sp-2-50-u_2.json&#39;,
+        ])
+
+    plot_name = &#34;first&#34;
+    MSP_name_list.append((MSP, plot_name))
+
+    # % Second subplot: (no scaling)
+    # % &#39;sp-2-50-l_1.json&#39;,
+    # % &#39;sp-2-50-u_2.json&#39;,
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        &#39;sp-2-50-l_1.json&#39;,
+        &#39;sp-2-50-u_2.json&#39;,
+        ])
+
+    plot_name = &#34;second&#34;
+
+    MSP_name_list.append((MSP, plot_name))
+    # % Third subplot: (no scaling)
+    # % &#39;sp-2-50-m_1.json&#39;,
+    # % &#39;sp-2-50-m_2.json&#39;,
+    # %
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        &#39;sp-2-50-m_1.json&#39;,
+        &#39;sp-2-50-m_2.json&#39;,
+        ])
+    plot_name = &#34;third&#34;
+    MSP_name_list.append((MSP, plot_name))
+
+        
+
+    # % Fourth subplot: (2. plot where the u subset have be scalled on lie in [0, 2500]^2)
+    # %
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        &#39;sp-2-50-l_1.json&#39;,
+        &#39;sp-2-50-u_2.json&#39;,
+        ])
+    plot_name = &#34;fourth&#34;
+    # scale problems
+
+    MSP.Y_list = [MSP.Y_list[0], MSP.Y_list[1]*Point((1/2,1))  ]
+    MSP_name_list.append((MSP, plot_name))
+
+
+    for MSP, plot_name in MSP_name_list:
+
+        Y = methods.MS_sum(MSP.Y_list)
+        G,Yn = algorithm2(MinkowskiSumProblem(MSP.Y_list))
+
+        MSP_colored = []
+        for s, Ys in enumerate(MSP.Y_list):
+            Ys.plot_color = [&#39;#CC3333&#39;, &#39;#3399FF&#39;][s]
+            MSP_colored.append(Ys)
+
+        MSP.Y_list = MSP_colored
+
+        with open(f&#39;./temp/plot_{plot_name}_DGPE.csv&#39;, &#39;w&#39;) as out_file:
+
+            csv_writer = csv.writer(out_file)
+
+
+            for j, y in enumerate(Y):
+                y_dir = {
+                        &#39;p1&#39; : y[0],
+                        &#39;p2&#39; : y[1],
+                        &#39;subprob&#39; : &#39;m&#39;,
+                        &#39;ndom&#39; : int(y in Yn), 
+                        &#39;gen&#39; : 0,
+                         }
+                
+                if j == 0: # write header
+                    csv_writer.writerow(y_dir.keys())
+                csv_writer.writerow(y_dir.values())
+
+                print(f&#34;{y_dir=}&#34;)
+
+
+
+            
+            for s, Ys in enumerate(MSP.Y_list):
+                for ys in Ys:
+                    y_dir = {
+                            &#39;p1&#39; : ys[0],
+                            &#39;p2&#39; : ys[1],
+                            &#39;subprob&#39; : s+1,
+                            &#39;ndom&#39; : 1,
+                            &#39;gen&#39; : int(ys in G.Y_list[s]),
+                             }
+
+                    print(f&#34;{y_dir=}&#34;)
+            
+                    csv_writer.writerow(y_dir.values())
+
+
+            ######################## Figure csv_plot_view START ########################
+
+            # define new figure
+            fig, ax = plt.subplots(figsize=(10,7), layout=&#39;constrained&#39;)
+            
+            if True:
+                MSP.plot()
+                G.plot(set_label = &#39;\mathcal{G}&#39;, hidelabel= True, marker= &#39;1&#39;, color = &#39;#408000&#39;)
+                Y.plot(color= &#39;lightgray&#39;)
+                Yn.plot(color = &#39;#408000&#39;)
+                # plt.show()
+                # fig.savefig(fname = f&#34;temp/{plot_name}.png&#34;)
+                plot_or_save(fig, f&#34;{plot_name}&#34;)
+                # plt.cla()
+            
+            ######################### Figure csv_plot_view END #########################</code></pre>
 </details>
 </dd>
 <dt id="plots.counter_example_reduction"><code class="name flex">
@@ -1579,6 +3283,41 @@ if __name__ == &#39;__main__&#39;:
         matrix_plot(Y1,Y2, fig_name = fig_name, point_labels=True, figsize = (10,7))
         # save or plot figure
         ######################### Figure counter_example_reduction END #########################</code></pre>
+</details>
+</dd>
+<dt id="plots.dgpe_matrix"><code class="name flex">
+<span>def <span class="ident">dgpe_matrix</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dgpe_matrix():
+
+    # Y1 = N(generator.generate_PointList(100, 2, method = &#34;CONCAVE&#34;))*2
+    # Y2 = N(generator.generate_PointList(100, 2, method = &#34;CONCAVE&#34;))*2 + PointList(((100,100),))
+ 
+    random.seed(1)
+    
+    np.random.seed(4)
+
+    Y1 = methods.lex_sort(N(generator.generate_PointList(70, 2, method = &#34;CONCAVE&#34;))*2) 
+    Y2 = methods.lex_sort(N(generator.generate_PointList(80, 2, method = &#34;CONCAVE&#34;))*2 + PointList(((50,50),)))
+    Y2 = methods.lex_sort(Y2)
+    Y2 = PointList([y2 for i, y2 in enumerate(Y2) if i not in [1,2,9,10,3,6]] + [Point((300,80))])
+    Y1 = PointList([y2 for i, y2 in enumerate(Y1) if i not in []] + [Point((80,200))])
+
+    # + PointList(((100,100),))
+
+    # Define the colors
+    # Y1.plot_color = (0.8, 0.2, 0.2)
+    # Ytwo = (0.2, 0.6, 1)
+    # Y = (0.25098, 0.50196, 0)
+
+
+    matrix_plot(Y1,Y2, &#39;DGPE_matrix&#39;, point_labels=True, figsize = (18,5))</code></pre>
 </details>
 </dd>
 <dt id="plots.empirical_matrix"><code class="name flex">
@@ -1684,6 +3423,55 @@ if __name__ == &#39;__main__&#39;:
     ######################### Figure example END #########################</code></pre>
 </details>
 </dd>
+<dt id="plots.example_operators"><code class="name flex">
+<span>def <span class="ident">example_operators</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def example_operators():
+
+    def op(y1: Point, y2: Point):
+        return Point((y1[0] + y2[0], y1[1] + y2[1]))
+
+    Point.__add__ = op
+
+
+
+    Y1 = PointList(((1,2), (1.5,1.2), (2,1)))
+    Y1 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-l_1.json&#39;)
+    Y2 = PointList(((2,3),(2.9,2.7), (3,2)))
+    Y2 = PointList.from_json(&#39;./instances/subproblems/sp-2-10-m_1.json&#39;)
+
+    Y1.plot(l=f&#34;${_Y1}$&#34;)
+
+    Y2.plot(l=f&#34;${_Y2}$&#34;)
+    
+    Y_list = (Y1,Y2)
+
+    Y = Y1 + Y2 
+
+    from minimum_generator import SimpleFilter
+    from algorithm2 import get_fixed_and_reduced
+    # PointList(Yn), C_dict = SimpleFilter()
+    Yn, C_dict = SimpleFilter(Y_list)
+    
+    Y_fixed, Y_reduced = get_fixed_and_reduced(C_dict, Y_list)
+
+    print(f&#34;{[len(Ys) for Ys in Y_list]=}&#34;)
+    print(f&#34;{[len(Ys) for Ys in Y_fixed]=}&#34;)
+    print(f&#34;{[len(Ys) for Ys in Y_reduced]=}&#34;)
+
+    Y.plot(f&#34;${_Y}$&#34;)
+
+    
+
+    plt.show()</code></pre>
+</details>
+</dd>
 <dt id="plots.example_reduction_lower_bounds"><code class="name flex">
 <span>def <span class="ident">example_reduction_lower_bounds</span></span>(<span>)</span>
 </code></dt>
@@ -1744,22 +3532,22 @@ if __name__ == &#39;__main__&#39;:
 <pre><code class="python">def induced_UB_plot(level, Y1,Y2, prefix=&#39;&#39;, plot=True):
     print(f&#34;{prefix}&#34;)
     # print(f&#34;{level=}&#34;)
-    def get_partial(Y, level=&#39;all&#39;):   
-        Y = N(Y)
-        Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
-        Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
-        # random.shuffle(Y2other_points)
-        match level:
-            case &#39;all&#39;:
-                return Y
-            case &#39;lexmin&#39;: 
-                return PointList((Y[0], Y[-1]))
-            case &#39;extreme&#39;:
-                return PointList(Y2e_points)
-            # case float():
-            case _:
-                to_index = math.floor(float(level)*len(Y2other_points))
-                return PointList(Y2e_points + Y2other_points[:to_index])
+#     def get_partial(Y, level=&#39;all&#39;):   
+        # Y = N(Y)
+        # Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
+        # Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
+        # # random.shuffle(Y2other_points)
+        # match level:
+            # case &#39;all&#39;:
+                # return Y
+            # case &#39;lexmin&#39;: 
+                # return PointList((Y[0], Y[-1]))
+            # case &#39;extreme&#39;:
+                # return PointList(Y2e_points)
+            # # case float():
+            # case _:
+                # to_index = math.floor(float(level)*len(Y2other_points))
+                # return PointList(Y2e_points + Y2other_points[:to_index])
                 # print(f&#34;case not implemented {level}&#34;)
     ######################## Figure Induced_UB START ########################
     # fig_name = f&#34;Induced_UB_{level}&#34;.replace(&#39;lexmin&#39;,&#39;0.00lexmin&#39;)
@@ -1772,7 +3560,7 @@ if __name__ == &#39;__main__&#39;:
     fig_name = f&#34;/RGS_example/RGS_sup&#34;
 
 
-    only_supported = True 
+    only_supported =  False
 
     LB_assumption = &#39;consecutive&#39;
     if only_supported:
@@ -1864,9 +3652,9 @@ if __name__ == &#39;__main__&#39;:
             # U_partial = methods.induced_UB(Y_partial, line=True)
             U_partial.plot(line=True, color=&#39;lightgray&#39;)
             
-
-            plot_or_save(fig, fig_name + str(plot_count))
-            plot_count +=1
+            if False:
+                plot_or_save(fig, fig_name + str(plot_count))
+                plot_count +=1
             plt.cla()
             reset_graph()
 
@@ -1951,6 +3739,278 @@ if __name__ == &#39;__main__&#39;:
         # return run_data</code></pre>
 </details>
 </dd>
+<dt id="plots.interactive_scaling"><code class="name flex">
+<span>def <span class="ident">interactive_scaling</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def interactive_scaling():
+
+
+    def op(y1: Point, y2: Point):
+        return Point((y1[0] * y2[0], y1[1] * y2[1]))
+
+    Point.__add__ = op
+
+
+
+
+    file = &#34;prob-2-50|50-ul-2_3.json&#34;
+    MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/&#39; + file)
+
+    if True:
+        MSP = MinkowskiSumProblem.from_subsets([
+            # &#39;/sp-2-100-u_1.json&#39;,
+            # &#39;/sp-2-100-u_2.json&#39;,
+            # &#39;/sp-2-100-u_3.json&#39;,
+            &#39;sp-2-50-l_1.json&#39;,
+             &#39;sp-2-50-u_2.json&#39;,
+            ])
+
+
+    alpha = 3
+
+    ######################## Figure validate_algorithm2 START ########################
+    # Define the figure and axis
+    fig, ax = plt.subplots(figsize=(8, 6))
+    plt.subplots_adjust(bottom=0.15)  # Adjust the bottom to make space for the slider
+    # Initial plot data
+    Y1 = MSP.Y_list[0]
+    Y2 = methods.lex_sort(MSP.Y_list[1])[:10]
+    alpha_1 = 1
+    alpha_2 = 4
+    y01, y02 = 0, 0
+
+    y0 = Point((y01, y02))
+    alpha = Point((alpha_1, alpha_2))
+
+    # Plot initial data
+    Y1 = MSP.Y_list[0] * 4
+    Y2 = MSP.Y_list[1]*alpha + PointList((y0,))
+    # Y3 = MSP.Y_list[2]
+    # Y2 = methods.lex_sort(Y2)[:10]
+    Y1.plot(f&#34;${_Y1}$&#34;)
+    Y2.plot(f&#34;${_Y2}$&#34;)
+    # Y3.plot(f&#34;${Y3}$&#34;)
+    Y2_color = Y2.plot_color
+    Y = Y1 + Y2
+    Y.plot(f&#34;${_Y}$&#34;, ax= ax, color = &#39;gray&#39;)
+
+    plt.show()
+    # Yn = N(Y1+Y2)
+    # G,Yn = algorithm2(MSP)
+
+    Yn = N(Y)
+    G,Yn = algorithm2(MinkowskiSumProblem([Y1,Y2]))
+    for s, g in enumerate(G.Y_list):
+        g.plot(f&#34;${_G}^{s}$&#34;, color=&#39;yellow&#39;, marker = &#39;x&#39;)
+    Yn.plot(f&#34;${_Yn}$&#34;, color = &#39;yellow&#39;)
+
+    # Add legend
+    ax.legend()
+
+    # Define the update function
+    def update(val):
+        ax.clear()  # Clear the current axes
+        alpha_1 = slider_3.val
+        alpha_2 = slider_4.val
+        alpha = Point((alpha_1, alpha_2))
+        # also update y0
+        y01 = float(textbox_1.text)
+        y02 = float(textbox_2.text)
+        # y02 = slider_2.val
+        y0 = Point((y01, y02))
+        Y2 = MSP.Y_list[1] * alpha + PointList((y0,))
+        # Y2 = methods.lex_sort(Y2)[:10]
+        Y1.plot(f&#34;${_Y1}$&#34;, ax=ax, color = Y1.plot_color)
+        Y2.plot(f&#34;${_Y2}\cdot \\alpha  + y^0$&#34;, ax= ax, color = Y2_color)
+        # Y3.plot(f&#34;${_Y1}$&#34;, ax=ax, color = Y3.plot_color)
+        # Y = Y1 + Y2 + Y3
+        Y = Y1 + Y2
+        # G,Yn = algorithm2(MinkowskiSumProblem([Y1,Y2]))
+        Y.plot(f&#34;${_Y}$&#34;, ax= ax, color = &#39;gray&#39;)
+        # Yn = N(Y1 + Y2 + Y3)
+        Yn = N(Y1 + Y2)
+
+        # G = alg2(MinkowskiSumProblem([Y1,Y2]))
+        # print(f&#34;{Y_fixed=}&#34;)
+        # Yn_with_duplicates, C_dict = SimpleFilter(MSP.Y_list)
+        # for s, g in enumerate(Y_fixed):
+            # g.plot(f&#34;${_G}^{s}$&#34;, color=&#39;yellow&#39;, marker = &#39;x&#39;, ax=ax)
+
+
+
+        Yn.plot(f&#34;${_Yn}$&#34;, ax=ax, color= &#39;yellow&#39;)
+        y0.plot(ax=ax, label = &#39;$y0$&#39;, color = &#39;black&#39;, marker = &#39;x&#39;)
+
+        ax.legend()
+        fig.canvas.draw_idle()
+
+    # Define the position of each slider
+    ax_slider3 = plt.axes([0.25, 0.05, 0.65, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+    ax_slider4 = plt.axes([0.25, 0.01, 0.65, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+
+    # Create the sliders
+    slider_3 = Slider(ax_slider3, &#39;Alpha_1&#39;, 0.1, 50.0, valinit=alpha_1)
+    slider_4 = Slider(ax_slider4, &#39;Alpha_2&#39;, 0.1, 50.0, valinit=alpha_2)
+
+    # update(1)
+    slider_3.on_changed(update)
+    slider_4.on_changed(update)
+        
+    # Define the position of each textbox
+    ax_textbox1 = plt.axes([0.25, 0.1, 0.25, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+    ax_textbox2 = plt.axes([0.55, 0.1, 0.25, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+
+    # Create the textboxes
+    textbox_1 = TextBox(ax_textbox1, &#39;y01&#39;, initial=str(y01))
+    textbox_2 = TextBox(ax_textbox2, &#39;y02&#39;, initial=str(y02))
+
+    textbox_1.on_submit(update)
+    textbox_2.on_submit(update)
+
+    # Show the plot
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="plots.interactive_scaling_3d"><code class="name flex">
+<span>def <span class="ident">interactive_scaling_3d</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def interactive_scaling_3d():
+
+    file = &#34;prob-2-50|50-ul-2_3.json&#34;
+    MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/&#39; + file)
+
+    if True:
+        MSP = MinkowskiSumProblem.from_subsets([
+            &#39;/sp-3-10-m_1.json&#39;,
+            &#39;/sp-3-50-l_1.json&#39;,
+            ])
+
+
+
+    # Create the figure first
+    fig = plt.figure(figsize = (30,10))
+    ax = fig.add_subplot(111, projection=&#39;3d&#39;)
+    ax.set_axis_off()
+    # fig.subplots_adjust(top=1.1, bottom=-.1)
+    plt.subplots_adjust(bottom=0.25)  # Adjust the bottom to make space for the slider
+    ax.set_aspect(&#39;auto&#39;)
+
+    # Initial plot data
+    Y1 = MSP.Y_list[0]
+    Y2 = methods.lex_sort(MSP.Y_list[1])[:10]
+    alpha_1 = 2
+    alpha_2 = 3
+    alpha_3 = 1
+    y01, y02, y03 = 0, 0, 0
+
+    y0 = Point((y01, y02, y03))
+    alpha = Point((alpha_1, alpha_2, alpha_3))
+
+    # Plot initial data
+    Y1.plot(f&#34;${_Y1}$&#34;, ax=ax)
+    Y2 = MSP.Y_list[1] * alpha + PointList((y0,))
+    Y2.plot(f&#34;${_Y2}$&#34;, ax=ax)
+    Y2_color = Y2.plot_color
+    Y = Y1 + Y2
+    Y.plot(f&#34;${_Y}$&#34;, ax=ax, color=&#39;gray&#39;)
+    Yn = N(Y)
+    Yn.plot(f&#34;${_Yn}$&#34;, color=&#39;yellow&#39;, ax=ax)
+
+    # Add legend
+    ax.legend()
+
+
+    # Calculate the new axis limits
+    x_max, y_max, z_max = [max([y[p] for y in Y]) for p in range(3)]
+    ax.set_xlim([0, 2 * x_max])
+    ax.set_ylim([0, 2 * y_max])
+    ax.set_zlim([0, 2 * z_max])
+
+    # Plot the vectors
+    ax.quiver(0, 0, 0, 2 * x_max, 0, 0, color=&#39;black&#39;, arrow_length_ratio=0.1)
+    ax.quiver(0, 0, 0, 0, 2 * y_max, 0, color=&#39;black&#39;, arrow_length_ratio=0.1)
+    ax.quiver(0, 0, 0, 0, 0, 2 * z_max, color=&#39;black&#39;, arrow_length_ratio=0.1)
+
+
+
+    # Define the update function
+    def update(val):
+        ax.clear()  # Clear the current axes
+
+        ax.set_xlim([0, 2 * x_max])
+        ax.set_ylim([0, 2 * y_max])
+        ax.set_zlim([0, 2 * z_max])
+        ax.set_axis_off()
+
+        ax.quiver(0, 0, 0, 2 * x_max, 0, 0, color=&#39;black&#39;, arrow_length_ratio=0.1)
+        ax.quiver(0, 0, 0, 0, 2 * y_max, 0, color=&#39;black&#39;, arrow_length_ratio=0.1)
+        ax.quiver(0, 0, 0, 0, 0, 2 * z_max, color=&#39;black&#39;, arrow_length_ratio=0.1)
+
+        alpha_1 = slider_3.val
+        alpha_2 = slider_4.val
+        alpha_3 = slider_5.val
+        alpha = Point((alpha_1, alpha_2, alpha_3))
+        y01 = float(textbox_1.text)
+        y02 = float(textbox_2.text)
+        y03 = float(textbox_3.text)
+        y0 = Point((y01, y02, y03))
+        Y2 = MSP.Y_list[1] * alpha + PointList((y0,))
+        Y1.plot(f&#34;${_Y1}$&#34;, ax=ax, color=Y1.plot_color)
+        Y2.plot(f&#34;${_Y2}\cdot \\alpha  + y^0$&#34;, ax=ax, color=Y2_color)
+        Y = Y1 + Y2
+        Y.plot(f&#34;${_Y}$&#34;, ax=ax, color=&#39;gray&#39;)
+        Yn = N(Y1 + Y2)
+        Yn.plot(f&#34;${_Yn}$&#34;, ax=ax, color=&#39;yellow&#39;)
+        y0.plot(ax=ax, label=&#39;$y0$&#39;, color=&#39;black&#39;, marker=&#39;x&#39;)
+        ax.legend()
+        fig.canvas.draw_idle()
+
+    # Define the position of each slider
+    ax_slider3 = fig.add_axes([0.25, 0.05, 0.65, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+    ax_slider4 = fig.add_axes([0.25, 0.10, 0.65, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+    ax_slider5 = fig.add_axes([0.25, 0.15, 0.65, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+
+    # Create the sliders
+    slider_3 = Slider(ax_slider3, &#39;Alpha_1&#39;, 0.1, 50.0, valinit=alpha_1)
+    slider_4 = Slider(ax_slider4, &#39;Alpha_2&#39;, 0.1, 50.0, valinit=alpha_2)
+    slider_5 = Slider(ax_slider5, &#39;Alpha_3&#39;, 0.1, 50.0, valinit=alpha_3)
+
+    # Connect sliders to the update function
+    slider_3.on_changed(update)
+    slider_4.on_changed(update)
+    slider_5.on_changed(update)
+
+    # Define the position of each textbox
+    ax_textbox1 = fig.add_axes([0.2, 0.2, 0.2, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+    ax_textbox2 = fig.add_axes([0.45, 0.2, 0.2, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+    ax_textbox3 = fig.add_axes([0.65, 0.2, 0.2, 0.03], facecolor=&#39;lightgoldenrodyellow&#39;)
+
+    # Create the textboxes
+    textbox_1 = TextBox(ax_textbox1, &#39;y01&#39;, initial=str(y01))
+    textbox_2 = TextBox(ax_textbox2, &#39;y02&#39;, initial=str(y02))
+    textbox_3 = TextBox(ax_textbox3, &#39;y03&#39;, initial=str(y03))
+
+    # Connect textboxes to the update function
+    textbox_1.on_submit(update)
+    textbox_2.on_submit(update)
+    textbox_3.on_submit(update)
+
+    # Show the plot
+    plt.show()</code></pre>
+</details>
+</dd>
 <dt id="plots.klamroth2023_lemma2"><code class="name flex">
 <span>def <span class="ident">klamroth2023_lemma2</span></span>(<span>)</span>
 </code></dt>
@@ -2008,7 +4068,39 @@ if __name__ == &#39;__main__&#39;:
 </summary>
 <pre><code class="python">def main():
 
-    slides_matrix_example_MGS()
+ 
+    # interactive_scaling()
+    # pairwise_alg3_plot_setup()
+    # example_operators()
+    # article_plot_emp3_visual()
+
+    # validate_algorithm3_l()
+
+    MS_limit()
+
+
+    #DGPE 2024
+#     global FIGURES_LOCATION
+    # FIGURES_LOCATION = &#34;../../../phd/Events/DGPE/poster/image/&#34;
+    # dgpe_matrix()
+    # article_plots_csv()
+
+
+    # pairwise_alg3_plot()
+    
+    # animate_scalling()
+
+    # RGS_slides()
+
+
+    # article_plots_csv()    
+
+    # interactive_scaling()
+    # interactive_scaling_3d()
+
+    # MSP_plot()
+
+    # slides_matrix_example_MGS()
     # slides_matrix_plot()
 
     # RGS_slides()
@@ -2159,13 +4251,13 @@ if __name__ == &#39;__main__&#39;:
 
     plt.xlabel(&#39;Objective 1&#39;)
     plt.ylabel(&#39;Objective 2&#39;)
-    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
-    plt.xlim(-1000,11000*2)
-    plt.ylim(-1000,11000*2)
+    # plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    # plt.xlim(-1000,11000*2)
+    # plt.ylim(-1000,11000*2)
+    plt.xlim(-10,303)
+    plt.ylim(-10,303)
     ax.append(fig.add_subplot(1, 3, 2))
 
-    # plt.xlabel(&#39;f&#34;${_Yn1}$&#34;&#39;)
-    # plt.ylabel(&#39;f&#34;${_Yn2}$&#34;&#39;)
 
     ax.append(fig.add_subplot(1, 3, 3, projection= projection ))
     # fig, ax = plt.subplots(ncols = 3, figsize=SIZE_LARGE_FIGURE, layout=&#39;constrained&#39;)
@@ -2173,21 +4265,29 @@ if __name__ == &#39;__main__&#39;:
 
     plt.xlabel(&#39;Objective 1&#39;)
     plt.ylabel(&#39;Objective 2&#39;)
-    plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
-    plt.xlim(-1000,11000*1.9)
-    plt.ylim(-1000,11000*1.9)
-
+    # plt.tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
+    # plt.xlim(-1000,11000*1.9)
+    # plt.ylim(-1000,11000*1.9)
+    plt.xlim(-10,500)
+    plt.ylim(-10,500)
     # ax[2].xlabel(&#39;Objective 1&#39;)
     # ax[2].plt.ylabel(&#39;Objective 2&#39;)
     # ax[2].tick_params(left = False, right = False , labelleft = False , labelbottom = False, bottom = False) 
 
+
     Y1 = methods.lex_sort(Y1)
     Y2 = methods.lex_sort(Y2)
+    Y1.plot_color = &#39;#CC3333&#39;
+    Y2.plot_color = &#39;#3399FF&#39;
     Y1_color = Y1.plot_color   
     Y2_color = Y2.plot_color   
 
-    Y = Y1+Y2
+    Y = N(Y1)+N(Y2)
+
+
     Yn = N(Y)
+    Yn.plot_color = &#39;#408000&#39;
+    Yn.plot_color = &#39;#408000&#39;
     Yn_set = set(Yn.points)
 
     # ######################## Figure ax1 START ########################
@@ -2196,8 +4296,9 @@ if __name__ == &#39;__main__&#39;:
     
 
     if not matrix_only:
-        Y1.plot(ax = ax[0], l = f&#34;${_Yn1}$&#34;, point_labels= point_labels)
-        Y2.plot(ax = ax[0], l = f&#34;${_Yn2}$&#34;, point_labels= point_labels)
+        Y1.plot(ax = ax[0], l = f&#34;${_Y1}$&#34;, point_labels= point_labels)
+        Y2.plot(ax = ax[0], l = f&#34;${_Y2}$&#34;, point_labels= point_labels)
+        
 
     # # save or plot figure
     # plot_or_save(fig, fig_name)
@@ -2210,8 +4311,8 @@ if __name__ == &#39;__main__&#39;:
     if not matrix_only and plot_mapping:
         # Y1_MSP.plot(ax = ax[0], l = f&#34;${_Yn1}\\rightarrow {_Yn}$&#34;,color = &#34;yellow&#34;, marker=&#39;1&#39;)
         # Y2_MSP.plot(ax = ax[0], l = f&#34;${_Yn2}\\rightarrow {_Yn}$&#34;, color = &#34;yellow&#34;, marker=&#39;1&#39;)
-        Y1_MSP.plot(ax = ax[0], l = f&#34;_&#34;,color = &#34;yellow&#34;, marker=&#39;1&#39;)
-        Y2_MSP.plot(ax = ax[0], l = f&#34;_&#34;, color = &#34;yellow&#34;, marker=&#39;1&#39;)
+        Y1_MSP.plot(ax = ax[0], l = f&#34;_&#34;,color = Yn.plot_color, marker=&#39;1&#39;)
+        Y2_MSP.plot(ax = ax[0], l = f&#34;_&#34;, color = Yn.plot_color, marker=&#39;1&#39;)
 
     # ######################### Figure ax1 END #########################
 
@@ -2231,9 +4332,9 @@ if __name__ == &#39;__main__&#39;:
     ######################## Figure matrix_plot START ########################
     
     # Define your custom colors
-    colors = [&#39;lightgray&#39;, &#39;yellow&#39;, &#39;red&#39;, Y1.plot_color, Y2.plot_color, &#39;white&#39;]
+    colors = [&#39;lightgray&#39;, &#39;#408000&#39;, &#39;red&#39;, Y1.plot_color, Y2.plot_color, &#39;white&#39;]
     if matrix_only:
-        colors = [&#39;lightgray&#39;, &#39;yellow&#39;, &#39;red&#39;, &#39;red&#39;, &#39;blue&#39;, &#39;white&#39;]
+        colors = [&#39;lightgray&#39;, &#39;#408000&#39;, &#39;red&#39;, &#39;red&#39;, &#39;blue&#39;, &#39;white&#39;]
     # Create a colormap with discrete colors
     cmap = matplotlib.colors.ListedColormap(colors)
 
@@ -2248,6 +4349,8 @@ if __name__ == &#39;__main__&#39;:
 
     ax[1].axis(&#39;off&#39;)
 
+    # ax[1].set_xlabel(f&#34;${_Y1}$&#34;)
+    # ax[1].set_ylabel(f&#34;${_Y2}$&#34;)
 
     ax[1].pcolormesh(M, cmap = cmap, edgecolors=&#39;white&#39;, linewidth=0.5)
     ax[1] = plt.gca()
@@ -2281,7 +4384,7 @@ if __name__ == &#39;__main__&#39;:
     if not matrix_only:
         Y.plot(ax = ax[2], l = f&#34;${_Yn1}&#34;+&#34;\\oplus&#34; +f&#34;{_Yn2}$&#34;, color = colors[0])
         if plot_mapping:
-            Yn.plot(ax = ax[2], l = f&#34;${_Yn}$&#34;, color = &#34;yellow&#34;)
+            Yn.plot(ax = ax[2], l = f&#34;${_Yn}$&#34;, color = &#34;#408000&#34;, marker= &#39;1&#39;)
     
     # save or plot figure
     plot_or_save(fig, fig_name)
@@ -2399,6 +4502,465 @@ if __name__ == &#39;__main__&#39;:
                             if os.path.getsize(csv_file_path) == 0:
                                 writer.writerow(data.keys())
                             writer.writerow(data.values())</code></pre>
+</details>
+</dd>
+<dt id="plots.pairwise_alg3_plot"><code class="name flex">
+<span>def <span class="ident">pairwise_alg3_plot</span></span>(<span>L1, Y1, U1, L2, Y2, U2, ax, ax_bar, ax_table, point_index=0, checkbox=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implementation of the pairwise algorithm3
+Returns: Subset Y_hat of Y1</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def pairwise_alg3_plot(L1, Y1, U1, L2, Y2, U2, ax, ax_bar, ax_table, point_index = 0, checkbox = None):
+    &#34;&#34;&#34;Implementation of the pairwise algorithm3
+    Returns: Subset Y_hat of Y1
+    &#34;&#34;&#34;
+
+
+    
+    
+    
+    
+    UB_color = &#39;red&#39;
+    LB_color = &#39;blue&#39;
+    bound_linestyle = &#39;dashed&#39;
+
+    Y1.plot(ax = ax , l= f&#34;${_Yn1}$&#34;, color = &#39;lightblue&#39;)
+    Y2.plot(ax = ax , l= f&#34;${_Yn2}$&#34;, color = &#39;lightcoral&#39;)
+
+
+    if checkbox.get_status()[4]:
+        U1.plot(ax = ax , l= f&#34;${_Yh1}$&#34;, color = &#39;blue&#39;)
+        U2.plot(ax = ax , l= f&#34;${_Yh2}$&#34;, color = &#39;red&#39;)
+
+    if checkbox.get_status()[3]:
+        L1_line = methods.induced_UB(L1, line=True) if checkbox.get_status()[6] else L1
+        L2_line = methods.induced_UB(L2, line=True) if checkbox.get_status()[7] else L2
+
+        L1_line.plot(ax = ax , l= f&#34;${_L1}$&#34;, line = True, color = Y1.plot_color, linestyle=bound_linestyle)
+        L2_line.plot(ax = ax , l= f&#34;${_L2}$&#34;, line = True, color = Y2.plot_color, linestyle=bound_linestyle)
+
+        methods.induced_UB(U1, line=True).plot(ax = ax , l= f&#34;${_U1}$&#34;, line = True, color = Y1.plot_color, linestyle=bound_linestyle, marker =&#39;+&#39;)
+        methods.induced_UB(U2, line=True).plot(ax = ax , l= f&#34;${_U2}$&#34;, line = True, color = Y2.plot_color, linestyle=bound_linestyle, marker= &#39;+&#39;)
+
+    
+
+    Y = Y1 + Y2 
+    Yn = N(Y)
+
+    U = N(U1 + U2)
+
+    U_line = methods.induced_UB(U, line = True)
+
+    if checkbox.get_status()[3]:
+        U_line.plot(ax = ax , l= f&#34;${_U}$&#34;, color = UB_color, linestyle=bound_linestyle, line=True)
+    Y.plot(ax = ax , l= f&#34;${_Y}$&#34;, color = &#39;gray&#39;)
+    Yn.plot(ax = ax , l= f&#34;${_Yn}$&#34;, color = &#39;green&#39;)
+
+
+
+    # generator upper bound
+
+    if checkbox.get_status()[5]:
+        U1_G = U1
+        U2_G = U2
+        for _ in range(1):
+            print(f&#34;{len(U1_G)=}&#34;)
+            print(f&#34;{len(U2_G)=}&#34;)
+            U1_G = N(methods.find_generator_U(U1_G,U2_G))
+            U2_G = N(methods.find_generator_U(U2_G,U1_G))
+            # U2_G = methods.find_generator_U(U1,U2)
+        U1_G_line = methods.induced_UB(U1_G, line = True)
+        U1_G_line.plot(ax=ax, l =f&#34;$UB^1$&#34;, line = True, linestyle = bound_linestyle, color = &#39;gray&#39;)
+        U2_G_line = methods.induced_UB(U2_G, line = True)
+        U2_G_line.plot(ax=ax, l =f&#34;$UB^2$&#34;, line = True, linestyle = bound_linestyle, color = &#39;gray&#39;)
+
+        # return
+
+        # U2_G = methods.find_generator_U(U1,U2)
+        # U2_G_line = methods.induced_UB(U1_G, line = True)
+        # U2_G_line.plot(ax=ax, l =f&#34;$UB$&#34;, line = True)
+
+
+    # plot g_not points
+    # RGS = algorithm3.algorithm3_run(MinkowskiSumProblem([Y1,Y2]))
+    G1_not, G2_not = algorithm3.pairwise_alg3(L1, Y1, U1, L2, Y2, U2)
+    if checkbox.get_status()[2]:
+        PointList(G1_not).plot(ax = ax, l=f&#39;Removable {1}&#39;, marker = &#39;x&#39;, color = &#39;black&#39;)
+        PointList(G2_not).plot(ax = ax, l=f&#39;Removable {2}&#39;, marker = &#39;x&#39;, color = &#39;black&#39;)
+
+    MGS, _ = algorithm2(MinkowskiSumProblem([Y1,Y2]))
+
+
+    if checkbox.get_status()[0]:
+        MGS.Y_list[0].plot(ax = ax, l= f&#34;${_G1}$&#34;, marker= &#39;x&#39;, color = &#39;yellow&#39;)
+        MGS.Y_list[1].plot(ax = ax, l= f&#34;${_G2}$&#34;, marker= &#39;x&#39;, color = &#39;yellow&#39;)
+
+
+    # for s, G_not in enumerate(RGS.Y_list):
+        # G_not.plot(ax = ax, l=f&#39;Redundant {s}&#39;, marker = &#39;x&#39;, color = &#39;black&#39;)
+    # Column labels
+
+
+
+    # Right hand side figures:
+    column_labels = [&#39;&#39;, f&#34;${_G}^1$&#34;, &#39;Removable&#39;, &#39;$Removable \\setminus &#39; + f&#34;{_Yh1}$&#34;,f&#34;${_Yh1}$&#34; , &#34;$q^1$&#34; , f&#34;${_Yn}^1$&#34;]
+    column_colors = [&#39;white&#39;, &#39;yellow&#39;, &#39;grey&#39;, &#39;white&#39;, &#39;white&#39;, &#39;white&#39;,&#39;lightblue&#39;,]
+
+    q1_stat = (len(G1_not) / (len(Y1) - len(MGS.Y_list[0])))*100 if (len(MGS.Y_list[0]) != len(Y1)) else None
+    q2_stat = (len(G2_not) / (len(Y2) - len(MGS.Y_list[1])))*100 if (len(MGS.Y_list[1]) != len(Y2)) else None
+    q1_format = f&#34;{q1_stat:.1f}%&#34; if q1_stat is not None else None
+    q2_format = f&#34;{q2_stat:.1f}%&#34; if q2_stat is not None else None
+
+    # Sample data for the table
+    data = [
+            [&#39;card&#39;, len(MGS.Y_list[0]), len(G1_not), len([y1 for y1 in G1_not if y1 not in U1]), len(U1), &#39;&#39; , len(Y1)],
+            [&#39;\%&#39;, f&#34;{len(MGS.Y_list[0])/len(Y1)*100:.1f}\%&#34;, f&#34;{len(G1_not)/len(Y1)*100:.1f}\%&#34;, f&#34;{len([y1 for y1 in G1_not if y1 not in U1])/len(Y1)*100:.1f}%&#34;, f&#34;{len(U1)/len(Y1)*100:.1f}%&#34;,q1_format,&#39;&#39;],
+            ]
+    # Create the table
+    table = ax_table[0].table(cellText=data, colLabels=column_labels, colColours=column_colors, cellLoc=&#39;center&#39;, loc=&#39;center&#39;)
+    percentages = [
+            len([y for y in Y1 if y in MGS.Y_list[0]]), 
+            len([y for y in Y1 if y not in PointList(G1_not) and y not in MGS.Y_list[0]]), 
+            len([y for y in Y1 if y in PointList(G1_not)]), 
+            ]
+    print(f&#34;{percentages=}&#34;)
+    assert sum(percentages) == len(Y1)
+    # bars = ax_bar.barh([0,1], percentages, color=[&#39;black&#39;, &#39;green&#39;])
+    
+    bars1 = ax_bar[0].barh(0, percentages[0], color=&#39;yellow&#39;, label = f&#34;${_G1}$&#34;)
+    bars2 = ax_bar[0].barh(0, percentages[1], left=percentages[0], color=&#39;lightblue&#39;, label = &#39;Rest&#39;)
+    bars2 = ax_bar[0].barh(0, percentages[2], left=percentages[0] + percentages[1], color=&#39;black&#39;, label = &#39;Removable&#39;)
+    ax_bar[0].legend(loc=&#39;upper center&#39;, bbox_to_anchor=(0.5, -0),
+          ncol=3, fancybox=True, shadow=True)
+    # repeat for s2
+    column_labels = [&#39;&#39;, f&#34;${_G}^2$&#34;, &#39;Removable&#39;, &#39;$Removable \\setminus &#39; + f&#34;{_Yh2}$&#34;,f&#34;${_Yh2}$&#34; , &#34;$q^2$&#34;, f&#34;${_Yn}^2$&#34;]
+    column_colors = [&#39;white&#39;, &#39;yellow&#39;, &#39;grey&#39;, &#39;white&#39;, &#39;white&#39;,&#39;white&#39;, &#39;lightcoral&#39;]
+    # Sample data for the table
+    data = [
+            [&#39;card&#39;, len(MGS.Y_list[1]), len(G2_not), len([y2 for y2 in G2_not if y2 not in U2]), len(U2),&#39;&#39;, len(Y2)],
+            [&#39;\%&#39;, f&#34;{len(MGS.Y_list[1])/len(Y2)*100:.1f}\%&#34;, f&#34;{len(G2_not)/len(Y2)*100:.1f}\%&#34;, f&#34;{len([y2 for y2 in G2_not if y2 not in U2])/len(Y2)*100:.1f}%&#34;, f&#34;{len(U2)/len(Y2)*100:.1f}%&#34;,q2_format,&#39;&#39;],
+            ]
+    # Create the table
+    table = ax_table[1].table(cellText=data, colLabels=column_labels, colColours=column_colors, cellLoc=&#39;center&#39;, loc=&#39;center&#39;)
+    percentages = [
+            len([y for y in Y2 if y in MGS.Y_list[1]]), 
+            len([y for y in Y2 if y not in PointList(G2_not) and y not in MGS.Y_list[1]]), 
+            len([y for y in Y2 if y in PointList(G2_not)]), 
+            ]
+    print(f&#34;{percentages=}&#34;)
+    assert sum(percentages) == len(Y2)
+    # bars = ax_bar.barh([0,1], percentages, color=[&#39;black&#39;, &#39;green&#39;])
+    
+    bars1 = ax_bar[1].barh(0, percentages[0], color=&#39;yellow&#39;, label = f&#34;${_G2}$&#34;)
+    bars2 = ax_bar[1].barh(0, percentages[1], left=percentages[0], color=&#39;lightcoral&#39;, label = &#39;Rest&#39;)
+    bars2 = ax_bar[1].barh(0, percentages[2], left=percentages[0] + percentages[1], color=&#39;black&#39;, label = &#39;Removable&#39;)
+    ax_bar[1].legend(loc=&#39;upper center&#39;, bbox_to_anchor=(0.5, -0),
+          ncol=3, fancybox=True, shadow=True)
+
+
+
+
+    G1_not = []
+    for y1_index, y1 in enumerate(methods.lex_sort(Y1)):
+        L = L2 + PointList(y1)
+        L.is_complete = L2.is_complete
+
+        is_dominated = methods.U_dominates_L(U,L)
+
+        if point_index == y1_index:
+            if checkbox.get_status()[1]:
+                print(f&#34;{point_index=}&#34;)
+                L_line = methods.induced_UB(L, line=True) if checkbox.get_status()[7] else L
+                L_line.plot(ax = ax, l = f&#34;${_L2} +&#34; + &#34;{y^1}$&#34;, color = LB_color, line = True, linestyle = bound_linestyle)
+                PointList(y1).plot(ax= ax, point_labels = True, marker=&#39;x&#39;, color = (&#39;red&#39; if is_dominated else &#39;green&#39;))
+
+        
+            # plot_or_save(fig, fig_name)
+            return
+
+        
+        if methods.U_dominates_L(U,L):
+            G1_not.append(y1)
+
+    # G1 = PointList([y1 for y1 in Y1 if y1 not in G1_not])
+    G2_not = []
+    for y2 in methods.lex_sort(Y2):
+        L = L1 + PointList(y2)
+        L.is_complete = L1.is_complete
+
+        if U_dominates_L(U,L):
+            G2_not.append(y2)
+
+    # G2 = PointList([y2 for y2 in Y2 if y2 not in G2_not])
+    
+    if True: # validate resutlts
+        for y1 in G1_not:
+            assert y1 in Y1, f&#34;{y1,Y1=}&#34;
+
+        for y2 in G2_not:
+            assert y2 in Y2
+
+    return (G1_not,G2_not)</code></pre>
+</details>
+</dd>
+<dt id="plots.pairwise_alg3_plot_setup"><code class="name flex">
+<span>def <span class="ident">pairwise_alg3_plot_setup</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def pairwise_alg3_plot_setup():
+
+
+    ######################## Figure RGS_plot START ########################
+    fig_name = &#34;RGS_plot&#34;
+    print(f&#34;Plotting figure: {fig_name}&#34;)
+    # define new figure
+    fig = plt.figure(figsize=(20,15), layout=&#39;constrained&#39;)
+
+    gs = gridspec.GridSpec(2, 2, height_ratios=[6, 4], width_ratios = [3,3])
+
+    # main plot
+    ax = fig.add_subplot(gs[0, :])
+    ax2 = fig.add_subplot(gs[1, 0])
+
+    # options plot
+    ax2.set_axis_off()
+
+    ax3 = fig.add_subplot(gs[1, 1])
+    ax3.set_axis_off()
+
+
+    # Function to update the slider limits
+    def update_slider_limits(slider, new_min, new_max):
+        # slider.valmin = new_min
+        # slider.valmax = new_max
+        slider.ax.set_xlim(new_min, new_max)
+        if index_slider.val &lt; new_min:
+            slider.set_val(new_min)  # Update the slider to reflect new limits
+        if index_slider.val &gt; new_max:
+            slider.set_val(new_max)  # Update the slider to reflect new limits
+
+
+    def update(_):
+        
+        ax.clear()  # Clear the current axes
+        ax_bar[0].clear()  # Clear the current axes
+        ax_bar[1].clear()  # Clear the current axes
+        ax_table[0].clear()  # Clear the current axes
+        ax_table[1].clear()  # Clear the current axes
+        # Hide the axis
+        ax_table[0].set_axis_off()
+        ax_table[1].set_axis_off()
+        ax_bar[0].set_axis_off()
+        ax_bar[1].set_axis_off()
+
+        # update options
+        level = level_slider.val
+        level2 = level2_slider.val
+        level_slider.valtext.set_text(f&#39;{level_slider.val*100:.0f}\%&#39;)
+        level2_slider.valtext.set_text(f&#39;{level2_slider.val*100:.0f}\%&#39;)
+        # index_slider.set_val(10)
+        sp1 = sp1_textbox.text
+        sp2 = sp2_textbox.text
+        update_slider_limits(index_slider, 0, len(PointList.from_json(&#39;./instances/subproblems/&#39; + sp1))-1)
+        point_index = int(index_slider.val)
+        seed = int(seed_textbox.text)
+        alpha = Point((int(alpha1_slider.val), int(alpha2_slider.val)))
+
+        # y0 = Point((1000,1000))
+        y0 = Point((int(y01_slider.val), int(y02_slider.val)))
+
+
+        MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/prob-2-50|50-ul-2_1.json&#39;)
+
+        MSP = MinkowskiSumProblem.from_subsets([
+            sp1,
+            sp2,
+            ])
+
+        Y_list = [methods.lex_sort(Y) for Y in MSP.Y_list]
+     
+
+        Y_list[s1] = Y_list[s1] * alpha
+        # Add y0 - translate the plot so that they are not on top of eachother
+        Y1_new = [y1+ y0 for y1 in Y_list[s1]]
+        for i, _ in enumerate(Y_list[s1]):
+            Y1_new[i].cls = Y_list[s1][i].cls
+        Y_list[s1] = PointList(Y1_new)
+    
+        Yse_list = [PointList([y for y in Y if y.cls == &#39;se&#39;]) for Y in Y_list]
+
+        Y1, Y2 = Y_list[s1], Y_list[s2]
+
+#         if level_slider.val &lt; len([y1 for y1 in Y1 if y1.cls == &#39;se&#39; ])/len(Y1):
+            # level_slider.set_val(len([y1 for y1 in Y1 if y1.cls == &#39;se&#39;]) /len(Y1))
+
+        # if level2_slider.val &lt; len([y2 for y2 in Y2 if y2.cls == &#39;se&#39;]) /len(Y2):
+            # level2_slider.set_val(len([y2 for y2 in Y2 if y2.cls == &#39;se&#39; ])/len(Y2))
+        # update_slider_limits(level_slider, )/ len(Y1), 1)
+        # update_slider_limits(level2_slider, len([y2 for y2 in Y2 if y2.cls == &#39;se&#39; ])/ len(Y2), 1)
+
+        assert point_index in set(range(len(Y1))), point_index
+
+        Y1se = Yse_list[s1]
+        Y2se = Yse_list[s2]
+
+        L1 = Y1se
+        L2 = Y2se
+
+
+        L1.is_complete, L2.is_complete = False, False
+        if checkbox.get_status()[6]:
+            L1 = Y1
+            L1.is_complete= True
+            assert level == 1
+        if checkbox.get_status()[7]:
+            L2 = Y2
+            L2.is_complete= True
+            assert level2 == 1
+
+
+        def get_partial(Y, level=&#39;all&#39;):   
+            Y = N(Y)
+            Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
+            Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
+            if seed != 0:
+                random.seed(seed)
+                random.shuffle(Y2other_points)
+            match level:
+                case &#39;all&#39;:
+                    return Y
+                case &#39;lexmin&#39;: 
+                    return PointList((Y[0], Y[-1]))
+                case &#39;extreme&#39;:
+                    return PointList(Y2e_points)
+                # case float():
+                case _:
+                    to_index = math.floor(float(level)*len(Y2other_points))
+                    return PointList(Y2e_points + Y2other_points[:to_index])
+
+
+        U1 = get_partial(Y1, level = level)
+        U2 = get_partial(Y2, level = level2)
+
+        pairwise_alg3_plot(L1, Y1, U1, L2, Y2, U2,ax,ax_bar, ax_table, point_index = point_index, checkbox=checkbox)
+
+
+    # Options
+    alpha = Point((1,1)) # add sliders alpha1 and alpha2 between 0.5 and 20
+    y0_point = Point((5000,5000))
+    level = 0.16 # add slider to scale between 0 and 1
+    level2 = 0 # add slider to scale between 0 and 1
+    s1 = 0 # drop down choose between set(range(len(Y_list)))
+    s2 = 1 # drop down choose between set(range(len(Y_list)))
+    point_index = 1 # add slider to integers on scale between 0 and len(Y_list[s1])
+    sp1 = &#39;sp-2-50-u_2.json&#39; # add textinput 
+    sp2 = &#39;sp-2-50-l_6.json&#39; # add textinpu
+    seed = 1
+
+
+    inner_gs = gridspec.GridSpecFromSubplotSpec(10, 3, subplot_spec=gs[1, 0])
+
+
+    i = 0
+
+    # slider for index
+    ax_index_slider = fig.add_subplot(inner_gs[i, :])
+    index_slider = Slider(ax_index_slider, &#39;$y^1$ index&#39;, 0, len(PointList.from_json(&#39;./instances/subproblems/&#39; + sp1)) -1, valinit=point_index, valfmt=&#34;%i&#34;, valstep = point_index)
+    index_slider.on_changed(update)
+
+
+    i+=1
+
+    ax_level_slider = fig.add_subplot(inner_gs[i, :])
+    level_slider = Slider(ax_level_slider, &#39;partial level &#39; + f&#34;${_Y1}$&#34;, 0, 1, valinit=level)
+    level_slider.on_changed(update)
+    i+=1
+    # Define the position of each textbox
+    ax_level2_slider = fig.add_subplot(inner_gs[i, :])
+    level2_slider = Slider(ax_level2_slider, &#39;partial level &#39; + f&#34;${_Y2}$&#34;, 0, 1, valinit=level2)
+    level2_slider.on_changed(update)
+
+
+
+    i+=1
+
+    ax_textbox = fig.add_subplot(inner_gs[i,0:2])
+    ax_textbox.text(0.5,0,f&#34;${_Y1} := &#34; +  f&#34;{_Y1}&#34; + &#34;\\cdot \\alpha + y^0$&#34;)
+    ax_textbox.set_axis_off()
+
+    ax_alpha1_slider = fig.add_subplot(inner_gs[i+1, 0])
+    alpha1_slider = Slider(ax_alpha1_slider, &#39;$\\alpha_1$&#39;, 0.5, 20, valinit=alpha[0], valfmt=&#34;%i&#34; )
+    alpha1_slider.on_changed(update)
+
+    ax_alpha2_slider = fig.add_subplot(inner_gs[i+2, 0])
+    alpha2_slider = Slider(ax_alpha2_slider, &#39;$\\alpha_2$&#39;, 0.5, 20, valinit=alpha[1], valfmt = &#39;%i&#39;)
+    alpha2_slider.on_changed(update)
+
+
+
+    ax_y01_slider = fig.add_subplot(inner_gs[i+1, 1])
+    y01_slider = Slider(ax_y01_slider, &#39;$y^0_1$&#39;, 0, 10000, valinit=y0_point[0], valfmt=&#34;%i&#34; )
+    y01_slider.on_changed(update)
+
+    ax_y02_slider = fig.add_subplot(inner_gs[i+2, 1])
+    y02_slider = Slider(ax_y02_slider, &#39;$y^0_2$&#39;, 0, 10000, valinit=y0_point[1], valfmt = &#39;%i&#39;)
+    y02_slider.on_changed(update)
+
+
+
+
+    ax_seed_textbox = fig.add_subplot(inner_gs[i, 2])
+    seed_textbox = TextBox(ax_seed_textbox, &#39;level seed (0=left to right) &#39;, initial=seed)
+
+    ax_sp1_textbox = fig.add_subplot(inner_gs[i+1, 2])
+    sp1_textbox = TextBox(ax_sp1_textbox, f&#34;${_Y1}$&#34;, initial=sp1)
+
+    ax_sp2_textbox = fig.add_subplot(inner_gs[i+2, 2])
+    sp2_textbox = TextBox(ax_sp2_textbox, f&#34;${_Y2}$&#34;, initial=sp2)
+    
+    i+=2
+    ax_update_button = fig.add_subplot(inner_gs[-3:-1,1:])
+    update_button = Button(ax_update_button, &#39;Update&#39;)
+    update_button.on_clicked(update)
+ 
+    # add checkboxes
+
+    # Add a subplot for the checkbox
+    ax_checkbox = fig.add_subplot(inner_gs[i+1:i+8, 0:1])
+
+    # Define the labels and initial state of the checkbox
+    labels = [&#39;MGS&#39;,f&#34;$y^1$&#34;, &#39;Removable&#39;, &#39;Bound sets&#39;, &#39;Known points&#39;, &#39;MGS Bounds&#39;, f&#34;${_Yn1} = {_L1}$&#34;, f&#34;${_Yn2} = {_L2}$&#34;]
+    states = [False, True, True, True, False, False, False, False]
+
+    # Create the checkbox
+    checkbox = CheckButtons(ax_checkbox, labels, states)
+    
+    # checkbox.on_clicked(update)
+
+    # add stuff to ax3
+    ax3_gs = gridspec.GridSpecFromSubplotSpec(9, 1, subplot_spec=gs[1, 1])
+
+    ax_table = []
+    ax_bar = []
+
+    ax_table.append(fig.add_subplot(ax3_gs[1]))
+    ax_table.append(fig.add_subplot(ax3_gs[6]))
+    ax_bar.append(fig.add_subplot(ax3_gs[3]))
+    ax_bar.append(fig.add_subplot(ax3_gs[8]))
+
+
+    update(None)
+
+    plt.show()</code></pre>
 </details>
 </dd>
 <dt id="plots.phase_1_slides"><code class="name flex">
@@ -2932,6 +5494,63 @@ if __name__ == &#39;__main__&#39;:
     matrix_plot(Y1,Y2, fig_name = fig_name + str(5), point_labels= point_labels, matrix_only=matrix_only)</code></pre>
 </details>
 </dd>
+<dt id="plots.validate_algorithm3_l"><code class="name flex">
+<span>def <span class="ident">validate_algorithm3_l</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_algorithm3_l():
+    # for some instances with ul|l alg3 manages to remove some subset vectors from l subsets.
+    #ex: alg3-prob-2-300|300|300-ull-3_4-0|all|all.json
+
+    RemSP = MinkowskiSumProblem.from_json(&#34;./instances/results/algorithm3_partial_levels/alg3-prob-2-300|300|300-ull-3_4-0|all|all.json&#34;)
+    MSP = MinkowskiSumProblem.from_json(&#34;./instances/problems/prob-2-300|300|300-ull-3_4.json&#34;)
+    
+    # validate q^s = 0.5 for an uuuu instance
+    problem_name = &#34;alg3-prob-2-300|300|300|300-uuuu-4_4-all|all|all|all.json&#34;
+    RemSP = MinkowskiSumProblem.from_json(&#34;./instances/results/algorithm3_partial_levels/&#34; + problem_name)
+    MSP = MinkowskiSumProblem.from_json(&#34;./instances/problems/prob-2-300|300|300|300-uuuu-4_4.json&#34;)
+
+    # removed vectors
+    RGS = MinkowskiSumProblem([PointList(set(Ys.points) - set(RYs.points)) for RYs, Ys in zip(RemSP,MSP)])
+
+
+    from algorithm3 import algorithm3_run
+    
+    MSP.Y_list = MSP.Y_list[::-1]
+
+    RGS_check = algorithm3_run(MSP, levels=(&#39;all&#39;,&#39;all&#39;,&#39;all&#39;,&#39;all&#39;)) 
+
+    for s, (rYs, Ys, RemYs, Rgs_Check) in enumerate(zip(RGS, MSP, RemSP, RGS_check)):
+        offset = PointList(((1000*s,1000*s),))
+        print(f&#34;\n{s=}&#34;)
+        print(f&#34;{len(rYs)=}&#34;)
+        print(f&#34;{len(Ys)=}&#34;)
+        print(f&#34;{len(RemYs)=}&#34;)
+        (offset + Ys).plot(f&#34;Y{s}&#34;)
+        # (offset + RemYs).plot(f&#34;removed&#34;, marker = &#39;x&#39;)
+        (offset + Rgs_check).plot(f&#34;removed&#34;, marker = &#39;x&#39;)
+ 
+
+
+    Yn =  methods.MS_sequential_filter(MSP.Y_list)
+
+    Yn.plot(&#39;Yn&#39;)
+    plt.show()    
+    RYn =  methods.MS_sequential_filter(RGS.Y_list)
+
+    assert Yn == RYn
+
+
+    # inspect s == 1
+    for i, y in enumerate(RemSP.Y_list[1]):
+        print(f&#34;{i,y.cls=}&#34;)</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -2945,20 +5564,31 @@ if __name__ == &#39;__main__&#39;:
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="plots.MSP_plot" href="#plots.MSP_plot">MSP_plot</a></code></li>
 <li><code><a title="plots.MSP_sol_example" href="#plots.MSP_sol_example">MSP_sol_example</a></code></li>
+<li><code><a title="plots.MS_limit" href="#plots.MS_limit">MS_limit</a></code></li>
 <li><code><a title="plots.RGS_slides" href="#plots.RGS_slides">RGS_slides</a></code></li>
 <li><code><a title="plots.all_slides" href="#plots.all_slides">all_slides</a></code></li>
+<li><code><a title="plots.animate_scalling" href="#plots.animate_scalling">animate_scalling</a></code></li>
+<li><code><a title="plots.article_plot_emp3_visual" href="#plots.article_plot_emp3_visual">article_plot_emp3_visual</a></code></li>
+<li><code><a title="plots.article_plots_csv" href="#plots.article_plots_csv">article_plots_csv</a></code></li>
 <li><code><a title="plots.counter_example_reduction" href="#plots.counter_example_reduction">counter_example_reduction</a></code></li>
+<li><code><a title="plots.dgpe_matrix" href="#plots.dgpe_matrix">dgpe_matrix</a></code></li>
 <li><code><a title="plots.empirical_matrix" href="#plots.empirical_matrix">empirical_matrix</a></code></li>
 <li><code><a title="plots.example" href="#plots.example">example</a></code></li>
+<li><code><a title="plots.example_operators" href="#plots.example_operators">example_operators</a></code></li>
 <li><code><a title="plots.example_reduction_lower_bounds" href="#plots.example_reduction_lower_bounds">example_reduction_lower_bounds</a></code></li>
 <li><code><a title="plots.induced_UB_plot" href="#plots.induced_UB_plot">induced_UB_plot</a></code></li>
+<li><code><a title="plots.interactive_scaling" href="#plots.interactive_scaling">interactive_scaling</a></code></li>
+<li><code><a title="plots.interactive_scaling_3d" href="#plots.interactive_scaling_3d">interactive_scaling_3d</a></code></li>
 <li><code><a title="plots.klamroth2023_lemma2" href="#plots.klamroth2023_lemma2">klamroth2023_lemma2</a></code></li>
 <li><code><a title="plots.main" href="#plots.main">main</a></code></li>
 <li><code><a title="plots.make_matrix_plot" href="#plots.make_matrix_plot">make_matrix_plot</a></code></li>
 <li><code><a title="plots.matrix_plot" href="#plots.matrix_plot">matrix_plot</a></code></li>
 <li><code><a title="plots.minimum_not_minimal" href="#plots.minimum_not_minimal">minimum_not_minimal</a></code></li>
 <li><code><a title="plots.multiple_induced_UB" href="#plots.multiple_induced_UB">multiple_induced_UB</a></code></li>
+<li><code><a title="plots.pairwise_alg3_plot" href="#plots.pairwise_alg3_plot">pairwise_alg3_plot</a></code></li>
+<li><code><a title="plots.pairwise_alg3_plot_setup" href="#plots.pairwise_alg3_plot_setup">pairwise_alg3_plot_setup</a></code></li>
 <li><code><a title="plots.phase_1_slides" href="#plots.phase_1_slides">phase_1_slides</a></code></li>
 <li><code><a title="plots.plot_or_save" href="#plots.plot_or_save">plot_or_save</a></code></li>
 <li><code><a title="plots.plot_ul" href="#plots.plot_ul">plot_ul</a></code></li>
@@ -2967,6 +5597,7 @@ if __name__ == &#39;__main__&#39;:
 <li><code><a title="plots.slides_MS_example" href="#plots.slides_MS_example">slides_MS_example</a></code></li>
 <li><code><a title="plots.slides_matrix_example_MGS" href="#plots.slides_matrix_example_MGS">slides_matrix_example_MGS</a></code></li>
 <li><code><a title="plots.slides_matrix_plot" href="#plots.slides_matrix_plot">slides_matrix_plot</a></code></li>
+<li><code><a title="plots.validate_algorithm3_l" href="#plots.validate_algorithm3_l">validate_algorithm3_l</a></code></li>
 </ul>
 </li>
 </ul>

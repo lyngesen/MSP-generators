@@ -38,45 +38,56 @@ Usage:
     output saved in: ./instances/results/algorithm3/result.csv
 &#34;&#34;&#34;
 
-from classes import Point, PointList, LinkedList, MinkowskiSumProblem
+from classes import Point, PointList, LinkedList, MinkowskiSumProblem, MSPInstances 
 import methods
-from methods import N
+from methods import N, U_dominates_L
 import time
 import csv
 import math
 import os
 from minimum_generator import solve_MGS_instance
 
+from algorithm2 import algorithm2
+
+import logging
+import random
 import numpy as np
 # from numoy import linalg
 from matplotlib import pyplot as plt
+import collections
 from scipy.spatial import ConvexHull
 from functools import reduce
 import itertools
 from scipy.optimize import linprog
+from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+
+def get_partial(Y, level=&#39;all&#39;, seed = 0):   
+    Y = N(Y)
+    Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
+    Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
+    random.seed(seed)
+    random.shuffle(Y2other_points)
+    match level:
+        case &#39;all&#39;:
+            return Y
+        case &#39;lexmin&#39;: 
+            return PointList((Y[0], Y[-1]))
+        case &#39;extreme&#39;:
+            return PointList(Y2e_points)
+        # case float():
+        case _:
+            to_index = math.floor(float(level)*len(Y2other_points))
+            return PointList(Y2e_points + Y2other_points[:to_index])
+            # print(f&#34;case not implemented {level}&#34;)
+
+    
 
 def induced_UB_plot(level, Y1,Y2, prefix=&#39;&#39;, plot=True):
     print(f&#34;{prefix}&#34;)
     # print(f&#34;{level=}&#34;)
-    def get_partial(Y, level=&#39;all&#39;):   
-        Y = N(Y)
-        Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
-        Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
-        # random.shuffle(Y2other_points)
-        match level:
-            case &#39;all&#39;:
-                return Y
-            case &#39;lexmin&#39;: 
-                return PointList((Y[0], Y[-1]))
-            case &#39;extreme&#39;:
-                return PointList(Y2e_points)
-            # case float():
-            case _:
-                to_index = math.floor(float(level)*len(Y2other_points))
-                return PointList(Y2e_points + Y2other_points[:to_index])
-                # print(f&#34;case not implemented {level}&#34;)
-    
-    
+
     Y2_partial = get_partial(Y2, level)
 
 
@@ -150,32 +161,25 @@ def multiple_induced_UB():
                                 writer.writerow(data.keys())
                             writer.writerow(data.values())
 
-def induced_LB_3d():
-
-    from mpl_toolkits.mplot3d import Axes3D
-    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-
+def induced_LB_3d(Y : PointList, level: int, PLOT = False):
 
     cnames = {
     # &#39;aliceblue&#39;:            &#39;#F0F8FF&#39;,
     # &#39;antiquewhite&#39;:         &#39;#FAEBD7&#39;,
     &#39;aqua&#39;:                 &#39;#00FFFF&#39;,
     &#39;aquamarine&#39;:           &#39;#7FFFD4&#39;,
-    &#39;azure&#39;:                &#39;#F0FFFF&#39;,
-    &#39;beige&#39;:                &#39;#F5F5DC&#39;,
-    &#39;bisque&#39;:               &#39;#FFE4C4&#39;,
+    # &#39;azure&#39;:                &#39;#F0FFFF&#39;,
+    # &#39;beige&#39;:                &#39;#F5F5DC&#39;,
+    # &#39;bisque&#39;:               &#39;#FFE4C4&#39;,
     &#39;black&#39;:                &#39;#000000&#39;,
-    &#39;blanchedalmond&#39;:       &#39;#FFEBCD&#39;,
     &#39;blue&#39;:                 &#39;#0000FF&#39;,
     &#39;blueviolet&#39;:           &#39;#8A2BE2&#39;,
     &#39;brown&#39;:                &#39;#A52A2A&#39;,
     &#39;burlywood&#39;:            &#39;#DEB887&#39;,
     &#39;cadetblue&#39;:            &#39;#5F9EA0&#39;,
-    &#39;chartreuse&#39;:           &#39;#7FFF00&#39;,
     &#39;chocolate&#39;:            &#39;#D2691E&#39;,
     &#39;coral&#39;:                &#39;#FF7F50&#39;,
     &#39;cornflowerblue&#39;:       &#39;#6495ED&#39;,
-    &#39;cornsilk&#39;:             &#39;#FFF8DC&#39;,
     &#39;crimson&#39;:              &#39;#DC143C&#39;,
     &#39;cyan&#39;:                 &#39;#00FFFF&#39;,
     &#39;darkblue&#39;:             &#39;#00008B&#39;,
@@ -186,20 +190,15 @@ def induced_LB_3d():
     &#39;darkkhaki&#39;:            &#39;#BDB76B&#39;,
     }
 
-    cnames_list = list(cnames.values())
-    
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
+    # for colorname, i in enumerate(cnames.keys()):
+        # print(f&#34;{colorname,i=}&#34;)
 
+
+
+    cnames_list = list(cnames.values())
+    for _ in range(10):
+        cnames_list += cnames_list
+    
 
     def in_hull(Y : PointList, y:Point):
         &#39;&#39;&#39; from https://stackoverflow.com/questions/16750618/whats-an-efficient-way-to-find-if-a-point-lies-in-the-convex-hull-of-a-point-cl &#39;&#39;&#39;
@@ -285,29 +284,6 @@ def induced_LB_3d():
     def plot_dominated_cone(point):
         pass
 
-    # fig = plt.figure()
-    # ax= plt.axes(projection = &#39;3d&#39;)
-    Y = PointList.from_json(&#39;./instances/subproblems/sp-3-50-l_1.json&#39;)
-    all_points = PointList(list(Y.points) + [Y.get_nadir()])
-    hull = ConvexHull(np.array([y.val for y in all_points]))
-    # hull = ConvexHull(all_points.as_np_array())
-    # Y = [PointList([y for i,y in enumerate(Y) if i in F]) for F in hull.simplices][4]
-    # plot_surface(Y,ax)
-
-
-
-
-    ZERO = Point([0 for _ in range(Y.dim)])
-    nadir_point = Y.get_nadir()
-    # nadir_point.plot(ax=ax,l=f&#34;$y^N$&#34;)
-    # ZERO.plot(ax=ax,l=f&#34;$0$&#34;)
-    if False: # plot axis lines
-        for p in range(nadir_point.dim):
-            unit_point = Point([nadir_point[q] if q ==p else 0 for q in range(nadir_point.dim)])
-            unit_point.plot(ax=ax,l=f&#34;$obj^{p}$&#34;, color=&#39;black&#39;)
-            PointList([ZERO, unit_point]).plot(ax=ax, line=True, color=&#39;black&#39;)
-
-
     def split_faces(FACES) -&gt; list[PointList]:
 
         F_splits = []
@@ -337,6 +313,25 @@ def induced_LB_3d():
                         F_splits.append(new_face)
 
         return F_splits
+
+    # fig = plt.figure()
+    # ax= plt.axes(projection = &#39;3d&#39;)
+    all_points = PointList(list(Y.points) + [Y.get_nadir()])
+    hull = ConvexHull(np.array([y.val for y in all_points]))
+    # hull = ConvexHull(all_points.as_np_array())
+    # Y = [PointList([y for i,y in enumerate(Y) if i in F]) for F in hull.simplices][4]
+    # plot_surface(Y,ax)
+
+    ZERO = Point([0 for _ in range(Y.dim)])
+    nadir_point = Y.get_nadir()
+    # nadir_point.plot(ax=ax,l=f&#34;$y^N$&#34;)
+    # ZERO.plot(ax=ax,l=f&#34;$0$&#34;)
+    if False: # plot axis lines
+        for p in range(nadir_point.dim):
+            unit_point = Point([nadir_point[q] if q ==p else 0 for q in range(nadir_point.dim)])
+            unit_point.plot(ax=ax,l=f&#34;$obj^{p}$&#34;, color=&#39;black&#39;)
+            PointList([ZERO, unit_point]).plot(ax=ax, line=True, color=&#39;black&#39;)
+
 
     all_points = PointList(list(Y.points) + [nadir_point])
     hull = ConvexHull(np.array([y.val for y in all_points]))
@@ -402,28 +397,28 @@ def induced_LB_3d():
 
     # plt.show()
 
-    PLOT = True
 
-    for _ in range(3):
+    for _ in range(level):
         print(f&#34;{len(FACES)=}&#34;)
 
 
         if True:
 
-            fig = plt.figure()
-            if Y.dim == 3:
-                ax= plt.axes(projection = &#39;3d&#39; if Y.dim ==3 else &#39;2d&#39;)
-                # ax.view_init(elev=-10., azim=200)
-                # ax.dist = 5
-            else:
-                ax= plt.axes()
-            Y.plot(ax = ax, l=r&#34;$\mathcal{Y}$&#34;, color=&#39;red&#39;)
-            # print(f&#34;{F_splits=}&#34;)
+            if PLOT:
+                fig = plt.figure()
+                if Y.dim == 3:
+                    ax= plt.axes(projection = &#39;3d&#39; if Y.dim ==3 else &#39;2d&#39;)
+                    # ax.view_init(elev=-10., azim=200)
+                    # ax.dist = 5
+                else:
+                    ax= plt.axes()
+                Y.plot(ax = ax, l=r&#34;$\mathcal{Y}$&#34;, color=&#39;red&#39;)
+                # print(f&#34;{F_splits=}&#34;)
             for f, F in enumerate(FACES):
                 l = F.get_ideal()
                 assert all((l &lt;= y for y in F))
                 if PLOT and len(F)&gt;2:
-                    F.plot(ax=ax,point_labels=False)
+                    # F.plot(ax=ax,point_labels=False)
                     l.plot(ax=ax, color = cnames_list[f])
                     plot_surface(F, ax, color = cnames_list[f])
 
@@ -433,16 +428,455 @@ def induced_LB_3d():
         # if _ == 0:
             # FACES = [FACES[1]]
 
-    if PLOT: plt.show()
+    if PLOT: 
+        plt.show()
+
+
+    # return PointList(itertools.chain.from_iterable(((f.ideal for f in F) for F in FACES)))
+    L = PointList((f.get_ideal() for f in FACES))
+    return L
+
+def algorithm3_pair(L_Y_U: list[list[PointList]]) -&gt; list[PointList]:
+    ((L1, Y1, U1), (L2, Y2, U2)) = L_Y_U
+    U = methods.N(U1 + U2)
+    
+
+    Y1_dom = set()
+    for y1 in Y1:
+
+
+        if U &lt; y1 + L2:
+            print(f&#34;{y1=} is dominated&#34;)
+            Y1_dom.add(y1)
+    G1 = PointList((y1 for y1 in Y1 if y1 not in Y1_dom))
+    # repeat
+    Y2_dom = set()
+    for y2 in Y2:
+
+        if U &lt; y2 + L1:
+            print(f&#34;{y2=} is dominated&#34;)
+            Y2_dom.add(y2)
+    G2 = PointList((y2 for y2 in Y2 if y2 not in Y2_dom))
+ 
+    print(f&#34;{len(G1),len(Y1)=}&#34;)
+    print(f&#34;{len(G2),len(Y2)=}&#34;)
+    
+
+    if True:
+        fig = plt.figure()
+        if Y1.dim == 3:
+            ax= plt.axes(projection = &#39;3d&#39;)
+        else:
+            ax= plt.axes()
+        print(f&#34;{U &lt; y2 + L1=}&#34;)
+        L1.plot(ax=ax,l=f&#34;L^1&#34;)
+        L2.plot(ax=ax,l=f&#34;L^2&#34;)
+        U1.plot(ax=ax,l=f&#34;U^1&#34;)
+        U2.plot(ax=ax,l=f&#34;U^2&#34;)
+        U.plot(ax=ax,l=f&#34;U&#34;)
+        Y1.plot(ax=ax,l=f&#34;Y^1&#34;)
+        Y2.plot(ax=ax,l=f&#34;Y^2&#34;)
+        if Y2_dom:
+            PointList(Y2_dom).plot(ax=ax, marker=&#39;x&#39;, color=&#39;black&#39;)
+        if Y1_dom:
+            PointList(Y1_dom).plot(ax=ax, marker=&#39;x&#39;, color=&#39;black&#39;)
+        y2.plot(ax=ax,l=&#39;y2&#39;, label_only=True)
+        (y2 + L1).plot(ax=ax,l=&#39;y2 + L1&#39;)
+        # plt.show()
+        return
+
+
+    return (G1,G2)
+
+def test_alg_3():
+
+
+
+    files = [
+            &#39;./instances/subproblems/sp-2-100-m_1.json&#39;,
+             &#39;./instances/subproblems/sp-2-100-u_1.json&#39;
+             ]
+
+    for level in [0,1,2]:
+        L_Y_U = list()
+        for i, file in enumerate(files):
+            Y = methods.lex_sort(PointList.from_json(file))
+            # assert Y == methods.N(Y)
+            Yse = PointList([y for y in Y if y.cls ==&#39;se&#39;])
+
+
+            L = methods.N(induced_LB_3d(Yse, level, PLOT=False))
+            U = Yse
+            L_Y_U.append((L,Y,U))
+
+            # Y.plot(ax=ax, l=f&#34;$Y^{i}$&#34;)
+            # L.plot(ax=ax, color=Y.plot_color, marker=1)
+            # U.plot(ax=ax, color=Y.plot_color, marker=2)
+        # plt.show()
+        # U.plot(SHOW=True)
+        algorithm3_pair(L_Y_U)
+    plt.show()
+
+
+
+
+
+def setup_instances():
+
+    L_Y_U_list = list()
+
+    Y = PointList.from_json(&#39;instances/subproblems/sp-2-100-u_1.json&#39;)
+    Yse = PointList([l for l in Y if l.cls ==&#39;se&#39;])
+    L_Y_U_list.append((L,Y,U))
+
+
+    Y = PointList.from_json(&#39;instances/subproblems/sp-2-10-l_1.json&#39;)
+    Yse = PointList([l for l in Y if l.cls ==&#39;se&#39;])
+    L_Y_U_list.append((L,Y,U))
+
+
+    Y = PointList.from_json(&#39;instances/subproblems/sp-2-10-m_1.json&#39;)
+    Yse = PointList([l for l in Y if l.cls ==&#39;se&#39;])
+    L_Y_U_list.append((L,Y,U))
+
+    return L_Y_U_list
+
+
+
+def pairwise_alg3(L1, Y1, U1, L2, Y2, U2):
+    &#34;&#34;&#34;Implementation of the pairwise algorithm3
+    Returns: Subset Y_hat of Y1
+    &#34;&#34;&#34;
+
+    U = N(U1 + U2)
+    G1_not = []
+    for y1 in methods.lex_sort(Y1):
+        L = L2 + PointList(y1)
+        L.is_complete = L2.is_complete
+
+        if U_dominates_L(U,L):
+            G1_not.append(y1)
+
+    # G1 = PointList([y1 for y1 in Y1 if y1 not in G1_not])
+    G2_not = []
+    for y2 in methods.lex_sort(Y2):
+        L = L1 + PointList(y2)
+        L.is_complete = L1.is_complete
+
+        if U_dominates_L(U,L):
+            G2_not.append(y2)
+
+    # G2 = PointList([y2 for y2 in Y2 if y2 not in G2_not])
+    
+    if True: # validate resutlts
+        for y1 in G1_not:
+            assert y1 in Y1, f&#34;{y1,Y1=}&#34;
+
+        for y2 in G2_not:
+            assert y2 in Y2
+
+    return (G1_not,G2_not)
+
+
+
+
+def all_pairs_alg3():
+    
+    Y1 = methods.lex_sort(PointList.from_json(&#39;instances/subproblems/sp-2-10-m_1.json&#39;))
+    Y1se = PointList([l for l in Y1 if l.cls ==&#39;se&#39;])
+    Y2 = methods.lex_sort(PointList.from_json(&#39;instances/subproblems/sp-2-50-l_1.json&#39;))
+    Y2se = PointList([l for l in Y2 if l.cls ==&#39;se&#39;])
+
+
+    if False:
+
+        # &#39;/sp-2-50-l_1.json&#39;,
+        # &#39;/sp-2-50-u_1.json&#39;
+        Y1 = methods.lex_sort(PointList.from_json(&#39;instances/subproblems/sp-2-50-l_1.json&#39;))
+        Y1se = PointList([l for l in Y1 if l.cls ==&#39;se&#39;])
+        Y2 = methods.lex_sort(PointList.from_json(&#39;instances/subproblems/sp-2-50-u_1.json&#39;))
+        Y2se = PointList([l for l in Y2 if l.cls ==&#39;se&#39;])
+
+    U1_line = methods.induced_UB(Y1se, line = True)
+    U2_line = methods.induced_UB(Y2se, line = True)
+
+    # U1 = methods.induced_UB(Y1se, line = False)
+    # U2 = methods.induced_UB(Y2se, line = False)
+    U1 = Y1se
+    U2 = Y2se
+
+    G1_not, G2_not = pairwise_alg3(Y1se, Y1, Y1se, Y2se, Y2, Y2se)
+    
+
+    def plot_sets():
+        Y1.plot(&#39;Y1&#39;)
+        Y2.plot(&#39;Y2&#39;)
+        Y1se.plot(&#39;Y1se&#39;, line=True, linestyle = &#39;dashed&#39;, color = Y1.plot_color)
+        Y2se.plot(&#39;Y2se&#39;, line =True, linestyle = &#39;dashed&#39;, color = Y2.plot_color)
+        U1_line.plot(&#39;U1&#39;, line =True, linestyle = &#39;dashed&#39;, color = Y1.plot_color)
+        U2_line.plot(&#39;U1&#39;, line =True, linestyle = &#39;dashed&#39;, color = Y2.plot_color)
+
+        PointList(G1_not).plot(marker=&#39;x&#39;, color = &#39;black&#39;)
+        PointList(G2_not).plot(marker=&#39;x&#39;, color = &#39;black&#39;)
+    
+
+    print(f&#34;{len(G1_not),len(Y1)=}&#34;)
+    print(f&#34;{len(G2_not),len(Y2)=}&#34;)
+
+
+    if True: # validate
+        for y1 in Y1[::math.floor(len(Y1)/5)]:
+            plot_sets()
+            U = N(U1 + U2)
+            L = PointList(y1) + Y2se
+            U.plot(&#39;U&#39;)
+            U_line = methods.induced_UB(U, line = True)
+            U_line.plot(line=True)
+            L.plot(line=True)
+            L.plot(&#39;L&#39;)
+            PointList(y1).plot(&#39;y1&#39;, marker = &#39;x&#39;)
+            y1.plot(&#39;y1&#39;, label_only=True)
+            print(f&#34;{U_dominates_L(U, L)=}&#34;)
+            plt.show()
+            # return
+            if y1 in G1_not:
+                assert U_dominates_L(U, L)
+
+
+def algorithm3_run(MSP,levels = None, logger = None):
+    &#34;&#34;&#34; The actual function used for results &#34;&#34;&#34;
+    if levels is None:
+        levels = [0 for s in range(MSP.S)]
+    
+
+    time_start = time.time()
+
+    print(f&#34;{MSP.S=}&#34;)
+    Y_list = [methods.lex_sort(Y) for Y in MSP.Y_list]
+    # Yse_list = [PointList([y for y in Y if y.cls == &#39;se&#39;]) for Y in MSP.Y_list]
+
+    print(f&#34;{MSP.filename=}&#34;)
+
+    L_list = []
+    U_list = []
+
+    for s in range(MSP.S):
+        if levels[s] == 1 or levels[s] == &#39;all&#39;:
+            Ls = MSP.Y_list[s]
+            if levels[s] == &#39;all&#39;:
+                Ls.is_complete = True
+        else:
+            Ls = get_partial(MSP.Y_list[s], 0) # only se points
+            Ls.is_complete = False # convex hull of Ls points
+        L_list.append(Ls)
+
+    
+        if levels[s] == &#39;all&#39;:
+            U_list.append(get_partial(MSP.Y_list[s], 1))
+        else:
+            U_list.append(get_partial(MSP.Y_list[s], levels[s]/100, seed = MSP.filename))
+
+            
+    print(f&#34;{[len(Y) for Y in MSP.Y_list]=}&#34;)
+    print(f&#34;{[len(U) for U in U_list]=}&#34;)
+
+    G_not_list = [set() for _ in range(MSP.S)]
+
+    for s1, Y1 in enumerate(MSP.Y_list):
+        
+        for s2, Y2 in enumerate(MSP.Y_list):
+            if s1 &gt;= s2: continue 
+
+            # Y1se = Yse_list[s1]
+            # Y2se = Yse_list[s2]
+            # G1_not, G2_not = pairwise_alg3(Y1se, Y1, Y1se, Y2se, Y2, Y2se)
+            G1_not, G2_not = pairwise_alg3(L_list[s1], Y1, U_list[s1], L_list[s2], Y2, U_list[s2])
+
+            print(f&#34;{len(set(G1_not))=}&#34;)
+            print(f&#34;{len(set(G2_not))=}&#34;)
+            print(f&#34;{G1_not=}&#34;)
+            print(f&#34;{G2_not=}&#34;)
+            for y1 in G1_not:
+                G_not_list[s1].add(y1)
+            
+            for y2 in G2_not:
+                G_not_list[s2].add(y2)
+            print(f&#34;{len(G_not_list[s1])=}&#34;)
+            print(f&#34;{len(G_not_list[s2])=}&#34;)
+
+    print(f&#34;{G_not_list=}&#34;)
+
+    for s in range(MSP.S):
+        print(f&#34;&#34;)
+        print(f&#34;|Y{s}| = {len(Y_list[s])}&#34;)
+        print(f&#34;|G_not{s}| = {len(G_not_list[s])}&#34;)
+        print(f&#34;&#34;)
+
+
+    if False: # plot
+        for s, Y in enumerate(MSP.Y_list):
+            Y.plot(f&#39;Y{s}&#39;)
+        for s, Y in enumerate(MSP.Y_list):
+            PointList(G_not_list[s]).plot(f&#39;not {s}&#39;,marker=&#39;x&#39;)
+
+
+        plt.show()
+
+    RGS = MinkowskiSumProblem([PointList(G_not) for G_not in G_not_list])
+
+    MGS, Yn = algorithm2(MSP, logger)
+
+    statistics = {
+            &#39;|G_sizes|&#39;: [len(G_not) for G_not in RGS.Y_list],
+            &#39;removed&#39;: [len(G_not) for G_not in RGS.Y_list],
+            &#39;removed_unknown&#39;: [len([g for g in G_not if g not in Us]) for G_not, Us in zip(RGS.Y_list, U_list)],
+            &#39;RGS_size&#39;: [len(Ys)- len(G_not) for G_not,Ys in zip(RGS.Y_list, MSP.Y_list)],
+            &#39;|Ys|-|Gs|_sizes&#39;: [len(Ys) - len(Gs) for (Ys,Gs) in zip(MSP.Y_list, MGS.Y_list)],
+            &#39;|G_not_sizes_total|&#39;: sum([len(G_not) for G_not in RGS.Y_list]),
+            &#39;running_time_RGS&#39;: time.time() - time_start,
+            &#39;known&#39;: [len(Us) for Us in U_list],
+            &#39;known_relative&#39;: [len(Us)/len(Ys) for Us, Ys in zip(U_list, MSP.Y_list)],
+            &#39;q_stats&#39;: [len(G_not_list[s])/(len(MSP.Y_list[s]) - len(MGS.Y_list[s])) if (len(MSP.Y_list[s]) - len(MGS.Y_list[s])) != 0 else None  for s in range(MSP.S) ],
+            &#39;q_stats_unknown&#39;: [len(G_not_list[s].difference(U_list[s]))/(len(MSP.Y_list[s]) - len(MGS.Y_list[s])) if (len(MSP.Y_list[s]) - len(MGS.Y_list[s])) != 0 else None  for s in range(MSP.S) ],
+            &#39;L_is_U&#39;: [Ls.is_complete for Ls in L_list],
+            &#39;any_L_is_U&#39;: any([Ls.is_complete for Ls in L_list])
+            }
+
+    print(f&#34;{statistics=}&#34;)
+
+    # add statistics from MGS
+    statistics.update(MGS.statistics)
+    
+    RGS.statistics = statistics
+
+    print(f&#34;{RGS.statistics=}&#34;)
+
+    
+
+    return RGS
+
+    pass
+
+
+
+
+def test_algorithm3_run():
+
+
+
+    # for logging
+    logname = &#39;algorithm3.log&#39;
+    logging.basicConfig(level=logging.DEBUG, 
+                        filename=logname,
+                        format=&#39;%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s&#39;,
+                        )
+
+    logger = logging.getLogger(logname)
+
+
+
+
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        &#39;/sp-2-10-m_1.json&#39;,
+        &#39;/sp-2-50-l_1.json&#39;,
+        &#39;/sp-2-50-u_1.json&#39;
+        ])
+
+    # TI = MSPInstances(preset = &#39;algorithm1&#39;, p_options = (2,), m_options = (2,3,4), size_options = (100,200,), seed_options = (1,) ,ignore_ifonly_l=True)
+    TI = MSPInstances(p_options = (2,), m_options = (2,3,4), size_options = (50, 100, 200, 300), seed_options = (1,2,3,4,5) ,ignore_ifonly_l=True)
+    # TI = MSPInstances(p_options = (2,), m_options = (2,3), size_options = (50, 100,200, 300), seed_options = (1,) ,ignore_ifonly_l=True)
+
+    save_solution_dir = &#39;./instances/results/algorithm3_partial_levels/&#39;
+    save_prefix = &#39;alg3-&#39;
+    TI.filter_out_solved(save_prefix, save_solution_dir)
+
+    print(f&#34;{TI=}&#34;)
+
+
+    # return
+    # MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/prob-2-100|100|100|100-uull-4_2.json&#39;)
+    # MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/prob-2-300|300-ul-2_3.json&#39;)
+
+
+    all_partial_levels = [0,25,50,75,100, &#39;all&#39;]
+
+    
+    solved_instances = set(os.listdir(save_solution_dir))
+
+    for MSP in TI:
+    # for MSP in [MinkowskiSumProblem.from_json(&#39;./instances/problems/prob-2-50|50|50-ull-3_1.json&#39;)]:
+    # if True:
+
+        # MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/prob-2-50|50-ul-2_1.json&#39;)
+        
+
+        for levels in itertools.product(*[all_partial_levels for s in range(MSP.S)]):
+        # for levels in [(75,74, 73)]:
+
+            RGS_filename = save_prefix + MSP.filename.split(&#39;/&#39;)[-1].replace(&#39;.json&#39;, &#39;-&#39; + &#39;|&#39;.join((str(l) for l in levels)) + &#39;.json&#39; )
+
+            
+            # or tuple([(l if not isinstance(l, str) else 101) for l in levels]) != tuple(sorted([(l if not isinstance(l, str) else 101) for l in levels])):
+            # only two kinds of levels, selv and other same lambda value
+            level_count_dict = collections.Counter(levels)
+            if len([v for v in level_count_dict.values() if v &gt; 0]) &gt; 2 or  len([v for v in level_count_dict.values() if v &gt; 1]) &gt; 1: 
+                logger.debug(f&#34;Skipping, not valid combination {levels=}&#34;)
+                continue
+            
+            
+
+            # if &#34;all&#34; in levels and MSP.S != 2:
+                # logger.debug(f&#34;Skipping, only all for p=2 {levels=}&#34;)
+                # continue
+
+            if RGS_filename in solved_instances:
+                logger.debug(f&#34;Skipping, already solved {RGS_filename=}&#34;)
+                continue
+
+            # print(f&#34;{MSP=}&#34;)
+            # print(f&#34;{levels=}&#34;)
+
+            logger.info(&#34;SOLVING &#34; + RGS_filename )
+            RGS = algorithm3_run(MSP, levels=levels, logger=logger)
+
+            # print(f&#34;{RGS_filename=}&#34;)
+            logger.info(&#34;SOLVED &#34; + RGS_filename )
+            print(f&#34;{RGS.statistics=}&#34;)
+            RGS.save_json(save_solution_dir + RGS_filename)
+            logger.info(&#34;SAVED &#34; + RGS_filename )
+
+
+
+def result_validation():
+
+
+    # check that no points of G_not_s is in G_s
+
+    pass
 
 def main():
+    
+    if False:
+        Y = PointList.from_json(&#39;./instances/subproblems/sp-2-10-l_1.json&#39;)
+        Y = PointList([y for y in Y if y.cls ==&#39;se&#39;][1:3])
+    else:
+        Y = PointList.from_json(&#39;./instances/subproblems/sp-3-10-l_1.json&#39;)
+        Y = PointList([y for y in Y if y.cls ==&#39;se&#39;][2:5])
+    L = induced_LB_3d(Y, 3, PLOT=True)
 
-    induced_LB_3d()
+    # L.plot(SHOW=True)
+
     # multiple_induced_UB()
 
 if __name__ == &#39;__main__&#39;:
-    
-    main()</code></pre>
+    # test_alg_3() 
+    # pairwise_alg3()
+    # main()
+
+
+    test_algorithm3_run()
+    # all_pairs_alg3()</code></pre>
 </details>
 </section>
 <section>
@@ -452,8 +886,8 @@ if __name__ == &#39;__main__&#39;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="algorithm3.induced_LB_3d"><code class="name flex">
-<span>def <span class="ident">induced_LB_3d</span></span>(<span>)</span>
+<dt id="algorithm3.algorithm3_pair"><code class="name flex">
+<span>def <span class="ident">algorithm3_pair</span></span>(<span>L_Y_U: list[list[<a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>]]) ‑> list[<a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -461,32 +895,312 @@ if __name__ == &#39;__main__&#39;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def induced_LB_3d():
+<pre><code class="python">def algorithm3_pair(L_Y_U: list[list[PointList]]) -&gt; list[PointList]:
+    ((L1, Y1, U1), (L2, Y2, U2)) = L_Y_U
+    U = methods.N(U1 + U2)
+    
 
-    from mpl_toolkits.mplot3d import Axes3D
-    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+    Y1_dom = set()
+    for y1 in Y1:
 
+
+        if U &lt; y1 + L2:
+            print(f&#34;{y1=} is dominated&#34;)
+            Y1_dom.add(y1)
+    G1 = PointList((y1 for y1 in Y1 if y1 not in Y1_dom))
+    # repeat
+    Y2_dom = set()
+    for y2 in Y2:
+
+        if U &lt; y2 + L1:
+            print(f&#34;{y2=} is dominated&#34;)
+            Y2_dom.add(y2)
+    G2 = PointList((y2 for y2 in Y2 if y2 not in Y2_dom))
+ 
+    print(f&#34;{len(G1),len(Y1)=}&#34;)
+    print(f&#34;{len(G2),len(Y2)=}&#34;)
+    
+
+    if True:
+        fig = plt.figure()
+        if Y1.dim == 3:
+            ax= plt.axes(projection = &#39;3d&#39;)
+        else:
+            ax= plt.axes()
+        print(f&#34;{U &lt; y2 + L1=}&#34;)
+        L1.plot(ax=ax,l=f&#34;L^1&#34;)
+        L2.plot(ax=ax,l=f&#34;L^2&#34;)
+        U1.plot(ax=ax,l=f&#34;U^1&#34;)
+        U2.plot(ax=ax,l=f&#34;U^2&#34;)
+        U.plot(ax=ax,l=f&#34;U&#34;)
+        Y1.plot(ax=ax,l=f&#34;Y^1&#34;)
+        Y2.plot(ax=ax,l=f&#34;Y^2&#34;)
+        if Y2_dom:
+            PointList(Y2_dom).plot(ax=ax, marker=&#39;x&#39;, color=&#39;black&#39;)
+        if Y1_dom:
+            PointList(Y1_dom).plot(ax=ax, marker=&#39;x&#39;, color=&#39;black&#39;)
+        y2.plot(ax=ax,l=&#39;y2&#39;, label_only=True)
+        (y2 + L1).plot(ax=ax,l=&#39;y2 + L1&#39;)
+        # plt.show()
+        return
+
+
+    return (G1,G2)</code></pre>
+</details>
+</dd>
+<dt id="algorithm3.algorithm3_run"><code class="name flex">
+<span>def <span class="ident">algorithm3_run</span></span>(<span>MSP, levels=None, logger=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The actual function used for results</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def algorithm3_run(MSP,levels = None, logger = None):
+    &#34;&#34;&#34; The actual function used for results &#34;&#34;&#34;
+    if levels is None:
+        levels = [0 for s in range(MSP.S)]
+    
+
+    time_start = time.time()
+
+    print(f&#34;{MSP.S=}&#34;)
+    Y_list = [methods.lex_sort(Y) for Y in MSP.Y_list]
+    # Yse_list = [PointList([y for y in Y if y.cls == &#39;se&#39;]) for Y in MSP.Y_list]
+
+    print(f&#34;{MSP.filename=}&#34;)
+
+    L_list = []
+    U_list = []
+
+    for s in range(MSP.S):
+        if levels[s] == 1 or levels[s] == &#39;all&#39;:
+            Ls = MSP.Y_list[s]
+            if levels[s] == &#39;all&#39;:
+                Ls.is_complete = True
+        else:
+            Ls = get_partial(MSP.Y_list[s], 0) # only se points
+            Ls.is_complete = False # convex hull of Ls points
+        L_list.append(Ls)
+
+    
+        if levels[s] == &#39;all&#39;:
+            U_list.append(get_partial(MSP.Y_list[s], 1))
+        else:
+            U_list.append(get_partial(MSP.Y_list[s], levels[s]/100, seed = MSP.filename))
+
+            
+    print(f&#34;{[len(Y) for Y in MSP.Y_list]=}&#34;)
+    print(f&#34;{[len(U) for U in U_list]=}&#34;)
+
+    G_not_list = [set() for _ in range(MSP.S)]
+
+    for s1, Y1 in enumerate(MSP.Y_list):
+        
+        for s2, Y2 in enumerate(MSP.Y_list):
+            if s1 &gt;= s2: continue 
+
+            # Y1se = Yse_list[s1]
+            # Y2se = Yse_list[s2]
+            # G1_not, G2_not = pairwise_alg3(Y1se, Y1, Y1se, Y2se, Y2, Y2se)
+            G1_not, G2_not = pairwise_alg3(L_list[s1], Y1, U_list[s1], L_list[s2], Y2, U_list[s2])
+
+            print(f&#34;{len(set(G1_not))=}&#34;)
+            print(f&#34;{len(set(G2_not))=}&#34;)
+            print(f&#34;{G1_not=}&#34;)
+            print(f&#34;{G2_not=}&#34;)
+            for y1 in G1_not:
+                G_not_list[s1].add(y1)
+            
+            for y2 in G2_not:
+                G_not_list[s2].add(y2)
+            print(f&#34;{len(G_not_list[s1])=}&#34;)
+            print(f&#34;{len(G_not_list[s2])=}&#34;)
+
+    print(f&#34;{G_not_list=}&#34;)
+
+    for s in range(MSP.S):
+        print(f&#34;&#34;)
+        print(f&#34;|Y{s}| = {len(Y_list[s])}&#34;)
+        print(f&#34;|G_not{s}| = {len(G_not_list[s])}&#34;)
+        print(f&#34;&#34;)
+
+
+    if False: # plot
+        for s, Y in enumerate(MSP.Y_list):
+            Y.plot(f&#39;Y{s}&#39;)
+        for s, Y in enumerate(MSP.Y_list):
+            PointList(G_not_list[s]).plot(f&#39;not {s}&#39;,marker=&#39;x&#39;)
+
+
+        plt.show()
+
+    RGS = MinkowskiSumProblem([PointList(G_not) for G_not in G_not_list])
+
+    MGS, Yn = algorithm2(MSP, logger)
+
+    statistics = {
+            &#39;|G_sizes|&#39;: [len(G_not) for G_not in RGS.Y_list],
+            &#39;removed&#39;: [len(G_not) for G_not in RGS.Y_list],
+            &#39;removed_unknown&#39;: [len([g for g in G_not if g not in Us]) for G_not, Us in zip(RGS.Y_list, U_list)],
+            &#39;RGS_size&#39;: [len(Ys)- len(G_not) for G_not,Ys in zip(RGS.Y_list, MSP.Y_list)],
+            &#39;|Ys|-|Gs|_sizes&#39;: [len(Ys) - len(Gs) for (Ys,Gs) in zip(MSP.Y_list, MGS.Y_list)],
+            &#39;|G_not_sizes_total|&#39;: sum([len(G_not) for G_not in RGS.Y_list]),
+            &#39;running_time_RGS&#39;: time.time() - time_start,
+            &#39;known&#39;: [len(Us) for Us in U_list],
+            &#39;known_relative&#39;: [len(Us)/len(Ys) for Us, Ys in zip(U_list, MSP.Y_list)],
+            &#39;q_stats&#39;: [len(G_not_list[s])/(len(MSP.Y_list[s]) - len(MGS.Y_list[s])) if (len(MSP.Y_list[s]) - len(MGS.Y_list[s])) != 0 else None  for s in range(MSP.S) ],
+            &#39;q_stats_unknown&#39;: [len(G_not_list[s].difference(U_list[s]))/(len(MSP.Y_list[s]) - len(MGS.Y_list[s])) if (len(MSP.Y_list[s]) - len(MGS.Y_list[s])) != 0 else None  for s in range(MSP.S) ],
+            &#39;L_is_U&#39;: [Ls.is_complete for Ls in L_list],
+            &#39;any_L_is_U&#39;: any([Ls.is_complete for Ls in L_list])
+            }
+
+    print(f&#34;{statistics=}&#34;)
+
+    # add statistics from MGS
+    statistics.update(MGS.statistics)
+    
+    RGS.statistics = statistics
+
+    print(f&#34;{RGS.statistics=}&#34;)
+
+    
+
+    return RGS
+
+    pass</code></pre>
+</details>
+</dd>
+<dt id="algorithm3.all_pairs_alg3"><code class="name flex">
+<span>def <span class="ident">all_pairs_alg3</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def all_pairs_alg3():
+    
+    Y1 = methods.lex_sort(PointList.from_json(&#39;instances/subproblems/sp-2-10-m_1.json&#39;))
+    Y1se = PointList([l for l in Y1 if l.cls ==&#39;se&#39;])
+    Y2 = methods.lex_sort(PointList.from_json(&#39;instances/subproblems/sp-2-50-l_1.json&#39;))
+    Y2se = PointList([l for l in Y2 if l.cls ==&#39;se&#39;])
+
+
+    if False:
+
+        # &#39;/sp-2-50-l_1.json&#39;,
+        # &#39;/sp-2-50-u_1.json&#39;
+        Y1 = methods.lex_sort(PointList.from_json(&#39;instances/subproblems/sp-2-50-l_1.json&#39;))
+        Y1se = PointList([l for l in Y1 if l.cls ==&#39;se&#39;])
+        Y2 = methods.lex_sort(PointList.from_json(&#39;instances/subproblems/sp-2-50-u_1.json&#39;))
+        Y2se = PointList([l for l in Y2 if l.cls ==&#39;se&#39;])
+
+    U1_line = methods.induced_UB(Y1se, line = True)
+    U2_line = methods.induced_UB(Y2se, line = True)
+
+    # U1 = methods.induced_UB(Y1se, line = False)
+    # U2 = methods.induced_UB(Y2se, line = False)
+    U1 = Y1se
+    U2 = Y2se
+
+    G1_not, G2_not = pairwise_alg3(Y1se, Y1, Y1se, Y2se, Y2, Y2se)
+    
+
+    def plot_sets():
+        Y1.plot(&#39;Y1&#39;)
+        Y2.plot(&#39;Y2&#39;)
+        Y1se.plot(&#39;Y1se&#39;, line=True, linestyle = &#39;dashed&#39;, color = Y1.plot_color)
+        Y2se.plot(&#39;Y2se&#39;, line =True, linestyle = &#39;dashed&#39;, color = Y2.plot_color)
+        U1_line.plot(&#39;U1&#39;, line =True, linestyle = &#39;dashed&#39;, color = Y1.plot_color)
+        U2_line.plot(&#39;U1&#39;, line =True, linestyle = &#39;dashed&#39;, color = Y2.plot_color)
+
+        PointList(G1_not).plot(marker=&#39;x&#39;, color = &#39;black&#39;)
+        PointList(G2_not).plot(marker=&#39;x&#39;, color = &#39;black&#39;)
+    
+
+    print(f&#34;{len(G1_not),len(Y1)=}&#34;)
+    print(f&#34;{len(G2_not),len(Y2)=}&#34;)
+
+
+    if True: # validate
+        for y1 in Y1[::math.floor(len(Y1)/5)]:
+            plot_sets()
+            U = N(U1 + U2)
+            L = PointList(y1) + Y2se
+            U.plot(&#39;U&#39;)
+            U_line = methods.induced_UB(U, line = True)
+            U_line.plot(line=True)
+            L.plot(line=True)
+            L.plot(&#39;L&#39;)
+            PointList(y1).plot(&#39;y1&#39;, marker = &#39;x&#39;)
+            y1.plot(&#39;y1&#39;, label_only=True)
+            print(f&#34;{U_dominates_L(U, L)=}&#34;)
+            plt.show()
+            # return
+            if y1 in G1_not:
+                assert U_dominates_L(U, L)</code></pre>
+</details>
+</dd>
+<dt id="algorithm3.get_partial"><code class="name flex">
+<span>def <span class="ident">get_partial</span></span>(<span>Y, level='all', seed=0)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_partial(Y, level=&#39;all&#39;, seed = 0):   
+    Y = N(Y)
+    Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
+    Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
+    random.seed(seed)
+    random.shuffle(Y2other_points)
+    match level:
+        case &#39;all&#39;:
+            return Y
+        case &#39;lexmin&#39;: 
+            return PointList((Y[0], Y[-1]))
+        case &#39;extreme&#39;:
+            return PointList(Y2e_points)
+        # case float():
+        case _:
+            to_index = math.floor(float(level)*len(Y2other_points))
+            return PointList(Y2e_points + Y2other_points[:to_index])
+            # print(f&#34;case not implemented {level}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="algorithm3.induced_LB_3d"><code class="name flex">
+<span>def <span class="ident">induced_LB_3d</span></span>(<span>Y: <a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>, level: int, PLOT=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def induced_LB_3d(Y : PointList, level: int, PLOT = False):
 
     cnames = {
     # &#39;aliceblue&#39;:            &#39;#F0F8FF&#39;,
     # &#39;antiquewhite&#39;:         &#39;#FAEBD7&#39;,
     &#39;aqua&#39;:                 &#39;#00FFFF&#39;,
     &#39;aquamarine&#39;:           &#39;#7FFFD4&#39;,
-    &#39;azure&#39;:                &#39;#F0FFFF&#39;,
-    &#39;beige&#39;:                &#39;#F5F5DC&#39;,
-    &#39;bisque&#39;:               &#39;#FFE4C4&#39;,
+    # &#39;azure&#39;:                &#39;#F0FFFF&#39;,
+    # &#39;beige&#39;:                &#39;#F5F5DC&#39;,
+    # &#39;bisque&#39;:               &#39;#FFE4C4&#39;,
     &#39;black&#39;:                &#39;#000000&#39;,
-    &#39;blanchedalmond&#39;:       &#39;#FFEBCD&#39;,
     &#39;blue&#39;:                 &#39;#0000FF&#39;,
     &#39;blueviolet&#39;:           &#39;#8A2BE2&#39;,
     &#39;brown&#39;:                &#39;#A52A2A&#39;,
     &#39;burlywood&#39;:            &#39;#DEB887&#39;,
     &#39;cadetblue&#39;:            &#39;#5F9EA0&#39;,
-    &#39;chartreuse&#39;:           &#39;#7FFF00&#39;,
     &#39;chocolate&#39;:            &#39;#D2691E&#39;,
     &#39;coral&#39;:                &#39;#FF7F50&#39;,
     &#39;cornflowerblue&#39;:       &#39;#6495ED&#39;,
-    &#39;cornsilk&#39;:             &#39;#FFF8DC&#39;,
     &#39;crimson&#39;:              &#39;#DC143C&#39;,
     &#39;cyan&#39;:                 &#39;#00FFFF&#39;,
     &#39;darkblue&#39;:             &#39;#00008B&#39;,
@@ -497,20 +1211,15 @@ if __name__ == &#39;__main__&#39;:
     &#39;darkkhaki&#39;:            &#39;#BDB76B&#39;,
     }
 
-    cnames_list = list(cnames.values())
-    
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
-    cnames_list += cnames_list
+    # for colorname, i in enumerate(cnames.keys()):
+        # print(f&#34;{colorname,i=}&#34;)
 
+
+
+    cnames_list = list(cnames.values())
+    for _ in range(10):
+        cnames_list += cnames_list
+    
 
     def in_hull(Y : PointList, y:Point):
         &#39;&#39;&#39; from https://stackoverflow.com/questions/16750618/whats-an-efficient-way-to-find-if-a-point-lies-in-the-convex-hull-of-a-point-cl &#39;&#39;&#39;
@@ -596,29 +1305,6 @@ if __name__ == &#39;__main__&#39;:
     def plot_dominated_cone(point):
         pass
 
-    # fig = plt.figure()
-    # ax= plt.axes(projection = &#39;3d&#39;)
-    Y = PointList.from_json(&#39;./instances/subproblems/sp-3-50-l_1.json&#39;)
-    all_points = PointList(list(Y.points) + [Y.get_nadir()])
-    hull = ConvexHull(np.array([y.val for y in all_points]))
-    # hull = ConvexHull(all_points.as_np_array())
-    # Y = [PointList([y for i,y in enumerate(Y) if i in F]) for F in hull.simplices][4]
-    # plot_surface(Y,ax)
-
-
-
-
-    ZERO = Point([0 for _ in range(Y.dim)])
-    nadir_point = Y.get_nadir()
-    # nadir_point.plot(ax=ax,l=f&#34;$y^N$&#34;)
-    # ZERO.plot(ax=ax,l=f&#34;$0$&#34;)
-    if False: # plot axis lines
-        for p in range(nadir_point.dim):
-            unit_point = Point([nadir_point[q] if q ==p else 0 for q in range(nadir_point.dim)])
-            unit_point.plot(ax=ax,l=f&#34;$obj^{p}$&#34;, color=&#39;black&#39;)
-            PointList([ZERO, unit_point]).plot(ax=ax, line=True, color=&#39;black&#39;)
-
-
     def split_faces(FACES) -&gt; list[PointList]:
 
         F_splits = []
@@ -648,6 +1334,25 @@ if __name__ == &#39;__main__&#39;:
                         F_splits.append(new_face)
 
         return F_splits
+
+    # fig = plt.figure()
+    # ax= plt.axes(projection = &#39;3d&#39;)
+    all_points = PointList(list(Y.points) + [Y.get_nadir()])
+    hull = ConvexHull(np.array([y.val for y in all_points]))
+    # hull = ConvexHull(all_points.as_np_array())
+    # Y = [PointList([y for i,y in enumerate(Y) if i in F]) for F in hull.simplices][4]
+    # plot_surface(Y,ax)
+
+    ZERO = Point([0 for _ in range(Y.dim)])
+    nadir_point = Y.get_nadir()
+    # nadir_point.plot(ax=ax,l=f&#34;$y^N$&#34;)
+    # ZERO.plot(ax=ax,l=f&#34;$0$&#34;)
+    if False: # plot axis lines
+        for p in range(nadir_point.dim):
+            unit_point = Point([nadir_point[q] if q ==p else 0 for q in range(nadir_point.dim)])
+            unit_point.plot(ax=ax,l=f&#34;$obj^{p}$&#34;, color=&#39;black&#39;)
+            PointList([ZERO, unit_point]).plot(ax=ax, line=True, color=&#39;black&#39;)
+
 
     all_points = PointList(list(Y.points) + [nadir_point])
     hull = ConvexHull(np.array([y.val for y in all_points]))
@@ -713,28 +1418,28 @@ if __name__ == &#39;__main__&#39;:
 
     # plt.show()
 
-    PLOT = True
 
-    for _ in range(3):
+    for _ in range(level):
         print(f&#34;{len(FACES)=}&#34;)
 
 
         if True:
 
-            fig = plt.figure()
-            if Y.dim == 3:
-                ax= plt.axes(projection = &#39;3d&#39; if Y.dim ==3 else &#39;2d&#39;)
-                # ax.view_init(elev=-10., azim=200)
-                # ax.dist = 5
-            else:
-                ax= plt.axes()
-            Y.plot(ax = ax, l=r&#34;$\mathcal{Y}$&#34;, color=&#39;red&#39;)
-            # print(f&#34;{F_splits=}&#34;)
+            if PLOT:
+                fig = plt.figure()
+                if Y.dim == 3:
+                    ax= plt.axes(projection = &#39;3d&#39; if Y.dim ==3 else &#39;2d&#39;)
+                    # ax.view_init(elev=-10., azim=200)
+                    # ax.dist = 5
+                else:
+                    ax= plt.axes()
+                Y.plot(ax = ax, l=r&#34;$\mathcal{Y}$&#34;, color=&#39;red&#39;)
+                # print(f&#34;{F_splits=}&#34;)
             for f, F in enumerate(FACES):
                 l = F.get_ideal()
                 assert all((l &lt;= y for y in F))
                 if PLOT and len(F)&gt;2:
-                    F.plot(ax=ax,point_labels=False)
+                    # F.plot(ax=ax,point_labels=False)
                     l.plot(ax=ax, color = cnames_list[f])
                     plot_surface(F, ax, color = cnames_list[f])
 
@@ -744,7 +1449,13 @@ if __name__ == &#39;__main__&#39;:
         # if _ == 0:
             # FACES = [FACES[1]]
 
-    if PLOT: plt.show()</code></pre>
+    if PLOT: 
+        plt.show()
+
+
+    # return PointList(itertools.chain.from_iterable(((f.ideal for f in F) for F in FACES)))
+    L = PointList((f.get_ideal() for f in FACES))
+    return L</code></pre>
 </details>
 </dd>
 <dt id="algorithm3.induced_UB_plot"><code class="name flex">
@@ -759,25 +1470,7 @@ if __name__ == &#39;__main__&#39;:
 <pre><code class="python">def induced_UB_plot(level, Y1,Y2, prefix=&#39;&#39;, plot=True):
     print(f&#34;{prefix}&#34;)
     # print(f&#34;{level=}&#34;)
-    def get_partial(Y, level=&#39;all&#39;):   
-        Y = N(Y)
-        Y2e_points = [y for y in Y if y.cls == &#39;se&#39;]
-        Y2other_points = [y for y in Y if y.cls != &#39;se&#39;]
-        # random.shuffle(Y2other_points)
-        match level:
-            case &#39;all&#39;:
-                return Y
-            case &#39;lexmin&#39;: 
-                return PointList((Y[0], Y[-1]))
-            case &#39;extreme&#39;:
-                return PointList(Y2e_points)
-            # case float():
-            case _:
-                to_index = math.floor(float(level)*len(Y2other_points))
-                return PointList(Y2e_points + Y2other_points[:to_index])
-                # print(f&#34;case not implemented {level}&#34;)
-    
-    
+
     Y2_partial = get_partial(Y2, level)
 
 
@@ -813,8 +1506,17 @@ if __name__ == &#39;__main__&#39;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def main():
+    
+    if False:
+        Y = PointList.from_json(&#39;./instances/subproblems/sp-2-10-l_1.json&#39;)
+        Y = PointList([y for y in Y if y.cls ==&#39;se&#39;][1:3])
+    else:
+        Y = PointList.from_json(&#39;./instances/subproblems/sp-3-10-l_1.json&#39;)
+        Y = PointList([y for y in Y if y.cls ==&#39;se&#39;][2:5])
+    L = induced_LB_3d(Y, 3, PLOT=True)
 
-    induced_LB_3d()
+    # L.plot(SHOW=True)
+
     # multiple_induced_UB()</code></pre>
 </details>
 </dd>
@@ -878,6 +1580,233 @@ if __name__ == &#39;__main__&#39;:
                             writer.writerow(data.values())</code></pre>
 </details>
 </dd>
+<dt id="algorithm3.pairwise_alg3"><code class="name flex">
+<span>def <span class="ident">pairwise_alg3</span></span>(<span>L1, Y1, U1, L2, Y2, U2)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implementation of the pairwise algorithm3
+Returns: Subset Y_hat of Y1</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def pairwise_alg3(L1, Y1, U1, L2, Y2, U2):
+    &#34;&#34;&#34;Implementation of the pairwise algorithm3
+    Returns: Subset Y_hat of Y1
+    &#34;&#34;&#34;
+
+    U = N(U1 + U2)
+    G1_not = []
+    for y1 in methods.lex_sort(Y1):
+        L = L2 + PointList(y1)
+        L.is_complete = L2.is_complete
+
+        if U_dominates_L(U,L):
+            G1_not.append(y1)
+
+    # G1 = PointList([y1 for y1 in Y1 if y1 not in G1_not])
+    G2_not = []
+    for y2 in methods.lex_sort(Y2):
+        L = L1 + PointList(y2)
+        L.is_complete = L1.is_complete
+
+        if U_dominates_L(U,L):
+            G2_not.append(y2)
+
+    # G2 = PointList([y2 for y2 in Y2 if y2 not in G2_not])
+    
+    if True: # validate resutlts
+        for y1 in G1_not:
+            assert y1 in Y1, f&#34;{y1,Y1=}&#34;
+
+        for y2 in G2_not:
+            assert y2 in Y2
+
+    return (G1_not,G2_not)</code></pre>
+</details>
+</dd>
+<dt id="algorithm3.result_validation"><code class="name flex">
+<span>def <span class="ident">result_validation</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def result_validation():
+
+
+    # check that no points of G_not_s is in G_s
+
+    pass</code></pre>
+</details>
+</dd>
+<dt id="algorithm3.setup_instances"><code class="name flex">
+<span>def <span class="ident">setup_instances</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def setup_instances():
+
+    L_Y_U_list = list()
+
+    Y = PointList.from_json(&#39;instances/subproblems/sp-2-100-u_1.json&#39;)
+    Yse = PointList([l for l in Y if l.cls ==&#39;se&#39;])
+    L_Y_U_list.append((L,Y,U))
+
+
+    Y = PointList.from_json(&#39;instances/subproblems/sp-2-10-l_1.json&#39;)
+    Yse = PointList([l for l in Y if l.cls ==&#39;se&#39;])
+    L_Y_U_list.append((L,Y,U))
+
+
+    Y = PointList.from_json(&#39;instances/subproblems/sp-2-10-m_1.json&#39;)
+    Yse = PointList([l for l in Y if l.cls ==&#39;se&#39;])
+    L_Y_U_list.append((L,Y,U))
+
+    return L_Y_U_list</code></pre>
+</details>
+</dd>
+<dt id="algorithm3.test_alg_3"><code class="name flex">
+<span>def <span class="ident">test_alg_3</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_alg_3():
+
+
+
+    files = [
+            &#39;./instances/subproblems/sp-2-100-m_1.json&#39;,
+             &#39;./instances/subproblems/sp-2-100-u_1.json&#39;
+             ]
+
+    for level in [0,1,2]:
+        L_Y_U = list()
+        for i, file in enumerate(files):
+            Y = methods.lex_sort(PointList.from_json(file))
+            # assert Y == methods.N(Y)
+            Yse = PointList([y for y in Y if y.cls ==&#39;se&#39;])
+
+
+            L = methods.N(induced_LB_3d(Yse, level, PLOT=False))
+            U = Yse
+            L_Y_U.append((L,Y,U))
+
+            # Y.plot(ax=ax, l=f&#34;$Y^{i}$&#34;)
+            # L.plot(ax=ax, color=Y.plot_color, marker=1)
+            # U.plot(ax=ax, color=Y.plot_color, marker=2)
+        # plt.show()
+        # U.plot(SHOW=True)
+        algorithm3_pair(L_Y_U)
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="algorithm3.test_algorithm3_run"><code class="name flex">
+<span>def <span class="ident">test_algorithm3_run</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_algorithm3_run():
+
+
+
+    # for logging
+    logname = &#39;algorithm3.log&#39;
+    logging.basicConfig(level=logging.DEBUG, 
+                        filename=logname,
+                        format=&#39;%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s&#39;,
+                        )
+
+    logger = logging.getLogger(logname)
+
+
+
+
+
+    MSP = MinkowskiSumProblem.from_subsets([
+        &#39;/sp-2-10-m_1.json&#39;,
+        &#39;/sp-2-50-l_1.json&#39;,
+        &#39;/sp-2-50-u_1.json&#39;
+        ])
+
+    # TI = MSPInstances(preset = &#39;algorithm1&#39;, p_options = (2,), m_options = (2,3,4), size_options = (100,200,), seed_options = (1,) ,ignore_ifonly_l=True)
+    TI = MSPInstances(p_options = (2,), m_options = (2,3,4), size_options = (50, 100, 200, 300), seed_options = (1,2,3,4,5) ,ignore_ifonly_l=True)
+    # TI = MSPInstances(p_options = (2,), m_options = (2,3), size_options = (50, 100,200, 300), seed_options = (1,) ,ignore_ifonly_l=True)
+
+    save_solution_dir = &#39;./instances/results/algorithm3_partial_levels/&#39;
+    save_prefix = &#39;alg3-&#39;
+    TI.filter_out_solved(save_prefix, save_solution_dir)
+
+    print(f&#34;{TI=}&#34;)
+
+
+    # return
+    # MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/prob-2-100|100|100|100-uull-4_2.json&#39;)
+    # MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/prob-2-300|300-ul-2_3.json&#39;)
+
+
+    all_partial_levels = [0,25,50,75,100, &#39;all&#39;]
+
+    
+    solved_instances = set(os.listdir(save_solution_dir))
+
+    for MSP in TI:
+    # for MSP in [MinkowskiSumProblem.from_json(&#39;./instances/problems/prob-2-50|50|50-ull-3_1.json&#39;)]:
+    # if True:
+
+        # MSP = MinkowskiSumProblem.from_json(&#39;./instances/problems/prob-2-50|50-ul-2_1.json&#39;)
+        
+
+        for levels in itertools.product(*[all_partial_levels for s in range(MSP.S)]):
+        # for levels in [(75,74, 73)]:
+
+            RGS_filename = save_prefix + MSP.filename.split(&#39;/&#39;)[-1].replace(&#39;.json&#39;, &#39;-&#39; + &#39;|&#39;.join((str(l) for l in levels)) + &#39;.json&#39; )
+
+            
+            # or tuple([(l if not isinstance(l, str) else 101) for l in levels]) != tuple(sorted([(l if not isinstance(l, str) else 101) for l in levels])):
+            # only two kinds of levels, selv and other same lambda value
+            level_count_dict = collections.Counter(levels)
+            if len([v for v in level_count_dict.values() if v &gt; 0]) &gt; 2 or  len([v for v in level_count_dict.values() if v &gt; 1]) &gt; 1: 
+                logger.debug(f&#34;Skipping, not valid combination {levels=}&#34;)
+                continue
+            
+            
+
+            # if &#34;all&#34; in levels and MSP.S != 2:
+                # logger.debug(f&#34;Skipping, only all for p=2 {levels=}&#34;)
+                # continue
+
+            if RGS_filename in solved_instances:
+                logger.debug(f&#34;Skipping, already solved {RGS_filename=}&#34;)
+                continue
+
+            # print(f&#34;{MSP=}&#34;)
+            # print(f&#34;{levels=}&#34;)
+
+            logger.info(&#34;SOLVING &#34; + RGS_filename )
+            RGS = algorithm3_run(MSP, levels=levels, logger=logger)
+
+            # print(f&#34;{RGS_filename=}&#34;)
+            logger.info(&#34;SOLVED &#34; + RGS_filename )
+            print(f&#34;{RGS.statistics=}&#34;)
+            RGS.save_json(save_solution_dir + RGS_filename)
+            logger.info(&#34;SAVED &#34; + RGS_filename )</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -890,11 +1819,20 @@ if __name__ == &#39;__main__&#39;:
 </div>
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="algorithm3.algorithm3_pair" href="#algorithm3.algorithm3_pair">algorithm3_pair</a></code></li>
+<li><code><a title="algorithm3.algorithm3_run" href="#algorithm3.algorithm3_run">algorithm3_run</a></code></li>
+<li><code><a title="algorithm3.all_pairs_alg3" href="#algorithm3.all_pairs_alg3">all_pairs_alg3</a></code></li>
+<li><code><a title="algorithm3.get_partial" href="#algorithm3.get_partial">get_partial</a></code></li>
 <li><code><a title="algorithm3.induced_LB_3d" href="#algorithm3.induced_LB_3d">induced_LB_3d</a></code></li>
 <li><code><a title="algorithm3.induced_UB_plot" href="#algorithm3.induced_UB_plot">induced_UB_plot</a></code></li>
 <li><code><a title="algorithm3.main" href="#algorithm3.main">main</a></code></li>
 <li><code><a title="algorithm3.multiple_induced_UB" href="#algorithm3.multiple_induced_UB">multiple_induced_UB</a></code></li>
+<li><code><a title="algorithm3.pairwise_alg3" href="#algorithm3.pairwise_alg3">pairwise_alg3</a></code></li>
+<li><code><a title="algorithm3.result_validation" href="#algorithm3.result_validation">result_validation</a></code></li>
+<li><code><a title="algorithm3.setup_instances" href="#algorithm3.setup_instances">setup_instances</a></code></li>
+<li><code><a title="algorithm3.test_alg_3" href="#algorithm3.test_alg_3">test_alg_3</a></code></li>
+<li><code><a title="algorithm3.test_algorithm3_run" href="#algorithm3.test_algorithm3_run">test_algorithm3_run</a></code></li>
 </ul>
 </li>
 </ul>

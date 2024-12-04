@@ -94,7 +94,8 @@ example use:
 &#34;&#34;&#34;
 from functools import wraps
 import time
-
+import threading 
+import multiprocessing
 
 # Define global dictionaries
 TIME_dict = {}
@@ -118,22 +119,32 @@ def timeit(func, keyname = None):
         return result
     return timeit_wrapper
 
-def print_timeit(tolerance = 0):
+def print_timeit(tolerance = 0, logger = None):
     global TIME_dict
     # sort and show TIME_dict
+    out_str = &#34;\n&#34;
     hline = 70
-    print(&#34;_&#34;*hline)
+    out_str += &#34;\t&#34; + &#34;_&#34;*hline + &#34;\n&#34;
     TIME_dict = {k: v for k, v in sorted(TIME_dict.items(), key=lambda item: item[1])}
     for k,v in TIME_dict.items():
         calls = COUNT_dict[k]
         # if v &gt; 0.01:
         if calls != 0 and v &gt; tolerance:
             calls = f&#34;{calls:13.2e}&#34; if calls &gt; 1_000_000 else f&#34;{calls:13}&#34; 
-            print(f&#34; {k:27} : {v:10.2f} seconds {calls} calls&#34;)
-    print(&#34;_&#34;*hline)
-    print(f&#34; {&#39;Total time &#39;:27} : {time.perf_counter() - START_TIME:10.2f} seconds&#34;)
-    print(&#34;_&#34;*hline)
+            # print(f&#34; {k:27} : {v:10.2f} seconds {calls} calls&#34;)
+            out_str += &#34;\t&#34; + f&#34; {k:27} : {v:10.2f} seconds {calls} calls&#34;+ &#34;\n&#34;
 
+    total_time = time.perf_counter() - START_TIME
+
+    if total_time &gt; tolerance:
+        out_str += &#34;\t&#34; + &#34;_&#34;*hline+ &#34;\n&#34;
+        out_str  += &#34;\t&#34; + f&#34; {&#39;Total time &#39;:27} : {total_time:10.2f} seconds&#34;+ &#34;\n&#34;
+        out_str += &#34;\t&#34; + &#34;_&#34;*hline+ &#34;\n&#34;
+
+        print(out_str)
+        if logger:
+            logger.info(out_str)
+        
     # TIME_dict_return = {k: v for k, v in TIME_dict.items() if COUNT_dict[k]&gt;0}
     return TIME_dict
 
@@ -161,7 +172,202 @@ def time_object(object_name, prefix = None):
         if callable(fct) and fct_str not in [&#39;__class__&#39;, &#39;__new__&#39;, &#39;__getattribute__&#39;] and &#39;recursion&#39; not in fct_str:
             fct = timeit(fct, f&#39;{prefix}.{fct_str}&#39;)
             setattr(object_name, fct_str, fct)
-    return object_name</code></pre>
+    return object_name
+
+
+
+
+
+
+def log_every_x_minutes(x, logger):
+    &#34;&#34;&#34;
+    A decorator for creating a log every x minutes. Threading is required as the process has to run paralell to calling the function func
+    
+
+    Usage:
+        import logging
+        logging.basicConfig(level=logging.INFO, filename=logname)
+        logger = logging.getLogger(logname)
+
+        @log_every_x_minutes(30, logger)
+        def example_function_which_takes_a_long_time_to_run():
+            time.sleep(a long time)
+    (or)
+        example_fct = log_every_x_minutes(30, logger)(example_fct)
+
+
+    &#34;&#34;&#34;
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start_time = time.time()
+
+            def log_time():
+                elapsed_time = time.time() - start_time
+                logger.info(f&#34;The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes&#34;)
+                # Schedule the next log after x minutes
+                threading.Timer(x * 60, log_time).start()
+
+            # Start the initial log
+            log_time()
+
+            # Call the original function
+            result = func(*args, **kwargs)
+
+            # The function has completed; no need to stop the timer
+            return result
+
+        return wrapper
+    return decorator
+
+
+def terminate_after_x_minutes_old(x, logger=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # Start the function as a process
+            p = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
+            p.start()
+
+            # Wait for the specified time or until the process finishes
+            p.join(timeout=x*60)
+
+            # If the process is still active after the wait time
+            if p.is_alive():
+                print(f&#34;{func.__name__} is running... killing process after {x:.2f} minutes {x/60:.2f} hours&#34;)
+                if logger:
+                    logger.info(f&#34;{func.__name__} is running... killing process after {x/60:.2f} seconds {x:.2f} minutes {x*60:.2f} hours&#34;)
+                    logger.warning(f&#34;{func.__name__} is running... killing process after {x*60:.2f} seconds {x:.2f} minutes {x/60:.2f} hours&#34;)
+
+                # Terminate the process
+                p.terminate()
+
+                # Ensure the process has terminated
+                p.join()
+        return wrapper
+    return decorator
+
+
+
+def target(queue, func, *args, **kwargs):
+    result = func(*args, **kwargs)
+    queue.put(result)
+
+def terminate_after_x_minutes(x, logger=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # Create a queue to capture the return value
+            queue = multiprocessing.Queue()
+
+            # Start the function as a process
+            p = multiprocessing.Process(target=target, args=(queue, func, *args), kwargs=kwargs)
+            p.start()
+
+            # Wait for the specified time or until the process finishes
+            p.join(timeout=x*60)
+
+            # If the process is still active after the wait time
+            if p.is_alive():
+                message = f&#34;{func.__name__} is running... killing process after {x:.2f} minutes&#34;
+                print(message)
+                if logger:
+                    logger.info(message)
+                    logger.warning(message)
+
+                # Terminate the process
+                p.terminate()
+
+                # Ensure the process has terminated
+                p.join()
+                return None
+            else:
+                # Get the result from the queue
+                if not queue.empty():
+                    return queue.get()
+                return None
+
+        return wrapper
+    return decorator
+
+import multiprocessing
+import time
+from functools import wraps
+def target(queue, func, *args, **kwargs):
+    result = func(*args, **kwargs)
+    queue.put(result)
+
+
+def terminate_and_log(max_time : int, log_interval=0, logger=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+
+            # Create a queue to capture the return value
+            queue = multiprocessing.Queue()
+
+            # Start the function as a process
+            p = multiprocessing.Process(target=target, args=(queue, func, *args), kwargs=kwargs)
+            p.start()
+
+            start_time = time.time()
+            last_log_time = start_time
+            check_interval = 1  # Check every second
+
+            
+            while time.time() - start_time &lt; max_time * 60:
+                time.sleep(check_interval)
+                current_time = time.time()
+
+                # Log every y minutes
+                if log_interval and current_time - last_log_time &gt;= log_interval * 60:
+                    if p.is_alive():
+                        elapsed_time = current_time - start_time
+                        message = f&#34;The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes&#34;
+                        print(f&#34;{message}&#34;)
+                        if logger:
+                            logger.info(message)
+
+                        last_log_time = current_time
+                print(f&#34;{p.is_alive()=}&#34;)
+                if not p.is_alive():
+                    break
+
+            # If the process is still active after the wait time
+            if p.is_alive():
+                message = f&#34;{func.__name__} is running... killing process after {max_time:.2f} minutes&#34;
+                print(message)
+                if logger:
+                    logger.info(message)
+                    logger.warning(message)
+
+                # Terminate the process
+                p.terminate()
+
+                # Ensure the process has terminated
+                p.join()
+                return None
+            else:
+                # Get the result from the queue
+                if not queue.empty():
+                    return queue.get()
+                return None
+
+        return wrapper
+    return decorator
+
+
+
+def set_defaults(**default_kwargs):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for key, value in default_kwargs.items():
+                if key not in kwargs:
+                    kwargs[key] = value
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator</code></pre>
 </details>
 </section>
 <section>
@@ -171,8 +377,68 @@ def time_object(object_name, prefix = None):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="timing.log_every_x_minutes"><code class="name flex">
+<span>def <span class="ident">log_every_x_minutes</span></span>(<span>x, logger)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A decorator for creating a log every x minutes. Threading is required as the process has to run paralell to calling the function func</p>
+<h2 id="usage">Usage</h2>
+<p>import logging
+logging.basicConfig(level=logging.INFO, filename=logname)
+logger = logging.getLogger(logname)</p>
+<p>@log_every_x_minutes(30, logger)
+def example_function_which_takes_a_long_time_to_run():
+time.sleep(a long time)
+(or)
+example_fct = log_every_x_minutes(30, logger)(example_fct)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def log_every_x_minutes(x, logger):
+    &#34;&#34;&#34;
+    A decorator for creating a log every x minutes. Threading is required as the process has to run paralell to calling the function func
+    
+
+    Usage:
+        import logging
+        logging.basicConfig(level=logging.INFO, filename=logname)
+        logger = logging.getLogger(logname)
+
+        @log_every_x_minutes(30, logger)
+        def example_function_which_takes_a_long_time_to_run():
+            time.sleep(a long time)
+    (or)
+        example_fct = log_every_x_minutes(30, logger)(example_fct)
+
+
+    &#34;&#34;&#34;
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start_time = time.time()
+
+            def log_time():
+                elapsed_time = time.time() - start_time
+                logger.info(f&#34;The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes&#34;)
+                # Schedule the next log after x minutes
+                threading.Timer(x * 60, log_time).start()
+
+            # Start the initial log
+            log_time()
+
+            # Call the original function
+            result = func(*args, **kwargs)
+
+            # The function has completed; no need to stop the timer
+            return result
+
+        return wrapper
+    return decorator</code></pre>
+</details>
+</dd>
 <dt id="timing.print_timeit"><code class="name flex">
-<span>def <span class="ident">print_timeit</span></span>(<span>tolerance=0)</span>
+<span>def <span class="ident">print_timeit</span></span>(<span>tolerance=0, logger=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -180,22 +446,32 @@ def time_object(object_name, prefix = None):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def print_timeit(tolerance = 0):
+<pre><code class="python">def print_timeit(tolerance = 0, logger = None):
     global TIME_dict
     # sort and show TIME_dict
+    out_str = &#34;\n&#34;
     hline = 70
-    print(&#34;_&#34;*hline)
+    out_str += &#34;\t&#34; + &#34;_&#34;*hline + &#34;\n&#34;
     TIME_dict = {k: v for k, v in sorted(TIME_dict.items(), key=lambda item: item[1])}
     for k,v in TIME_dict.items():
         calls = COUNT_dict[k]
         # if v &gt; 0.01:
         if calls != 0 and v &gt; tolerance:
             calls = f&#34;{calls:13.2e}&#34; if calls &gt; 1_000_000 else f&#34;{calls:13}&#34; 
-            print(f&#34; {k:27} : {v:10.2f} seconds {calls} calls&#34;)
-    print(&#34;_&#34;*hline)
-    print(f&#34; {&#39;Total time &#39;:27} : {time.perf_counter() - START_TIME:10.2f} seconds&#34;)
-    print(&#34;_&#34;*hline)
+            # print(f&#34; {k:27} : {v:10.2f} seconds {calls} calls&#34;)
+            out_str += &#34;\t&#34; + f&#34; {k:27} : {v:10.2f} seconds {calls} calls&#34;+ &#34;\n&#34;
 
+    total_time = time.perf_counter() - START_TIME
+
+    if total_time &gt; tolerance:
+        out_str += &#34;\t&#34; + &#34;_&#34;*hline+ &#34;\n&#34;
+        out_str  += &#34;\t&#34; + f&#34; {&#39;Total time &#39;:27} : {total_time:10.2f} seconds&#34;+ &#34;\n&#34;
+        out_str += &#34;\t&#34; + &#34;_&#34;*hline+ &#34;\n&#34;
+
+        print(out_str)
+        if logger:
+            logger.info(out_str)
+        
     # TIME_dict_return = {k: v for k, v in TIME_dict.items() if COUNT_dict[k]&gt;0}
     return TIME_dict</code></pre>
 </details>
@@ -217,6 +493,192 @@ def time_object(object_name, prefix = None):
     TIME_dict = {k : 0 for k in TIME_dict.keys()}
     COUNT_dict = {k : 0 for k in COUNT_dict.keys()}
     START_TIME = time.perf_counter()</code></pre>
+</details>
+</dd>
+<dt id="timing.set_defaults"><code class="name flex">
+<span>def <span class="ident">set_defaults</span></span>(<span>**default_kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_defaults(**default_kwargs):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for key, value in default_kwargs.items():
+                if key not in kwargs:
+                    kwargs[key] = value
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator</code></pre>
+</details>
+</dd>
+<dt id="timing.target"><code class="name flex">
+<span>def <span class="ident">target</span></span>(<span>queue, func, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def target(queue, func, *args, **kwargs):
+    result = func(*args, **kwargs)
+    queue.put(result)</code></pre>
+</details>
+</dd>
+<dt id="timing.terminate_after_x_minutes"><code class="name flex">
+<span>def <span class="ident">terminate_after_x_minutes</span></span>(<span>x, logger=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def terminate_after_x_minutes(x, logger=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # Create a queue to capture the return value
+            queue = multiprocessing.Queue()
+
+            # Start the function as a process
+            p = multiprocessing.Process(target=target, args=(queue, func, *args), kwargs=kwargs)
+            p.start()
+
+            # Wait for the specified time or until the process finishes
+            p.join(timeout=x*60)
+
+            # If the process is still active after the wait time
+            if p.is_alive():
+                message = f&#34;{func.__name__} is running... killing process after {x:.2f} minutes&#34;
+                print(message)
+                if logger:
+                    logger.info(message)
+                    logger.warning(message)
+
+                # Terminate the process
+                p.terminate()
+
+                # Ensure the process has terminated
+                p.join()
+                return None
+            else:
+                # Get the result from the queue
+                if not queue.empty():
+                    return queue.get()
+                return None
+
+        return wrapper
+    return decorator</code></pre>
+</details>
+</dd>
+<dt id="timing.terminate_after_x_minutes_old"><code class="name flex">
+<span>def <span class="ident">terminate_after_x_minutes_old</span></span>(<span>x, logger=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def terminate_after_x_minutes_old(x, logger=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # Start the function as a process
+            p = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
+            p.start()
+
+            # Wait for the specified time or until the process finishes
+            p.join(timeout=x*60)
+
+            # If the process is still active after the wait time
+            if p.is_alive():
+                print(f&#34;{func.__name__} is running... killing process after {x:.2f} minutes {x/60:.2f} hours&#34;)
+                if logger:
+                    logger.info(f&#34;{func.__name__} is running... killing process after {x/60:.2f} seconds {x:.2f} minutes {x*60:.2f} hours&#34;)
+                    logger.warning(f&#34;{func.__name__} is running... killing process after {x*60:.2f} seconds {x:.2f} minutes {x/60:.2f} hours&#34;)
+
+                # Terminate the process
+                p.terminate()
+
+                # Ensure the process has terminated
+                p.join()
+        return wrapper
+    return decorator</code></pre>
+</details>
+</dd>
+<dt id="timing.terminate_and_log"><code class="name flex">
+<span>def <span class="ident">terminate_and_log</span></span>(<span>max_time: int, log_interval=0, logger=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def terminate_and_log(max_time : int, log_interval=0, logger=None):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+
+            # Create a queue to capture the return value
+            queue = multiprocessing.Queue()
+
+            # Start the function as a process
+            p = multiprocessing.Process(target=target, args=(queue, func, *args), kwargs=kwargs)
+            p.start()
+
+            start_time = time.time()
+            last_log_time = start_time
+            check_interval = 1  # Check every second
+
+            
+            while time.time() - start_time &lt; max_time * 60:
+                time.sleep(check_interval)
+                current_time = time.time()
+
+                # Log every y minutes
+                if log_interval and current_time - last_log_time &gt;= log_interval * 60:
+                    if p.is_alive():
+                        elapsed_time = current_time - start_time
+                        message = f&#34;The function {func.__name__} has been running for {elapsed_time / 60:.2f} minutes&#34;
+                        print(f&#34;{message}&#34;)
+                        if logger:
+                            logger.info(message)
+
+                        last_log_time = current_time
+                print(f&#34;{p.is_alive()=}&#34;)
+                if not p.is_alive():
+                    break
+
+            # If the process is still active after the wait time
+            if p.is_alive():
+                message = f&#34;{func.__name__} is running... killing process after {max_time:.2f} minutes&#34;
+                print(message)
+                if logger:
+                    logger.info(message)
+                    logger.warning(message)
+
+                # Terminate the process
+                p.terminate()
+
+                # Ensure the process has terminated
+                p.join()
+                return None
+            else:
+                # Get the result from the queue
+                if not queue.empty():
+                    return queue.get()
+                return None
+
+        return wrapper
+    return decorator</code></pre>
 </details>
 </dd>
 <dt id="timing.time_object"><code class="name flex">
@@ -286,8 +748,14 @@ def time_object(object_name, prefix = None):
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="timing.log_every_x_minutes" href="#timing.log_every_x_minutes">log_every_x_minutes</a></code></li>
 <li><code><a title="timing.print_timeit" href="#timing.print_timeit">print_timeit</a></code></li>
 <li><code><a title="timing.reset_timeit" href="#timing.reset_timeit">reset_timeit</a></code></li>
+<li><code><a title="timing.set_defaults" href="#timing.set_defaults">set_defaults</a></code></li>
+<li><code><a title="timing.target" href="#timing.target">target</a></code></li>
+<li><code><a title="timing.terminate_after_x_minutes" href="#timing.terminate_after_x_minutes">terminate_after_x_minutes</a></code></li>
+<li><code><a title="timing.terminate_after_x_minutes_old" href="#timing.terminate_after_x_minutes_old">terminate_after_x_minutes_old</a></code></li>
+<li><code><a title="timing.terminate_and_log" href="#timing.terminate_and_log">terminate_and_log</a></code></li>
 <li><code><a title="timing.time_object" href="#timing.time_object">time_object</a></code></li>
 <li><code><a title="timing.timeit" href="#timing.timeit">timeit</a></code></li>
 </ul>

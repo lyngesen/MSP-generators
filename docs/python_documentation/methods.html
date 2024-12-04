@@ -62,6 +62,8 @@ from collections import deque # for fast leftappend
 from operator import itemgetter # for lexsort function to define keys
 import math
 import uuid
+import time
+
 
 def basic_filter(Y:PointList):
     &#34;&#34;&#34;
@@ -235,14 +237,62 @@ def unidirectional_filter(Y: PointList, duplicates_allowed = False) -&gt; PointL
 
 
 
-def call_c_nondomDC(call_id:str):
+def call_c_nondomDC(call_id:str, max_time=None, logger=None):
     # current_d = os.getcwd()
     # move to c folder and execute
     # os.chdir(&#39;/Users/au618299/Desktop/cythonTest/nondom/&#39;)
     # subprocess.call([&#39;./nondom&#39;,call_id])
     # return to initial directory
     # os.chdir(current_d)
-    subprocess.call([&#39;/Users/au618299/Desktop/cythonTest/nondom/./nondom&#39;,call_id])
+    # subprocess.call([&#39;/Users/au618299/Desktop/cythonTest/nondom/./nondom&#39;,call_id])
+    assert &#39;nondom&#39; in os.listdir()
+    # subprocess.call([&#39;./nondom&#39;,call_id])
+    p = subprocess.Popen([&#39;./nondom&#39;,call_id])
+
+    try:
+        if max_time:
+            p.wait(timeout=max_time*60)
+        else:
+            p.wait()
+    except subprocess.TimeoutExpired:
+        print(f&#34;Process timed out after {max_time} seconds&#34;)
+        p.kill()
+        print(&#34;Process killed due to timeout&#34;)
+        if logger:
+            logger.warning(&#34;Process timed out after {max_time} seconds {call_id=}&#34;)
+
+
+
+def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=None, logger=None, verbose = False):
+    assert &#39;ND_pointsSum2&#39; in os.listdir()
+
+    # print(f&#34;calling subprocess &#34;)
+    if max_gb:
+        if verbose:
+            p = subprocess.Popen([&#39;./ND_pointsSum2&#39;,call_id,str(max_gb)])
+        else:
+            p = subprocess.Popen([&#39;./ND_pointsSum2&#39;,call_id,str(max_gb)], stdout=subprocess.DEVNULL)
+    else:
+        if verbose:
+            p = subprocess.Popen([&#39;./ND_pointsSum2&#39;,call_id])
+        else:
+            p = subprocess.Popen([&#39;./ND_pointsSum2&#39;,call_id], stdout=subprocess.DEVNULL)
+
+    
+    try:
+        if max_time:
+            p.wait(timeout=max_time*60)
+        else:
+            p.wait()
+    except subprocess.TimeoutExpired:
+        print(f&#34;Process timed out after {max_time} seconds&#34;)
+        p.kill()
+        print(&#34;Process killed due to timeout&#34;)
+        if logger:
+            logger.warning(&#34;Process timed out after {max_time} seconds {call_id=}&#34;)
+            logger.info(f&#34;{p.returncode=}&#34;)
+        print(f&#34;{p.returncode=}&#34;)
+    # print(f&#34;subprocess complete &#34;)
 
 
 def nondomDC_wrapper(Y : PointList):
@@ -251,23 +301,68 @@ def nondomDC_wrapper(Y : PointList):
     # out_file = fr&#34;/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}&#34; # c script directory
     out_file = fr&#34;temp/pointsIn-{call_id}&#34; # c script directory
     Y.save_raw(out_file)
-    call_c_nondomDC(call_id)
+    assert os.path.exists(out_file), f&#34;{out_file=}&#34;
+
+    try:
+        out_str = call_c_nondomDC(call_id)
+    finally:
+        os.remove(out_file)
     # in_file = filepath = fr&#34;/Users/au618299/Desktop/cythonTest/nondom/temp/pointsOut-{call_id}&#34; # c script directory
     in_file = filepath = fr&#34;temp/pointsOut-{call_id}&#34; # c script directory
+    assert os.path.exists(in_file), f&#34;{in_file,out_str=}&#34;
     Yn = PointList.from_raw(in_file)
+    # print(f&#34;{in_file=}&#34;)
+    try:
+        Yn = PointList.from_raw(in_file)
+    except FileNotFoundError:
+        print(f&#34;File not found&#34;)
+        print(f&#34;{in_file=}&#34;)
+        return None
+
     if True: # clear temp folder
-        os.remove(out_file)
+        # os.remove(out_file)
         os.remove(in_file)
-    return Yn
+    return Yn.removed_duplicates()
+
+
+def ND_pointsSum2_wrapper(A : PointList, B : PointList) -&gt; PointList:
+    # A python wrapper for the c implementation of ND_pointsSum2 [Bruno Lang]
+    call_id = str(uuid.uuid4())
+    # out_file = fr&#34;/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}&#34; # c script directory
+    out_fileA = fr&#34;temp/pointsInA-{call_id}&#34; # c script directory
+    out_fileB = fr&#34;temp/pointsInB-{call_id}&#34; # c script directory
+    A.save_raw(out_fileA)
+    B.save_raw(out_fileB)
+    try:
+        call_c_ND_pointsSum2(call_id)
+    finally:
+        os.remove(out_fileA)
+        os.remove(out_fileB)
+
+
+    in_file = filepath = fr&#34;temp/pointsOut-{call_id}&#34; # c script directory
+    try:
+        Yn = PointList.from_raw(in_file)
+    except FileNotFoundError:
+        return None
+
+    if True: # clear temp folder
+        os.remove(in_file)
+    return Yn.removed_duplicates()
+
 
 def N(Y = PointList, **kwargs):
     &#34;&#34;&#34; &#39;best&#39; implemented nondominance filter &#34;&#34;&#34;
     if Y[0].dim &lt;= 2:
         return unidirectional_filter(Y, *kwargs)
-    # elif len(Y) &lt; 1024*2:
-        # return KD_filter(Y)
     else:
         return nondomDC_wrapper(Y)
+
+
+    # elif len(Y) &lt; 1024*2:
+        # return KD_filter(Y)
+    # else:
+        # return nondomDC_wrapper(Y)
         # return naive_filter(Y, MCtF = True)
         # return two_phase_filter(Y)
 
@@ -317,7 +412,12 @@ def MS_sequential_filter(Y_list = list[PointList], N = N) -&gt; PointList:
     for s in range(1, len(Y_list)):
         # print(f&#34;{s=}&#34;)
         # print(f&#34;{len(Y_ms)=}&#34;)
-        Y_ms = N(Y_ms + N(Y_list[s]))
+        # Y_ms = N(Y_ms + N(Y_list[s]))
+        Y_ms = ND_pointsSum2_wrapper(Y_ms, N(Y_list[s]))
+        Y_ms = Y_ms.removed_duplicates()
+        # assert Y_ms == N(Y_ms), f&#34;{len(Y_ms),len(N(Y_ms)),len(Y_ms.removed_duplicates())=}&#34;
+        if Y_ms is None:
+            return None
 
     return PointList(Y_ms)
 
@@ -421,9 +521,10 @@ def lex_filter(Y: PointList):
 def induced_UB(Y: PointList, line=False, assumption = &#34;consecutive&#34;):
     &#34;&#34;&#34; Induced upper bound set from pointlist Y, points are assumed to be consecutive in Yn&#34;&#34;&#34;
     # arg assumption in [consecutive, supported, nonconsecutive]
-    assert assumption in [&#34;consecutive&#34;, &#34;supported&#34;, &#34;nonconsecutive&#34;]
+    assert assumption in [&#34;consecutive&#34;, &#34;supported&#34;, &#34;nonconsecutive&#34;,&#34;localNadir&#34;]
 
     Y = N(Y)
+    Y = lex_sort(Y)
     U = []
     seen = set() # for spotting duplicates
     if line:
@@ -431,7 +532,7 @@ def induced_UB(Y: PointList, line=False, assumption = &#34;consecutive&#34;):
         for i in range(len(Y)-1):
                 if assumption == &#34;consecutive&#34;:
                     u = Point((Y[i+1][0], Y[i][1]))
-                elif assumption == &#34;nonconsecutive&#34;:
+                elif assumption in {&#34;nonconsecutive&#34;, &#34;localNadir&#34;}:
                     u = Point((Y[i][0], Y[i+1][1]))
                 if assumption != &#34;supported&#34;:
                     U.append(u)
@@ -442,7 +543,11 @@ def induced_UB(Y: PointList, line=False, assumption = &#34;consecutive&#34;):
                 seen.add(Y[i+1])
                 u = Point((Y[i+1][0], Y[i][1]))
                 U.append(u)
-    U = PointList(U)
+    if assumption == &#39;localNadir&#39;:
+        U = PointList([Y[0]] + U + [Y[-1]])
+        assert U.dim == 2
+    else:
+        U = PointList(U)
     return U
  
 
@@ -498,7 +603,52 @@ def find_generator_U(Y1:PointList, Y2:PointList) -&gt; PointList:
         u_current = u_current + Point((0, -l2))
         Uc.append(u_current)
 
-    return PointList(Uc)</code></pre>
+    return PointList(Uc)
+
+
+def U_dominates_L(U: PointList, L:PointList):
+    &#39;&#39;&#39;
+    Checks if the lower bound L is dominated by the upper bound U
+    input :
+        U : list of non-dominated points as tuples
+        L : list of supported points which make up the lower bound set
+    &#39;&#39;&#39;
+    assert all((L.dim == U.dim, L.dim == 2))
+    # y = sorted(set(L)) # sort non-dominated points
+
+    
+    if L.is_complete: # Assume Yn = Ln, ie LB not defined by the convex hull
+        return N(U) &lt; N(L)
+
+
+    L = lex_sort(N(L))
+    local_nadir_points = induced_UB(U)
+
+    if len(L) == 1:
+        return U.dominates_point(L[0])
+    
+    # Check that all extreme points of L are dominated
+    for l in L:
+        for u in U:
+            if u &lt; l:
+                break
+        else: # finally, if loop terminates normally
+            # print(f&#34;The LB point {l=} is not dominated by any point of U&#34;)
+            return False
+
+    # Check that all line segments of L are dominated
+    for i in range(len(set(L)) - 1):
+        # define linear function (line between l[i] and l[i+1])
+        lin_fct = lambda x : L[i][1] + (L[i+1][1]-L[i][1])/(L[i+1][0]-L[i][0])*(x-L[i][0])
+        for n in local_nadir_points:
+            if L[i][0] &lt;= n[0] and n[0] &lt;= L[i+1][0]:
+                if n[1] &gt; lin_fct(n[0]):
+                    # print(f&#34;line between {L[i],L[i+1]} is not dominated by nadir-point {n}&#34;)
+                    return False
+                if math.isclose(n[1], lin_fct(n[0])):
+                    return False
+    # if loop ends, the node is not dominated by the upper bound set
+    return True</code></pre>
 </details>
 </section>
 <section>
@@ -640,7 +790,12 @@ output: nondominated points of Minkowski sum of sets Y_list</p></div>
     for s in range(1, len(Y_list)):
         # print(f&#34;{s=}&#34;)
         # print(f&#34;{len(Y_ms)=}&#34;)
-        Y_ms = N(Y_ms + N(Y_list[s]))
+        # Y_ms = N(Y_ms + N(Y_list[s]))
+        Y_ms = ND_pointsSum2_wrapper(Y_ms, N(Y_list[s]))
+        Y_ms = Y_ms.removed_duplicates()
+        # assert Y_ms == N(Y_ms), f&#34;{len(Y_ms),len(N(Y_ms)),len(Y_ms.removed_duplicates())=}&#34;
+        if Y_ms is None:
+            return None
 
     return PointList(Y_ms)</code></pre>
 </details>
@@ -692,12 +847,108 @@ output: Minkowski sum of sets</p></div>
     &#34;&#34;&#34; &#39;best&#39; implemented nondominance filter &#34;&#34;&#34;
     if Y[0].dim &lt;= 2:
         return unidirectional_filter(Y, *kwargs)
-    # elif len(Y) &lt; 1024*2:
-        # return KD_filter(Y)
     else:
         return nondomDC_wrapper(Y)
+
+
+    # elif len(Y) &lt; 1024*2:
+        # return KD_filter(Y)
+    # else:
+        # return nondomDC_wrapper(Y)
         # return naive_filter(Y, MCtF = True)
         # return two_phase_filter(Y)</code></pre>
+</details>
+</dd>
+<dt id="methods.ND_pointsSum2_wrapper"><code class="name flex">
+<span>def <span class="ident">ND_pointsSum2_wrapper</span></span>(<span>A: <a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>, B: <a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>) ‑> <a title="classes.PointList" href="classes.html#classes.PointList">PointList</a></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ND_pointsSum2_wrapper(A : PointList, B : PointList) -&gt; PointList:
+    # A python wrapper for the c implementation of ND_pointsSum2 [Bruno Lang]
+    call_id = str(uuid.uuid4())
+    # out_file = fr&#34;/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}&#34; # c script directory
+    out_fileA = fr&#34;temp/pointsInA-{call_id}&#34; # c script directory
+    out_fileB = fr&#34;temp/pointsInB-{call_id}&#34; # c script directory
+    A.save_raw(out_fileA)
+    B.save_raw(out_fileB)
+    try:
+        call_c_ND_pointsSum2(call_id)
+    finally:
+        os.remove(out_fileA)
+        os.remove(out_fileB)
+
+
+    in_file = filepath = fr&#34;temp/pointsOut-{call_id}&#34; # c script directory
+    try:
+        Yn = PointList.from_raw(in_file)
+    except FileNotFoundError:
+        return None
+
+    if True: # clear temp folder
+        os.remove(in_file)
+    return Yn.removed_duplicates()</code></pre>
+</details>
+</dd>
+<dt id="methods.U_dominates_L"><code class="name flex">
+<span>def <span class="ident">U_dominates_L</span></span>(<span>U: <a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>, L: <a title="classes.PointList" href="classes.html#classes.PointList">PointList</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Checks if the lower bound L is dominated by the upper bound U
+input :
+U : list of non-dominated points as tuples
+L : list of supported points which make up the lower bound set</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def U_dominates_L(U: PointList, L:PointList):
+    &#39;&#39;&#39;
+    Checks if the lower bound L is dominated by the upper bound U
+    input :
+        U : list of non-dominated points as tuples
+        L : list of supported points which make up the lower bound set
+    &#39;&#39;&#39;
+    assert all((L.dim == U.dim, L.dim == 2))
+    # y = sorted(set(L)) # sort non-dominated points
+
+    
+    if L.is_complete: # Assume Yn = Ln, ie LB not defined by the convex hull
+        return N(U) &lt; N(L)
+
+
+    L = lex_sort(N(L))
+    local_nadir_points = induced_UB(U)
+
+    if len(L) == 1:
+        return U.dominates_point(L[0])
+    
+    # Check that all extreme points of L are dominated
+    for l in L:
+        for u in U:
+            if u &lt; l:
+                break
+        else: # finally, if loop terminates normally
+            # print(f&#34;The LB point {l=} is not dominated by any point of U&#34;)
+            return False
+
+    # Check that all line segments of L are dominated
+    for i in range(len(set(L)) - 1):
+        # define linear function (line between l[i] and l[i+1])
+        lin_fct = lambda x : L[i][1] + (L[i+1][1]-L[i][1])/(L[i+1][0]-L[i][0])*(x-L[i][0])
+        for n in local_nadir_points:
+            if L[i][0] &lt;= n[0] and n[0] &lt;= L[i+1][0]:
+                if n[1] &gt; lin_fct(n[0]):
+                    # print(f&#34;line between {L[i],L[i+1]} is not dominated by nadir-point {n}&#34;)
+                    return False
+                if math.isclose(n[1], lin_fct(n[0])):
+                    return False
+    # if loop ends, the node is not dominated by the upper bound set
+    return True</code></pre>
 </details>
 </dd>
 <dt id="methods.basic_filter"><code class="name flex">
@@ -732,8 +983,8 @@ output: PointList with all nondominated points removed</p>
     return(PointList(Yn))</code></pre>
 </details>
 </dd>
-<dt id="methods.call_c_nondomDC"><code class="name flex">
-<span>def <span class="ident">call_c_nondomDC</span></span>(<span>call_id: str)</span>
+<dt id="methods.call_c_ND_pointsSum2"><code class="name flex">
+<span>def <span class="ident">call_c_ND_pointsSum2</span></span>(<span>call_id: str, max_time=None, max_gb=None, logger=None, verbose=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -741,14 +992,70 @@ output: PointList with all nondominated points removed</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def call_c_nondomDC(call_id:str):
+<pre><code class="python">def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=None, logger=None, verbose = False):
+    assert &#39;ND_pointsSum2&#39; in os.listdir()
+
+    # print(f&#34;calling subprocess &#34;)
+    if max_gb:
+        if verbose:
+            p = subprocess.Popen([&#39;./ND_pointsSum2&#39;,call_id,str(max_gb)])
+        else:
+            p = subprocess.Popen([&#39;./ND_pointsSum2&#39;,call_id,str(max_gb)], stdout=subprocess.DEVNULL)
+    else:
+        if verbose:
+            p = subprocess.Popen([&#39;./ND_pointsSum2&#39;,call_id])
+        else:
+            p = subprocess.Popen([&#39;./ND_pointsSum2&#39;,call_id], stdout=subprocess.DEVNULL)
+
+    
+    try:
+        if max_time:
+            p.wait(timeout=max_time*60)
+        else:
+            p.wait()
+    except subprocess.TimeoutExpired:
+        print(f&#34;Process timed out after {max_time} seconds&#34;)
+        p.kill()
+        print(&#34;Process killed due to timeout&#34;)
+        if logger:
+            logger.warning(&#34;Process timed out after {max_time} seconds {call_id=}&#34;)
+            logger.info(f&#34;{p.returncode=}&#34;)
+        print(f&#34;{p.returncode=}&#34;)
+    # print(f&#34;subprocess complete &#34;)</code></pre>
+</details>
+</dd>
+<dt id="methods.call_c_nondomDC"><code class="name flex">
+<span>def <span class="ident">call_c_nondomDC</span></span>(<span>call_id: str, max_time=None, logger=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def call_c_nondomDC(call_id:str, max_time=None, logger=None):
     # current_d = os.getcwd()
     # move to c folder and execute
     # os.chdir(&#39;/Users/au618299/Desktop/cythonTest/nondom/&#39;)
     # subprocess.call([&#39;./nondom&#39;,call_id])
     # return to initial directory
     # os.chdir(current_d)
-    subprocess.call([&#39;/Users/au618299/Desktop/cythonTest/nondom/./nondom&#39;,call_id])</code></pre>
+    # subprocess.call([&#39;/Users/au618299/Desktop/cythonTest/nondom/./nondom&#39;,call_id])
+    assert &#39;nondom&#39; in os.listdir()
+    # subprocess.call([&#39;./nondom&#39;,call_id])
+    p = subprocess.Popen([&#39;./nondom&#39;,call_id])
+
+    try:
+        if max_time:
+            p.wait(timeout=max_time*60)
+        else:
+            p.wait()
+    except subprocess.TimeoutExpired:
+        print(f&#34;Process timed out after {max_time} seconds&#34;)
+        p.kill()
+        print(&#34;Process killed due to timeout&#34;)
+        if logger:
+            logger.warning(&#34;Process timed out after {max_time} seconds {call_id=}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="methods.find_generator_U"><code class="name flex">
@@ -826,9 +1133,10 @@ output: A set of generator upper bound points Uc as PointList</p></div>
 <pre><code class="python">def induced_UB(Y: PointList, line=False, assumption = &#34;consecutive&#34;):
     &#34;&#34;&#34; Induced upper bound set from pointlist Y, points are assumed to be consecutive in Yn&#34;&#34;&#34;
     # arg assumption in [consecutive, supported, nonconsecutive]
-    assert assumption in [&#34;consecutive&#34;, &#34;supported&#34;, &#34;nonconsecutive&#34;]
+    assert assumption in [&#34;consecutive&#34;, &#34;supported&#34;, &#34;nonconsecutive&#34;,&#34;localNadir&#34;]
 
     Y = N(Y)
+    Y = lex_sort(Y)
     U = []
     seen = set() # for spotting duplicates
     if line:
@@ -836,7 +1144,7 @@ output: A set of generator upper bound points Uc as PointList</p></div>
         for i in range(len(Y)-1):
                 if assumption == &#34;consecutive&#34;:
                     u = Point((Y[i+1][0], Y[i][1]))
-                elif assumption == &#34;nonconsecutive&#34;:
+                elif assumption in {&#34;nonconsecutive&#34;, &#34;localNadir&#34;}:
                     u = Point((Y[i][0], Y[i+1][1]))
                 if assumption != &#34;supported&#34;:
                     U.append(u)
@@ -847,7 +1155,11 @@ output: A set of generator upper bound points Uc as PointList</p></div>
                 seen.add(Y[i+1])
                 u = Point((Y[i+1][0], Y[i][1]))
                 U.append(u)
-    U = PointList(U)
+    if assumption == &#39;localNadir&#39;:
+        U = PointList([Y[0]] + U + [Y[-1]])
+        assert U.dim == 2
+    else:
+        U = PointList(U)
     return U</code></pre>
 </details>
 </dd>
@@ -1026,14 +1338,28 @@ output: PointList with all nondominated points removed</p>
     # out_file = fr&#34;/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}&#34; # c script directory
     out_file = fr&#34;temp/pointsIn-{call_id}&#34; # c script directory
     Y.save_raw(out_file)
-    call_c_nondomDC(call_id)
+    assert os.path.exists(out_file), f&#34;{out_file=}&#34;
+
+    try:
+        out_str = call_c_nondomDC(call_id)
+    finally:
+        os.remove(out_file)
     # in_file = filepath = fr&#34;/Users/au618299/Desktop/cythonTest/nondom/temp/pointsOut-{call_id}&#34; # c script directory
     in_file = filepath = fr&#34;temp/pointsOut-{call_id}&#34; # c script directory
+    assert os.path.exists(in_file), f&#34;{in_file,out_str=}&#34;
     Yn = PointList.from_raw(in_file)
+    # print(f&#34;{in_file=}&#34;)
+    try:
+        Yn = PointList.from_raw(in_file)
+    except FileNotFoundError:
+        print(f&#34;File not found&#34;)
+        print(f&#34;{in_file=}&#34;)
+        return None
+
     if True: # clear temp folder
-        os.remove(out_file)
+        # os.remove(out_file)
         os.remove(in_file)
-    return Yn</code></pre>
+    return Yn.removed_duplicates()</code></pre>
 </details>
 </dd>
 <dt id="methods.two_phase_filter"><code class="name flex">
@@ -1138,7 +1464,10 @@ output: PointList with all nondominated points removed</p></div>
 <li><code><a title="methods.MS_sequential_filter" href="#methods.MS_sequential_filter">MS_sequential_filter</a></code></li>
 <li><code><a title="methods.MS_sum" href="#methods.MS_sum">MS_sum</a></code></li>
 <li><code><a title="methods.N" href="#methods.N">N</a></code></li>
+<li><code><a title="methods.ND_pointsSum2_wrapper" href="#methods.ND_pointsSum2_wrapper">ND_pointsSum2_wrapper</a></code></li>
+<li><code><a title="methods.U_dominates_L" href="#methods.U_dominates_L">U_dominates_L</a></code></li>
 <li><code><a title="methods.basic_filter" href="#methods.basic_filter">basic_filter</a></code></li>
+<li><code><a title="methods.call_c_ND_pointsSum2" href="#methods.call_c_ND_pointsSum2">call_c_ND_pointsSum2</a></code></li>
 <li><code><a title="methods.call_c_nondomDC" href="#methods.call_c_nondomDC">call_c_nondomDC</a></code></li>
 <li><code><a title="methods.find_generator_U" href="#methods.find_generator_U">find_generator_U</a></code></li>
 <li><code><a title="methods.induced_UB" href="#methods.induced_UB">induced_UB</a></code></li>
