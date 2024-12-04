@@ -2,7 +2,23 @@
 .Rhistory
 .RData
 .Ruserdata
+code/jobscript_alg1
+code/jobscript
 code/__pycache__/**
 **/**.DS_Store
 code/instances/testsets/**
+<<<<<<< Updated upstream
 *.tex
+=======
+nondom
+>>>>>>> Stashed changes
+renv/
+.RData
+.Rproj
+.Rhistory
+.Ruserdata
+.Rprofile
+.Rbuildignore
+.renvignore
+minkowski_theory.Rproj
+renv.lock
