@@ -25,7 +25,7 @@ import uuid
 import time
 
 
-def basic_filter(Y:PointList):
+def basic_filter(Y:PointList) -> PointList:
     """
     input: PointList
     output: PointList with all nondominated points removed
@@ -105,7 +105,7 @@ def two_phase_filter(Y: PointList) -> PointList:
     return Yn_new       
 
 
-def KD_filter(Y: PointList):
+def KD_filter(Y: PointList) -> PointList:
     """ Kd-tree filtering algorithm from Chen2012
 
     Args:
@@ -153,7 +153,7 @@ def KD_filter(Y: PointList):
     return Yn
 
 
-def lex_sort(Y: PointList):
+def lex_sort(Y: PointList) -> PointList:
     """
     input: PointList
     output: lexicographically sorted PointList Y
@@ -255,7 +255,7 @@ def call_c_ND_pointsSum2(call_id:str, max_time=None,max_gb=None, logger=None, ve
     # print(f"subprocess complete ")
 
 
-def nondomDC_wrapper(Y : PointList):
+def nondomDC_wrapper(Y : PointList) -> PointList:
     # A python wrapper for the c implementation of NonDomDC [Bruno Lang]
     call_id = str(uuid.uuid4())
     # out_file = fr"/Users/au618299/Desktop/cythonTest/nondom/temp/pointsIn-{call_id}" # c script directory
@@ -404,7 +404,7 @@ def MS_doubling_filter(Y_list = list[PointList], MS_filter_alg = MS_sequential_f
 
 
 
-def lex_sort_linked(Y: PointList):
+def lex_sort_linked(Y: PointList) ->PointList:
     """function for sorting p = 2$"""
     assert Y.dim <= 2, "dim p > 2 NOT IMPLEMENTED"
  
@@ -439,7 +439,7 @@ def lex_sort_linked(Y: PointList):
     return PointList((N.data for N in llist.__iter__()))
 
 
-def lex_filter(Y: PointList):
+def lex_filter(Y: PointList) -> PointList:
     """function for filtering out dominated points using linked lists for p = 2$"""
     assert Y.dim <= 2, "dim p > 2 NOT IMPLEMENTED"
  
@@ -478,7 +478,7 @@ def lex_filter(Y: PointList):
     return PointList((N.data for N in llist.__iter__()))
 
 
-def induced_UB(Y: PointList, line=False, assumption = "consecutive"):
+def induced_UB(Y: PointList, line=False, assumption = "consecutive") -> PointList:
     """ Induced upper bound set from pointlist Y, points are assumed to be consecutive in Yn"""
     # arg assumption in [consecutive, supported, nonconsecutive]
     assert assumption in ["consecutive", "supported", "nonconsecutive","localNadir"]
@@ -566,7 +566,7 @@ def find_generator_U(Y1:PointList, Y2:PointList) -> PointList:
     return PointList(Uc)
 
 
-def U_dominates_L(U: PointList, L:PointList):
+def U_dominates_L(U: PointList, L:PointList) -> bool:
     '''
     Checks if the lower bound L is dominated by the upper bound U
     input :

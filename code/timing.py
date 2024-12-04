@@ -45,6 +45,12 @@ COUNT_dict = {}
 START_TIME = time.perf_counter()
 
 def timeit(func, keyname = None):
+    """timeit. A python decorator which to record future calls (time and call count) of the function func.
+
+    Args:
+        func: A function to decorate
+        keyname: name in log - usefull for long names
+    """
     if keyname == None:
         keyname = func.__name__
     TIME_dict[keyname] = 0
@@ -62,8 +68,13 @@ def timeit(func, keyname = None):
     return timeit_wrapper
 
 def print_timeit(tolerance = 0, logger = None):
+    """print_timeit. Prints the current TIME_DICT
+
+    Args:
+        tolerance: lower tolerance (seconds) for when a time entry should be printed
+        logger: name of logging object to divert the print.
+    """
     global TIME_dict
-    # sort and show TIME_dict
     out_str = "\n"
     hline = 70
     out_str += "\t" + "_"*hline + "\n"
@@ -87,10 +98,11 @@ def print_timeit(tolerance = 0, logger = None):
         if logger:
             logger.info(out_str)
         
-    # TIME_dict_return = {k: v for k, v in TIME_dict.items() if COUNT_dict[k]>0}
     return TIME_dict
 
 def reset_timeit():
+    """reset_timeit. Resets all time/count objects: TIME_dict, COUNT_dict and START_TIME.
+    """
     global TIME_dict
     global COUNT_dict
     global START_TIME
@@ -126,7 +138,7 @@ def log_every_x_minutes(x, logger):
     A decorator for creating a log every x minutes. Threading is required as the process has to run paralell to calling the function func
     
 
-    Usage:
+    example use:
         import logging
         logging.basicConfig(level=logging.INFO, filename=logname)
         logger = logging.getLogger(logname)
@@ -163,39 +175,16 @@ def log_every_x_minutes(x, logger):
     return decorator
 
 
-def terminate_after_x_minutes_old(x, logger=None):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            # Start the function as a process
-            p = multiprocessing.Process(target=func, args=args, kwargs=kwargs)
-            p.start()
-
-            # Wait for the specified time or until the process finishes
-            p.join(timeout=x*60)
-
-            # If the process is still active after the wait time
-            if p.is_alive():
-                print(f"{func.__name__} is running... killing process after {x:.2f} minutes {x/60:.2f} hours")
-                if logger:
-                    logger.info(f"{func.__name__} is running... killing process after {x/60:.2f} seconds {x:.2f} minutes {x*60:.2f} hours")
-                    logger.warning(f"{func.__name__} is running... killing process after {x*60:.2f} seconds {x:.2f} minutes {x/60:.2f} hours")
-
-                # Terminate the process
-                p.terminate()
-
-                # Ensure the process has terminated
-                p.join()
-        return wrapper
-    return decorator
-
-
-
 def target(queue, func, *args, **kwargs):
     result = func(*args, **kwargs)
     queue.put(result)
+def terminate_after_x_minutes(x: int, logger=None):
+    """terminate_after_x_minutes. A decorator which exits a function after x minutes
 
-def terminate_after_x_minutes(x, logger=None):
+    Args:
+        x (int): x minutes
+        logger: a logging object
+    """
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -232,9 +221,6 @@ def terminate_after_x_minutes(x, logger=None):
         return wrapper
     return decorator
 
-import multiprocessing
-import time
-from functools import wraps
 def target(queue, func, *args, **kwargs):
     result = func(*args, **kwargs)
     queue.put(result)
