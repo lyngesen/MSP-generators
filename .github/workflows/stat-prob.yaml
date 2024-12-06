@@ -2,14 +2,16 @@
 
 on:
   push:
-    paths:
-      - .github/workflows/stat-prob.yaml
-      - code/instances/stat-prob.R
-      - code/instances/results/**.json
-      - code/instances/problem-statistics.Rmd
-      
-  schedule:
-    - cron: '15 5,17 * * *'
+    branches-ignore:
+      - '**'
+  #   paths:
+  #     - .github/workflows/stat-prob.yaml
+  #     - code/instances/stat-prob.R
+  #     - code/instances/results/**.json
+  #     - code/instances/problem-statistics.Rmd
+  #     
+  # schedule:
+  #   - cron: '15 5,17 * * *'
 
 name: Update result statistics
 
